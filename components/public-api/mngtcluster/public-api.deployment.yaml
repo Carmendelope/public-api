@@ -1,0 +1,33 @@
+###
+# Public API
+###
+
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  labels:
+    cluster: management
+    component: public-api
+  name: public-api
+  namespace: default
+spec:
+  replicas: 1
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      cluster: management
+      component: public-api
+  template:
+    metadata:
+      labels:
+        cluster: management
+        component: public-api
+    spec:
+      containers:
+      - name: public-api
+        image: nalej/public-api:VERSION
+        imagePullPolicy: Always
+        securityContext:
+          runAsUser: 2000
+      imagePullSecrets:
+      - name: myregistrykey
