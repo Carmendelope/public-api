@@ -19,6 +19,7 @@ type Manager struct {
 	nodeClient grpc_infrastructure_go.NodesClient
 }
 
+// NewManager creates a Manager using a set of clients.
 func NewManager(clustClient grpc_infrastructure_go.ClustersClient,
 nodeClient grpc_infrastructure_go.NodesClient) Manager {
 	return Manager{

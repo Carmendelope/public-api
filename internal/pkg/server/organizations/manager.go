@@ -15,6 +15,7 @@ type Manager struct {
 	orgClient grpc_organization_go.OrganizationsClient
 }
 
+// NewManager creates a Manager using a set of clients.
 func NewManager(orgClient grpc_organization_go.OrganizationsClient) Manager {
 	return Manager{orgClient:orgClient}
 }

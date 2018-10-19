@@ -16,6 +16,11 @@ type Manager struct {
 
 }
 
+// NewManager creates a Manager using a set of clients.
+func NewManager() Manager {
+	return Manager{}
+}
+
 func (m * Manager) Info(userID *grpc_user_go.UserId) (*grpc_public_api_go.User, error) {
 	panic("implement me")
 }
