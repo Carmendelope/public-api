@@ -12,8 +12,14 @@ import (
 	"github.com/nalej/public-api/internal/pkg/entities"
 )
 
+// Handler structure for the organizations requests.
 type Handler struct {
 	Manager Manager
+}
+
+// NewHandler creates a new Handler with a linked manager.
+func NewHandler(manager Manager) *Handler{
+	return &Handler{manager}
 }
 
 func (h *Handler) Info(ctx context.Context, organizationID *grpc_organization_go.OrganizationId) (*grpc_public_api_go.OrganizationInfo, error) {
@@ -24,6 +30,3 @@ func (h *Handler) Info(ctx context.Context, organizationID *grpc_organization_go
 	return h.Manager.Info(organizationID)
 }
 
-func NewHandler(manager Manager) *Handler{
-	return &Handler{manager}
-}

@@ -11,6 +11,7 @@ import (
 	"github.com/nalej/grpc-user-go"
 )
 
+// Manager structure with the required clients for users operations.
 type Manager struct {
 
 }

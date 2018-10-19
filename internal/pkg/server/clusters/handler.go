@@ -13,14 +13,17 @@ import (
 	"github.com/nalej/public-api/internal/pkg/entities"
 )
 
+// Handler structure for the cluster requests.
 type Handler struct {
 	Manager Manager
 }
 
+// NewHandler creates a new Handler with a linked manager.
 func NewHandler(manager Manager) *Handler{
 	return &Handler{manager}
 }
 
+// List all the clusters in an organization.
 func (h * Handler) List(ctx context.Context, organizationID *grpc_organization_go.OrganizationId) (*grpc_public_api_go.ClusterList, error) {
 	err := entities.ValidOrganizationId(organizationID)
 	if err != nil{
@@ -29,6 +32,7 @@ func (h * Handler) List(ctx context.Context, organizationID *grpc_organization_g
 	return h.Manager.List(organizationID)
 }
 
+// Update the cluster information.
 func (h * Handler) Update(ctx context.Context, updateClusterRequest *grpc_public_api_go.UpdateClusterRequest) (*grpc_common_go.Success, error) {
 	err := entities.ValidUpdateClusterRequest(updateClusterRequest)
 	if err != nil {

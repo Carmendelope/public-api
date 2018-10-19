@@ -9,6 +9,7 @@ import (
 	"github.com/nalej/grpc-organization-go"
 )
 
+// Manager structure with the required clients for roles operations.
 type Manager struct {
 
 }

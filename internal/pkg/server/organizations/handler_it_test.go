@@ -15,6 +15,7 @@ import (
 	"github.com/nalej/grpc-organization-go"
 	"github.com/nalej/grpc-public-api-go"
 	"github.com/nalej/grpc-utils/pkg/test"
+	"github.com/nalej/public-api/internal/pkg/server/ithelpers"
 	"github.com/nalej/public-api/internal/pkg/utils"
 	"github.com/onsi/ginkgo"
 	"github.com/onsi/gomega"
@@ -23,16 +24,6 @@ import (
 	"google.golang.org/grpc/test/bufconn"
 	"os"
 )
-
-func createOrganization(name string, orgClient grpc_organization_go.OrganizationsClient) * grpc_organization_go.Organization {
-	toAdd := &grpc_organization_go.AddOrganizationRequest{
-		Name:                 name,
-	}
-	added, err := orgClient.AddOrganization(context.Background(), toAdd)
-	gomega.Expect(err).To(gomega.Succeed())
-	gomega.Expect(added).ToNot(gomega.BeNil())
-	return added
-}
 
 var _ = ginkgo.Describe("Organizations", func(){
 
@@ -77,7 +68,7 @@ var _ = ginkgo.Describe("Organizations", func(){
 		test.LaunchServer(server, listener)
 
 		client = grpc_public_api_go.NewOrganizationsClient(conn)
-		targetOrganization = createOrganization(fmt.Sprintf("testOrg-%d", ginkgo.GinkgoRandomSeed()), orgClient)
+		targetOrganization = ithelpers.CreateOrganization(fmt.Sprintf("testOrg-%d", ginkgo.GinkgoRandomSeed()), orgClient)
 	})
 
 	ginkgo.AfterSuite(func() {

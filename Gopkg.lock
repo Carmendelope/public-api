@@ -47,28 +47,44 @@
   version = "v2.0.0"
 
 [[projects]]
-  digest = "1:80c06f0c7685dc6138142b2ba34b195e46413e429393314d68d83863a5fb03ff"
+  digest = "1:337ecf8b5cd146525d79adacfd52c5e74c77c66577cf1c068ab3d790ca9a826e"
   name = "github.com/nalej/grpc-authx-go"
   packages = ["."]
   pruneopts = ""
-  revision = "1381967e64580f1520246049a7143ffb05486343"
-  version = "v0.0.8"
+  revision = "bda1ca58438235b3be98c82ace10f0c7f7ebf213"
+  version = "v0.0.9"
 
 [[projects]]
-  digest = "1:19103b116a219048d3f5c6c1ba4b92b491c7d25910004f34a8bab900f2c5d29d"
+  digest = "1:7bf7a627b289399500a0be302cedab87a53974bb05bf42c2478dbf977014f946"
   name = "github.com/nalej/grpc-common-go"
   packages = ["."]
   pruneopts = ""
-  revision = "539f8345e40fc8a180b4c2cd31d448ca53eb7ac3"
-  version = "v0.0.7"
+  revision = "3cc1a7216094651b95766527f334d9353926a867"
+  version = "v0.0.8"
 
 [[projects]]
-  digest = "1:bb241a198cdb511cc45f1754b01b67ac8b1e29385ab598fdb2055d279190ac0c"
+  digest = "1:e0e142e4d29bb225e856b5624b6924a9dc25136d798fd3298344346e40e9ed2b"
   name = "github.com/nalej/grpc-infrastructure-go"
   packages = ["."]
   pruneopts = ""
-  revision = "14ec44f090477b715ffb165f86e3e6cbf48ecf1c"
-  version = "v0.0.4"
+  revision = "2cc5945f6243100819e3697804fe25f12c1a0f40"
+  version = "v0.0.8"
+
+[[projects]]
+  digest = "1:ed337b988c547687d3d298f11d1f561c2e31e926b60e219cc6011d023d9d5c7d"
+  name = "github.com/nalej/grpc-infrastructure-manager-go"
+  packages = ["."]
+  pruneopts = ""
+  revision = "854fb1ec62cc281e1fd06908570196970a27dfed"
+  version = "v0.0.7"
+
+[[projects]]
+  digest = "1:c470b24854fc7852136396ec32341fb4e4ea47610ecd7f0cee6e0a22be0fd574"
+  name = "github.com/nalej/grpc-installer-go"
+  packages = ["."]
+  pruneopts = ""
+  revision = "eadc4cef0e1960f8744c843fe01da012fa86d9b3"
+  version = "v0.0.6"
 
 [[projects]]
   digest = "1:35095702756168405f19f2125289e326aa6e698003478c16d9a45fc30d7420ec"
@@ -97,7 +113,11 @@
 [[projects]]
   digest = "1:05c1a54c80e2d88b6af8f6e3af68ded6ef7f5aea9a28873fb68edc72ea798581"
   name = "github.com/nalej/grpc-utils"
-  packages = ["pkg/tools"]
+  packages = [
+    "pkg/conversions",
+    "pkg/test",
+    "pkg/tools",
+  ]
   pruneopts = ""
   revision = "5dd4662c03100806b57763212966a72e0c4b85e5"
   version = "v1.1.0"
@@ -181,7 +201,7 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:547dcb6aebfb7fb17947660ebb034470c13f4d63d893def190a2f7ba3d09bc38"
+  digest = "1:6543c75ddc1efc0041202dd49378ee2e5711b7cc82c2845c0437eef6276cc984"
   name = "golang.org/x/net"
   packages = [
     "context",
@@ -196,15 +216,15 @@
     "trace",
   ]
   pruneopts = ""
-  revision = "49bb7cea24b1df9410e1712aa6433dae904ff66a"
+  revision = "04a2e542c03f1d053ab3e4d6e5abcd4b66e2be8e"
 
 [[projects]]
   branch = "master"
-  digest = "1:2ed0bf267e44950120acd95570227e28184573ffb099bd85b529ee148e004ddb"
+  digest = "1:9bbe878c5cef3e193360515704d01ddb34c756e8cfd4abf7166f3f6a2059c553"
   name = "golang.org/x/sys"
   packages = ["unix"]
   pruneopts = ""
-  revision = "fa43e7bc11baaae89f3f902b2b4d832b68234844"
+  revision = "8f1d3d21f81be6e86ebcd6febee89c89bc50719f"
 
 [[projects]]
   digest = "1:5acd3512b047305d49e8763eef7ba423901e85d5dd2fd1e71778a0ea8de10bd4"
@@ -243,11 +263,14 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:1b3b4ec811695907c4a3cb92e4f32834a4a42459bff7e02068b6b2b5344803cd"
+  digest = "1:849525811c9f6ae1f5bd9b866adb4c9436f4a12d767f48e33bf343596d4aafd7"
   name = "google.golang.org/genproto"
-  packages = ["googleapis/rpc/status"]
+  packages = [
+    "googleapis/rpc/errdetails",
+    "googleapis/rpc/status",
+  ]
   pruneopts = ""
-  revision = "af9cb2a35e7f169ec875002c1829c9b315cddc04"
+  revision = "94acd270e44e65579b9ee3cdab25034d33fed608"
 
 [[projects]]
   digest = "1:15656947b87a6a240e61dcfae9e71a55a8d5677f240d12ab48f02cdbabf1e309"
@@ -281,6 +304,7 @@
     "stats",
     "status",
     "tap",
+    "test/bufconn",
   ]
   pruneopts = ""
   revision = "8dea3dc473e90c8179e519d91302d0597c0ca1d1"
@@ -319,9 +343,12 @@
     "github.com/nalej/grpc-authx-go",
     "github.com/nalej/grpc-common-go",
     "github.com/nalej/grpc-infrastructure-go",
+    "github.com/nalej/grpc-infrastructure-manager-go",
     "github.com/nalej/grpc-organization-go",
     "github.com/nalej/grpc-public-api-go",
     "github.com/nalej/grpc-user-go",
+    "github.com/nalej/grpc-utils/pkg/conversions",
+    "github.com/nalej/grpc-utils/pkg/test",
     "github.com/nalej/grpc-utils/pkg/tools",
     "github.com/onsi/ginkgo",
     "github.com/onsi/gomega",
@@ -330,6 +357,7 @@
     "github.com/spf13/cobra",
     "google.golang.org/grpc",
     "google.golang.org/grpc/reflection",
+    "google.golang.org/grpc/test/bufconn",
   ]
   solver-name = "gps-cdcl"
   solver-version = 1

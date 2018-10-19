@@ -6,6 +6,7 @@ package nodes
 
 import "github.com/nalej/grpc-infrastructure-go"
 
+// Manager structure with the required clients for node operations.
 type Manager struct {
 
 }

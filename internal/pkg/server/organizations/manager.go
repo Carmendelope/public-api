@@ -10,6 +10,7 @@ import (
 	"github.com/nalej/grpc-public-api-go"
 )
 
+// Manager structure with the required clients for organization operations.
 type Manager struct {
 	orgClient grpc_organization_go.OrganizationsClient
 }

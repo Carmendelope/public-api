@@ -9,6 +9,7 @@ import (
 	"github.com/nalej/grpc-public-api-go"
 )
 
+// Manager structure with the required clients for resources operations.
 type Manager struct {
 
 }

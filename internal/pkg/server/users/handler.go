@@ -14,10 +14,12 @@ import (
 	"github.com/nalej/public-api/internal/pkg/entities"
 )
 
+// Handler structure for the user requests.
 type Handler struct {
 	Manager Manager
 }
 
+// NewHandler creates a new Handler with a linked manager.
 func NewHandler(manager Manager) *Handler{
 	return &Handler{manager}
 }
