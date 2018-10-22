@@ -20,3 +20,15 @@ appropriate services.
  ```
  $ ./bin/system-model-cli
  ```
+
+ # Integration tests
+
+ The following table contains the variables that activate the integration tests
+
+ | Variable  | Example Value | Description |
+ | ------------- | ------------- |------------- |
+ | RUN_INTEGRATION_TEST  | true | Run integration tests |
+ | IT_SM_ADDRESS  | localhost:8800 | System Model Address |
+ | IT_INFRAMGR_ADDRESS  | localhost:8860 | Infrastructure Manager Address |
+ | IT_APPMGR_ADDRESS  | localhost:8910 | Applications Manager Address |
+ | IT_ACCESSMGR_ADDRESS  | localhost:8920 | Access Manager Address |
