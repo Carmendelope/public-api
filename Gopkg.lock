@@ -5,16 +5,30 @@
   digest = "1:3dd078fda7500c341bc26cfbc6c6a34614f295a2457149fc1045cab767cbcf18"
   name = "github.com/golang/protobuf"
   packages = [
+    "jsonpb",
     "proto",
     "protoc-gen-go/descriptor",
     "ptypes",
     "ptypes/any",
     "ptypes/duration",
+    "ptypes/struct",
     "ptypes/timestamp",
   ]
   pruneopts = ""
   revision = "aa810b61a9c79d51363740d207bb46cf8e620ed5"
   version = "v1.2.0"
+
+[[projects]]
+  digest = "1:dc70bd0ecd18729cf0ecf8828045e185ce0b15084f1bbe250422ab65e6fcd79c"
+  name = "github.com/grpc-ecosystem/grpc-gateway"
+  packages = [
+    "runtime",
+    "runtime/internal",
+    "utilities",
+  ]
+  pruneopts = ""
+  revision = "aeab1d96e0f1368d243e2e5f526aa29d495517bb"
+  version = "v1.5.1"
 
 [[projects]]
   digest = "1:b3c5b95e56c06f5aa72cb2500e6ee5f44fcd122872d4fec2023a488e561218bc"
@@ -47,44 +61,28 @@
   version = "v2.0.0"
 
 [[projects]]
-  digest = "1:337ecf8b5cd146525d79adacfd52c5e74c77c66577cf1c068ab3d790ca9a826e"
+  digest = "1:b3f0497720df8e539d94595157d9bd6ff7046098e1a2093d27db60d03e4c2f78"
   name = "github.com/nalej/grpc-authx-go"
   packages = ["."]
   pruneopts = ""
-  revision = "bda1ca58438235b3be98c82ace10f0c7f7ebf213"
-  version = "v0.0.9"
+  revision = "4bc5e88d7f5e50e1869e4ccf516e19593abcaf35"
+  version = "v0.0.10"
 
 [[projects]]
-  digest = "1:7bf7a627b289399500a0be302cedab87a53974bb05bf42c2478dbf977014f946"
+  digest = "1:0c331ab84cd34dfcea929a448d81cf41a334fb40309823986fa08cdda0b27211"
   name = "github.com/nalej/grpc-common-go"
   packages = ["."]
   pruneopts = ""
-  revision = "3cc1a7216094651b95766527f334d9353926a867"
-  version = "v0.0.8"
+  revision = "01c146663956b9333964ba38a24ec7c8abdb697a"
+  version = "v0.0.9"
 
 [[projects]]
-  digest = "1:e0e142e4d29bb225e856b5624b6924a9dc25136d798fd3298344346e40e9ed2b"
+  digest = "1:31f10e244830122699d60e0923942e8a723023175816b0f24e640ad3fe12d49c"
   name = "github.com/nalej/grpc-infrastructure-go"
   packages = ["."]
   pruneopts = ""
-  revision = "2cc5945f6243100819e3697804fe25f12c1a0f40"
-  version = "v0.0.8"
-
-[[projects]]
-  digest = "1:ed337b988c547687d3d298f11d1f561c2e31e926b60e219cc6011d023d9d5c7d"
-  name = "github.com/nalej/grpc-infrastructure-manager-go"
-  packages = ["."]
-  pruneopts = ""
-  revision = "854fb1ec62cc281e1fd06908570196970a27dfed"
-  version = "v0.0.7"
-
-[[projects]]
-  digest = "1:c470b24854fc7852136396ec32341fb4e4ea47610ecd7f0cee6e0a22be0fd574"
-  name = "github.com/nalej/grpc-installer-go"
-  packages = ["."]
-  pruneopts = ""
-  revision = "eadc4cef0e1960f8744c843fe01da012fa86d9b3"
-  version = "v0.0.6"
+  revision = "7516f7818d29acfecc0e4e973857418dd862d355"
+  version = "v0.0.9"
 
 [[projects]]
   digest = "1:35095702756168405f19f2125289e326aa6e698003478c16d9a45fc30d7420ec"
@@ -95,12 +93,12 @@
   version = "v0.0.8"
 
 [[projects]]
-  digest = "1:5514aa208c8988f552c7cec9c333d639d484d3adfd4853b256275757eb89aded"
+  digest = "1:cf19542b9eb1b41c1e1b01cd8bb3f10512e5c1c05f6d6166338b35c912565efe"
   name = "github.com/nalej/grpc-public-api-go"
   packages = ["."]
   pruneopts = ""
-  revision = "526a174e8a4375cdb90d3e0674cc3d9d2b5aa6a5"
-  version = "v0.0.1"
+  revision = "05b80dfec3d8ffadcc31a29b14f7f609df5cc6d5"
+  version = "v0.0.2"
 
 [[projects]]
   digest = "1:445af32e0c19b779abc06599afbf10e7f81bb66ed7df4430a268803941891e65"
@@ -220,11 +218,11 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:9bbe878c5cef3e193360515704d01ddb34c756e8cfd4abf7166f3f6a2059c553"
+  digest = "1:03a1b1f2bfb0a6b2291c4161032429b1e8a1f23cc68530ad64358f8b493ead5f"
   name = "golang.org/x/sys"
   packages = ["unix"]
   pruneopts = ""
-  revision = "8f1d3d21f81be6e86ebcd6febee89c89bc50719f"
+  revision = "8a28ead16f52c8aaeffbf79239b251dfdf6c4f96"
 
 [[projects]]
   digest = "1:5acd3512b047305d49e8763eef7ba423901e85d5dd2fd1e71778a0ea8de10bd4"
@@ -266,6 +264,7 @@
   digest = "1:849525811c9f6ae1f5bd9b866adb4c9436f4a12d767f48e33bf343596d4aafd7"
   name = "google.golang.org/genproto"
   packages = [
+    "googleapis/api/annotations",
     "googleapis/rpc/errdetails",
     "googleapis/rpc/status",
   ]
@@ -339,11 +338,11 @@
   analyzer-name = "dep"
   analyzer-version = 1
   input-imports = [
+    "github.com/grpc-ecosystem/grpc-gateway/runtime",
     "github.com/nalej/derrors",
     "github.com/nalej/grpc-authx-go",
     "github.com/nalej/grpc-common-go",
     "github.com/nalej/grpc-infrastructure-go",
-    "github.com/nalej/grpc-infrastructure-manager-go",
     "github.com/nalej/grpc-organization-go",
     "github.com/nalej/grpc-public-api-go",
     "github.com/nalej/grpc-user-go",

@@ -91,7 +91,7 @@ var _ = ginkgo.Describe("Users", func() {
 		gomega.Expect(info.Name).Should(gomega.Equal(targetUser.Name))
 		gomega.Expect(info.RoleName).Should(gomega.Equal("RoleName"))
 	})
-	
+
 	ginkgo.PIt("should be able list users in an organization", func(){
 	    organizationID := &grpc_organization_go.OrganizationId{
 	    	OrganizationId: targetOrganization.OrganizationId,
