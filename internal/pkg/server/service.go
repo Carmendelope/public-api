@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
+	"github.com/nalej/authx/pkg/interceptor"
 	"github.com/nalej/derrors"
 	"github.com/nalej/grpc-infrastructure-go"
 	"github.com/nalej/grpc-organization-go"
@@ -109,7 +110,7 @@ func (s * Service) LaunchGRPC() error {
 	roleManager := roles.NewManager()
 	roleHandler := roles.NewHandler(roleManager)
 
-	grpcServer := grpc.NewServer()
+	grpcServer := grpc.NewServer(interceptor.WithServerAuthxInterceptor(interceptor.NewConfig(nil,"","")))
 	grpc_public_api_go.RegisterOrganizationsServer(grpcServer, orgHandler)
 	grpc_public_api_go.RegisterClustersServer(grpcServer, clusHandler)
 	grpc_public_api_go.RegisterNodesServer(grpcServer, nodesHandler)

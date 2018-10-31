@@ -37,7 +37,12 @@
 
 [[constraint]]
     name="github.com/nalej/grpc-authx-go"
-    version="v0.0.8"
+    version="=v0.0.8"
+
+[[constraint]]
+    name="github.com/nalej/authx"
+    branch="feature/NP-240_Integrate-AUTHX-interceptor"
+
 
 [[constraint]]
     name="github.com/nalej/grpc-user-go"
