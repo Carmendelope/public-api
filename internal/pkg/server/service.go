@@ -57,9 +57,21 @@ func (s * Service) GetClients() (* Clients, derrors.Error) {
 
 // Run the service, launch the REST service handler.
 func (s *Service) Run() error {
+	vErr := s.Configuration.Validate()
+	if vErr != nil{
+		log.Fatal().Str("err", vErr.DebugReport()).Msg("invalid configuration")
+	}
+
 	s.Configuration.Print()
 
-	go s.LaunchGRPC()
+	authConfig, authErr := s.Configuration.LoadAuthConfig()
+	if authErr != nil {
+		log.Fatal().Str("err", authErr.DebugReport()).Msg("cannot load authx config")
+	}
+
+	log.Info().Bool("AllowsAll", authConfig.AllowsAll).Int("permissions", len(authConfig.Permissions)).Msg("Auth config")
+
+	go s.LaunchGRPC(authConfig)
 	return s.LaunchHTTP()
 }
 
@@ -80,7 +92,7 @@ func (s * Service) LaunchHTTP() error {
 	return http.ListenAndServe(addr, mux)
 }
 
-func (s * Service) LaunchGRPC() error {
+func (s * Service) LaunchGRPC(authConfig * interceptor.AuthorizationConfig) error {
 	clients, cErr := s.GetClients()
 	if cErr != nil{
 		log.Fatal().Str("err", cErr.DebugReport()).Msg("cannot generate clients")
@@ -110,7 +122,8 @@ func (s * Service) LaunchGRPC() error {
 	roleManager := roles.NewManager()
 	roleHandler := roles.NewHandler(roleManager)
 
-	grpcServer := grpc.NewServer(interceptor.WithServerAuthxInterceptor(interceptor.NewConfig(nil,"","")))
+	grpcServer := grpc.NewServer(interceptor.WithServerAuthxInterceptor(
+		interceptor.NewConfig(authConfig, s.Configuration.AuthSecret, s.Configuration.AuthHeader)))
 	grpc_public_api_go.RegisterOrganizationsServer(grpcServer, orgHandler)
 	grpc_public_api_go.RegisterClustersServer(grpcServer, clusHandler)
 	grpc_public_api_go.RegisterNodesServer(grpcServer, nodesHandler)

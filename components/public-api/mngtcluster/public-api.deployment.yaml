@@ -9,7 +9,7 @@ metadata:
     cluster: management
     component: public-api
   name: public-api
-  namespace: default
+  namespace: nalej
 spec:
   replicas: 1
   revisionHistoryLimit: 10
@@ -23,10 +23,31 @@ spec:
         cluster: management
         component: public-api
     spec:
+      volumes:
+      - name: authx-config
+        configMap:
+          name: public-api-authx-config
       containers:
       - name: public-api
         image: nalej/public-api:VERSION
-        imagePullPolicy: Always
+        env:
+          - name: AUTH_SECRET
+            valueFrom:
+              secretKeyRef:
+                name: authx-secret
+                key: secret
+        volumeMounts:
+          - name: authx-config
+            mountPath: "/nalej/config"
+            readOnly: true
+        # TODO link secret, file, etc.
+        imagePullPolicy: IfNotPresent
+        args:
+        - "run"
+        - "--debug"
+        - "--authHeader=Authorization"
+        - "--authSecret=$AUTH_SECRET"
+        - "--authConfigPath=/nalej/config/authx-config.json"
         securityContext:
           runAsUser: 2000
       imagePullSecrets:
