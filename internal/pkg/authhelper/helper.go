@@ -15,14 +15,14 @@ type RequestMetadata struct {
 func GetRequestMetadata(ctx context.Context) (*RequestMetadata, derrors.Error){
 	md, ok := metadata.FromIncomingContext(ctx)
 	if !ok {
-		return nil, derrors.NewInvalidArgumentError("expeting JWT metadata")
+		return nil, derrors.NewInvalidArgumentError("expecting JWT metadata")
 	}
 	log.Debug().Interface("metadata", md).Msg("Metadata received")
-	userID, found := md["userID"]
+	userID, found := md["user_id"]
 	if !found {
 		return nil, derrors.NewUnauthenticatedError("userID not found")
 	}
-	organizationID, found := md["organizationID"]
+	organizationID, found := md["organization_id"]
 	if !found {
 		return nil, derrors.NewUnauthenticatedError("organizationID not found")
 	}

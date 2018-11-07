@@ -1,0 +1,22 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: public-api
+  labels:
+    cluster: management
+    component: public-api
+  namespace: nalej
+spec:
+  selector:
+    cluster: management
+    component: public-api
+  type: ClusterIP
+  ports:
+  - protocol: TCP
+    name: grpc
+    port: 8081
+    targetPort: 8081
+  - protocol: TCP
+    name: http
+    port: 8082
+    targetPort: 8082

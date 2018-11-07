@@ -45,8 +45,12 @@ spec:
         args:
         - "run"
         - "--debug"
-        - "--authHeader=Authorization"
-        - "--authSecret=$AUTH_SECRET"
+        - "--systemModelAddress=system-model.nalej:8800"
+        - "--infrastructureManagerAddress=infrastructure-manager.nalej:8081"
+        - "--applicationsManagerAddress=application-manager.nalej:8910"
+        - "--userManagerAddress=user-manager.nalej:8920"
+        - "--authHeader=authorization"
+        - "--authSecret=$(AUTH_SECRET)"
         - "--authConfigPath=/nalej/config/authx-config.json"
         securityContext:
           runAsUser: 2000

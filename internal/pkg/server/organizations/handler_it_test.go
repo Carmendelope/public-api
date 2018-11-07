@@ -10,9 +10,10 @@ IT_SM_ADDRESS=localhost:8800
 package organizations
 
 import (
-	"context"
 	"fmt"
+	"github.com/nalej/authx/pkg/interceptor"
 	"github.com/nalej/grpc-organization-go"
+	"github.com/nalej/grpc-authx-go"
 	"github.com/nalej/grpc-public-api-go"
 	"github.com/nalej/grpc-utils/pkg/test"
 	"github.com/nalej/public-api/internal/pkg/server/ithelpers"
@@ -51,10 +52,13 @@ var _ = ginkgo.Describe("Organizations", func(){
 
 	// Target organization.
 	var targetOrganization * grpc_organization_go.Organization
+	var token string
 
 	ginkgo.BeforeSuite(func() {
 		listener = test.GetDefaultListener()
-		server = grpc.NewServer()
+		authConfig := ithelpers.GetAuthConfig("/public_api.Organizations/Info")
+		server = grpc.NewServer(interceptor.WithServerAuthxInterceptor(
+			interceptor.NewConfig(authConfig, "secret", ithelpers.AuthHeader)))
 
 		smConn = utils.GetConnection(systemModelAddress)
 		orgClient = grpc_organization_go.NewOrganizationsClient(smConn)
@@ -69,6 +73,9 @@ var _ = ginkgo.Describe("Organizations", func(){
 
 		client = grpc_public_api_go.NewOrganizationsClient(conn)
 		targetOrganization = ithelpers.CreateOrganization(fmt.Sprintf("testOrg-%d", ginkgo.GinkgoRandomSeed()), orgClient)
+		token = ithelpers.GenerateToken("email@nalej.com",
+			targetOrganization.OrganizationId, "Owner", "secret",
+			[]grpc_authx_go.AccessPrimitive{grpc_authx_go.AccessPrimitive_ORG})
 	})
 
 	ginkgo.AfterSuite(func() {
@@ -81,7 +88,9 @@ var _ = ginkgo.Describe("Organizations", func(){
 		orgID := &grpc_organization_go.OrganizationId{
 			OrganizationId:       targetOrganization.OrganizationId,
 		}
-		info, err := client.Info(context.Background(), orgID)
+		ctx, cancel := ithelpers.GetContext(token)
+		defer cancel()
+		info, err := client.Info(ctx, orgID)
 		gomega.Expect(err).To(gomega.Succeed())
 		gomega.Expect(info.OrganizationId).Should(gomega.Equal(targetOrganization.OrganizationId))
 		gomega.Expect(info.Name).Should(gomega.Equal(targetOrganization.Name))
@@ -91,7 +100,9 @@ var _ = ginkgo.Describe("Organizations", func(){
 		orgID := &grpc_organization_go.OrganizationId{
 			OrganizationId:       "does-not-exists",
 		}
-		info, err := client.Info(context.Background(), orgID)
+		ctx, cancel := ithelpers.GetContext(token)
+		defer cancel()
+		info, err := client.Info(ctx, orgID)
 		gomega.Expect(err).To(gomega.HaveOccurred())
 		gomega.Expect(info).To(gomega.BeNil())
 	})

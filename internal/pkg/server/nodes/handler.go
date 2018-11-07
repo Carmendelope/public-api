@@ -6,8 +6,10 @@ package nodes
 
 import (
 	"context"
+	"github.com/nalej/derrors"
 	"github.com/nalej/grpc-infrastructure-go"
 	"github.com/nalej/grpc-utils/pkg/conversions"
+	"github.com/nalej/public-api/internal/pkg/authhelper"
 	"github.com/nalej/public-api/internal/pkg/entities"
 )
 
@@ -22,7 +24,14 @@ func NewHandler(manager Manager) *Handler{
 }
 
 func (h *Handler) ClusterNodes(ctx context.Context, clusterId *grpc_infrastructure_go.ClusterId) (*grpc_infrastructure_go.NodeList, error) {
-	err := entities.ValidClusterId(clusterId)
+	rm, err := authhelper.GetRequestMetadata(ctx)
+	if err != nil{
+		return nil, conversions.ToGRPCError(err)
+	}
+	if clusterId.OrganizationId != rm.OrganizationID {
+		return nil, derrors.NewUnauthenticatedError("cannot access requested OrganizationID")
+	}
+	err = entities.ValidClusterId(clusterId)
 	if err != nil {
 		return nil, conversions.ToGRPCError(err)
 	}

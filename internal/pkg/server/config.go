@@ -81,5 +81,7 @@ func (conf *Config) Print() {
 	log.Info().Str("URL", conf.UserManagerAddress).Msg("User Manager")
 	log.Info().Str("URL", conf.LoggingAddress).Msg("Logging Service")
 	log.Info().Str("header", conf.AuthHeader).Str("secret", strings.Repeat("*", len(conf.AuthSecret))).Msg("Authorization")
+	// TODO do not show auth secret
+	log.Info().Str("header", conf.AuthHeader).Str("secret", conf.AuthSecret).Msg("Authorization")
 	log.Info().Str("path", conf.AuthConfigPath).Msg("Permissions file")
 }

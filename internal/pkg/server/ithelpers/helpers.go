@@ -7,10 +7,19 @@ package ithelpers
 import (
 	"context"
 	"fmt"
-	"github.com/nalej/grpc-organization-go"
+	"github.com/dgrijalva/jwt-go"
+	"github.com/google/uuid"
+	"github.com/nalej/authx/pkg/interceptor"
+	"github.com/nalej/authx/pkg/token"
+	"github.com/nalej/grpc-authx-go"
 	"github.com/nalej/grpc-infrastructure-go"
+	"github.com/nalej/grpc-organization-go"
 	"github.com/onsi/gomega"
+	"google.golang.org/grpc/metadata"
+	"time"
 )
+
+const AuthHeader = "authorization"
 
 func CreateOrganization(name string, orgClient grpc_organization_go.OrganizationsClient) * grpc_organization_go.Organization {
 	toAdd := &grpc_organization_go.AddOrganizationRequest{
@@ -55,5 +64,50 @@ func CreateNodes(cluster * grpc_infrastructure_go.Cluster, numNodes int, clustCl
 		}
 		_, err = nodeClient.AttachNode(context.Background(), attachRequest)
 		gomega.Expect(err).To(gomega.Succeed())
+	}
+}
+
+// GenerateUUID creates a new random UUID.
+func GenerateUUID() string {
+	return uuid.New().String()
+}
+
+func GenerateToken(email string, organizationID string, roleName string, secret string, primitives []grpc_authx_go.AccessPrimitive) string {
+	p := make([]string, 0)
+	for _, prim := range primitives{
+		p = append(p, prim.String())
+	}
+
+	pClaim := token.PersonalClaim{
+		UserID:         email,
+		Primitives:     p,
+		RoleName:       roleName,
+		OrganizationID: organizationID,
+	}
+
+	claim := token.NewClaim(pClaim, "it", time.Now(), time.Minute)
+	t := jwt.NewWithClaims(jwt.SigningMethodHS256, claim)
+	tokenString, err := t.SignedString([]byte(secret))
+	gomega.Expect(err).To(gomega.Succeed())
+
+	return tokenString
+}
+
+func GetContext(token string) (context.Context, context.CancelFunc) {
+	md := metadata.New(map[string]string{AuthHeader: token})
+	baseContext, cancel := context.WithTimeout(context.Background(), time.Minute)
+	return metadata.NewOutgoingContext(baseContext, md), cancel
+}
+
+func GetAuthConfig(endpoints ... string) *interceptor.AuthorizationConfig {
+	permissions := make(map[string]interceptor.Permission, 0)
+	for _, e := range endpoints{
+		permissions[e] = interceptor.Permission{
+			Must:    []string{grpc_authx_go.AccessPrimitive_ORG.String()},
+		}
+	}
+	return &interceptor.AuthorizationConfig{
+		AllowsAll:   false,
+		Permissions: permissions,
 	}
 }

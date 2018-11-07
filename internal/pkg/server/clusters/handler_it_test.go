@@ -10,10 +10,11 @@ IT_SM_ADDRESS=localhost:8800
 package clusters
 
 import (
-	"context"
 	"fmt"
-	"github.com/nalej/grpc-organization-go"
+	"github.com/nalej/authx/pkg/interceptor"
+	"github.com/nalej/grpc-authx-go"
 	"github.com/nalej/grpc-infrastructure-go"
+	"github.com/nalej/grpc-organization-go"
 	"github.com/nalej/grpc-public-api-go"
 	"github.com/nalej/grpc-utils/pkg/test"
 	"github.com/nalej/public-api/internal/pkg/server/ithelpers"
@@ -57,10 +58,13 @@ var _ = ginkgo.Describe("Clusters", func() {
 	// Target organization.
 	var targetOrganization * grpc_organization_go.Organization
 	var targetCluster * grpc_infrastructure_go.Cluster
+	var token string
 
 	ginkgo.BeforeSuite(func() {
 		listener = test.GetDefaultListener()
-		server = grpc.NewServer()
+		authConfig := ithelpers.GetAuthConfig("/public_api.Clusters/List", "/public_api.Clusters/Update")
+		server = grpc.NewServer(interceptor.WithServerAuthxInterceptor(
+			interceptor.NewConfig(authConfig, "secret", ithelpers.AuthHeader)))
 
 		smConn = utils.GetConnection(systemModelAddress)
 		orgClient = grpc_organization_go.NewOrganizationsClient(smConn)
@@ -79,6 +83,9 @@ var _ = ginkgo.Describe("Clusters", func() {
 		targetOrganization = ithelpers.CreateOrganization(fmt.Sprintf("testOrg-%d", ginkgo.GinkgoRandomSeed()), orgClient)
 		targetCluster = ithelpers.CreateCluster(targetOrganization, fmt.Sprintf("testOrg-%d", ginkgo.GinkgoRandomSeed()), clustClient)
 		ithelpers.CreateNodes(targetCluster, NumNodes, clustClient, nodeClient)
+		token = ithelpers.GenerateToken("email@nalej.com",
+			targetOrganization.OrganizationId, "Owner", "secret",
+			[]grpc_authx_go.AccessPrimitive{grpc_authx_go.AccessPrimitive_ORG})
 	})
 
 	ginkgo.AfterSuite(func() {
@@ -92,7 +99,9 @@ var _ = ginkgo.Describe("Clusters", func() {
 		organizationID := &grpc_organization_go.OrganizationId{
 			OrganizationId:       targetOrganization.OrganizationId,
 		}
-		clusters, err := client.List(context.Background(), organizationID)
+		ctx, cancel := ithelpers.GetContext(token)
+		defer cancel()
+		clusters, err := client.List(ctx, organizationID)
 		gomega.Expect(err).To(gomega.Succeed())
 		gomega.Expect(len(clusters.Clusters)).To(gomega.Equal(1))
 		c0 := clusters.Clusters[0]
@@ -110,7 +119,9 @@ var _ = ginkgo.Describe("Clusters", func() {
 			Description:          "newDescription",
 			Labels:               newLabels,
 		}
-		done, err := client.Update(context.Background(), updateRequest)
+		ctx, cancel := ithelpers.GetContext(token)
+		defer cancel()
+		done, err := client.Update(ctx, updateRequest)
 		gomega.Expect(err).To(gomega.Succeed())
 		gomega.Expect(done).ToNot(gomega.BeNil())
 
@@ -118,7 +129,9 @@ var _ = ginkgo.Describe("Clusters", func() {
 			OrganizationId:       targetCluster.OrganizationId,
 			ClusterId:            targetCluster.ClusterId,
 		}
-		retrieved, err := clustClient.GetCluster(context.Background(), clusterID)
+		ctx2, cancel2 := ithelpers.GetContext(token)
+		defer cancel2()
+		retrieved, err := clustClient.GetCluster(ctx2, clusterID)
 		gomega.Expect(err).To(gomega.Succeed())
 		gomega.Expect(retrieved.Name).Should(gomega.Equal(updateRequest.Name))
 		gomega.Expect(retrieved.Description).Should(gomega.Equal(updateRequest.Description))

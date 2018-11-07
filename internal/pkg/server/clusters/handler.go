@@ -6,10 +6,12 @@ package clusters
 
 import (
 	"context"
+	"github.com/nalej/derrors"
 	"github.com/nalej/grpc-common-go"
 	"github.com/nalej/grpc-organization-go"
 	"github.com/nalej/grpc-public-api-go"
 	"github.com/nalej/grpc-utils/pkg/conversions"
+	"github.com/nalej/public-api/internal/pkg/authhelper"
 	"github.com/nalej/public-api/internal/pkg/entities"
 )
 
@@ -25,7 +27,14 @@ func NewHandler(manager Manager) *Handler{
 
 // List all the clusters in an organization.
 func (h * Handler) List(ctx context.Context, organizationID *grpc_organization_go.OrganizationId) (*grpc_public_api_go.ClusterList, error) {
-	err := entities.ValidOrganizationId(organizationID)
+	rm, err := authhelper.GetRequestMetadata(ctx)
+	if err != nil{
+		return nil, conversions.ToGRPCError(err)
+	}
+	if organizationID.OrganizationId != rm.OrganizationID {
+		return nil, derrors.NewUnauthenticatedError("cannot access requested OrganizationID")
+	}
+	err = entities.ValidOrganizationId(organizationID)
 	if err != nil{
 		return nil, conversions.ToGRPCError(err)
 	}
@@ -34,7 +43,14 @@ func (h * Handler) List(ctx context.Context, organizationID *grpc_organization_g
 
 // Update the cluster information.
 func (h * Handler) Update(ctx context.Context, updateClusterRequest *grpc_public_api_go.UpdateClusterRequest) (*grpc_common_go.Success, error) {
-	err := entities.ValidUpdateClusterRequest(updateClusterRequest)
+	rm, err := authhelper.GetRequestMetadata(ctx)
+	if err != nil{
+		return nil, conversions.ToGRPCError(err)
+	}
+	if updateClusterRequest.OrganizationId != rm.OrganizationID {
+		return nil, derrors.NewUnauthenticatedError("cannot access requested OrganizationID")
+	}
+	err = entities.ValidUpdateClusterRequest(updateClusterRequest)
 	if err != nil {
 		return nil, conversions.ToGRPCError(err)
 	}

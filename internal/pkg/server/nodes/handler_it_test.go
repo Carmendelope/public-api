@@ -10,10 +10,11 @@ IT_SM_ADDRESS=localhost:8800
 package nodes
 
 import (
-	"context"
 	"fmt"
-	"github.com/nalej/grpc-organization-go"
+	"github.com/nalej/authx/pkg/interceptor"
+	"github.com/nalej/grpc-authx-go"
 	"github.com/nalej/grpc-infrastructure-go"
+	"github.com/nalej/grpc-organization-go"
 	"github.com/nalej/grpc-public-api-go"
 	"github.com/nalej/grpc-utils/pkg/test"
 	"github.com/nalej/public-api/internal/pkg/server/ithelpers"
@@ -57,10 +58,13 @@ var _ = ginkgo.Describe("Nodes", func() {
 	// Target organization.
 	var targetOrganization * grpc_organization_go.Organization
 	var targetCluster * grpc_infrastructure_go.Cluster
+	var token string
 
 	ginkgo.BeforeSuite(func() {
 		listener = test.GetDefaultListener()
-		server = grpc.NewServer()
+		authConfig := ithelpers.GetAuthConfig("/public_api.Nodes/ClusterNodes")
+		server = grpc.NewServer(interceptor.WithServerAuthxInterceptor(
+			interceptor.NewConfig(authConfig, "secret", ithelpers.AuthHeader)))
 
 		smConn = utils.GetConnection(systemModelAddress)
 		orgClient = grpc_organization_go.NewOrganizationsClient(smConn)
@@ -79,6 +83,9 @@ var _ = ginkgo.Describe("Nodes", func() {
 		targetOrganization = ithelpers.CreateOrganization(fmt.Sprintf("testOrg-%d", ginkgo.GinkgoRandomSeed()), orgClient)
 		targetCluster = ithelpers.CreateCluster(targetOrganization, fmt.Sprintf("testOrg-%d", ginkgo.GinkgoRandomSeed()), clustClient)
 		ithelpers.CreateNodes(targetCluster, NumNodes, clustClient, nodeClient)
+		token = ithelpers.GenerateToken("email@nalej.com",
+			targetOrganization.OrganizationId, "Owner", "secret",
+			[]grpc_authx_go.AccessPrimitive{grpc_authx_go.AccessPrimitive_ORG})
 	})
 
 	ginkgo.AfterSuite(func() {
@@ -93,7 +100,9 @@ var _ = ginkgo.Describe("Nodes", func() {
 			OrganizationId:       targetCluster.OrganizationId,
 			ClusterId:            targetCluster.ClusterId,
 		}
-		list, err := client.ClusterNodes(context.Background(), clusterID)
+		ctx, cancel := ithelpers.GetContext(token)
+		defer cancel()
+		list, err := client.ClusterNodes(ctx, clusterID)
 
 		gomega.Expect(err).To(gomega.Succeed())
 		gomega.Expect(len(list.Nodes)).To(gomega.Equal(NumNodes))
