@@ -3,6 +3,8 @@ package server
 import (
 	"github.com/nalej/derrors"
 	"github.com/rs/zerolog/log"
+	"github.com/nalej/authx/pkg/interceptor"
+	"strings"
 )
 
 type Config struct {
@@ -16,14 +18,58 @@ type Config struct {
 	InfrastructureManagerAddress string
 	// ApplicationsManagerAddress with the host:port to connect to the Applications manager.
 	ApplicationsManagerAddress string
-	// AccessManagerAddress with the host:port to connect to the Access manager.
-	AccessManagerAddress string
+	// UserManagerAddress with the host:port to connect to the Access manager.
+	UserManagerAddress string
 	// LoggingAddress with the host:port to connect to the Logging component.
 	LoggingAddress string
+	// AuthSecret contains the shared authx secret.
+	AuthSecret string
+	// AuthHeader contains the name of the target header.
+	AuthHeader string
+	// AuthConfigPath contains the path of the file with the authentication configuration.
+	AuthConfigPath string
 }
 
 func (conf * Config) Validate() derrors.Error {
+
+	if conf.Port <= 0 || conf.HTTPPort <= 0 {
+		return derrors.NewInvalidArgumentError("ports must be valid")
+	}
+
+	if conf.SystemModelAddress == "" {
+		return derrors.NewInvalidArgumentError("systemModelAddress must be set")
+	}
+
+	if conf.InfrastructureManagerAddress == "" {
+		return derrors.NewInvalidArgumentError("infrastructureManagerAddress must be set")
+	}
+
+	if conf.ApplicationsManagerAddress == "" {
+		return derrors.NewInvalidArgumentError("applicationsManagerAddress must be set")
+	}
+
+	if conf.InfrastructureManagerAddress == "" {
+		return derrors.NewInvalidArgumentError("infrastructureManagerAddress must be set")
+	}
+
+	if conf.UserManagerAddress == "" {
+		return derrors.NewInvalidArgumentError("userManagerAddress must be set")
+	}
+
+	if conf.AuthHeader == "" || conf.AuthSecret == "" {
+		return derrors.NewInvalidArgumentError("Authorization header and secret must be set")
+	}
+
+	if conf.AuthConfigPath == "" {
+		return derrors.NewInvalidArgumentError("authConfigPath must be set")
+	}
+
 	return nil
+}
+
+// LoadAuthConfig loads the security configuration.
+func (conf * Config) LoadAuthConfig() (* interceptor.AuthorizationConfig, derrors.Error) {
+	return interceptor.LoadAuthorizationConfig(conf.AuthConfigPath)
 }
 
 func (conf *Config) Print() {
@@ -32,6 +78,8 @@ func (conf *Config) Print() {
 	log.Info().Str("URL", conf.SystemModelAddress).Msg("System Model")
 	log.Info().Str("URL", conf.InfrastructureManagerAddress).Msg("Infrastructure Manager")
 	log.Info().Str("URL", conf.ApplicationsManagerAddress).Msg("Applications Manager")
-	log.Info().Str("URL", conf.AccessManagerAddress).Msg("Access Manager")
+	log.Info().Str("URL", conf.UserManagerAddress).Msg("User Manager")
 	log.Info().Str("URL", conf.LoggingAddress).Msg("Logging Service")
+	log.Info().Str("header", conf.AuthHeader).Str("secret", strings.Repeat("*", len(conf.AuthSecret))).Msg("Authorization")
+	log.Info().Str("path", conf.AuthConfigPath).Msg("Permissions file")
 }

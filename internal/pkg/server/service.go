@@ -4,10 +4,12 @@ import (
 	"context"
 	"fmt"
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
+	"github.com/nalej/authx/pkg/interceptor"
 	"github.com/nalej/derrors"
 	"github.com/nalej/grpc-infrastructure-go"
 	"github.com/nalej/grpc-organization-go"
 	"github.com/nalej/grpc-public-api-go"
+	"github.com/nalej/grpc-user-manager-go"
 	"github.com/nalej/grpc-utils/pkg/tools"
 	"github.com/nalej/public-api/internal/pkg/server/clusters"
 	"github.com/nalej/public-api/internal/pkg/server/nodes"
@@ -39,6 +41,7 @@ type Clients struct {
 	orgClient grpc_organization_go.OrganizationsClient
 	clusClient grpc_infrastructure_go.ClustersClient
 	nodeClient grpc_infrastructure_go.NodesClient
+	umClient grpc_user_manager_go.UserManagerClient
 }
 
 func (s * Service) GetClients() (* Clients, derrors.Error) {
@@ -47,18 +50,36 @@ func (s * Service) GetClients() (* Clients, derrors.Error) {
 		return nil, derrors.AsError(err, "cannot create connection with the system model")
 	}
 
+	umConn, err := grpc.Dial(s.Configuration.UserManagerAddress, grpc.WithInsecure())
+	if err != nil{
+		return nil, derrors.AsError(err, "cannot create connection with the user manager")
+	}
+
 	oClient := grpc_organization_go.NewOrganizationsClient(smConn)
 	cClient := grpc_infrastructure_go.NewClustersClient(smConn)
 	nClient := grpc_infrastructure_go.NewNodesClient(smConn)
+	umClient := grpc_user_manager_go.NewUserManagerClient(umConn)
 
-	return &Clients{oClient, cClient, nClient}, nil
+	return &Clients{oClient, cClient, nClient, umClient}, nil
 }
 
 // Run the service, launch the REST service handler.
 func (s *Service) Run() error {
+	vErr := s.Configuration.Validate()
+	if vErr != nil{
+		log.Fatal().Str("err", vErr.DebugReport()).Msg("invalid configuration")
+	}
+
 	s.Configuration.Print()
 
-	go s.LaunchGRPC()
+	authConfig, authErr := s.Configuration.LoadAuthConfig()
+	if authErr != nil {
+		log.Fatal().Str("err", authErr.DebugReport()).Msg("cannot load authx config")
+	}
+
+	log.Info().Bool("AllowsAll", authConfig.AllowsAll).Int("permissions", len(authConfig.Permissions)).Msg("Auth config")
+
+	go s.LaunchGRPC(authConfig)
 	return s.LaunchHTTP()
 }
 
@@ -79,7 +100,7 @@ func (s * Service) LaunchHTTP() error {
 	return http.ListenAndServe(addr, mux)
 }
 
-func (s * Service) LaunchGRPC() error {
+func (s * Service) LaunchGRPC(authConfig * interceptor.AuthorizationConfig) error {
 	clients, cErr := s.GetClients()
 	if cErr != nil{
 		log.Fatal().Str("err", cErr.DebugReport()).Msg("cannot generate clients")
@@ -103,13 +124,14 @@ func (s * Service) LaunchGRPC() error {
 	resManager := resources.NewManager(clients.clusClient, clients.nodeClient)
 	resHandler := resources.NewHandler(resManager)
 
-	userManager := users.NewManager()
+	userManager := users.NewManager(clients.umClient)
 	userHandler := users.NewHandler(userManager)
 
-	roleManager := roles.NewManager()
+	roleManager := roles.NewManager(clients.umClient)
 	roleHandler := roles.NewHandler(roleManager)
 
-	grpcServer := grpc.NewServer()
+	grpcServer := grpc.NewServer(interceptor.WithServerAuthxInterceptor(
+		interceptor.NewConfig(authConfig, s.Configuration.AuthSecret, s.Configuration.AuthHeader)))
 	grpc_public_api_go.RegisterOrganizationsServer(grpcServer, orgHandler)
 	grpc_public_api_go.RegisterClustersServer(grpcServer, clusHandler)
 	grpc_public_api_go.RegisterNodesServer(grpcServer, nodesHandler)

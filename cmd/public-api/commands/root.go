@@ -23,7 +23,7 @@ var rootCmd = &cobra.Command{
 	Long:  `
 The Public API component processes user requests from the frontend and
 interacts with the final customer. This is the exposed API to the
-outside worl.`,
+outside world.`,
 	Version: "unknown-version",
 
 	Run: func(cmd *cobra.Command, args []string) {

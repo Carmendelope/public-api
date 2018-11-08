@@ -17,6 +17,9 @@ import (
 var debugLevel bool
 var consoleLogging bool
 
+var nalejAddress string
+var nalejPort int
+
 var rootCmd = &cobra.Command{
 	Use:   "public-api-cli",
 	Short: "CLI for the public-api",
@@ -31,6 +34,8 @@ var rootCmd = &cobra.Command{
 func init() {
 	rootCmd.PersistentFlags().BoolVar(&debugLevel, "debug", false, "Set debug level")
 	rootCmd.PersistentFlags().BoolVar(&consoleLogging, "consoleLogging", false, "Pretty print logging")
+	rootCmd.PersistentFlags().StringVar(&nalejAddress, "nalejAddress", "", "Address (host) of the Nalej platform")
+	rootCmd.PersistentFlags().IntVar(&nalejPort, "port", 8081, "Port of the Nalej platform Public API")
 }
 
 func Execute() {

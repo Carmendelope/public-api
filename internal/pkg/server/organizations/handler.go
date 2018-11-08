@@ -6,9 +6,11 @@ package organizations
 
 import (
 	"context"
+	"github.com/nalej/derrors"
 	"github.com/nalej/grpc-organization-go"
 	"github.com/nalej/grpc-public-api-go"
 	"github.com/nalej/grpc-utils/pkg/conversions"
+	"github.com/nalej/public-api/internal/pkg/authhelper"
 	"github.com/nalej/public-api/internal/pkg/entities"
 )
 
@@ -23,7 +25,14 @@ func NewHandler(manager Manager) *Handler{
 }
 
 func (h *Handler) Info(ctx context.Context, organizationID *grpc_organization_go.OrganizationId) (*grpc_public_api_go.OrganizationInfo, error) {
-	err := entities.ValidOrganizationId(organizationID)
+	rm, err := authhelper.GetRequestMetadata(ctx)
+	if err != nil{
+		return nil, conversions.ToGRPCError(err)
+	}
+	if organizationID.OrganizationId != rm.OrganizationID {
+		return nil, derrors.NewUnauthenticatedError("cannot access requested OrganizationID")
+	}
+	err = entities.ValidOrganizationId(organizationID)
 	if err != nil {
 		return nil, conversions.ToGRPCError(err)
 	}

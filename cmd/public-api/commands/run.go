@@ -2,8 +2,6 @@
  * Copyright (C) 2018 Nalej - All Rights Reserved
  */
 
-// This is an example of an executable command.
-
 package commands
 
 import (
@@ -35,7 +33,10 @@ func init() {
 		"Infrastructure Manager address (host:port)")
 	runCmd.PersistentFlags().StringVar(&config.ApplicationsManagerAddress, "applicationsManagerAddress", "localhost:8910",
 		"Applications Manager address (host:port)")
-	runCmd.PersistentFlags().StringVar(&config.AccessManagerAddress, "accessManagerAddress", "localhost:8920",
-		"Access Manager address (host:port)")
+	runCmd.PersistentFlags().StringVar(&config.UserManagerAddress, "userManagerAddress", "localhost:8920",
+		"User Manager address (host:port)")
+	runCmd.PersistentFlags().StringVar(&config.AuthHeader, "authHeader", "", "Authorization Header")
+	runCmd.PersistentFlags().StringVar(&config.AuthSecret, "authSecret", "", "Authorization secret")
+	runCmd.PersistentFlags().StringVar(&config.AuthConfigPath, "authConfigPath", "", "Authorization config path")
 	rootCmd.AddCommand(runCmd)
 }

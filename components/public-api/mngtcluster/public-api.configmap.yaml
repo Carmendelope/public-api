@@ -1,0 +1,26 @@
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  labels:
+    cluster: management
+    component: public-api
+  name: public-api-authx-config
+  namespace: nalej
+data:
+  # Primitives: ORG, APPS, RESOURCES, PROFILE
+  authx-config.json: |
+    {"allows_all":false,
+     "permissions": {
+       "/public_api.Clusters/List":{"must":["RESOURCES"]},
+       "/public_api.Clusters/Update":{"must":["RESOURCES"]},
+       "/public_api.Nodes/ClusterNodes":{"must":["RESOURCES"]},
+       "/public_api.Organizations/Info":{"must":["ORG"]},
+       "/public_api.Resources/Summary":{"should":["ORG", "RESOURCES"]},
+       "/public_api.Roles/List":{"must":["ORG"]},
+       "/public_api.Users/Info":{"should":["ORG", "PROFILE"]},
+       "/public_api.Users/List":{"must":["ORG"]},
+       "/public_api.Users/Delete":{"must":["ORG"]},
+       "/public_api.Users/ResetPassword":{"should":["ORG", "PROFILE"]},
+       "/public_api.Users/Update":{"should":["ORG", "PROFILE"]}
+     }
+    }
