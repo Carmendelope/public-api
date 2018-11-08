@@ -9,6 +9,7 @@ import (
 	"github.com/nalej/grpc-infrastructure-go"
 	"github.com/nalej/grpc-organization-go"
 	"github.com/nalej/grpc-public-api-go"
+	"github.com/nalej/grpc-user-manager-go"
 	"github.com/nalej/grpc-utils/pkg/tools"
 	"github.com/nalej/public-api/internal/pkg/server/clusters"
 	"github.com/nalej/public-api/internal/pkg/server/nodes"
@@ -40,6 +41,7 @@ type Clients struct {
 	orgClient grpc_organization_go.OrganizationsClient
 	clusClient grpc_infrastructure_go.ClustersClient
 	nodeClient grpc_infrastructure_go.NodesClient
+	umClient grpc_user_manager_go.UserManagerClient
 }
 
 func (s * Service) GetClients() (* Clients, derrors.Error) {
@@ -48,11 +50,17 @@ func (s * Service) GetClients() (* Clients, derrors.Error) {
 		return nil, derrors.AsError(err, "cannot create connection with the system model")
 	}
 
+	umConn, err := grpc.Dial(s.Configuration.UserManagerAddress, grpc.WithInsecure())
+	if err != nil{
+		return nil, derrors.AsError(err, "cannot create connection with the user manager")
+	}
+
 	oClient := grpc_organization_go.NewOrganizationsClient(smConn)
 	cClient := grpc_infrastructure_go.NewClustersClient(smConn)
 	nClient := grpc_infrastructure_go.NewNodesClient(smConn)
+	umClient := grpc_user_manager_go.NewUserManagerClient(umConn)
 
-	return &Clients{oClient, cClient, nClient}, nil
+	return &Clients{oClient, cClient, nClient, umClient}, nil
 }
 
 // Run the service, launch the REST service handler.
@@ -116,10 +124,10 @@ func (s * Service) LaunchGRPC(authConfig * interceptor.AuthorizationConfig) erro
 	resManager := resources.NewManager(clients.clusClient, clients.nodeClient)
 	resHandler := resources.NewHandler(resManager)
 
-	userManager := users.NewManager()
+	userManager := users.NewManager(clients.umClient)
 	userHandler := users.NewHandler(userManager)
 
-	roleManager := roles.NewManager()
+	roleManager := roles.NewManager(clients.umClient)
 	roleHandler := roles.NewHandler(roleManager)
 
 	grpcServer := grpc.NewServer(interceptor.WithServerAuthxInterceptor(

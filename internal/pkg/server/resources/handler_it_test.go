@@ -10,10 +10,11 @@ IT_SM_ADDRESS=localhost:8800
 package resources
 
 import (
-	"context"
 	"fmt"
-	"github.com/nalej/grpc-organization-go"
+	"github.com/nalej/authx/pkg/interceptor"
+	"github.com/nalej/grpc-authx-go"
 	"github.com/nalej/grpc-infrastructure-go"
+	"github.com/nalej/grpc-organization-go"
 	"github.com/nalej/grpc-public-api-go"
 	"github.com/nalej/grpc-utils/pkg/test"
 	"github.com/nalej/public-api/internal/pkg/server/ithelpers"
@@ -70,10 +71,13 @@ var _ = ginkgo.Describe("Resources", func() {
 
 	// Target organization.
 	var targetOrganization * grpc_organization_go.Organization
+	var token string
 
 	ginkgo.BeforeSuite(func() {
 		listener = test.GetDefaultListener()
-		server = grpc.NewServer()
+		authConfig := ithelpers.GetAuthConfig("/public_api.Resources/Summary")
+		server = grpc.NewServer(interceptor.WithServerAuthxInterceptor(
+			interceptor.NewConfig(authConfig, "secret", ithelpers.AuthHeader)))
 
 		smConn = utils.GetConnection(systemModelAddress)
 		orgClient = grpc_organization_go.NewOrganizationsClient(smConn)
@@ -91,6 +95,9 @@ var _ = ginkgo.Describe("Resources", func() {
 		client = grpc_public_api_go.NewResourcesClient(conn)
 		targetOrganization = ithelpers.CreateOrganization(fmt.Sprintf("testOrg-%d", ginkgo.GinkgoRandomSeed()), orgClient)
 		createEnvironment(targetOrganization, NumClusters, NumNodes, clustClient, nodeClient)
+		token = ithelpers.GenerateToken("email@nalej.com",
+			targetOrganization.OrganizationId, "Owner", "secret",
+			[]grpc_authx_go.AccessPrimitive{grpc_authx_go.AccessPrimitive_ORG})
 	})
 
 	ginkgo.AfterSuite(func() {
@@ -104,8 +111,9 @@ var _ = ginkgo.Describe("Resources", func() {
 		organizationID := &grpc_organization_go.OrganizationId{
 			OrganizationId:       targetOrganization.OrganizationId,
 		}
-
-		summary, err := client.Summary(context.Background(), organizationID)
+		ctx, cancel := ithelpers.GetContext(token)
+		defer cancel()
+		summary, err := client.Summary(ctx, organizationID)
 		gomega.Expect(err).To(gomega.Succeed())
 		gomega.Expect(summary.TotalClusters).To(gomega.Equal(int64(NumClusters)))
 		gomega.Expect(summary.TotalNodes).To(gomega.Equal(int64(NumClusters * NumNodes)))

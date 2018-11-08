@@ -31,4 +31,4 @@ appropriate services.
  | IT_SM_ADDRESS  | localhost:8800 | System Model Address |
  | IT_INFRAMGR_ADDRESS  | localhost:8860 | Infrastructure Manager Address |
  | IT_APPMGR_ADDRESS  | localhost:8910 | Applications Manager Address |
- | IT_ACCESSMGR_ADDRESS  | localhost:8920 | Access Manager Address |
+ | IT_USER_MANAGER_ADDRESS  | localhost:8920 | User Manager Address |

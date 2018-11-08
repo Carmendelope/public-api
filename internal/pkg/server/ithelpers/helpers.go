@@ -14,8 +14,10 @@ import (
 	"github.com/nalej/grpc-authx-go"
 	"github.com/nalej/grpc-infrastructure-go"
 	"github.com/nalej/grpc-organization-go"
+	"github.com/nalej/grpc-user-manager-go"
 	"github.com/onsi/gomega"
 	"google.golang.org/grpc/metadata"
+	"math/rand"
 	"time"
 )
 
@@ -65,6 +67,35 @@ func CreateNodes(cluster * grpc_infrastructure_go.Cluster, numNodes int, clustCl
 		_, err = nodeClient.AttachNode(context.Background(), attachRequest)
 		gomega.Expect(err).To(gomega.Succeed())
 	}
+}
+
+func CreateRole(organizationID string, userManagerClient grpc_user_manager_go.UserManagerClient) *grpc_authx_go.Role {
+	addRoleRequest := &grpc_user_manager_go.AddRoleRequest{
+		OrganizationId:       organizationID,
+		Name:                 "test role",
+		Description:          "test role",
+		Primitives:           []grpc_authx_go.AccessPrimitive{grpc_authx_go.AccessPrimitive_ORG},
+	}
+	added, err := userManagerClient.AddRole(context.Background(), addRoleRequest)
+	gomega.Expect(err).To(gomega.Succeed())
+	return added
+}
+
+func CreateUser(organizationID string, roleID string, userManagerClient grpc_user_manager_go.UserManagerClient) *grpc_user_manager_go.User {
+
+	addUserRequest := &grpc_user_manager_go.AddUserRequest{
+		OrganizationId:       organizationID,
+		Email:                fmt.Sprintf("test-%d@mail.com", rand.Int()),
+		Password:             "password",
+		Name:                 "randomUser",
+		RoleId:               roleID,
+		XXX_NoUnkeyedLiteral: struct{}{},
+		XXX_unrecognized:     nil,
+		XXX_sizecache:        0,
+	}
+	added, err := userManagerClient.AddUser(context.Background(), addUserRequest)
+	gomega.Expect(err).To(gomega.Succeed())
+	return added
 }
 
 // GenerateUUID creates a new random UUID.

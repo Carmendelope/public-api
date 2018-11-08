@@ -3,7 +3,6 @@ package authhelper
 import (
 	"context"
 	"github.com/nalej/derrors"
-	"github.com/rs/zerolog/log"
 	"google.golang.org/grpc/metadata"
 )
 
@@ -17,7 +16,7 @@ func GetRequestMetadata(ctx context.Context) (*RequestMetadata, derrors.Error){
 	if !ok {
 		return nil, derrors.NewInvalidArgumentError("expecting JWT metadata")
 	}
-	log.Debug().Interface("metadata", md).Msg("Metadata received")
+	//log.Debug().Interface("metadata", md).Msg("Metadata received")
 	userID, found := md["user_id"]
 	if !found {
 		return nil, derrors.NewUnauthenticatedError("userID not found")
