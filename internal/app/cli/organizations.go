@@ -5,7 +5,6 @@
 package cli
 
 import (
-	"fmt"
 	"github.com/nalej/grpc-organization-go"
 	"github.com/nalej/grpc-public-api-go"
 	"github.com/nalej/grpc-utils/pkg/conversions"
@@ -46,7 +45,7 @@ func (o * Organizations) Info(organizationID string) {
 	if iErr != nil{
 		log.Fatal().Str("trace", conversions.ToDerror(iErr).DebugReport()).Msg("cannot obtain organization info")
 	}
-	fmt.Println(info.String())
+	o.PrintResult(info)
 
 }
 

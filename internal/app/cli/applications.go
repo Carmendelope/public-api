@@ -5,9 +5,9 @@ import (
 	"fmt"
 	"github.com/nalej/derrors"
 	"github.com/nalej/grpc-application-go"
+	"github.com/nalej/grpc-application-manager-go"
 	"github.com/nalej/grpc-organization-go"
 	"github.com/nalej/grpc-public-api-go"
-	"github.com/nalej/grpc-utils/pkg/conversions"
 	"github.com/rs/zerolog/log"
 	"google.golang.org/grpc"
 	"io/ioutil"
@@ -119,11 +119,7 @@ func (a * Applications) AddDescriptor(organizationID string, descriptorPath stri
 		log.Fatal().Str("trace", aErr.DebugReport()).Msg("cannot load application descriptor")
 	}
 	added, err := client.AddAppDescriptor(ctx, addDescriptorRequest)
-
-	if err != nil{
-		log.Fatal().Str("trace", conversions.ToDerror(err).DebugReport()).Msg("cannot add a new application descriptor")
-	}
-	fmt.Println(added.String())
+	a.PrintResultOrError(added, err, "cannot add a new application descriptor")
 }
 
 func (a * Applications) GetDescriptor(organizationID string, descriptorID string) {
@@ -138,10 +134,7 @@ func (a * Applications) GetDescriptor(organizationID string, descriptorID string
 		AppDescriptorId:      descriptorID,
 	}
 	descriptor, err := client.GetAppDescriptor(ctx, appDescriptorID)
-	if err != nil{
-		log.Fatal().Str("trace", conversions.ToDerror(err).DebugReport()).Msg("cannot obtain descriptor")
-	}
-	fmt.Println(descriptor.String())
+	a.PrintResultOrError(descriptor, err, "cannot obtain descriptor")
 }
 
 func (a * Applications) ListDescriptors(organizationID string) {
@@ -155,8 +148,22 @@ func (a * Applications) ListDescriptors(organizationID string) {
 		OrganizationId:       organizationID,
 	}
 	list, err := client.ListAppDescriptors(ctx, orgID)
-	if err != nil{
-		log.Fatal().Str("trace", conversions.ToDerror(err).DebugReport()).Msg("cannot obtain descriptor list")
+	a.PrintResultOrError(list, err, "cannot obtain descriptor list")
+}
+
+func (a * Applications) Deploy(organizationID string, appDescriptorID string, name string, description string){
+	a.load()
+	ctx, cancel := a.GetContext()
+	client, conn := a.getClient()
+	defer conn.Close()
+	defer cancel()
+
+	deployRequest := &grpc_application_manager_go.DeployRequest{
+		OrganizationId:       organizationID,
+		AppDescriptorId:      appDescriptorID,
+		Name:                 name,
+		Description:          description,
 	}
-	fmt.Println(list.String())
+	deployed, err := client.Deploy(ctx, deployRequest)
+	a.PrintResultOrError(deployed, err, "cannot deploy application")
 }

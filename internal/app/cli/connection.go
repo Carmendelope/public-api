@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/nalej/derrors"
+	"github.com/nalej/grpc-utils/pkg/conversions"
 	"github.com/rs/zerolog/log"
 	"google.golang.org/grpc"
 )
@@ -25,6 +26,14 @@ func (c* Connection) GetConnection() (*grpc.ClientConn, derrors.Error){
 		return nil, derrors.AsError(err, "cannot create connection with the public api")
 	}
 	return conn, nil
+}
+
+func (c * Connection) PrintResultOrError(result interface{}, err error, errMsg string) {
+	if err != nil{
+		log.Fatal().Str("trace", conversions.ToDerror(err).DebugReport()).Msg(errMsg)
+	}else{
+		c.PrintResult(result)
+	}
 }
 
 func (c * Connection) PrintResult(result interface{}) error {

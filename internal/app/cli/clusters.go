@@ -5,7 +5,6 @@
 package cli
 
 import (
-	"fmt"
 	"github.com/nalej/grpc-organization-go"
 	"github.com/nalej/grpc-public-api-go"
 	"github.com/nalej/grpc-utils/pkg/conversions"
@@ -54,7 +53,7 @@ func (c * Clusters) List(organizationID string) {
 	if err != nil{
 		log.Fatal().Str("trace", conversions.ToDerror(err).DebugReport()).Msg("cannot obtain cluster list")
 	}
-	fmt.Println(clusters.String())
+	c.PrintResult(clusters)
 }
 
 func (c* Clusters) Update(organizationID string, clusterID string, newName string, newDescription string) {
@@ -73,5 +72,5 @@ func (c* Clusters) Update(organizationID string, clusterID string, newName strin
 	if err != nil{
 		log.Fatal().Str("trace", conversions.ToDerror(err).DebugReport()).Msg("cannot obtain cluster list")
 	}
-	fmt.Println(success.String())
+	c.PrintResult(success)
 }

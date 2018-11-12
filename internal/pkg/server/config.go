@@ -2,6 +2,7 @@ package server
 
 import (
 	"github.com/nalej/derrors"
+	"github.com/nalej/public-api/version"
 	"github.com/rs/zerolog/log"
 	"github.com/nalej/authx/pkg/interceptor"
 	"strings"
@@ -73,6 +74,7 @@ func (conf * Config) LoadAuthConfig() (* interceptor.AuthorizationConfig, derror
 }
 
 func (conf *Config) Print() {
+	log.Info().Str("app", version.AppVersion).Str("commit", version.Commit).Msg("Version")
 	log.Info().Int("port", conf.Port).Msg("gRPC port")
 	log.Info().Int("port", conf.HTTPPort).Msg("HTTP port")
 	log.Info().Str("URL", conf.SystemModelAddress).Msg("System Model")

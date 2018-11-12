@@ -92,13 +92,13 @@ func (o * Options) List(){
 
 // Resolve the effective value of a parameter.
 func (o * Options) Resolve(key string, paramValue string) string {
-	log.Info().Str("key", key).Str("paramValue", paramValue).Msg("resolving option")
+	log.Debug().Str("key", key).Str("paramValue", paramValue).Msg("resolving option")
 	stored := o.Get(key)
 	if stored == "" {
 		return paramValue
 	}
 	if stored != "" && paramValue == "" {
-		log.Info().Str(key, stored).Msg("using stored option")
+		log.Debug().Str(key, stored).Msg("using stored option")
 		return stored
 	}
 	return paramValue

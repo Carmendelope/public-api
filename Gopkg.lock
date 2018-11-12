@@ -120,12 +120,12 @@
   version = "v0.0.13"
 
 [[projects]]
-  digest = "1:5e6eb8399cd5198d74a11d8f703d12239760cd53c1a15d687d4ebe1ff0e52834"
+  digest = "1:47b1fd7f5533f1a4a2d6558f01c71396e745507fcbc73715d324d19d4dd1f2fc"
   name = "github.com/nalej/grpc-conductor-go"
   packages = ["."]
   pruneopts = ""
-  revision = "ae1cc5bb658ee561b2da6223a38664881e408452"
-  version = "v0.0.50"
+  revision = "7babc816ca74229f8c9ae8e92623249e34ed65f2"
+  version = "v0.0.51"
 
 [[projects]]
   digest = "1:072acc3354fe3d8ad2ea1f76d852a2c59c5120aead0801dbbb7bd3d1329e70ac"
@@ -411,8 +411,11 @@
     "github.com/nalej/authx/pkg/interceptor",
     "github.com/nalej/authx/pkg/token",
     "github.com/nalej/derrors",
+    "github.com/nalej/grpc-application-go",
+    "github.com/nalej/grpc-application-manager-go",
     "github.com/nalej/grpc-authx-go",
     "github.com/nalej/grpc-common-go",
+    "github.com/nalej/grpc-conductor-go",
     "github.com/nalej/grpc-infrastructure-go",
     "github.com/nalej/grpc-login-api-go",
     "github.com/nalej/grpc-organization-go",

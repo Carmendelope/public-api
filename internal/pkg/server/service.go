@@ -6,11 +6,13 @@ import (
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
 	"github.com/nalej/authx/pkg/interceptor"
 	"github.com/nalej/derrors"
+	"github.com/nalej/grpc-application-manager-go"
 	"github.com/nalej/grpc-infrastructure-go"
 	"github.com/nalej/grpc-organization-go"
 	"github.com/nalej/grpc-public-api-go"
 	"github.com/nalej/grpc-user-manager-go"
 	"github.com/nalej/grpc-utils/pkg/tools"
+	"github.com/nalej/public-api/internal/pkg/server/applications"
 	"github.com/nalej/public-api/internal/pkg/server/clusters"
 	"github.com/nalej/public-api/internal/pkg/server/nodes"
 	"github.com/nalej/public-api/internal/pkg/server/organizations"
@@ -42,6 +44,7 @@ type Clients struct {
 	clusClient grpc_infrastructure_go.ClustersClient
 	nodeClient grpc_infrastructure_go.NodesClient
 	umClient grpc_user_manager_go.UserManagerClient
+	appClient grpc_application_manager_go.ApplicationManagerClient
 }
 
 func (s * Service) GetClients() (* Clients, derrors.Error) {
@@ -55,12 +58,18 @@ func (s * Service) GetClients() (* Clients, derrors.Error) {
 		return nil, derrors.AsError(err, "cannot create connection with the user manager")
 	}
 
+	appConn, err := grpc.Dial(s.Configuration.ApplicationsManagerAddress, grpc.WithInsecure())
+	if err != nil{
+		return nil, derrors.AsError(err, "cannot create connection with the applications manager")
+	}
+
 	oClient := grpc_organization_go.NewOrganizationsClient(smConn)
 	cClient := grpc_infrastructure_go.NewClustersClient(smConn)
 	nClient := grpc_infrastructure_go.NewNodesClient(smConn)
 	umClient := grpc_user_manager_go.NewUserManagerClient(umConn)
+	appClient := grpc_application_manager_go.NewApplicationManagerClient(appConn)
 
-	return &Clients{oClient, cClient, nClient, umClient}, nil
+	return &Clients{oClient, cClient, nClient, umClient, appClient}, nil
 }
 
 // Run the service, launch the REST service handler.
@@ -130,6 +139,9 @@ func (s * Service) LaunchGRPC(authConfig * interceptor.AuthorizationConfig) erro
 	roleManager := roles.NewManager(clients.umClient)
 	roleHandler := roles.NewHandler(roleManager)
 
+	appManager := applications.NewManager(clients.appClient)
+	appHandler := applications.NewHandler(appManager)
+
 	grpcServer := grpc.NewServer(interceptor.WithServerAuthxInterceptor(
 		interceptor.NewConfig(authConfig, s.Configuration.AuthSecret, s.Configuration.AuthHeader)))
 	grpc_public_api_go.RegisterOrganizationsServer(grpcServer, orgHandler)
@@ -138,6 +150,7 @@ func (s * Service) LaunchGRPC(authConfig * interceptor.AuthorizationConfig) erro
 	grpc_public_api_go.RegisterResourcesServer(grpcServer, resHandler)
 	grpc_public_api_go.RegisterUsersServer(grpcServer, userHandler)
 	grpc_public_api_go.RegisterRolesServer(grpcServer, roleHandler)
+	grpc_public_api_go.RegisterApplicationsServer(grpcServer, appHandler)
 
 	// Register reflection service on gRPC server.
 	reflection.Register(grpcServer)

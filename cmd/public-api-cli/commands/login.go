@@ -20,7 +20,7 @@ var loginCmd = &cobra.Command{
 	Long:  `Login into the Nalej platform`,
 	Run: func(cmd *cobra.Command, args []string) {
 		SetupLogging()
-		l := cli.NewLogin(nalejAddress, loginPort)
+		l := cli.NewLogin(options.Resolve("nalejAddress", nalejAddress), loginPort)
 		_, err := l.Login(email, password)
 		if err != nil{
 			log.Error().Str("trace", err.DebugReport()).Msg("unable to login into the platform")

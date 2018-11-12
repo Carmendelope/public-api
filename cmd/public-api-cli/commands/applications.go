@@ -11,6 +11,7 @@ import (
 
 var descriptorID string
 var descriptorPath string
+var description string
 
 var appsCmd = &cobra.Command{
 	Use:   "app",
@@ -26,13 +27,17 @@ var appsCmd = &cobra.Command{
 func init() {
 	rootCmd.AddCommand(appsCmd)
 	appsCmd.PersistentFlags().StringVar(&organizationID, "organizationID", "", "Organization identifier")
+	appsCmd.PersistentFlags().StringVar(&descriptorID, "descriptorID", "", "Application descriptor identifier")
 	appsCmd.AddCommand(descriptorCmd)
-	descriptorCmd.PersistentFlags().StringVar(&descriptorID, "descriptorID", "", "Application descriptor identifier")
 	addDescriptorCmd.PersistentFlags().StringVar(&descriptorPath, "descriptorPath", "", "Application descriptor path containing a JSON spec")
 	descriptorCmd.AddCommand(addDescriptorCmd)
 	descriptorCmd.AddCommand(getDescriptorCmd)
 	descriptorCmd.AddCommand(listDescriptorsCmd)
 	descriptorCmd.AddCommand(addDescriptorHelpCmd)
+	appsCmd.AddCommand(instanceCmd)
+	deployInstanceCmd.Flags().StringVar(&name, "name", "", "Name of the application instance")
+	deployInstanceCmd.Flags().StringVar(&description, "description", "", "Description of the application instance")
+	instanceCmd.AddCommand(deployInstanceCmd)
 }
 
 var descriptorCmd = &cobra.Command{
@@ -63,7 +68,7 @@ var addDescriptorHelpCmd = &cobra.Command{
 	Long:  `Show help related to adding a new application descriptor`,
 	Run: func(cmd *cobra.Command, args []string) {
 		SetupLogging()
-		a := cli.NewApplications(nalejAddress, nalejPort)
+		a := cli.NewApplications(options.Resolve("nalejAddress", nalejAddress), options.ResolveAsInt("port", nalejPort))
 		a.AddDescriptorHelp()
 	},
 }
@@ -74,7 +79,7 @@ var listDescriptorsCmd = &cobra.Command{
 	Long:  `List the application descriptors`,
 	Run: func(cmd *cobra.Command, args []string) {
 		SetupLogging()
-		a := cli.NewApplications(nalejAddress, nalejPort)
+		a := cli.NewApplications(options.Resolve("nalejAddress", nalejAddress), options.ResolveAsInt("port", nalejPort))
 		a.ListDescriptors(options.Resolve("organizationID", organizationID))
 	},
 }
@@ -85,7 +90,29 @@ var getDescriptorCmd = &cobra.Command{
 	Long:  `Get an application descriptor`,
 	Run: func(cmd *cobra.Command, args []string) {
 		SetupLogging()
-		a := cli.NewApplications(nalejAddress, nalejPort)
+		a := cli.NewApplications(options.Resolve("nalejAddress", nalejAddress), options.ResolveAsInt("port", nalejPort))
 		a.GetDescriptor(options.Resolve("organizationID", organizationID), descriptorID)
+	},
+}
+
+var instanceCmd = &cobra.Command{
+	Use:   "inst",
+	Aliases: []string{"instance"},
+	Short: "Manage applications instances",
+	Long:  `Manage applications instances`,
+	Run: func(cmd *cobra.Command, args []string) {
+		SetupLogging()
+		cmd.Help()
+	},
+}
+
+var deployInstanceCmd = &cobra.Command{
+	Use:   "deploy",
+	Short: "Deploy an application instance",
+	Long:  `Deploy an application instance`,
+	Run: func(cmd *cobra.Command, args []string) {
+		SetupLogging()
+		a := cli.NewApplications(options.Resolve("nalejAddress", nalejAddress), options.ResolveAsInt("port", nalejPort))
+		a.Deploy(options.Resolve("organizationID", organizationID), descriptorID, name, description)
 	},
 }

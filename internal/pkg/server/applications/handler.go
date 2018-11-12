@@ -7,6 +7,7 @@ package applications
 
 import (
 	"context"
+	"github.com/google/uuid"
 	"github.com/nalej/derrors"
 	"github.com/nalej/grpc-application-go"
 	"github.com/nalej/grpc-application-manager-go"
@@ -41,6 +42,7 @@ func (h *Handler) AddAppDescriptor(ctx context.Context, addRequest *grpc_applica
 	if err != nil{
 		return nil, conversions.ToGRPCError(err)
 	}
+	addRequest.RequestId = uuid.New().String()
 	return h.Manager.AddAppDescriptor(addRequest)
 }
 

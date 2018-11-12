@@ -5,7 +5,6 @@
 package cli
 
 import (
-	"fmt"
 	"github.com/nalej/grpc-infrastructure-go"
 	"github.com/nalej/grpc-public-api-go"
 	"github.com/nalej/grpc-utils/pkg/conversions"
@@ -56,7 +55,7 @@ func (n * Nodes) List(organizationID string, clusterID string){
 	if err != nil{
 		log.Fatal().Str("trace", conversions.ToDerror(err).DebugReport()).Msg("cannot obtain node list")
 	}
-	fmt.Println(list)
+	n.PrintResult(list)
 }
 
 
