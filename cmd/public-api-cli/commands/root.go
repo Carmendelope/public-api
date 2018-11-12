@@ -5,6 +5,8 @@
 package commands
 
 import (
+	"encoding/json"
+	"github.com/nalej/public-api/internal/app/cli"
 	"github.com/nalej/public-api/version"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
@@ -19,6 +21,8 @@ var consoleLogging bool
 
 var nalejAddress string
 var nalejPort int
+
+var options cli.Options
 
 var rootCmd = &cobra.Command{
 	Use:   "public-api-cli",
@@ -35,7 +39,7 @@ func init() {
 	rootCmd.PersistentFlags().BoolVar(&debugLevel, "debug", false, "Set debug level")
 	rootCmd.PersistentFlags().BoolVar(&consoleLogging, "consoleLogging", false, "Pretty print logging")
 	rootCmd.PersistentFlags().StringVar(&nalejAddress, "nalejAddress", "", "Address (host) of the Nalej platform")
-	rootCmd.PersistentFlags().IntVar(&nalejPort, "port", 8081, "Port of the Nalej platform Public API")
+	rootCmd.PersistentFlags().IntVar(&nalejPort, "port", -1, "Port of the Nalej platform Public API")
 }
 
 func Execute() {
@@ -56,4 +60,13 @@ func SetupLogging() {
 	if consoleLogging {
 		log.Logger = log.Output(zerolog.ConsoleWriter{Out: os.Stderr})
 	}
+}
+
+func PrintResult(result interface{}) error {
+	//Print descriptors
+	res, err := json.MarshalIndent(result, "", "  ")
+	if err == nil {
+		fmt.Println(string(res))
+	}
+	return err
 }

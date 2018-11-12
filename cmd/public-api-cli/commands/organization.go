@@ -34,6 +34,6 @@ var infoCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		SetupLogging()
 		o := cli.NewOrganizations(nalejAddress, nalejPort)
-		o.Info(organizationID)
+		o.Info(options.Resolve("organizationID", organizationID))
 	},
 }

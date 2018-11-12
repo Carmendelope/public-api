@@ -6,6 +6,8 @@ package entities
 
 import (
 	"github.com/nalej/derrors"
+	"github.com/nalej/grpc-application-go"
+	"github.com/nalej/grpc-application-manager-go"
 	"github.com/nalej/grpc-infrastructure-go"
 	"github.com/nalej/grpc-organization-go"
 	"github.com/nalej/grpc-public-api-go"
@@ -13,6 +15,8 @@ import (
 )
 
 const emptyOrganizationId = "organization_id cannot be empty"
+const emptyInstanceId = "app_instance_id cannot be empty"
+const emptyDescriptorId = "app_descriptor_id cannot be empty"
 const emptyClusterId = "cluster_id cannot be empty"
 const emptyEmail = "email cannot be empty"
 
@@ -44,6 +48,26 @@ func ValidUserId(userID *grpc_user_go.UserId) derrors.Error {
 	return nil
 }
 
+func ValidAppInstanceID(appInstanceID * grpc_application_go.AppInstanceId) derrors.Error {
+	if appInstanceID.OrganizationId == "" {
+		return derrors.NewInvalidArgumentError(emptyOrganizationId)
+	}
+	if appInstanceID.AppInstanceId == "" {
+		return derrors.NewInvalidArgumentError(emptyInstanceId)
+	}
+	return nil
+}
+
+func ValidAppDescriptorID(appDescriptorID * grpc_application_go.AppDescriptorId) derrors.Error {
+	if appDescriptorID.OrganizationId == "" {
+		return derrors.NewInvalidArgumentError(emptyOrganizationId)
+	}
+	if appDescriptorID.AppDescriptorId == "" {
+		return derrors.NewInvalidArgumentError(emptyDescriptorId)
+	}
+	return nil
+}
+
 func ValidUpdateClusterRequest(updateClusterRequest *grpc_public_api_go.UpdateClusterRequest) derrors.Error {
 	if updateClusterRequest.OrganizationId == "" {
 		return derrors.NewInvalidArgumentError(emptyOrganizationId)
@@ -60,6 +84,31 @@ func ValidUpdateUserRequest(updateUserRequest *grpc_user_go.UpdateUserRequest) d
 	}
 	if updateUserRequest.Email == "" {
 		return derrors.NewInvalidArgumentError(emptyEmail)
+	}
+	return nil
+}
+
+func ValidAddAppDescriptor(request * grpc_application_go.AddAppDescriptorRequest) derrors.Error {
+	if request.OrganizationId == "" {
+		return derrors.NewInvalidArgumentError(emptyOrganizationId)
+	}
+	if len(request.Services) == 0 {
+		return derrors.NewInvalidArgumentError("expecting at least one service")
+	}
+	for _, s := range request.Services {
+		if s.OrganizationId != request.OrganizationId {
+			return derrors.NewInvalidArgumentError("organization_id mismatch")
+		}
+	}
+	return nil
+}
+
+func ValidDeployRequest(request * grpc_application_manager_go.DeployRequest) derrors.Error {
+	if request.OrganizationId == "" {
+		return derrors.NewInvalidArgumentError(emptyOrganizationId)
+	}
+	if request.AppDescriptorId == "" {
+		return derrors.NewInvalidArgumentError(emptyDescriptorId)
 	}
 	return nil
 }

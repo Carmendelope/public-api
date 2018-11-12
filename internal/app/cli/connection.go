@@ -1,6 +1,7 @@
 package cli
 
 import (
+	"encoding/json"
 	"fmt"
 	"github.com/nalej/derrors"
 	"github.com/rs/zerolog/log"
@@ -24,4 +25,13 @@ func (c* Connection) GetConnection() (*grpc.ClientConn, derrors.Error){
 		return nil, derrors.AsError(err, "cannot create connection with the public api")
 	}
 	return conn, nil
+}
+
+func (c * Connection) PrintResult(result interface{}) error {
+	//Print descriptors
+	res, err := json.MarshalIndent(result, "", "  ")
+	if err == nil {
+		fmt.Println(string(res))
+	}
+	return err
 }
