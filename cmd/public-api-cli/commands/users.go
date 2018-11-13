@@ -9,21 +9,18 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var name string
-var roleName string
-
 var usersCmd = &cobra.Command{
-	Use:   "user",
+	Use:     "user",
 	Aliases: []string{"users"},
-	Short: "Manage user",
-	Long:  `Manage user`,
+	Short:   "Manage user",
+	Long:    `Manage user`,
 	Run: func(cmd *cobra.Command, args []string) {
 		SetupLogging()
 		cmd.Help()
 	},
 }
 
-func init(){
+func init() {
 	rootCmd.AddCommand(usersCmd)
 	usersCmd.PersistentFlags().StringVar(&email, "email", "", "User email")
 	usersCmd.AddCommand(userInfoCmd)
@@ -58,10 +55,10 @@ var userListCmd = &cobra.Command{
 }
 
 var deleteUserCmd = &cobra.Command{
-	Use:   "del",
+	Use:     "del",
 	Aliases: []string{"delete"},
-	Short: "Delete a user",
-	Long:  `Delete a user`,
+	Short:   "Delete a user",
+	Long:    `Delete a user`,
 	Run: func(cmd *cobra.Command, args []string) {
 		SetupLogging()
 		u := cli.NewUsers(options.Resolve("nalejAddress", nalejAddress), options.ResolveAsInt("port", nalejPort))
@@ -70,10 +67,10 @@ var deleteUserCmd = &cobra.Command{
 }
 
 var resetPasswordCmd = &cobra.Command{
-	Use:   "reset-password",
+	Use:     "reset-password",
 	Aliases: []string{"reset"},
-	Short: "Reset the password of a user",
-	Long:  `Reset the password of a user`,
+	Short:   "Reset the password of a user",
+	Long:    `Reset the password of a user`,
 	Run: func(cmd *cobra.Command, args []string) {
 		SetupLogging()
 		u := cli.NewUsers(options.Resolve("nalejAddress", nalejAddress), options.ResolveAsInt("port", nalejPort))
@@ -91,4 +88,3 @@ var updateUserCmd = &cobra.Command{
 		u.Update(options.Resolve("organizationID", organizationID), email, name, roleName)
 	},
 }
-

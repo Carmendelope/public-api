@@ -12,39 +12,38 @@ type Roles struct {
 	Credentials
 }
 
-func NewRoles(address string, port int) * Roles{
+func NewRoles(address string, port int) *Roles {
 	return &Roles{
-		Connection: *NewConnection(address, port),
+		Connection:  *NewConnection(address, port),
 		Credentials: *NewEmptyCredentials(DefaultPath),
 	}
 }
 
-func (r * Roles) load() {
+func (r *Roles) load() {
 	err := r.LoadCredentials()
-	if err != nil{
+	if err != nil {
 		log.Fatal().Str("trace", err.DebugReport()).Msg("cannot load credentials, try login first")
 	}
 }
 
-func (r * Roles) getClient() (grpc_public_api_go.RolesClient, *grpc.ClientConn){
+func (r *Roles) getClient() (grpc_public_api_go.RolesClient, *grpc.ClientConn) {
 	conn, err := r.GetConnection()
-	if err != nil{
+	if err != nil {
 		log.Fatal().Str("trace", err.DebugReport()).Msg("cannot create the connection with the Nalej platform")
 	}
 	client := grpc_public_api_go.NewRolesClient(conn)
 	return client, conn
 }
 
-func (r * Roles) List(organizationID string){
+func (r *Roles) List(organizationID string) {
 	r.load()
 	ctx, cancel := r.GetContext()
 	client, conn := r.getClient()
 	defer conn.Close()
 	defer cancel()
 	orgID := &grpc_organization_go.OrganizationId{
-		OrganizationId:       organizationID,
+		OrganizationId: organizationID,
 	}
 	roles, err := client.List(ctx, orgID)
 	r.PrintResultOrError(roles, err, "cannot obtain role list")
 }
-

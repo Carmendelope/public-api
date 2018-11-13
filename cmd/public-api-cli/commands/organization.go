@@ -9,8 +9,6 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var organizationID string
-
 var orgCmd = &cobra.Command{
 	Use:   "org",
 	Short: "Organization related operations",

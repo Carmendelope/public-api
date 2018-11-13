@@ -15,27 +15,27 @@ import (
 
 const OptionsPath = "options"
 
-type Options struct{
+type Options struct {
 	// TODO Refactor and store the options in a single map that is serialized.
 	Options map[string]string `json:"options"`
 }
 
-func NewOptions() * Options{
+func NewOptions() *Options {
 	return &Options{}
 }
 
-func (o * Options) getPath() string {
+func (o *Options) getPath() string {
 	path := filepath.Join(resolvePath(DefaultPath), OptionsPath)
 	log.Debug().Str("path", path).Msg("Options directory")
 	return path
 }
 
-func (o * Options) createIfNotExists(path string) {
+func (o *Options) createIfNotExists(path string) {
 	_ = os.MkdirAll(path, 0700)
 }
 
 // Set the value of a key as a persistent option.
-func (o * Options) Set(key string, value string){
+func (o *Options) Set(key string, value string) {
 
 	if key == "" {
 		log.Fatal().Msg("key must not be empty")
@@ -49,13 +49,13 @@ func (o * Options) Set(key string, value string){
 	o.createIfNotExists(basePath)
 	targetPath := filepath.Join(basePath, key)
 	err := ioutil.WriteFile(targetPath, []byte(value), 0600)
-	if err != nil{
+	if err != nil {
 		log.Fatal().Err(err).Str("key", key).Msg("cannot write option")
 	}
 }
 
 // Get the value of a previously store key
-func (o * Options) Get(key string) string {
+func (o *Options) Get(key string) string {
 
 	if key == "" {
 		log.Fatal().Msg("key must not be empty")
@@ -64,8 +64,8 @@ func (o * Options) Get(key string) string {
 	targetPath := filepath.Join(o.getPath(), key)
 	log.Debug().Str("targetPath", targetPath).Msg("Get")
 	value, err := ioutil.ReadFile(targetPath)
-	if err != nil{
-		log.Warn().Err(err).Str("key", key).Msg("cannot read option")
+	if err != nil {
+		log.Debug().Err(err).Str("key", key).Msg("cannot read option")
 		return ""
 	}
 	log.Debug().Str("value", string(value)).Msg("Get")
@@ -73,16 +73,16 @@ func (o * Options) Get(key string) string {
 }
 
 // Delete a given key
-func (o * Options) Delete(key string){
+func (o *Options) Delete(key string) {
 	targetPath := filepath.Join(o.getPath(), key)
 	_ = os.Remove(targetPath)
 }
 
 // List the available options
-func (o * Options) List(){
+func (o *Options) List() {
 	targetPath := o.getPath()
 	_ = filepath.Walk(targetPath, func(path string, info os.FileInfo, err error) error {
-		if !info.IsDir(){
+		if !info.IsDir() {
 			retrieved := o.Get(filepath.Base(info.Name()))
 			fmt.Printf("Key: %s Value: %s\n", info.Name(), retrieved)
 		}
@@ -91,7 +91,7 @@ func (o * Options) List(){
 }
 
 // Resolve the effective value of a parameter.
-func (o * Options) Resolve(key string, paramValue string) string {
+func (o *Options) Resolve(key string, paramValue string) string {
 	log.Debug().Str("key", key).Str("paramValue", paramValue).Msg("resolving option")
 	stored := o.Get(key)
 	if stored == "" {
@@ -104,7 +104,7 @@ func (o * Options) Resolve(key string, paramValue string) string {
 	return paramValue
 }
 
-func (o * Options) ResolveAsInt(key string, paramValue int) int {
+func (o *Options) ResolveAsInt(key string, paramValue int) int {
 	toStr := ""
 	if paramValue >= 0 {
 		toStr = strconv.Itoa(paramValue)

@@ -9,15 +9,11 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var descriptorID string
-var descriptorPath string
-var description string
-
 var appsCmd = &cobra.Command{
-	Use:   "app",
+	Use:     "app",
 	Aliases: []string{"applications"},
-	Short: "Manage applications",
-	Long:  `Manage applications`,
+	Short:   "Manage applications",
+	Long:    `Manage applications`,
 	Run: func(cmd *cobra.Command, args []string) {
 		SetupLogging()
 		cmd.Help()
@@ -41,10 +37,10 @@ func init() {
 }
 
 var descriptorCmd = &cobra.Command{
-	Use:   "desc",
+	Use:     "desc",
 	Aliases: []string{"descriptor"},
-	Short: "Manage applications descriptors",
-	Long:  `Manage applications descriptors`,
+	Short:   "Manage applications descriptors",
+	Long:    `Manage applications descriptors`,
 	Run: func(cmd *cobra.Command, args []string) {
 		SetupLogging()
 		cmd.Help()
@@ -96,10 +92,10 @@ var getDescriptorCmd = &cobra.Command{
 }
 
 var instanceCmd = &cobra.Command{
-	Use:   "inst",
+	Use:     "inst",
 	Aliases: []string{"instance"},
-	Short: "Manage applications instances",
-	Long:  `Manage applications instances`,
+	Short:   "Manage applications instances",
+	Long:    `Manage applications instances`,
 	Run: func(cmd *cobra.Command, args []string) {
 		SetupLogging()
 		cmd.Help()

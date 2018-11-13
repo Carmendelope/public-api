@@ -10,10 +10,6 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var loginPort int
-var email string
-var password string
-
 var loginCmd = &cobra.Command{
 	Use:   "login",
 	Short: "Login into the Nalej platform",
@@ -22,7 +18,7 @@ var loginCmd = &cobra.Command{
 		SetupLogging()
 		l := cli.NewLogin(options.Resolve("nalejAddress", nalejAddress), loginPort)
 		_, err := l.Login(email, password)
-		if err != nil{
+		if err != nil {
 			log.Error().Str("trace", err.DebugReport()).Msg("unable to login into the platform")
 		}
 	},

@@ -18,8 +18,16 @@ appropriate services.
  A CLI has been added for convenience, use:
 
  ```
- $ ./bin/system-model-cli
+ $ ./bin/public-api-cli
  ```
+
+## Tips for local development
+
+### Embed certificates in minikube
+
+```
+$ minikube config set embed-certs true
+```
 
  # Integration tests
 

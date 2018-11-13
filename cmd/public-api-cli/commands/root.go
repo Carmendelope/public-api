@@ -25,9 +25,9 @@ var nalejPort int
 var options cli.Options
 
 var rootCmd = &cobra.Command{
-	Use:   "public-api-cli",
-	Short: "CLI for the public-api",
-	Long:  `A command line client for the public-api`,
+	Use:     "public-api-cli",
+	Short:   "CLI for the public-api",
+	Long:    `A command line client for the public-api`,
 	Version: "unknown-version",
 	Run: func(cmd *cobra.Command, args []string) {
 		SetupLogging()

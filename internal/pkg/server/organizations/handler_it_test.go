@@ -12,8 +12,8 @@ package organizations
 import (
 	"fmt"
 	"github.com/nalej/authx/pkg/interceptor"
-	"github.com/nalej/grpc-organization-go"
 	"github.com/nalej/grpc-authx-go"
+	"github.com/nalej/grpc-organization-go"
 	"github.com/nalej/grpc-public-api-go"
 	"github.com/nalej/grpc-utils/pkg/test"
 	"github.com/nalej/public-api/internal/pkg/server/ithelpers"
@@ -26,9 +26,9 @@ import (
 	"os"
 )
 
-var _ = ginkgo.Describe("Organizations", func(){
+var _ = ginkgo.Describe("Organizations", func() {
 
-	if ! utils.RunIntegrationTests() {
+	if !utils.RunIntegrationTests() {
 		log.Warn().Msg("Integration tests are skipped")
 		return
 	}
@@ -42,16 +42,16 @@ var _ = ginkgo.Describe("Organizations", func(){
 	}
 
 	// gRPC server
-	var server * grpc.Server
+	var server *grpc.Server
 	// grpc test listener
-	var listener * bufconn.Listener
+	var listener *bufconn.Listener
 	// client
 	var orgClient grpc_organization_go.OrganizationsClient
-	var smConn * grpc.ClientConn
+	var smConn *grpc.ClientConn
 	var client grpc_public_api_go.OrganizationsClient
 
 	// Target organization.
-	var targetOrganization * grpc_organization_go.Organization
+	var targetOrganization *grpc_organization_go.Organization
 	var token string
 
 	ginkgo.BeforeSuite(func() {
@@ -84,9 +84,9 @@ var _ = ginkgo.Describe("Organizations", func(){
 		smConn.Close()
 	})
 
-	ginkgo.It("should be able to retrieve an existing organization", func(){
+	ginkgo.It("should be able to retrieve an existing organization", func() {
 		orgID := &grpc_organization_go.OrganizationId{
-			OrganizationId:       targetOrganization.OrganizationId,
+			OrganizationId: targetOrganization.OrganizationId,
 		}
 		ctx, cancel := ithelpers.GetContext(token)
 		defer cancel()
@@ -96,9 +96,9 @@ var _ = ginkgo.Describe("Organizations", func(){
 		gomega.Expect(info.Name).Should(gomega.Equal(targetOrganization.Name))
 	})
 
-	ginkgo.It("should fail on an organization that does not exists", func(){
+	ginkgo.It("should fail on an organization that does not exists", func() {
 		orgID := &grpc_organization_go.OrganizationId{
-			OrganizationId:       "does-not-exists",
+			OrganizationId: "does-not-exists",
 		}
 		ctx, cancel := ithelpers.GetContext(token)
 		defer cancel()

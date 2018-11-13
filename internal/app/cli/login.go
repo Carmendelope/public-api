@@ -18,16 +18,16 @@ type Login struct {
 }
 
 // NewLogin creates a new Login structure.
-func NewLogin(address string, port int) * Login{
+func NewLogin(address string, port int) *Login {
 	return &Login{
 		*NewConnection(address, port),
 	}
 }
 
 // Login into the platform using email and password.
-func (l * Login) Login(email string, password string) (*Credentials, derrors.Error){
+func (l *Login) Login(email string, password string) (*Credentials, derrors.Error) {
 	c, err := l.GetConnection()
-	if err != nil{
+	if err != nil {
 		return nil, err
 	}
 	defer c.Close()
@@ -35,17 +35,17 @@ func (l * Login) Login(email string, password string) (*Credentials, derrors.Err
 	ctx, cancel := context.WithTimeout(context.Background(), DefaultTimeout)
 	defer cancel()
 	loginRequest := &grpc_authx_go.LoginWithBasicCredentialsRequest{
-		Username:             email,
-		Password:             password,
+		Username: email,
+		Password: password,
 	}
 	response, lErr := loginClient.LoginWithBasicCredentials(ctx, loginRequest)
-	if lErr != nil{
+	if lErr != nil {
 		return nil, conversions.ToDerror(lErr)
 	}
 	log.Debug().Str("token", response.Token).Msg("Login success")
 	credentials := NewCredentials(DefaultPath, response.Token, response.RefreshToken)
 	sErr := credentials.Store()
-	if sErr != nil{
+	if sErr != nil {
 		return nil, sErr
 	}
 	return credentials, nil

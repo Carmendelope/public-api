@@ -32,8 +32,8 @@ func createEnvironment(
 	numClusters int, numNodes int,
 	clustClient grpc_infrastructure_go.ClustersClient,
 	nodeClient grpc_infrastructure_go.NodesClient,
-	){
-	for clusterIndex := 0; clusterIndex < numClusters; clusterIndex++{
+) {
+	for clusterIndex := 0; clusterIndex < numClusters; clusterIndex++ {
 		cluster := ithelpers.CreateCluster(targetOrganization,
 			fmt.Sprintf("cluster-%d", clusterIndex), clustClient)
 		ithelpers.CreateNodes(cluster, numNodes, clustClient, nodeClient)
@@ -45,7 +45,7 @@ var _ = ginkgo.Describe("Resources", func() {
 	const NumNodes = 10
 	const NumClusters = 5
 
-	if ! utils.RunIntegrationTests() {
+	if !utils.RunIntegrationTests() {
 		log.Warn().Msg("Integration tests are skipped")
 		return
 	}
@@ -59,18 +59,18 @@ var _ = ginkgo.Describe("Resources", func() {
 	}
 
 	// gRPC server
-	var server * grpc.Server
+	var server *grpc.Server
 	// grpc test listener
-	var listener * bufconn.Listener
+	var listener *bufconn.Listener
 	// client
 	var orgClient grpc_organization_go.OrganizationsClient
 	var clustClient grpc_infrastructure_go.ClustersClient
 	var nodeClient grpc_infrastructure_go.NodesClient
-	var smConn * grpc.ClientConn
+	var smConn *grpc.ClientConn
 	var client grpc_public_api_go.ResourcesClient
 
 	// Target organization.
-	var targetOrganization * grpc_organization_go.Organization
+	var targetOrganization *grpc_organization_go.Organization
 	var token string
 
 	ginkgo.BeforeSuite(func() {
@@ -106,10 +106,10 @@ var _ = ginkgo.Describe("Resources", func() {
 		smConn.Close()
 	})
 
-	ginkgo.It("should be able to obtain the summary", func(){
+	ginkgo.It("should be able to obtain the summary", func() {
 
 		organizationID := &grpc_organization_go.OrganizationId{
-			OrganizationId:       targetOrganization.OrganizationId,
+			OrganizationId: targetOrganization.OrganizationId,
 		}
 		ctx, cancel := ithelpers.GetContext(token)
 		defer cancel()

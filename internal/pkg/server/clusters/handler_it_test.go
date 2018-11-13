@@ -14,6 +14,7 @@ import (
 	"github.com/nalej/authx/pkg/interceptor"
 	"github.com/nalej/grpc-authx-go"
 	"github.com/nalej/grpc-infrastructure-go"
+	"github.com/nalej/grpc-infrastructure-manager-go"
 	"github.com/nalej/grpc-organization-go"
 	"github.com/nalej/grpc-public-api-go"
 	"github.com/nalej/grpc-utils/pkg/test"
@@ -31,33 +32,36 @@ var _ = ginkgo.Describe("Clusters", func() {
 
 	const NumNodes = 10
 
-	if ! utils.RunIntegrationTests() {
+	if !utils.RunIntegrationTests() {
 		log.Warn().Msg("Integration tests are skipped")
 		return
 	}
 
 	var (
-		systemModelAddress = os.Getenv("IT_SM_ADDRESS")
+		systemModelAddress  = os.Getenv("IT_SM_ADDRESS")
+		infraManagerAddress = os.Getenv("IT_INFRAMGR_ADDRESS")
 	)
 
-	if systemModelAddress == "" {
+	if systemModelAddress == "" || infraManagerAddress == "" {
 		ginkgo.Fail("missing environment variables")
 	}
 
 	// gRPC server
-	var server * grpc.Server
+	var server *grpc.Server
 	// grpc test listener
-	var listener * bufconn.Listener
+	var listener *bufconn.Listener
 	// client
 	var orgClient grpc_organization_go.OrganizationsClient
 	var clustClient grpc_infrastructure_go.ClustersClient
 	var nodeClient grpc_infrastructure_go.NodesClient
-	var smConn * grpc.ClientConn
+	var infraClient grpc_infrastructure_manager_go.InfrastructureManagerClient
+	var smConn *grpc.ClientConn
+	var infraConn *grpc.ClientConn
 	var client grpc_public_api_go.ClustersClient
 
 	// Target organization.
-	var targetOrganization * grpc_organization_go.Organization
-	var targetCluster * grpc_infrastructure_go.Cluster
+	var targetOrganization *grpc_organization_go.Organization
+	var targetCluster *grpc_infrastructure_go.Cluster
 	var token string
 
 	ginkgo.BeforeSuite(func() {
@@ -70,11 +74,13 @@ var _ = ginkgo.Describe("Clusters", func() {
 		orgClient = grpc_organization_go.NewOrganizationsClient(smConn)
 		clustClient = grpc_infrastructure_go.NewClustersClient(smConn)
 		nodeClient = grpc_infrastructure_go.NewNodesClient(smConn)
+		infraConn = utils.GetConnection(infraManagerAddress)
+		infraClient = grpc_infrastructure_manager_go.NewInfrastructureManagerClient(infraConn)
 
 		conn, err := test.GetConn(*listener)
 		gomega.Expect(err).To(gomega.Succeed())
 
-		manager := NewManager(clustClient, nodeClient)
+		manager := NewManager(clustClient, nodeClient, infraClient)
 		handler := NewHandler(manager)
 		grpc_public_api_go.RegisterClustersServer(server, handler)
 		test.LaunchServer(server, listener)
@@ -94,10 +100,10 @@ var _ = ginkgo.Describe("Clusters", func() {
 		smConn.Close()
 	})
 
-	ginkgo.It("should be able to list the clusters", func(){
+	ginkgo.It("should be able to list the clusters", func() {
 
 		organizationID := &grpc_organization_go.OrganizationId{
-			OrganizationId:       targetOrganization.OrganizationId,
+			OrganizationId: targetOrganization.OrganizationId,
 		}
 		ctx, cancel := ithelpers.GetContext(token)
 		defer cancel()
@@ -109,15 +115,15 @@ var _ = ginkgo.Describe("Clusters", func() {
 		gomega.Expect(c0.RunningNodes).Should(gomega.Equal(int64(0)))
 	})
 
-	ginkgo.It("should be able to update a cluster", func(){
+	ginkgo.It("should be able to update a cluster", func() {
 		newLabels := make(map[string]string, 0)
-		newLabels["nk"]="nv"
+		newLabels["nk"] = "nv"
 		updateRequest := &grpc_public_api_go.UpdateClusterRequest{
-			OrganizationId:       targetCluster.OrganizationId,
-			ClusterId:            targetCluster.ClusterId,
-			Name:                 "newName",
-			Description:          "newDescription",
-			Labels:               newLabels,
+			OrganizationId: targetCluster.OrganizationId,
+			ClusterId:      targetCluster.ClusterId,
+			Name:           "newName",
+			Description:    "newDescription",
+			Labels:         newLabels,
 		}
 		ctx, cancel := ithelpers.GetContext(token)
 		defer cancel()
@@ -126,8 +132,8 @@ var _ = ginkgo.Describe("Clusters", func() {
 		gomega.Expect(done).ToNot(gomega.BeNil())
 
 		clusterID := &grpc_infrastructure_go.ClusterId{
-			OrganizationId:       targetCluster.OrganizationId,
-			ClusterId:            targetCluster.ClusterId,
+			OrganizationId: targetCluster.OrganizationId,
+			ClusterId:      targetCluster.ClusterId,
 		}
 		ctx2, cancel2 := ithelpers.GetContext(token)
 		defer cancel2()

@@ -20,7 +20,6 @@ const emptyDescriptorId = "app_descriptor_id cannot be empty"
 const emptyClusterId = "cluster_id cannot be empty"
 const emptyEmail = "email cannot be empty"
 
-
 func ValidOrganizationId(organizationID *grpc_organization_go.OrganizationId) derrors.Error {
 	if organizationID.OrganizationId == "" {
 		return derrors.NewInvalidArgumentError(emptyOrganizationId)
@@ -48,7 +47,7 @@ func ValidUserId(userID *grpc_user_go.UserId) derrors.Error {
 	return nil
 }
 
-func ValidAppInstanceID(appInstanceID * grpc_application_go.AppInstanceId) derrors.Error {
+func ValidAppInstanceID(appInstanceID *grpc_application_go.AppInstanceId) derrors.Error {
 	if appInstanceID.OrganizationId == "" {
 		return derrors.NewInvalidArgumentError(emptyOrganizationId)
 	}
@@ -58,7 +57,7 @@ func ValidAppInstanceID(appInstanceID * grpc_application_go.AppInstanceId) derro
 	return nil
 }
 
-func ValidAppDescriptorID(appDescriptorID * grpc_application_go.AppDescriptorId) derrors.Error {
+func ValidAppDescriptorID(appDescriptorID *grpc_application_go.AppDescriptorId) derrors.Error {
 	if appDescriptorID.OrganizationId == "" {
 		return derrors.NewInvalidArgumentError(emptyOrganizationId)
 	}
@@ -88,7 +87,7 @@ func ValidUpdateUserRequest(updateUserRequest *grpc_user_go.UpdateUserRequest) d
 	return nil
 }
 
-func ValidAddAppDescriptor(request * grpc_application_go.AddAppDescriptorRequest) derrors.Error {
+func ValidAddAppDescriptor(request *grpc_application_go.AddAppDescriptorRequest) derrors.Error {
 	if request.OrganizationId == "" {
 		return derrors.NewInvalidArgumentError(emptyOrganizationId)
 	}
@@ -103,12 +102,19 @@ func ValidAddAppDescriptor(request * grpc_application_go.AddAppDescriptorRequest
 	return nil
 }
 
-func ValidDeployRequest(request * grpc_application_manager_go.DeployRequest) derrors.Error {
+func ValidDeployRequest(request *grpc_application_manager_go.DeployRequest) derrors.Error {
 	if request.OrganizationId == "" {
 		return derrors.NewInvalidArgumentError(emptyOrganizationId)
 	}
 	if request.AppDescriptorId == "" {
 		return derrors.NewInvalidArgumentError(emptyDescriptorId)
+	}
+	return nil
+}
+
+func ValidInstallRequest(request *grpc_public_api_go.InstallRequest) derrors.Error {
+	if request.OrganizationId == "" {
+		return derrors.NewInvalidArgumentError(emptyOrganizationId)
 	}
 	return nil
 }

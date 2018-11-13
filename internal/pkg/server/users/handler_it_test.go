@@ -35,7 +35,7 @@ var _ = ginkgo.Describe("Users", func() {
 
 	const NumUsers = 5
 
-	if ! utils.RunIntegrationTests() {
+	if !utils.RunIntegrationTests() {
 		log.Warn().Msg("Integration tests are skipped")
 		return
 	}
@@ -50,20 +50,20 @@ var _ = ginkgo.Describe("Users", func() {
 	}
 
 	// gRPC server
-	var server * grpc.Server
+	var server *grpc.Server
 	// grpc test listener
-	var listener * bufconn.Listener
+	var listener *bufconn.Listener
 	// client
 	var orgClient grpc_organization_go.OrganizationsClient
 	var umClient grpc_user_manager_go.UserManagerClient
-	var smConn * grpc.ClientConn
-	var umConn * grpc.ClientConn
+	var smConn *grpc.ClientConn
+	var umConn *grpc.ClientConn
 	var client grpc_public_api_go.UsersClient
 
 	// Target organization.
-	var targetOrganization * grpc_organization_go.Organization
-	var targetRole * grpc_authx_go.Role
-	var targetUser * grpc_user_manager_go.User
+	var targetOrganization *grpc_organization_go.Organization
+	var targetRole *grpc_authx_go.Role
+	var targetUser *grpc_user_manager_go.User
 	var token string
 
 	ginkgo.BeforeSuite(func() {
@@ -105,10 +105,10 @@ var _ = ginkgo.Describe("Users", func() {
 		umConn.Close()
 	})
 
-	ginkgo.It("should be able to retrieve the user information", func(){
+	ginkgo.It("should be able to retrieve the user information", func() {
 		userID := &grpc_user_go.UserId{
-			OrganizationId:       targetUser.OrganizationId,
-			Email:                targetUser.Email,
+			OrganizationId: targetUser.OrganizationId,
+			Email:          targetUser.Email,
 		}
 		ctx, cancel := ithelpers.GetContext(token)
 		defer cancel()
@@ -120,43 +120,43 @@ var _ = ginkgo.Describe("Users", func() {
 		gomega.Expect(info.RoleName).Should(gomega.Equal(targetRole.Name))
 	})
 
-	ginkgo.It("should be able list users in an organization", func(){
-	    organizationID := &grpc_organization_go.OrganizationId{
-	    	OrganizationId: targetOrganization.OrganizationId,
+	ginkgo.It("should be able list users in an organization", func() {
+		organizationID := &grpc_organization_go.OrganizationId{
+			OrganizationId: targetOrganization.OrganizationId,
 		}
 		ctx, cancel := ithelpers.GetContext(token)
 		defer cancel()
-	    list, err := client.List(ctx, organizationID)
-	    gomega.Expect(err).To(gomega.Succeed())
-	    gomega.Expect(len(list.Users)).Should(gomega.Equal(1))
+		list, err := client.List(ctx, organizationID)
+		gomega.Expect(err).To(gomega.Succeed())
+		gomega.Expect(len(list.Users)).Should(gomega.Equal(1))
 	})
 
-	ginkgo.PIt("should be able to delete a user", func(){
+	ginkgo.PIt("should be able to delete a user", func() {
 		userID := &grpc_user_go.UserId{
-			OrganizationId:       targetUser.OrganizationId,
-			Email:                targetUser.Email,
+			OrganizationId: targetUser.OrganizationId,
+			Email:          targetUser.Email,
 		}
 		success, err := client.Delete(context.Background(), userID)
 		gomega.Expect(err).To(gomega.Succeed())
 		gomega.Expect(success).ToNot(gomega.BeNil())
 	})
 
-	ginkgo.PIt("should be able to reset the password of a user", func(){
+	ginkgo.PIt("should be able to reset the password of a user", func() {
 		userID := &grpc_user_go.UserId{
-			OrganizationId:       targetUser.OrganizationId,
-			Email:                targetUser.Email,
+			OrganizationId: targetUser.OrganizationId,
+			Email:          targetUser.Email,
 		}
 		reset, err := client.ResetPassword(context.Background(), userID)
 		gomega.Expect(err).To(gomega.Succeed())
 		gomega.Expect(reset.NewPassword).ShouldNot(gomega.BeEmpty())
 	})
 
-	ginkgo.PIt("should be able to update an existing user", func(){
-	    updateUserRequest := &grpc_user_go.UpdateUserRequest{
-			OrganizationId:       targetUser.OrganizationId,
-			Email:                targetUser.Email,
-			Name:                 "newName",
-			Role:                 "newRole",
+	ginkgo.PIt("should be able to update an existing user", func() {
+		updateUserRequest := &grpc_user_go.UpdateUserRequest{
+			OrganizationId: targetUser.OrganizationId,
+			Email:          targetUser.Email,
+			Name:           "newName",
+			Role:           "newRole",
 		}
 		success, err := client.Update(context.Background(), updateUserRequest)
 		gomega.Expect(err).To(gomega.Succeed())

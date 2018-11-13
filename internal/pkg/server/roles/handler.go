@@ -20,13 +20,13 @@ type Handler struct {
 }
 
 // NewHandler creates a new Handler with a linked manager.
-func NewHandler(manager Manager) *Handler{
+func NewHandler(manager Manager) *Handler {
 	return &Handler{manager}
 }
 
 func (h *Handler) List(ctx context.Context, organizationID *grpc_organization_go.OrganizationId) (*grpc_authx_go.RoleList, error) {
 	rm, err := authhelper.GetRequestMetadata(ctx)
-	if err != nil{
+	if err != nil {
 		return nil, conversions.ToGRPCError(err)
 	}
 	if organizationID.OrganizationId != rm.OrganizationID {
@@ -38,5 +38,3 @@ func (h *Handler) List(ctx context.Context, organizationID *grpc_organization_go
 	}
 	return h.Manager.List(organizationID)
 }
-
-

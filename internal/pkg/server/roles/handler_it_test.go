@@ -30,7 +30,7 @@ import (
 
 var _ = ginkgo.Describe("Roles", func() {
 
-	if ! utils.RunIntegrationTests() {
+	if !utils.RunIntegrationTests() {
 		log.Warn().Msg("Integration tests are skipped")
 		return
 	}
@@ -45,19 +45,19 @@ var _ = ginkgo.Describe("Roles", func() {
 	}
 
 	// gRPC server
-	var server * grpc.Server
+	var server *grpc.Server
 	// grpc test listener
-	var listener * bufconn.Listener
+	var listener *bufconn.Listener
 	// client
 	var orgClient grpc_organization_go.OrganizationsClient
 	var umClient grpc_user_manager_go.UserManagerClient
-	var smConn * grpc.ClientConn
-	var umConn * grpc.ClientConn
+	var smConn *grpc.ClientConn
+	var umConn *grpc.ClientConn
 	var client grpc_public_api_go.RolesClient
 
 	// Target organization.
-	var targetOrganization * grpc_organization_go.Organization
-	var targetRole * grpc_authx_go.Role
+	var targetOrganization *grpc_organization_go.Organization
+	var targetRole *grpc_authx_go.Role
 	var token string
 
 	ginkgo.BeforeSuite(func() {
@@ -94,16 +94,16 @@ var _ = ginkgo.Describe("Roles", func() {
 		umConn.Close()
 	})
 
-	ginkgo.It("should be able to list the roles in the system", func(){
+	ginkgo.It("should be able to list the roles in the system", func() {
 		organizationID := &grpc_organization_go.OrganizationId{
-			OrganizationId:       targetOrganization.OrganizationId,
+			OrganizationId: targetOrganization.OrganizationId,
 		}
 		ctx, cancel := ithelpers.GetContext(token)
 		defer cancel()
-	    roleList, err := client.List(ctx, organizationID)
-	    gomega.Expect(err).To(gomega.Succeed())
-	    gomega.Expect(len(roleList.Roles)).Should(gomega.Equal(1))
-	    gomega.Expect(roleList.Roles[0].RoleId).Should(gomega.Equal(targetRole.RoleId))
+		roleList, err := client.List(ctx, organizationID)
+		gomega.Expect(err).To(gomega.Succeed())
+		gomega.Expect(len(roleList.Roles)).Should(gomega.Equal(1))
+		gomega.Expect(roleList.Roles[0].RoleId).Should(gomega.Equal(targetRole.RoleId))
 	})
 
 })

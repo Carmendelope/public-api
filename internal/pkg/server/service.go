@@ -8,6 +8,7 @@ import (
 	"github.com/nalej/derrors"
 	"github.com/nalej/grpc-application-manager-go"
 	"github.com/nalej/grpc-infrastructure-go"
+	"github.com/nalej/grpc-infrastructure-manager-go"
 	"github.com/nalej/grpc-organization-go"
 	"github.com/nalej/grpc-public-api-go"
 	"github.com/nalej/grpc-user-manager-go"
@@ -24,11 +25,12 @@ import (
 	"google.golang.org/grpc/reflection"
 	"net"
 	"net/http"
+	"strings"
 )
 
 type Service struct {
 	Configuration Config
-	Server * tools.GenericGRPCServer
+	Server        *tools.GenericGRPCServer
 }
 
 // NewService creates a new system model service.
@@ -40,42 +42,46 @@ func NewService(conf Config) *Service {
 }
 
 type Clients struct {
-	orgClient grpc_organization_go.OrganizationsClient
-	clusClient grpc_infrastructure_go.ClustersClient
-	nodeClient grpc_infrastructure_go.NodesClient
-	umClient grpc_user_manager_go.UserManagerClient
-	appClient grpc_application_manager_go.ApplicationManagerClient
+	orgClient   grpc_organization_go.OrganizationsClient
+	clusClient  grpc_infrastructure_go.ClustersClient
+	nodeClient  grpc_infrastructure_go.NodesClient
+	infraClient grpc_infrastructure_manager_go.InfrastructureManagerClient
+	umClient    grpc_user_manager_go.UserManagerClient
+	appClient   grpc_application_manager_go.ApplicationManagerClient
 }
 
-func (s * Service) GetClients() (* Clients, derrors.Error) {
+func (s *Service) GetClients() (*Clients, derrors.Error) {
 	smConn, err := grpc.Dial(s.Configuration.SystemModelAddress, grpc.WithInsecure())
-	if err != nil{
+	if err != nil {
 		return nil, derrors.AsError(err, "cannot create connection with the system model")
 	}
-
+	infraConn, err := grpc.Dial(s.Configuration.InfrastructureManagerAddress, grpc.WithInsecure())
+	if err != nil {
+		return nil, derrors.AsError(err, "cannot create connection with the applications manager")
+	}
 	umConn, err := grpc.Dial(s.Configuration.UserManagerAddress, grpc.WithInsecure())
-	if err != nil{
+	if err != nil {
 		return nil, derrors.AsError(err, "cannot create connection with the user manager")
 	}
-
 	appConn, err := grpc.Dial(s.Configuration.ApplicationsManagerAddress, grpc.WithInsecure())
-	if err != nil{
+	if err != nil {
 		return nil, derrors.AsError(err, "cannot create connection with the applications manager")
 	}
 
 	oClient := grpc_organization_go.NewOrganizationsClient(smConn)
 	cClient := grpc_infrastructure_go.NewClustersClient(smConn)
 	nClient := grpc_infrastructure_go.NewNodesClient(smConn)
+	infraClient := grpc_infrastructure_manager_go.NewInfrastructureManagerClient(infraConn)
 	umClient := grpc_user_manager_go.NewUserManagerClient(umConn)
 	appClient := grpc_application_manager_go.NewApplicationManagerClient(appConn)
 
-	return &Clients{oClient, cClient, nClient, umClient, appClient}, nil
+	return &Clients{oClient, cClient, nClient, infraClient, umClient, appClient}, nil
 }
 
 // Run the service, launch the REST service handler.
 func (s *Service) Run() error {
 	vErr := s.Configuration.Validate()
-	if vErr != nil{
+	if vErr != nil {
 		log.Fatal().Str("err", vErr.DebugReport()).Msg("invalid configuration")
 	}
 
@@ -92,7 +98,30 @@ func (s *Service) Run() error {
 	return s.LaunchHTTP()
 }
 
-func (s * Service) LaunchHTTP() error {
+// allowCORS allows Cross Origin Resource Sharing from any origin.
+// Don't do this without consideration in production systems.
+func (s *Service) allowCORS(h http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if origin := r.Header.Get("Origin"); origin != "" {
+			w.Header().Set("Access-Control-Allow-Origin", origin)
+			if r.Method == "OPTIONS" && r.Header.Get("Access-Control-Request-Method") != "" {
+				preflightHandler(w, r)
+				return
+			}
+		}
+		h.ServeHTTP(w, r)
+	})
+}
+
+func preflightHandler(w http.ResponseWriter, r *http.Request) {
+	headers := []string{"Content-Type", "Accept"}
+	w.Header().Set("Access-Control-Allow-Headers", strings.Join(headers, ","))
+	methods := []string{"GET", "HEAD", "POST", "PUT", "DELETE"}
+	w.Header().Set("Access-Control-Allow-Methods", strings.Join(methods, ","))
+	log.Debug().Str("URL", r.URL.Path).Msg("preflight request")
+}
+
+func (s *Service) LaunchHTTP() error {
 	addr := fmt.Sprintf(":%d", s.Configuration.HTTPPort)
 	clientAddr := fmt.Sprintf(":%d", s.Configuration.Port)
 	opts := []grpc.DialOption{grpc.WithInsecure()}
@@ -105,13 +134,17 @@ func (s * Service) LaunchHTTP() error {
 		log.Fatal().Err(err).Msg("failed to start cluster handler")
 	}
 
+	server := &http.Server{
+		Addr:    addr,
+		Handler: s.allowCORS(mux),
+	}
 	log.Info().Str("address", addr).Msg("HTTP Listening")
-	return http.ListenAndServe(addr, mux)
+	return server.ListenAndServe()
 }
 
-func (s * Service) LaunchGRPC(authConfig * interceptor.AuthorizationConfig) error {
+func (s *Service) LaunchGRPC(authConfig *interceptor.AuthorizationConfig) error {
 	clients, cErr := s.GetClients()
-	if cErr != nil{
+	if cErr != nil {
 		log.Fatal().Str("err", cErr.DebugReport()).Msg("cannot generate clients")
 		return cErr
 	}
@@ -124,7 +157,7 @@ func (s * Service) LaunchGRPC(authConfig * interceptor.AuthorizationConfig) erro
 	orgManager := organizations.NewManager(clients.orgClient)
 	orgHandler := organizations.NewHandler(orgManager)
 
-	clusManager := clusters.NewManager(clients.clusClient, clients.nodeClient)
+	clusManager := clusters.NewManager(clients.clusClient, clients.nodeClient, clients.infraClient)
 	clusHandler := clusters.NewHandler(clusManager)
 
 	nodesManager := nodes.NewManager(clients.nodeClient)

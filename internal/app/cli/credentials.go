@@ -14,6 +14,7 @@ import (
 	"os/user"
 	"path/filepath"
 	"strings"
+	"time"
 )
 
 // DefaultPath to store and retrieve credentials
@@ -26,44 +27,44 @@ const TokenFileName = "token"
 const RefreshTokenFileName = "refresh_token"
 
 type Credentials struct {
-	BasePath string
-	Token string
+	BasePath     string
+	Token        string
 	RefreshToken string
 }
 
-func NewEmptyCredentials(basePath string) * Credentials{
-	return &Credentials{BasePath:basePath}
+func NewEmptyCredentials(basePath string) *Credentials {
+	return &Credentials{BasePath: basePath}
 }
 
 // NewCredentials creates a new Credentials structure.
-func NewCredentials(basePath string, token string, refreshToken string) * Credentials {
+func NewCredentials(basePath string, token string, refreshToken string) *Credentials {
 	return &Credentials{basePath, token, refreshToken}
 }
 
 // NewCredentials from disk reads the stored credentials from the Login operation.
-func NewCredentialsFromDisk(basePath string) (*Credentials, derrors.Error){
+func NewCredentialsFromDisk(basePath string) (*Credentials, derrors.Error) {
 	tokenPath := filepath.Join(resolvePath(basePath), TokenFileName)
 	refreshTokenPath := filepath.Join(resolvePath(basePath), RefreshTokenFileName)
 	token, err := ioutil.ReadFile(tokenPath)
-	if err != nil{
+	if err != nil {
 		return nil, derrors.AsError(err, "cannot read token file")
 	}
 	refreshToken, err := ioutil.ReadFile(refreshTokenPath)
-	if err != nil{
+	if err != nil {
 		return nil, derrors.AsError(err, "cannot read refresh token file")
 	}
 	return NewCredentials(basePath, string(token), string(refreshToken)), nil
 }
 
-func (c * Credentials) LoadCredentials() derrors.Error{
+func (c *Credentials) LoadCredentials() derrors.Error {
 	tokenPath := filepath.Join(resolvePath(c.BasePath), TokenFileName)
 	refreshTokenPath := filepath.Join(resolvePath(c.BasePath), RefreshTokenFileName)
 	token, err := ioutil.ReadFile(tokenPath)
-	if err != nil{
+	if err != nil {
 		return derrors.AsError(err, "cannot read token file")
 	}
 	refreshToken, err := ioutil.ReadFile(refreshTokenPath)
-	if err != nil{
+	if err != nil {
 		return derrors.AsError(err, "cannot read refresh token file")
 	}
 	c.Token = string(token)
@@ -76,7 +77,7 @@ func resolvePath(path string) string {
 		usr, _ := user.Current()
 		return strings.Replace(path, "~", usr.HomeDir, 1)
 	}
-	if strings.HasPrefix(path, "."){
+	if strings.HasPrefix(path, ".") {
 		abs, _ := filepath.Abs("./")
 		return strings.Replace(path, ".", abs, 1)
 	}
@@ -84,25 +85,29 @@ func resolvePath(path string) string {
 }
 
 // Store the credentials in disk
-func (c * Credentials) Store() derrors.Error {
+func (c *Credentials) Store() derrors.Error {
 	rPath := resolvePath(c.BasePath)
 	_ = os.MkdirAll(rPath, 0700)
 	tokenPath := filepath.Join(resolvePath(c.BasePath), TokenFileName)
 	refreshTokenPath := filepath.Join(resolvePath(c.BasePath), RefreshTokenFileName)
 	err := ioutil.WriteFile(tokenPath, []byte(c.Token), 0600)
-	if err != nil{
+	if err != nil {
 		return derrors.AsError(err, "cannot write token file")
 	}
 	err = ioutil.WriteFile(refreshTokenPath, []byte(c.RefreshToken), 0600)
-	if err != nil{
+	if err != nil {
 		return derrors.AsError(err, "cannot write refresh token file")
 	}
 	return nil
 }
 
-func (c* Credentials) GetContext() (context.Context, context.CancelFunc) {
+func (c *Credentials) GetContext(timeout ...time.Duration) (context.Context, context.CancelFunc) {
 	md := metadata.New(map[string]string{AuthHeader: c.Token})
 	log.Debug().Interface("md", md).Msg("metadata has been created")
-	baseContext, cancel := context.WithTimeout(context.Background(), DefaultTimeout)
+	if len(timeout) == 0 {
+		baseContext, cancel := context.WithTimeout(context.Background(), DefaultTimeout)
+		return metadata.NewOutgoingContext(baseContext, md), cancel
+	}
+	baseContext, cancel := context.WithTimeout(context.Background(), timeout[0])
 	return metadata.NewOutgoingContext(baseContext, md), cancel
 }
