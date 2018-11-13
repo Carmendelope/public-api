@@ -116,3 +116,14 @@ var deployInstanceCmd = &cobra.Command{
 		a.Deploy(options.Resolve("organizationID", organizationID), descriptorID, name, description)
 	},
 }
+
+var listInstancesCmd = &cobra.Command{
+	Use:   "list",
+	Short: "List application instances",
+	Long:  `List application intances`,
+	Run: func(cmd *cobra.Command, args []string) {
+		SetupLogging()
+		a := cli.NewApplications(options.Resolve("nalejAddress", nalejAddress), options.ResolveAsInt("port", nalejPort))
+		a.ListInstances(options.Resolve("organizationID", organizationID))
+	},
+}

@@ -167,3 +167,17 @@ func (a * Applications) Deploy(organizationID string, appDescriptorID string, na
 	deployed, err := client.Deploy(ctx, deployRequest)
 	a.PrintResultOrError(deployed, err, "cannot deploy application")
 }
+
+func (a * Applications) ListInstances(organizationID string){
+	a.load()
+	ctx, cancel := a.GetContext()
+	client, conn := a.getClient()
+	defer conn.Close()
+	defer cancel()
+
+	orgID := &grpc_organization_go.OrganizationId{
+		OrganizationId:       organizationID,
+	}
+	list, err := client.ListAppInstances(ctx, orgID)
+	a.PrintResultOrError(list, err, "cannot list application instances")
+}
