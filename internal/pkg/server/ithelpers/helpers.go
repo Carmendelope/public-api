@@ -11,6 +11,8 @@ import (
 	"github.com/google/uuid"
 	"github.com/nalej/authx/pkg/interceptor"
 	"github.com/nalej/authx/pkg/token"
+	"github.com/nalej/grpc-application-go"
+	"github.com/nalej/grpc-application-manager-go"
 	"github.com/nalej/grpc-authx-go"
 	"github.com/nalej/grpc-infrastructure-go"
 	"github.com/nalej/grpc-organization-go"
@@ -94,6 +96,51 @@ func CreateUser(organizationID string, roleID string, userManagerClient grpc_use
 		XXX_sizecache:        0,
 	}
 	added, err := userManagerClient.AddUser(context.Background(), addUserRequest)
+	gomega.Expect(err).To(gomega.Succeed())
+	return added
+}
+
+func GetAddDescriptorRequest(organizationID string) *grpc_application_go.AddAppDescriptorRequest {
+	service := &grpc_application_go.Service{
+		OrganizationId: organizationID,
+		ServiceId:            "1",
+		Name:                 "Simple MySQL service",
+		Description:          "A MySQL instance",
+		Type:                 grpc_application_go.ServiceType_DOCKER,
+		Image:                "mysql:5.6",
+		Specs:                &grpc_application_go.DeploySpecs{Replicas: 1},
+		Storage:              []*grpc_application_go.Storage{&grpc_application_go.Storage{MountPath: "/tmp",}},
+		ExposedPorts:         []*grpc_application_go.Port{&grpc_application_go.Port{
+			Name: "mysqlport", InternalPort: 3306, ExposedPort: 3306,
+		}},
+		EnvironmentVariables: map[string]string{"MYSQL_ROOT_PASSWORD":"root"},
+		Configs:              []*grpc_application_go.ConfigFile{&grpc_application_go.ConfigFile{MountPath:"/tmp"}},
+		Labels:                map[string]string { "app":"simple-app", "component":"mysql"},
+	}
+
+	secRule := grpc_application_go.SecurityRule{
+		OrganizationId: organizationID,
+		Name:"all open",
+		Access: grpc_application_go.PortAccess_PUBLIC,
+		RuleId: "001",
+		SourcePort: 3306,
+		SourceServiceId: "1",
+	}
+
+	return &grpc_application_go.AddAppDescriptorRequest{
+		RequestId: GenerateUUID(),
+		OrganizationId: organizationID,
+		Name:                 "Sample application",
+		Description:          "This is a basic descriptor of an application",
+		Labels:               map[string]string{"app":"simple-app"},
+		Rules:                []*grpc_application_go.SecurityRule{&secRule},
+		Services:             []*grpc_application_go.Service{service},
+	}
+}
+
+func CreateAppDescriptor(organizationID string, appClient grpc_application_manager_go.ApplicationManagerClient) * grpc_application_go.AppDescriptor {
+	toAdd := GetAddDescriptorRequest(organizationID)
+	added, err := appClient.AddAppDescriptor(context.Background(), toAdd)
 	gomega.Expect(err).To(gomega.Succeed())
 	return added
 }

@@ -21,6 +21,13 @@ data:
        "/public_api.Users/List":{"must":["ORG"]},
        "/public_api.Users/Delete":{"must":["ORG"]},
        "/public_api.Users/ResetPassword":{"should":["ORG", "PROFILE"]},
-       "/public_api.Users/Update":{"should":["ORG", "PROFILE"]}
+       "/public_api.Users/Update":{"should":["ORG", "PROFILE"]},
+       "/public_api.Applications/AddAppDescriptor":{"should":["ORG", "APPS"]},
+       "/public_api.Applications/ListAppDescriptors":{"should":["ORG", "APPS"]},
+       "/public_api.Applications/GetAppDescriptor":{"should":["ORG", "APPS"]},
+       "/public_api.Applications/Deploy":{"should":["ORG", "APPS"]},
+       "/public_api.Applications/Undeploy":{"should":["ORG", "APPS"]},
+       "/public_api.Applications/ListAppInstances":{"should":["ORG", "APPS"]},
+       "/public_api.Applications/GetAppInstance":{"should":["ORG", "APPS"]}
      }
     }
