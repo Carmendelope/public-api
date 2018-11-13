@@ -120,12 +120,12 @@
   version = "v0.0.13"
 
 [[projects]]
-  digest = "1:47b1fd7f5533f1a4a2d6558f01c71396e745507fcbc73715d324d19d4dd1f2fc"
+  digest = "1:81dc68aa6eb5ebecca748ff445815f77d07213938483f223fef86cccf90bbcfc"
   name = "github.com/nalej/grpc-conductor-go"
   packages = ["."]
   pruneopts = ""
-  revision = "7babc816ca74229f8c9ae8e92623249e34ed65f2"
-  version = "v0.0.51"
+  revision = "f81d4b53e970fc88bc597cea78956d55e6808eab"
+  version = "v0.0.53"
 
 [[projects]]
   digest = "1:072acc3354fe3d8ad2ea1f76d852a2c59c5120aead0801dbbb7bd3d1329e70ac"
@@ -134,6 +134,22 @@
   pruneopts = ""
   revision = "2aff58ef27e1d66db11aefb93b0355dcb6c8a891"
   version = "v0.0.13"
+
+[[projects]]
+  digest = "1:f9dac3eff915c80c52fe949d300e758f89f6b459abbf097ecbd6872a8643e8eb"
+  name = "github.com/nalej/grpc-infrastructure-manager-go"
+  packages = ["."]
+  pruneopts = ""
+  revision = "90207ba0a80475eb841115e328dde72753cff078"
+  version = "v0.0.12"
+
+[[projects]]
+  digest = "1:f13a5c44a755493c3b9b3662629edf8747058690e9b60097b5390b5fe7bc37f8"
+  name = "github.com/nalej/grpc-installer-go"
+  packages = ["."]
+  pruneopts = ""
+  revision = "3ed67c1ac5aad4ce83880cd5ebb9ef43939d7d4c"
+  version = "v0.0.11"
 
 [[projects]]
   digest = "1:2c43a197df586917cbd6630686fc33a5a5d4c37082b21a56d11c0afece2a5fc7"
@@ -152,12 +168,12 @@
   version = "v0.0.12"
 
 [[projects]]
-  digest = "1:06538c05375016b776e07c00ed359e94d3ded2b165c89e3356a214e2b76c728b"
+  digest = "1:9d0a872235e452ce6026049307cfe67a748c12cfb1c4d0c90900ee4a9ba5b6f8"
   name = "github.com/nalej/grpc-public-api-go"
   packages = ["."]
   pruneopts = ""
-  revision = "773cffad76a23ab081ec2e11b4cca13fc26d842c"
-  version = "v0.0.6"
+  revision = "e6e24df3cca3abcccbb3edf8306dac7259de062f"
+  version = "v0.0.7"
 
 [[projects]]
   digest = "1:7d209b186679bf457f6b61c40622484f077a3c17ac4f7940325833bb95c01688"
@@ -236,7 +252,7 @@
   version = "v1.4.2"
 
 [[projects]]
-  digest = "1:4991a7fdf70aa5dda11361d8f6a987feda4b497028f87c76a7a402d9d337f3e8"
+  digest = "1:e2f6f07c6ee5903a51a02e35cf1c48fb0c4ecf1d025a371d4b2a0105ea434f38"
   name = "github.com/rs/zerolog"
   packages = [
     ".",
@@ -245,8 +261,8 @@
     "log",
   ]
   pruneopts = ""
-  revision = "8e30c7136954547e35720dbc2e5a50fd140f60af"
-  version = "v1.10.2"
+  revision = "848482bc3dbeed6a47eb8f8cec0d4484795b1314"
+  version = "v1.10.3"
 
 [[projects]]
   digest = "1:a1403cc8a94b8d7956ee5e9694badef0e7b051af289caad1cf668331e3ffa4f6"
@@ -417,6 +433,8 @@
     "github.com/nalej/grpc-common-go",
     "github.com/nalej/grpc-conductor-go",
     "github.com/nalej/grpc-infrastructure-go",
+    "github.com/nalej/grpc-infrastructure-manager-go",
+    "github.com/nalej/grpc-installer-go",
     "github.com/nalej/grpc-login-api-go",
     "github.com/nalej/grpc-organization-go",
     "github.com/nalej/grpc-public-api-go",

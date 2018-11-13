@@ -32,14 +32,14 @@ import (
 
 var _ = ginkgo.Describe("Applications", func() {
 
-	if ! utils.RunIntegrationTests() {
+	if !utils.RunIntegrationTests() {
 		log.Warn().Msg("Integration tests are skipped")
 		return
 	}
 
 	var (
-		systemModelAddress= os.Getenv("IT_SM_ADDRESS")
-		appManagerAddress= os.Getenv("IT_APPMGR_ADDRESS")
+		systemModelAddress = os.Getenv("IT_SM_ADDRESS")
+		appManagerAddress  = os.Getenv("IT_APPMGR_ADDRESS")
 	)
 
 	if systemModelAddress == "" || appManagerAddress == "" {
@@ -97,8 +97,8 @@ var _ = ginkgo.Describe("Applications", func() {
 		appConn.Close()
 	})
 
-	ginkgo.Context("descriptors", func(){
-		ginkgo.It("should be able to register a new descriptor", func(){
+	ginkgo.Context("descriptors", func() {
+		ginkgo.It("should be able to register a new descriptor", func() {
 			toAdd := ithelpers.GetAddDescriptorRequest(targetOrganization.OrganizationId)
 			ctx, cancel := ithelpers.GetContext(token)
 			defer cancel()
@@ -106,7 +106,7 @@ var _ = ginkgo.Describe("Applications", func() {
 			gomega.Expect(err).To(gomega.Succeed())
 			gomega.Expect(added.AppDescriptorId).ShouldNot(gomega.BeEmpty())
 		})
-		ginkgo.It("should be able to get the information of a descriptor", func(){
+		ginkgo.It("should be able to get the information of a descriptor", func() {
 			toAdd := ithelpers.GetAddDescriptorRequest(targetOrganization.OrganizationId)
 			ctx, cancel := ithelpers.GetContext(token)
 			defer cancel()
@@ -114,15 +114,15 @@ var _ = ginkgo.Describe("Applications", func() {
 			gomega.Expect(err).To(gomega.Succeed())
 			gomega.Expect(added.AppDescriptorId).ShouldNot(gomega.BeEmpty())
 			appDescriptorID := &grpc_application_go.AppDescriptorId{
-				OrganizationId:       added.OrganizationId,
-				AppDescriptorId:      added.AppDescriptorId,
+				OrganizationId:  added.OrganizationId,
+				AppDescriptorId: added.AppDescriptorId,
 			}
 			ctx2, cancel2 := ithelpers.GetContext(token)
 			defer cancel2()
 			retrieved, err := client.GetAppDescriptor(ctx2, appDescriptorID)
 			gomega.Expect(retrieved.AppDescriptorId).Should(gomega.Equal(added.AppDescriptorId))
 		})
-		ginkgo.It("should be able to list the existing descriptors", func(){
+		ginkgo.It("should be able to list the existing descriptors", func() {
 			numDescriptors := 5
 			org := ithelpers.CreateOrganization(fmt.Sprintf("list-desc-%d", ginkgo.GinkgoRandomSeed()), orgClient)
 			orgToken := ithelpers.GenerateToken("email@nalej.com",
@@ -138,7 +138,7 @@ var _ = ginkgo.Describe("Applications", func() {
 			}
 
 			organizationID := &grpc_organization_go.OrganizationId{
-				OrganizationId:       org.OrganizationId,
+				OrganizationId: org.OrganizationId,
 			}
 			ctx, cancel := ithelpers.GetContext(orgToken)
 			defer cancel()
@@ -148,20 +148,20 @@ var _ = ginkgo.Describe("Applications", func() {
 		})
 	})
 
-	ginkgo.Context("instances", func(){
+	ginkgo.Context("instances", func() {
 
-		var targetDescriptor * grpc_application_go.AppDescriptor
+		var targetDescriptor *grpc_application_go.AppDescriptor
 
-		ginkgo.BeforeEach(func(){
+		ginkgo.BeforeEach(func() {
 			targetDescriptor = ithelpers.CreateAppDescriptor(targetOrganization.OrganizationId, appClient)
 		})
 
-		ginkgo.FIt("should be able to deploy an application", func(){
+		ginkgo.FIt("should be able to deploy an application", func() {
 			toDeploy := &grpc_application_manager_go.DeployRequest{
-				OrganizationId:       targetDescriptor.OrganizationId,
-				AppDescriptorId:      targetDescriptor.AppDescriptorId,
-				Name:                 "deploy-test",
-				Description:          "deploy-test",
+				OrganizationId:  targetDescriptor.OrganizationId,
+				AppDescriptorId: targetDescriptor.AppDescriptorId,
+				Name:            "deploy-test",
+				Description:     "deploy-test",
 			}
 			ctx, cancel := ithelpers.GetContext(token)
 			defer cancel()
@@ -173,15 +173,15 @@ var _ = ginkgo.Describe("Applications", func() {
 			gomega.Expect(deployed.AppInstanceId).ShouldNot(gomega.BeEmpty())
 		})
 
-		ginkgo.PIt("should be able to undeploy an application", func(){
+		ginkgo.PIt("should be able to undeploy an application", func() {
 
 		})
 
-		ginkgo.PIt("should be able to list the running instances", func(){
+		ginkgo.PIt("should be able to list the running instances", func() {
 
 		})
 
-		ginkgo.PIt("should be able to retrieve the information of a running instance", func(){
+		ginkgo.PIt("should be able to retrieve the information of a running instance", func() {
 
 		})
 	})

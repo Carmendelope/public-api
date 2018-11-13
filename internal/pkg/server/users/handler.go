@@ -22,13 +22,13 @@ type Handler struct {
 }
 
 // NewHandler creates a new Handler with a linked manager.
-func NewHandler(manager Manager) *Handler{
+func NewHandler(manager Manager) *Handler {
 	return &Handler{manager}
 }
 
 func (h *Handler) Info(ctx context.Context, userID *grpc_user_go.UserId) (*grpc_public_api_go.User, error) {
 	rm, err := authhelper.GetRequestMetadata(ctx)
-	if err != nil{
+	if err != nil {
 		return nil, conversions.ToGRPCError(err)
 	}
 	if userID.OrganizationId != rm.OrganizationID {
@@ -46,7 +46,7 @@ func (h *Handler) Info(ctx context.Context, userID *grpc_user_go.UserId) (*grpc_
 
 func (h *Handler) List(ctx context.Context, organizationID *grpc_organization_go.OrganizationId) (*grpc_public_api_go.UserList, error) {
 	rm, err := authhelper.GetRequestMetadata(ctx)
-	if err != nil{
+	if err != nil {
 		return nil, conversions.ToGRPCError(err)
 	}
 	if organizationID.OrganizationId != rm.OrganizationID {
@@ -61,7 +61,7 @@ func (h *Handler) List(ctx context.Context, organizationID *grpc_organization_go
 
 func (h *Handler) Delete(ctx context.Context, userID *grpc_user_go.UserId) (*grpc_common_go.Success, error) {
 	rm, err := authhelper.GetRequestMetadata(ctx)
-	if err != nil{
+	if err != nil {
 		return nil, conversions.ToGRPCError(err)
 	}
 	if userID.OrganizationId != rm.OrganizationID {
@@ -76,7 +76,7 @@ func (h *Handler) Delete(ctx context.Context, userID *grpc_user_go.UserId) (*grp
 
 func (h *Handler) ResetPassword(ctx context.Context, userID *grpc_user_go.UserId) (*grpc_public_api_go.PasswordResetResponse, error) {
 	rm, err := authhelper.GetRequestMetadata(ctx)
-	if err != nil{
+	if err != nil {
 		return nil, conversions.ToGRPCError(err)
 	}
 	if userID.OrganizationId != rm.OrganizationID {
@@ -91,7 +91,7 @@ func (h *Handler) ResetPassword(ctx context.Context, userID *grpc_user_go.UserId
 
 func (h *Handler) Update(ctx context.Context, updateUserRequest *grpc_user_go.UpdateUserRequest) (*grpc_common_go.Success, error) {
 	rm, err := authhelper.GetRequestMetadata(ctx)
-	if err != nil{
+	if err != nil {
 		return nil, conversions.ToGRPCError(err)
 	}
 	if updateUserRequest.OrganizationId != rm.OrganizationID {
@@ -103,5 +103,3 @@ func (h *Handler) Update(ctx context.Context, updateUserRequest *grpc_user_go.Up
 	}
 	return h.Manager.Update(updateUserRequest)
 }
-
-

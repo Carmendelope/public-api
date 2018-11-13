@@ -19,13 +19,13 @@ type Handler struct {
 }
 
 // NewHandler creates a new Handler with a linked manager.
-func NewHandler(manager Manager) *Handler{
+func NewHandler(manager Manager) *Handler {
 	return &Handler{manager}
 }
 
 func (h *Handler) ClusterNodes(ctx context.Context, clusterId *grpc_infrastructure_go.ClusterId) (*grpc_infrastructure_go.NodeList, error) {
 	rm, err := authhelper.GetRequestMetadata(ctx)
-	if err != nil{
+	if err != nil {
 		return nil, conversions.ToGRPCError(err)
 	}
 	if clusterId.OrganizationId != rm.OrganizationID {
@@ -37,4 +37,3 @@ func (h *Handler) ClusterNodes(ctx context.Context, clusterId *grpc_infrastructu
 	}
 	return h.Manager.ClusterNodes(clusterId)
 }
-

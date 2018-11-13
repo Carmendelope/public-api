@@ -20,7 +20,7 @@ var consoleLogging bool
 var rootCmd = &cobra.Command{
 	Use:   "public-api",
 	Short: "Public API component",
-	Long:  `
+	Long: `
 The Public API component processes user requests from the frontend and
 interacts with the final customer. This is the exposed API to the
 outside world.`,

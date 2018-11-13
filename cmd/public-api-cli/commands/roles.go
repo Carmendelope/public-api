@@ -10,10 +10,10 @@ import (
 )
 
 var rolesCmd = &cobra.Command{
-	Use:   "roles",
-	Aliases: []string{"rol"},
-	Short: "Manage roles",
-	Long:  `Manage roles`,
+	Use:     "roles",
+	Aliases: []string{"rol", "role"},
+	Short:   "Manage roles",
+	Long:    `Manage roles`,
 	Run: func(cmd *cobra.Command, args []string) {
 		SetupLogging()
 		cmd.Help()

@@ -1,10 +1,10 @@
 package server
 
 import (
+	"github.com/nalej/authx/pkg/interceptor"
 	"github.com/nalej/derrors"
 	"github.com/nalej/public-api/version"
 	"github.com/rs/zerolog/log"
-	"github.com/nalej/authx/pkg/interceptor"
 	"strings"
 )
 
@@ -31,7 +31,7 @@ type Config struct {
 	AuthConfigPath string
 }
 
-func (conf * Config) Validate() derrors.Error {
+func (conf *Config) Validate() derrors.Error {
 
 	if conf.Port <= 0 || conf.HTTPPort <= 0 {
 		return derrors.NewInvalidArgumentError("ports must be valid")
@@ -69,7 +69,7 @@ func (conf * Config) Validate() derrors.Error {
 }
 
 // LoadAuthConfig loads the security configuration.
-func (conf * Config) LoadAuthConfig() (* interceptor.AuthorizationConfig, derrors.Error) {
+func (conf *Config) LoadAuthConfig() (*interceptor.AuthorizationConfig, derrors.Error) {
 	return interceptor.LoadAuthorizationConfig(conf.AuthConfigPath)
 }
 

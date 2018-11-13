@@ -11,9 +11,10 @@ data:
   authx-config.json: |
     {"allows_all":false,
      "permissions": {
-       "/public_api.Clusters/List":{"must":["RESOURCES"]},
-       "/public_api.Clusters/Update":{"must":["RESOURCES"]},
-       "/public_api.Nodes/ClusterNodes":{"must":["RESOURCES"]},
+       "/public_api.Clusters/Install":{"should":["ORG", "RESOURCES"]},
+       "/public_api.Clusters/List":{"should":["ORG", "RESOURCES"]},
+       "/public_api.Clusters/Update":{"should":["ORG", "RESOURCES"]},
+       "/public_api.Nodes/ClusterNodes":{"should":["ORG", "RESOURCES"]},
        "/public_api.Organizations/Info":{"must":["ORG"]},
        "/public_api.Resources/Summary":{"should":["ORG", "RESOURCES"]},
        "/public_api.Roles/List":{"must":["ORG"]},

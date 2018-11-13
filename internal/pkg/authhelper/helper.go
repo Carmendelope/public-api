@@ -7,11 +7,11 @@ import (
 )
 
 type RequestMetadata struct {
-	UserID string
+	UserID         string
 	OrganizationID string
 }
 
-func GetRequestMetadata(ctx context.Context) (*RequestMetadata, derrors.Error){
+func GetRequestMetadata(ctx context.Context) (*RequestMetadata, derrors.Error) {
 	md, ok := metadata.FromIncomingContext(ctx)
 	if !ok {
 		return nil, derrors.NewInvalidArgumentError("expecting JWT metadata")
@@ -27,4 +27,3 @@ func GetRequestMetadata(ctx context.Context) (*RequestMetadata, derrors.Error){
 	}
 	return &RequestMetadata{userID[0], organizationID[0]}, nil
 }
-

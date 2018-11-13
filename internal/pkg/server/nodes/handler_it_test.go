@@ -2,7 +2,7 @@
  * Copyright (C)  2018 Nalej - All Rights Reserved
  */
 
- /*
+/*
 RUN_INTEGRATION_TEST=true
 IT_SM_ADDRESS=localhost:8800
 */
@@ -31,7 +31,7 @@ var _ = ginkgo.Describe("Nodes", func() {
 
 	const NumNodes = 10
 
-	if ! utils.RunIntegrationTests() {
+	if !utils.RunIntegrationTests() {
 		log.Warn().Msg("Integration tests are skipped")
 		return
 	}
@@ -45,19 +45,19 @@ var _ = ginkgo.Describe("Nodes", func() {
 	}
 
 	// gRPC server
-	var server * grpc.Server
+	var server *grpc.Server
 	// grpc test listener
-	var listener * bufconn.Listener
+	var listener *bufconn.Listener
 	// client
 	var orgClient grpc_organization_go.OrganizationsClient
 	var clustClient grpc_infrastructure_go.ClustersClient
 	var nodeClient grpc_infrastructure_go.NodesClient
-	var smConn * grpc.ClientConn
+	var smConn *grpc.ClientConn
 	var client grpc_public_api_go.NodesClient
 
 	// Target organization.
-	var targetOrganization * grpc_organization_go.Organization
-	var targetCluster * grpc_infrastructure_go.Cluster
+	var targetOrganization *grpc_organization_go.Organization
+	var targetCluster *grpc_infrastructure_go.Cluster
 	var token string
 
 	ginkgo.BeforeSuite(func() {
@@ -94,11 +94,11 @@ var _ = ginkgo.Describe("Nodes", func() {
 		smConn.Close()
 	})
 
-	ginkgo.It("should be able to list the nodes in a clusters", func(){
+	ginkgo.It("should be able to list the nodes in a clusters", func() {
 
 		clusterID := &grpc_infrastructure_go.ClusterId{
-			OrganizationId:       targetCluster.OrganizationId,
-			ClusterId:            targetCluster.ClusterId,
+			OrganizationId: targetCluster.OrganizationId,
+			ClusterId:      targetCluster.ClusterId,
 		}
 		ctx, cancel := ithelpers.GetContext(token)
 		defer cancel()

@@ -17,13 +17,13 @@ type Manager struct {
 
 // NewManager creates a Manager using a set of clients.
 func NewManager(orgClient grpc_organization_go.OrganizationsClient) Manager {
-	return Manager{orgClient:orgClient}
+	return Manager{orgClient: orgClient}
 }
 
-func (m * Manager) ToOrganizationInfo(organization * grpc_organization_go.Organization) *grpc_public_api_go.OrganizationInfo {
+func (m *Manager) ToOrganizationInfo(organization *grpc_organization_go.Organization) *grpc_public_api_go.OrganizationInfo {
 	return &grpc_public_api_go.OrganizationInfo{
-		OrganizationId:       organization.OrganizationId,
-		Name:                 organization.Name,
+		OrganizationId: organization.OrganizationId,
+		Name:           organization.Name,
 	}
 }
 

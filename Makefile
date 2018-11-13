@@ -124,8 +124,6 @@ create-image:
             mkdir -p $(TARGET)/images/"$$app" ; \
             docker build --no-cache -t $(DOCKER_REPO)/"$$app":$(VERSION) -f components/"$$app"/Dockerfile $(TARGET)/linux_amd64 ; \
             docker save $(DOCKER_REPO)/"$$app" > $(TARGET)/images/"$$app"/image.tar ; \
-            // docker rmi $(DOCKER_REPO)/"$$app":$(VERSION) ; \
-            cd $(TARGET)/images/"$$app"/ && tar cvzf "$$app".tar.gz * && cd - ; \
         else  \
             echo $$app has no Dockerfile ; \
         fi ; \
