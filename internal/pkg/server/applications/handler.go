@@ -35,7 +35,7 @@ func (h *Handler) AddAppDescriptor(ctx context.Context, addRequest *grpc_applica
 		return nil, conversions.ToGRPCError(err)
 	}
 	if addRequest.OrganizationId != rm.OrganizationID {
-		return nil, derrors.NewUnauthenticatedError("cannot access requested OrganizationID")
+		return nil, derrors.NewPermissionDeniedError("cannot access requested OrganizationID")
 	}
 	err = entities.ValidAddAppDescriptor(addRequest)
 	if err != nil {
@@ -52,7 +52,7 @@ func (h *Handler) ListAppDescriptors(ctx context.Context, organizationID *grpc_o
 		return nil, conversions.ToGRPCError(err)
 	}
 	if organizationID.OrganizationId != rm.OrganizationID {
-		return nil, derrors.NewUnauthenticatedError("cannot access requested OrganizationID")
+		return nil, derrors.NewPermissionDeniedError("cannot access requested OrganizationID")
 	}
 	err = entities.ValidOrganizationId(organizationID)
 	if err != nil {
@@ -68,7 +68,7 @@ func (h *Handler) GetAppDescriptor(ctx context.Context, appDescriptorID *grpc_ap
 		return nil, conversions.ToGRPCError(err)
 	}
 	if appDescriptorID.OrganizationId != rm.OrganizationID {
-		return nil, derrors.NewUnauthenticatedError("cannot access requested OrganizationID")
+		return nil, derrors.NewPermissionDeniedError("cannot access requested OrganizationID")
 	}
 	err = entities.ValidAppDescriptorID(appDescriptorID)
 	if err != nil {
@@ -84,7 +84,7 @@ func (h *Handler) Deploy(ctx context.Context, deployRequest *grpc_application_ma
 		return nil, conversions.ToGRPCError(err)
 	}
 	if deployRequest.OrganizationId != rm.OrganizationID {
-		return nil, derrors.NewUnauthenticatedError("cannot access requested OrganizationID")
+		return nil, derrors.NewPermissionDeniedError("cannot access requested OrganizationID")
 	}
 	err = entities.ValidDeployRequest(deployRequest)
 	if err != nil {
@@ -100,7 +100,7 @@ func (h *Handler) Undeploy(ctx context.Context, appInstanceID *grpc_application_
 		return nil, conversions.ToGRPCError(err)
 	}
 	if appInstanceID.OrganizationId != rm.OrganizationID {
-		return nil, derrors.NewUnauthenticatedError("cannot access requested OrganizationID")
+		return nil, derrors.NewPermissionDeniedError("cannot access requested OrganizationID")
 	}
 	err = entities.ValidAppInstanceID(appInstanceID)
 	if err != nil {
@@ -116,7 +116,7 @@ func (h *Handler) ListAppInstances(ctx context.Context, organizationID *grpc_org
 		return nil, conversions.ToGRPCError(err)
 	}
 	if organizationID.OrganizationId != rm.OrganizationID {
-		return nil, derrors.NewUnauthenticatedError("cannot access requested OrganizationID")
+		return nil, derrors.NewPermissionDeniedError("cannot access requested OrganizationID")
 	}
 	err = entities.ValidOrganizationId(organizationID)
 	if err != nil {
@@ -132,7 +132,7 @@ func (h *Handler) GetAppInstance(ctx context.Context, appInstanceID *grpc_applic
 		return nil, conversions.ToGRPCError(err)
 	}
 	if appInstanceID.OrganizationId != rm.OrganizationID {
-		return nil, derrors.NewUnauthenticatedError("cannot access requested OrganizationID")
+		return nil, derrors.NewPermissionDeniedError("cannot access requested OrganizationID")
 	}
 	err = entities.ValidAppInstanceID(appInstanceID)
 	if err != nil {

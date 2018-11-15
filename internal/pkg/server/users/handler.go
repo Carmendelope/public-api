@@ -32,7 +32,7 @@ func (h * Handler) Add(ctx context.Context, addUserRequest * grpc_public_api_go.
 		return nil, conversions.ToGRPCError(err)
 	}
 	if addUserRequest.OrganizationId != rm.OrganizationID {
-		return nil, derrors.NewUnauthenticatedError("cannot access requested OrganizationID")
+		return nil, derrors.NewPermissionDeniedError("cannot access requested OrganizationID")
 	}
 	err = entities.ValidAddUserRequest(addUserRequest)
 	if err != nil {
@@ -47,10 +47,10 @@ func (h *Handler) Info(ctx context.Context, userID *grpc_user_go.UserId) (*grpc_
 		return nil, conversions.ToGRPCError(err)
 	}
 	if userID.OrganizationId != rm.OrganizationID {
-		return nil, derrors.NewUnauthenticatedError("cannot access requested OrganizationID")
+		return nil, derrors.NewPermissionDeniedError("cannot access requested OrganizationID")
 	}
 	if userID.Email != rm.UserID {
-		return nil, derrors.NewUnauthenticatedError("cannot access requested user")
+		return nil, derrors.NewPermissionDeniedError("cannot access requested user")
 	}
 	err = entities.ValidUserId(userID)
 	if err != nil {
@@ -65,7 +65,7 @@ func (h *Handler) List(ctx context.Context, organizationID *grpc_organization_go
 		return nil, conversions.ToGRPCError(err)
 	}
 	if organizationID.OrganizationId != rm.OrganizationID {
-		return nil, derrors.NewUnauthenticatedError("cannot access requested OrganizationID")
+		return nil, derrors.NewPermissionDeniedError("cannot access requested OrganizationID")
 	}
 	err = entities.ValidOrganizationId(organizationID)
 	if err != nil {
@@ -80,7 +80,7 @@ func (h *Handler) Delete(ctx context.Context, userID *grpc_user_go.UserId) (*grp
 		return nil, conversions.ToGRPCError(err)
 	}
 	if userID.OrganizationId != rm.OrganizationID {
-		return nil, derrors.NewUnauthenticatedError("cannot access requested OrganizationID")
+		return nil, derrors.NewPermissionDeniedError("cannot access requested OrganizationID")
 	}
 	err = entities.ValidUserId(userID)
 	if err != nil {
@@ -95,7 +95,7 @@ func (h *Handler) ResetPassword(ctx context.Context, userID *grpc_user_go.UserId
 		return nil, conversions.ToGRPCError(err)
 	}
 	if userID.OrganizationId != rm.OrganizationID {
-		return nil, derrors.NewUnauthenticatedError("cannot access requested OrganizationID")
+		return nil, derrors.NewPermissionDeniedError("cannot access requested OrganizationID")
 	}
 	err = entities.ValidUserId(userID)
 	if err != nil {
@@ -110,7 +110,7 @@ func (h *Handler) Update(ctx context.Context, updateUserRequest *grpc_user_go.Up
 		return nil, conversions.ToGRPCError(err)
 	}
 	if updateUserRequest.OrganizationId != rm.OrganizationID {
-		return nil, derrors.NewUnauthenticatedError("cannot access requested OrganizationID")
+		return nil, derrors.NewPermissionDeniedError("cannot access requested OrganizationID")
 	}
 	err = entities.ValidUpdateUserRequest(updateUserRequest)
 	if err != nil {
