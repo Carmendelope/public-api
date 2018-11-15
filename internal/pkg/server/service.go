@@ -118,7 +118,6 @@ func preflightHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Headers", strings.Join(headers, ","))
 	methods := []string{"GET", "HEAD", "POST", "PUT", "DELETE"}
 	w.Header().Set("Access-Control-Allow-Methods", strings.Join(methods, ","))
-	log.Debug().Str("URL", r.URL.Path).Msg("preflight request")
 }
 
 func (s *Service) LaunchHTTP() error {
