@@ -26,6 +26,21 @@ func NewHandler(manager Manager) *Handler {
 	return &Handler{manager}
 }
 
+func (h * Handler) Add(ctx context.Context, addUserRequest * grpc_public_api_go.AddUserRequest) (*grpc_public_api_go.User, error){
+	rm, err := authhelper.GetRequestMetadata(ctx)
+	if err != nil {
+		return nil, conversions.ToGRPCError(err)
+	}
+	if addUserRequest.OrganizationId != rm.OrganizationID {
+		return nil, derrors.NewUnauthenticatedError("cannot access requested OrganizationID")
+	}
+	err = entities.ValidAddUserRequest(addUserRequest)
+	if err != nil {
+		return nil, conversions.ToGRPCError(err)
+	}
+	return h.Manager.Add(addUserRequest)
+}
+
 func (h *Handler) Info(ctx context.Context, userID *grpc_user_go.UserId) (*grpc_public_api_go.User, error) {
 	rm, err := authhelper.GetRequestMetadata(ctx)
 	if err != nil {
