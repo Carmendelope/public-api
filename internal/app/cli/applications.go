@@ -181,3 +181,19 @@ func (a *Applications) ListInstances(organizationID string) {
 	list, err := client.ListAppInstances(ctx, orgID)
 	a.PrintResultOrError(list, err, "cannot list application instances")
 }
+
+func (a *Applications) GetInstance(organizationID string, appInstanceID string) {
+	a.load()
+	ctx, cancel := a.GetContext()
+	client, conn := a.getClient()
+	defer conn.Close()
+	defer cancel()
+
+	instID := &grpc_application_go.AppInstanceId{
+		OrganizationId:       organizationID,
+		AppInstanceId:        appInstanceID,
+	}
+	inst, err := client.GetAppInstance(ctx, instID)
+	a.PrintResultOrError(inst, err, "cannot obtain application instance information")
+}
+

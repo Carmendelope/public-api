@@ -23,3 +23,5 @@ var nodes []string
 var descriptorID string
 var descriptorPath string
 var description string
+
+var instanceID string

@@ -27,13 +27,19 @@ func init() {
 	appsCmd.AddCommand(descriptorCmd)
 	addDescriptorCmd.PersistentFlags().StringVar(&descriptorPath, "descriptorPath", "", "Application descriptor path containing a JSON spec")
 	descriptorCmd.AddCommand(addDescriptorCmd)
+	getDescriptorCmd.MarkPersistentFlagRequired("descriptorID")
 	descriptorCmd.AddCommand(getDescriptorCmd)
 	descriptorCmd.AddCommand(listDescriptorsCmd)
 	descriptorCmd.AddCommand(addDescriptorHelpCmd)
+	instanceCmd.PersistentFlags().StringVar(&instanceID, "instanceID", "", "Application instance identifier")
 	appsCmd.AddCommand(instanceCmd)
 	deployInstanceCmd.Flags().StringVar(&name, "name", "", "Name of the application instance")
 	deployInstanceCmd.Flags().StringVar(&description, "description", "", "Description of the application instance")
 	instanceCmd.AddCommand(deployInstanceCmd)
+	listInstancesCmd.MarkPersistentFlagRequired("instanceID")
+	instanceCmd.AddCommand(listInstancesCmd)
+	getInstanceCmd.MarkPersistentFlagRequired("instanceID")
+	instanceCmd.AddCommand(getInstanceCmd)
 }
 
 var descriptorCmd = &cobra.Command{
@@ -121,5 +127,16 @@ var listInstancesCmd = &cobra.Command{
 		SetupLogging()
 		a := cli.NewApplications(options.Resolve("nalejAddress", nalejAddress), options.ResolveAsInt("port", nalejPort))
 		a.ListInstances(options.Resolve("organizationID", organizationID))
+	},
+}
+
+var getInstanceCmd = &cobra.Command{
+	Use:   "get",
+	Short: "Get an application instance",
+	Long:  `Get and application instance`,
+	Run: func(cmd *cobra.Command, args []string) {
+		SetupLogging()
+		a := cli.NewApplications(options.Resolve("nalejAddress", nalejAddress), options.ResolveAsInt("port", nalejPort))
+		a.GetInstance(options.Resolve("organizationID", organizationID), instanceID)
 	},
 }
