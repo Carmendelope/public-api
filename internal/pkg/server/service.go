@@ -127,12 +127,28 @@ func (s *Service) LaunchHTTP() error {
 	opts := []grpc.DialOption{grpc.WithInsecure()}
 	mux := runtime.NewServeMux()
 
-	if err := grpc_public_api_go.RegisterOrganizationsHandlerFromEndpoint(context.Background(), mux, clientAddr, opts); err != nil {
-		log.Fatal().Err(err).Msg("failed to start organizations handler")
+	if err := grpc_public_api_go.RegisterApplicationsHandlerFromEndpoint(context.Background(), mux, clientAddr, opts); err != nil {
+		log.Fatal().Err(err).Msg("failed to start applications handler")
 	}
 	if err := grpc_public_api_go.RegisterClustersHandlerFromEndpoint(context.Background(), mux, clientAddr, opts); err != nil {
 		log.Fatal().Err(err).Msg("failed to start cluster handler")
 	}
+	if err := grpc_public_api_go.RegisterNodesHandlerFromEndpoint(context.Background(), mux, clientAddr, opts); err != nil {
+		log.Fatal().Err(err).Msg("failed to start nodes handler")
+	}
+	if err := grpc_public_api_go.RegisterOrganizationsHandlerFromEndpoint(context.Background(), mux, clientAddr, opts); err != nil {
+		log.Fatal().Err(err).Msg("failed to start organizations handler")
+	}
+	if err := grpc_public_api_go.RegisterResourcesHandlerFromEndpoint(context.Background(), mux, clientAddr, opts); err != nil {
+		log.Fatal().Err(err).Msg("failed to start applications handler")
+	}
+	if err := grpc_public_api_go.RegisterRolesHandlerFromEndpoint(context.Background(), mux, clientAddr, opts); err != nil {
+		log.Fatal().Err(err).Msg("failed to start applications handler")
+	}
+	if err := grpc_public_api_go.RegisterUsersHandlerFromEndpoint(context.Background(), mux, clientAddr, opts); err != nil {
+		log.Fatal().Err(err).Msg("failed to start applications handler")
+	}
+
 
 	server := &http.Server{
 		Addr:    addr,
