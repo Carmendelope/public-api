@@ -29,7 +29,7 @@ spec:
           name: public-api-authx-config
       containers:
       - name: public-api
-        image: nalej/public-api:VERSION
+        image: nalejregistry.azurecr.io/nalej/public-api:VERSION
         env:
           - name: AUTH_SECRET
             valueFrom:
@@ -55,4 +55,4 @@ spec:
         securityContext:
           runAsUser: 2000
       imagePullSecrets:
-      - name: myregistrykey
+      - name: nalej-registry
