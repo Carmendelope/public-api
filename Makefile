@@ -122,10 +122,8 @@ create-image:
 	$(info >>> Creating images ...)
 	for app in $(APPS); do \
         echo Create image of app $$app ; \
-        if [ -f components/"$$app"/Dockerfile ]; then \
-            mkdir -p $(TARGET)/images/"$$app" ; \
+        if [ -f components/"$$app"/Dockerfile ]; then \\
             docker build --no-cache -t $(DOCKER_REGISTRY)/$(DOCKER_REPO)/"$$app":$(VERSION) -f components/"$$app"/Dockerfile $(TARGET)/linux_amd64 ; \
-            docker save $(DOCKER_REGISTRY)/$(DOCKER_REPO)/"$$app" > $(TARGET)/images/"$$app"/image.tar ; \
         else  \
             echo $$app has no Dockerfile ; \
         fi ; \
