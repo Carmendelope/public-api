@@ -35,7 +35,7 @@ func (m *Manager) Add(addUserRequest * grpc_public_api_go.AddUserRequest) (*grpc
 	}
 	var roleId string
 	for _, r := range role.Roles{
-		if r.Name == addUserRequest.Name {
+		if r.Name == addUserRequest.RoleName {
 			roleId = r.RoleId
 		}
 	}
