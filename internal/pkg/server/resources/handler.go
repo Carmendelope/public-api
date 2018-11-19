@@ -30,7 +30,7 @@ func (h *Handler) Summary(ctx context.Context, organizationID *grpc_organization
 		return nil, conversions.ToGRPCError(err)
 	}
 	if organizationID.OrganizationId != rm.OrganizationID {
-		return nil, derrors.NewUnauthenticatedError("cannot access requested OrganizationID")
+		return nil, derrors.NewPermissionDeniedError("cannot access requested OrganizationID")
 	}
 	err = entities.ValidOrganizationId(organizationID)
 	if err != nil {

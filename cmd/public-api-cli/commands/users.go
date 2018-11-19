@@ -88,3 +88,16 @@ var updateUserCmd = &cobra.Command{
 		u.Update(options.Resolve("organizationID", organizationID), email, name, roleName)
 	},
 }
+
+
+var addUserCmd = &cobra.Command{
+	Use:   "add",
+	Short: "Add a new user",
+	Long:  `Add a new user`,
+	Run: func(cmd *cobra.Command, args []string) {
+		SetupLogging()
+		// TODO NP-337
+		//u := cli.NewUsers(options.Resolve("nalejAddress", nalejAddress), options.ResolveAsInt("port", nalejPort))
+		panic("not implemented")
+	},
+}

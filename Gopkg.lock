@@ -70,14 +70,14 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:168c67078d6527ebbc3539b7896323e2afd38720f88b1369b8dddf228942f472"
+  digest = "1:f7b76ffe5e79f9d0475f7d3fee644dbd3a057a7ed3d97b02aa920b4f1c748fd5"
   name = "github.com/nalej/authx"
   packages = [
     "pkg/interceptor",
     "pkg/token",
   ]
   pruneopts = ""
-  revision = "911c8ccce169ae13cded719da5b925f8b83cc954"
+  revision = "ac79f4258003c14a7d99e8de277a9b986c0edda7"
 
 [[projects]]
   digest = "1:0cc441f3dfe124dd74f44dd7e466dfc17cc7edff468094fbc3847a96b5ebf6f7"
@@ -168,12 +168,12 @@
   version = "v0.0.12"
 
 [[projects]]
-  digest = "1:9d0a872235e452ce6026049307cfe67a748c12cfb1c4d0c90900ee4a9ba5b6f8"
+  digest = "1:fb32f25fa2e9dfb80ffb9659f77738ca5cecfd33f77d5c303db0fff9f792a79e"
   name = "github.com/nalej/grpc-public-api-go"
   packages = ["."]
   pruneopts = ""
-  revision = "e6e24df3cca3abcccbb3edf8306dac7259de062f"
-  version = "v0.0.7"
+  revision = "e73182ebb432181c4ee255c6411826dcabe52832"
+  version = "v0.0.9"
 
 [[projects]]
   digest = "1:7d209b186679bf457f6b61c40622484f077a3c17ac4f7940325833bb95c01688"
@@ -282,7 +282,7 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:3b86e1cf4059ba6c2cf189f60655a16a8e32d221ed23c4137ac6b2adeaeccc52"
+  digest = "1:4ac199b027ed34460ec4e0a92c882156f561e78cd046fef095e50f867462435a"
   name = "golang.org/x/net"
   packages = [
     "context",
@@ -297,7 +297,7 @@
     "trace",
   ]
   pruneopts = ""
-  revision = "03003ca0c849e57b6ea29a4bab8d3cb6e4d568fe"
+  revision = "adae6a3d119ae4890b46832a2e88a95adc62b8e7"
 
 [[projects]]
   branch = "master"

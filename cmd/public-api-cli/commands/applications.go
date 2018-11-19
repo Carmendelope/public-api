@@ -2,6 +2,9 @@
  * Copyright (C) 2018 Nalej - All Rights Reserved
  */
 
+ // TODO Remove descriptor NP-338
+ // TODO Undeploy application instance NP-339
+
 package commands
 
 import (

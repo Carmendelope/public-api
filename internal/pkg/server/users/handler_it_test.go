@@ -70,7 +70,7 @@ var _ = ginkgo.Describe("Users", func() {
 		rand.Seed(ginkgo.GinkgoRandomSeed())
 		listener = test.GetDefaultListener()
 		authConfig := ithelpers.GetAuthConfig(
-			"/public_api.Users/Info", "/public_api.Users/List",
+			"/public_api.Users/Add", "/public_api.Users/Info", "/public_api.Users/List",
 			"/public_api.Users/Delete", "/public_api.Users/ResetPassword",
 			"/public_api.Users/Update")
 		server = grpc.NewServer(interceptor.WithServerAuthxInterceptor(
@@ -103,6 +103,23 @@ var _ = ginkgo.Describe("Users", func() {
 		listener.Close()
 		smConn.Close()
 		umConn.Close()
+	})
+
+	ginkgo.It("should be able to add a new user", func(){
+	    addRequest := &grpc_public_api_go.AddUserRequest{
+			OrganizationId:       targetOrganization.OrganizationId,
+			Email:                fmt.Sprintf("random%d@nalej.com", rand.Int()),
+			Password:             "password",
+			Name:                 "Name",
+			RoleName:             targetRole.Name,
+		}
+	    ctx, cancel := ithelpers.GetContext(token)
+		defer cancel()
+	    added, err := client.Add(ctx, addRequest)
+	    gomega.Expect(err).To(gomega.Succeed())
+	    gomega.Expect(added.OrganizationId).Should(gomega.Equal(addRequest.OrganizationId))
+	    gomega.Expect(added.Email).Should(gomega.Equal(addRequest.Email))
+	    gomega.Expect(added.RoleName).Should(gomega.Equal(addRequest.RoleName))
 	})
 
 	ginkgo.It("should be able to retrieve the user information", func() {

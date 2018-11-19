@@ -33,7 +33,7 @@ func (h *Handler) Install(ctx context.Context, request *grpc_public_api_go.Insta
 		return nil, conversions.ToGRPCError(err)
 	}
 	if request.OrganizationId != rm.OrganizationID {
-		return nil, derrors.NewUnauthenticatedError("cannot access requested OrganizationID")
+		return nil, derrors.NewPermissionDeniedError("cannot access requested OrganizationID")
 	}
 	err = entities.ValidInstallRequest(request)
 	if err != nil {
@@ -49,7 +49,7 @@ func (h *Handler) List(ctx context.Context, organizationID *grpc_organization_go
 		return nil, conversions.ToGRPCError(err)
 	}
 	if organizationID.OrganizationId != rm.OrganizationID {
-		return nil, derrors.NewUnauthenticatedError("cannot access requested OrganizationID")
+		return nil, derrors.NewPermissionDeniedError("cannot access requested OrganizationID")
 	}
 	err = entities.ValidOrganizationId(organizationID)
 	if err != nil {
@@ -65,7 +65,7 @@ func (h *Handler) Update(ctx context.Context, updateClusterRequest *grpc_public_
 		return nil, conversions.ToGRPCError(err)
 	}
 	if updateClusterRequest.OrganizationId != rm.OrganizationID {
-		return nil, derrors.NewUnauthenticatedError("cannot access requested OrganizationID")
+		return nil, derrors.NewPermissionDeniedError("cannot access requested OrganizationID")
 	}
 	err = entities.ValidUpdateClusterRequest(updateClusterRequest)
 	if err != nil {

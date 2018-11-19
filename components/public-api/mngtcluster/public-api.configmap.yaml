@@ -18,6 +18,7 @@ data:
        "/public_api.Organizations/Info":{"must":["ORG"]},
        "/public_api.Resources/Summary":{"should":["ORG", "RESOURCES"]},
        "/public_api.Roles/List":{"must":["ORG"]},
+       "/public_api.Users/Add":{"must":["ORG"]},
        "/public_api.Users/Info":{"should":["ORG", "PROFILE"]},
        "/public_api.Users/List":{"must":["ORG"]},
        "/public_api.Users/Delete":{"must":["ORG"]},

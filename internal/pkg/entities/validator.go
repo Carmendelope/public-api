@@ -19,6 +19,9 @@ const emptyInstanceId = "app_instance_id cannot be empty"
 const emptyDescriptorId = "app_descriptor_id cannot be empty"
 const emptyClusterId = "cluster_id cannot be empty"
 const emptyEmail = "email cannot be empty"
+const emptyName = "name cannot be empty"
+const emptyPassword = "password cannot be empty"
+const emptyRoleName = "role_name cannot be empty"
 
 func ValidOrganizationId(organizationID *grpc_organization_go.OrganizationId) derrors.Error {
 	if organizationID.OrganizationId == "" {
@@ -73,6 +76,25 @@ func ValidUpdateClusterRequest(updateClusterRequest *grpc_public_api_go.UpdateCl
 	}
 	if updateClusterRequest.ClusterId == "" {
 		return derrors.NewInvalidArgumentError(emptyClusterId)
+	}
+	return nil
+}
+
+func ValidAddUserRequest(request *grpc_public_api_go.AddUserRequest) derrors.Error {
+	if request.OrganizationId == "" {
+		return derrors.NewInvalidArgumentError(emptyOrganizationId)
+	}
+	if request.Email == "" {
+		return derrors.NewInvalidArgumentError(emptyEmail)
+	}
+	if request.Password == "" {
+		return derrors.NewInvalidArgumentError(emptyPassword)
+	}
+	if request.Name == "" {
+		return derrors.NewInvalidArgumentError(emptyName)
+	}
+	if request.RoleName == "" {
+		return derrors.NewInvalidArgumentError(emptyRoleName)
 	}
 	return nil
 }
