@@ -66,6 +66,22 @@ func (m *Manager) Install(request *grpc_public_api_go.InstallRequest) (*grpc_inf
 	return m.infraClient.InstallCluster(context.Background(), installRequest)
 }
 
+func (m * Manager) extendInfo(source *grpc_infrastructure_go.Cluster) (*grpc_public_api_go.Cluster, error) {
+	totalNodes, runningNodes, err := m.clusterNodesStats(source.OrganizationId, source.ClusterId)
+	if err != nil {
+		return nil, err
+	}
+	return entities.ToPublicAPICluster(source, totalNodes, runningNodes), nil
+}
+
+func (m *Manager) Info(clusterID *grpc_infrastructure_go.ClusterId) (*grpc_public_api_go.Cluster, error) {
+	retrieved, err := m.clustClient.GetCluster(context.Background(), clusterID)
+	if err != nil {
+		return nil, err
+	}
+	return m.extendInfo(retrieved)
+}
+
 // List all the clusters in an organization.
 func (m *Manager) List(organizationID *grpc_organization_go.OrganizationId) (*grpc_public_api_go.ClusterList, error) {
 	list, err := m.clustClient.ListClusters(context.Background(), organizationID)
@@ -74,22 +90,9 @@ func (m *Manager) List(organizationID *grpc_organization_go.OrganizationId) (*gr
 	}
 	clusters := make([]*grpc_public_api_go.Cluster, 0)
 	for _, c := range list.Clusters {
-
-		totalNodes, runningNodes, err := m.clusterNodesStats(organizationID.OrganizationId, c.ClusterId)
+		toAdd, err := m.extendInfo(c)
 		if err != nil {
 			return nil, err
-		}
-		toAdd := &grpc_public_api_go.Cluster{
-			OrganizationId: organizationID.OrganizationId,
-			ClusterId:      c.ClusterId,
-			Name:           c.Name,
-			Description:    c.Description,
-			ClusterType:    c.ClusterType,
-			Multitenant:    c.Multitenant,
-			Status:         c.Status,
-			Labels:         c.Labels,
-			TotalNodes:     totalNodes,
-			RunningNodes:   runningNodes,
 		}
 		clusters = append(clusters, toAdd)
 	}

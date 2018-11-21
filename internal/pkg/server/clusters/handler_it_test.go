@@ -100,6 +100,18 @@ var _ = ginkgo.Describe("Clusters", func() {
 		smConn.Close()
 	})
 
+	ginkgo.It("should be able to retrieve the information of a cluster", func(){
+		clusterID := &grpc_infrastructure_go.ClusterId{
+			OrganizationId:       targetCluster.OrganizationId,
+			ClusterId:            targetCluster.ClusterId,
+		}
+		ctx, cancel := ithelpers.GetContext(token)
+		defer cancel()
+		retrieved, err := client.Info(ctx, clusterID)
+		gomega.Expect(err).To(gomega.Succeed())
+		gomega.Expect(retrieved.ClusterId).Should(gomega.Equal(targetCluster.ClusterId))
+	})
+
 	ginkgo.It("should be able to list the clusters", func() {
 
 		organizationID := &grpc_organization_go.OrganizationId{

@@ -25,3 +25,18 @@ func ToInfraClusterUpdate(update grpc_public_api_go.UpdateClusterRequest) *grpc_
 
 	return result
 }
+
+func ToPublicAPICluster(source *grpc_infrastructure_go.Cluster, totalNodes int64, runningNodes int64) *grpc_public_api_go.Cluster {
+	return &grpc_public_api_go.Cluster{
+		OrganizationId:       source.OrganizationId,
+		ClusterId:            source.ClusterId,
+		Name:                 source.Name,
+		Description:          source.Description,
+		ClusterTypeName:      source.ClusterType.String(),
+		MultitenantSupport:   source.Multitenant.String(),
+		StatusName:           source.Status.String(),
+		Labels:               source.Labels,
+		TotalNodes:           totalNodes,
+		RunningNodes:         runningNodes,
+	}
+}
