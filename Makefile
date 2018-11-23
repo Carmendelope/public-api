@@ -122,7 +122,7 @@ create-image:
 	$(info >>> Creating images ...)
 	for app in $(APPS); do \
         echo Create image of app $$app ; \
-        if [ -f components/"$$app"/Dockerfile ]; then \\
+        if [ -f components/"$$app"/Dockerfile ]; then \
             docker build --no-cache -t $(DOCKER_REGISTRY)/$(DOCKER_REPO)/"$$app":$(VERSION) -f components/"$$app"/Dockerfile $(TARGET)/linux_amd64 ; \
         else  \
             echo $$app has no Dockerfile ; \

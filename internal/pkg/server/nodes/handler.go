@@ -8,6 +8,7 @@ import (
 	"context"
 	"github.com/nalej/derrors"
 	"github.com/nalej/grpc-infrastructure-go"
+	"github.com/nalej/grpc-public-api-go"
 	"github.com/nalej/grpc-utils/pkg/conversions"
 	"github.com/nalej/public-api/internal/pkg/authhelper"
 	"github.com/nalej/public-api/internal/pkg/entities"
@@ -23,7 +24,8 @@ func NewHandler(manager Manager) *Handler {
 	return &Handler{manager}
 }
 
-func (h *Handler) ClusterNodes(ctx context.Context, clusterId *grpc_infrastructure_go.ClusterId) (*grpc_infrastructure_go.NodeList, error) {
+// List retrieves information about the nodes of a cluster.
+func (h *Handler) List(ctx context.Context, clusterId *grpc_infrastructure_go.ClusterId) (*grpc_public_api_go.NodeList, error) {
 	rm, err := authhelper.GetRequestMetadata(ctx)
 	if err != nil {
 		return nil, conversions.ToGRPCError(err)
@@ -35,5 +37,5 @@ func (h *Handler) ClusterNodes(ctx context.Context, clusterId *grpc_infrastructu
 	if err != nil {
 		return nil, conversions.ToGRPCError(err)
 	}
-	return h.Manager.ClusterNodes(clusterId)
+	return h.Manager.List(clusterId)
 }

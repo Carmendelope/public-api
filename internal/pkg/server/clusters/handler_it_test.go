@@ -5,6 +5,7 @@
 /*
 RUN_INTEGRATION_TEST=true
 IT_SM_ADDRESS=localhost:8800
+IT_INFRAMGR_ADDRESS=localhost:8860
 */
 
 package clusters
@@ -66,7 +67,10 @@ var _ = ginkgo.Describe("Clusters", func() {
 
 	ginkgo.BeforeSuite(func() {
 		listener = test.GetDefaultListener()
-		authConfig := ithelpers.GetAuthConfig("/public_api.Clusters/List", "/public_api.Clusters/Update")
+		authConfig := ithelpers.GetAuthConfig(
+			"/public_api.Clusters/Info",
+			"/public_api.Clusters/List",
+			"/public_api.Clusters/Update")
 		server = grpc.NewServer(interceptor.WithServerAuthxInterceptor(
 			interceptor.NewConfig(authConfig, "secret", ithelpers.AuthHeader)))
 
@@ -110,6 +114,8 @@ var _ = ginkgo.Describe("Clusters", func() {
 		retrieved, err := client.Info(ctx, clusterID)
 		gomega.Expect(err).To(gomega.Succeed())
 		gomega.Expect(retrieved.ClusterId).Should(gomega.Equal(targetCluster.ClusterId))
+		gomega.Expect(retrieved.MultitenantSupport).Should(gomega.Equal(targetCluster.Multitenant.String()))
+		gomega.Expect(retrieved.ClusterTypeName).Should(gomega.Equal(targetCluster.ClusterType.String()))
 	})
 
 	ginkgo.It("should be able to list the clusters", func() {

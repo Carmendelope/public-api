@@ -48,6 +48,17 @@ var installClustersCmd = &cobra.Command{
 	},
 }
 
+var infoClusterCmd = &cobra.Command{
+	Use:   "info",
+	Short: "Get the cluster information",
+	Long:  `Get the cluster information`,
+	Run: func(cmd *cobra.Command, args []string) {
+		SetupLogging()
+		c := cli.NewClusters(options.Resolve("nalejAddress", nalejAddress), options.ResolveAsInt("port", nalejPort))
+		c.Info(options.Resolve("organizationID", organizationID), options.Resolve("clusterID", clusterID))
+	},
+}
+
 var listClustersCmd = &cobra.Command{
 	Use:   "list",
 	Short: "List clusters",

@@ -13,6 +13,7 @@ import (
 	"github.com/nalej/grpc-common-go"
 	"github.com/nalej/grpc-conductor-go"
 	"github.com/nalej/grpc-organization-go"
+	"github.com/nalej/grpc-public-api-go"
 	"github.com/nalej/grpc-utils/pkg/conversions"
 	"github.com/nalej/public-api/internal/pkg/authhelper"
 	"github.com/nalej/public-api/internal/pkg/entities"
@@ -110,7 +111,7 @@ func (h *Handler) Undeploy(ctx context.Context, appInstanceID *grpc_application_
 }
 
 // ListAppInstances retrieves a list of application descriptors.
-func (h *Handler) ListAppInstances(ctx context.Context, organizationID *grpc_organization_go.OrganizationId) (*grpc_application_go.AppInstanceList, error) {
+func (h *Handler) ListAppInstances(ctx context.Context, organizationID *grpc_organization_go.OrganizationId) (*grpc_public_api_go.AppInstanceList, error) {
 	rm, err := authhelper.GetRequestMetadata(ctx)
 	if err != nil {
 		return nil, conversions.ToGRPCError(err)
@@ -126,7 +127,7 @@ func (h *Handler) ListAppInstances(ctx context.Context, organizationID *grpc_org
 }
 
 // GetAppDescriptor retrieves a given application descriptor.
-func (h *Handler) GetAppInstance(ctx context.Context, appInstanceID *grpc_application_go.AppInstanceId) (*grpc_application_go.AppInstance, error) {
+func (h *Handler) GetAppInstance(ctx context.Context, appInstanceID *grpc_application_go.AppInstanceId) (*grpc_public_api_go.AppInstance, error) {
 	rm, err := authhelper.GetRequestMetadata(ctx)
 	if err != nil {
 		return nil, conversions.ToGRPCError(err)

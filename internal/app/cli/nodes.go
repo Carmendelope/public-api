@@ -7,7 +7,6 @@ package cli
 import (
 	"github.com/nalej/grpc-infrastructure-go"
 	"github.com/nalej/grpc-public-api-go"
-	"github.com/nalej/grpc-utils/pkg/conversions"
 	"github.com/rs/zerolog/log"
 	"google.golang.org/grpc"
 )
@@ -51,9 +50,6 @@ func (n *Nodes) List(organizationID string, clusterID string) {
 		OrganizationId: organizationID,
 		ClusterId:      clusterID,
 	}
-	list, err := client.ClusterNodes(ctx, cID)
-	if err != nil {
-		log.Fatal().Str("trace", conversions.ToDerror(err).DebugReport()).Msg("cannot obtain node list")
-	}
-	n.PrintResult(list)
+	list, err := client.List(ctx, cID)
+	n.PrintResultOrError(list, err, "cannot list nodes")
 }

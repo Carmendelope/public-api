@@ -101,6 +101,7 @@ var _ = ginkgo.Describe("Roles", func() {
 		ctx, cancel := ithelpers.GetContext(token)
 		defer cancel()
 		roleList, err := client.List(ctx, organizationID)
+
 		gomega.Expect(err).To(gomega.Succeed())
 		gomega.Expect(len(roleList.Roles)).Should(gomega.Equal(1))
 		gomega.Expect(roleList.Roles[0].RoleId).Should(gomega.Equal(targetRole.RoleId))
