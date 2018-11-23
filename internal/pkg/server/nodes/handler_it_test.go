@@ -102,7 +102,7 @@ var _ = ginkgo.Describe("Nodes", func() {
 		}
 		ctx, cancel := ithelpers.GetContext(token)
 		defer cancel()
-		list, err := client.ClusterNodes(ctx, clusterID)
+		list, err := client.List(ctx, clusterID)
 
 		gomega.Expect(err).To(gomega.Succeed())
 		gomega.Expect(len(list.Nodes)).To(gomega.Equal(NumNodes))

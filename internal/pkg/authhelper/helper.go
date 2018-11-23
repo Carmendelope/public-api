@@ -3,12 +3,17 @@ package authhelper
 import (
 	"context"
 	"github.com/nalej/derrors"
+	"github.com/nalej/grpc-authx-go"
 	"google.golang.org/grpc/metadata"
 )
 
 type RequestMetadata struct {
-	UserID         string
-	OrganizationID string
+	UserID            string
+	OrganizationID    string
+	OrgPrimitive      bool
+	AppsPrimitive     bool
+	ResourcePrimitive bool
+	ProfilePrimitive  bool
 }
 
 func GetRequestMetadata(ctx context.Context) (*RequestMetadata, derrors.Error) {
@@ -16,7 +21,6 @@ func GetRequestMetadata(ctx context.Context) (*RequestMetadata, derrors.Error) {
 	if !ok {
 		return nil, derrors.NewInvalidArgumentError("expecting JWT metadata")
 	}
-	//log.Debug().Interface("metadata", md).Msg("Metadata received")
 	userID, found := md["user_id"]
 	if !found {
 		return nil, derrors.NewUnauthenticatedError("userID not found")
@@ -25,5 +29,17 @@ func GetRequestMetadata(ctx context.Context) (*RequestMetadata, derrors.Error) {
 	if !found {
 		return nil, derrors.NewUnauthenticatedError("organizationID not found")
 	}
-	return &RequestMetadata{userID[0], organizationID[0]}, nil
+	_, orgPrimitive := md[grpc_authx_go.AccessPrimitive_ORG.String()]
+	_, appsPrimitive := md[grpc_authx_go.AccessPrimitive_APPS.String()]
+	_, resourcePrimitive := md[grpc_authx_go.AccessPrimitive_RESOURCES.String()]
+	_, profilePrimitive := md[grpc_authx_go.AccessPrimitive_PROFILE.String()]
+
+	return &RequestMetadata{
+		UserID:            userID[0],
+		OrganizationID:    organizationID[0],
+		OrgPrimitive:      orgPrimitive,
+		AppsPrimitive:     appsPrimitive,
+		ResourcePrimitive: resourcePrimitive,
+		ProfilePrimitive:  profilePrimitive,
+	}, nil
 }

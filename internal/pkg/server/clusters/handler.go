@@ -8,6 +8,7 @@ import (
 	"context"
 	"github.com/nalej/derrors"
 	"github.com/nalej/grpc-common-go"
+	"github.com/nalej/grpc-infrastructure-go"
 	"github.com/nalej/grpc-infrastructure-manager-go"
 	"github.com/nalej/grpc-organization-go"
 	"github.com/nalej/grpc-public-api-go"
@@ -40,6 +41,22 @@ func (h *Handler) Install(ctx context.Context, request *grpc_public_api_go.Insta
 		return nil, conversions.ToGRPCError(err)
 	}
 	return h.Manager.Install(request)
+}
+
+// List all the clusters in an organization.
+func (h *Handler) Info(ctx context.Context, clusterID *grpc_infrastructure_go.ClusterId) (*grpc_public_api_go.Cluster, error) {
+	rm, err := authhelper.GetRequestMetadata(ctx)
+	if err != nil {
+		return nil, conversions.ToGRPCError(err)
+	}
+	if clusterID.OrganizationId != rm.OrganizationID {
+		return nil, derrors.NewPermissionDeniedError("cannot access requested OrganizationID")
+	}
+	err = entities.ValidClusterId(clusterID)
+	if err != nil {
+		return nil, conversions.ToGRPCError(err)
+	}
+	return h.Manager.Info(clusterID)
 }
 
 // List all the clusters in an organization.

@@ -52,6 +52,7 @@ var _ = ginkgo.Describe("Applications", func() {
 	var listener *bufconn.Listener
 	// client
 	var orgClient grpc_organization_go.OrganizationsClient
+	var smAppClient grpc_application_go.ApplicationsClient
 	var appClient grpc_application_manager_go.ApplicationManagerClient
 	var smConn *grpc.ClientConn
 	var appConn *grpc.ClientConn
@@ -72,6 +73,7 @@ var _ = ginkgo.Describe("Applications", func() {
 
 		smConn = utils.GetConnection(systemModelAddress)
 		orgClient = grpc_organization_go.NewOrganizationsClient(smConn)
+		smAppClient = grpc_application_go.NewApplicationsClient(smConn)
 		appConn = utils.GetConnection(appManagerAddress)
 		appClient = grpc_application_manager_go.NewApplicationManagerClient(appConn)
 
@@ -154,9 +156,10 @@ var _ = ginkgo.Describe("Applications", func() {
 
 		ginkgo.BeforeEach(func() {
 			targetDescriptor = ithelpers.CreateAppDescriptor(targetOrganization.OrganizationId, appClient)
+			ithelpers.DeleteAllInstances(targetOrganization.OrganizationId, smAppClient)
 		})
 
-		ginkgo.FIt("should be able to deploy an application", func() {
+		ginkgo.It("should be able to deploy an application", func() {
 			toDeploy := &grpc_application_manager_go.DeployRequest{
 				OrganizationId:  targetDescriptor.OrganizationId,
 				AppDescriptorId: targetDescriptor.AppDescriptorId,
@@ -177,12 +180,57 @@ var _ = ginkgo.Describe("Applications", func() {
 
 		})
 
-		ginkgo.PIt("should be able to list the running instances", func() {
+		ginkgo.It("should be able to list the running instances", func() {
+			toDeploy := &grpc_application_manager_go.DeployRequest{
+				OrganizationId:  targetDescriptor.OrganizationId,
+				AppDescriptorId: targetDescriptor.AppDescriptorId,
+				Name:            "deploy-test",
+				Description:     "deploy-test",
+			}
+			ctx, cancel := ithelpers.GetContext(token)
+			defer cancel()
+			deployed, err := client.Deploy(ctx, toDeploy)
+			if err != nil {
+				log.Error().Str("trace", conversions.ToDerror(err).DebugReport()).Msg("error")
+			}
+			gomega.Expect(err).To(gomega.Succeed())
+			gomega.Expect(deployed.AppInstanceId).ShouldNot(gomega.BeEmpty())
 
+			orgID := &grpc_organization_go.OrganizationId{
+				OrganizationId:       targetOrganization.OrganizationId,
+			}
+			ctx2, cancel2 := ithelpers.GetContext(token)
+			defer cancel2()
+			list, err := client.ListAppInstances(ctx2, orgID)
+			gomega.Expect(err).To(gomega.Succeed())
+			gomega.Expect(len(list.Instances)).Should(gomega.Equal(1))
 		})
 
-		ginkgo.PIt("should be able to retrieve the information of a running instance", func() {
+		ginkgo.It("should be able to retrieve the information of a running instance", func() {
+			toDeploy := &grpc_application_manager_go.DeployRequest{
+				OrganizationId:  targetDescriptor.OrganizationId,
+				AppDescriptorId: targetDescriptor.AppDescriptorId,
+				Name:            "deploy-test",
+				Description:     "deploy-test",
+			}
+			ctx, cancel := ithelpers.GetContext(token)
+			defer cancel()
+			deployed, err := client.Deploy(ctx, toDeploy)
+			if err != nil {
+				log.Error().Str("trace", conversions.ToDerror(err).DebugReport()).Msg("error")
+			}
+			gomega.Expect(err).To(gomega.Succeed())
+			gomega.Expect(deployed.AppInstanceId).ShouldNot(gomega.BeEmpty())
 
+			instanceID := &grpc_application_go.AppInstanceId{
+				OrganizationId:       targetOrganization.OrganizationId,
+				AppInstanceId:        deployed.AppInstanceId,
+			}
+			ctx2, cancel2 := ithelpers.GetContext(token)
+			defer cancel2()
+			info, err := client.GetAppInstance(ctx2, instanceID)
+			gomega.Expect(err).To(gomega.Succeed())
+			gomega.Expect(info).ShouldNot(gomega.BeNil())
 		})
 	})
 

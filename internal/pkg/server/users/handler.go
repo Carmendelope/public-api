@@ -27,7 +27,7 @@ func NewHandler(manager Manager) *Handler {
 	return &Handler{manager}
 }
 
-func (h * Handler) Add(ctx context.Context, addUserRequest * grpc_public_api_go.AddUserRequest) (*grpc_public_api_go.User, error){
+func (h *Handler) Add(ctx context.Context, addUserRequest *grpc_public_api_go.AddUserRequest) (*grpc_public_api_go.User, error) {
 	log.Debug().Str("organizationID", addUserRequest.OrganizationId).Str("email", addUserRequest.Email).Msg("add user")
 	rm, err := authhelper.GetRequestMetadata(ctx)
 	if err != nil {
@@ -99,6 +99,9 @@ func (h *Handler) ResetPassword(ctx context.Context, userID *grpc_user_go.UserId
 	if userID.OrganizationId != rm.OrganizationID {
 		return nil, derrors.NewPermissionDeniedError("cannot access requested OrganizationID")
 	}
+	if !rm.OrgPrimitive && userID.Email != rm.UserID {
+		return nil, derrors.NewPermissionDeniedError("cannot reset password of selected user")
+	}
 	err = entities.ValidUserId(userID)
 	if err != nil {
 		return nil, conversions.ToGRPCError(err)
@@ -113,6 +116,9 @@ func (h *Handler) Update(ctx context.Context, updateUserRequest *grpc_user_go.Up
 	}
 	if updateUserRequest.OrganizationId != rm.OrganizationID {
 		return nil, derrors.NewPermissionDeniedError("cannot access requested OrganizationID")
+	}
+	if !rm.OrgPrimitive && updateUserRequest.Email != rm.UserID {
+		return nil, derrors.NewPermissionDeniedError("cannot update the information of selected user")
 	}
 	err = entities.ValidUpdateUserRequest(updateUserRequest)
 	if err != nil {

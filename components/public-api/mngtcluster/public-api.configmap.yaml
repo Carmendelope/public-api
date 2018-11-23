@@ -12,6 +12,7 @@ data:
     {"allows_all":false,
      "permissions": {
        "/public_api.Clusters/Install":{"should":["ORG", "RESOURCES"]},
+       "/public_api.Clusters/Info":{"should":["ORG", "RESOURCES"]},
        "/public_api.Clusters/List":{"should":["ORG", "RESOURCES"]},
        "/public_api.Clusters/Update":{"should":["ORG", "RESOURCES"]},
        "/public_api.Nodes/ClusterNodes":{"should":["ORG", "RESOURCES"]},

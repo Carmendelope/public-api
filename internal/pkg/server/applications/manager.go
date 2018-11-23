@@ -7,6 +7,8 @@ import (
 	"github.com/nalej/grpc-common-go"
 	"github.com/nalej/grpc-conductor-go"
 	"github.com/nalej/grpc-organization-go"
+	"github.com/nalej/grpc-public-api-go"
+	"github.com/nalej/public-api/internal/pkg/entities"
 )
 
 type Manager struct {
@@ -43,11 +45,25 @@ func (m *Manager) Undeploy(appInstanceID *grpc_application_go.AppInstanceId) (*g
 }
 
 // ListAppInstances retrieves a list of application descriptors.
-func (m *Manager) ListAppInstances(organizationID *grpc_organization_go.OrganizationId) (*grpc_application_go.AppInstanceList, error) {
-	return m.appClient.ListAppInstances(context.Background(), organizationID)
+func (m *Manager) ListAppInstances(organizationID *grpc_organization_go.OrganizationId) (*grpc_public_api_go.AppInstanceList, error) {
+	apps, err := m.appClient.ListAppInstances(context.Background(), organizationID)
+	if err != nil{
+		return nil, err
+	}
+	result := make([]*grpc_public_api_go.AppInstance, 0)
+	for _, app := range apps.Instances{
+		result = append(result, entities.ToPublicAPIAppInstance(app))
+	}
+	return &grpc_public_api_go.AppInstanceList{
+		Instances:            result,
+	}, nil
 }
 
 // GetAppDescriptor retrieves a given application descriptor.
-func (m *Manager) GetAppInstance(appInstanceID *grpc_application_go.AppInstanceId) (*grpc_application_go.AppInstance, error) {
-	return m.appClient.GetAppInstance(context.Background(), appInstanceID)
+func (m *Manager) GetAppInstance(appInstanceID *grpc_application_go.AppInstanceId) (*grpc_public_api_go.AppInstance, error) {
+	inst, err :=  m.appClient.GetAppInstance(context.Background(), appInstanceID)
+	if err != nil{
+		return nil, err
+	}
+	return entities.ToPublicAPIAppInstance(inst), nil
 }

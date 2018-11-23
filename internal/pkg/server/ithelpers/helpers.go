@@ -189,3 +189,20 @@ func GetAuthConfig(endpoints ...string) *interceptor.AuthorizationConfig {
 		Permissions: permissions,
 	}
 }
+
+// DeleteAllInstances from system model.
+func DeleteAllInstances(organizationID string, smAppClient grpc_application_go.ApplicationsClient){
+	orgID := &grpc_organization_go.OrganizationId{
+		OrganizationId: organizationID,
+	}
+	instances, err := smAppClient.ListAppInstances(context.Background(), orgID)
+	gomega.Expect(err).To(gomega.Succeed())
+	for _, inst := range instances.Instances{
+		toRemove := &grpc_application_go.AppInstanceId{
+			OrganizationId:       inst.OrganizationId,
+			AppInstanceId:        inst.AppInstanceId,
+		}
+		_, err := smAppClient.RemoveAppInstance(context.Background(), toRemove)
+		gomega.Expect(err).To(gomega.Succeed())
+	}
+}

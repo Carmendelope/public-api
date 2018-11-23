@@ -80,6 +80,20 @@ func (c *Clusters) Install(organizationID string, clusterID string, kubeConfigPa
 	c.PrintResultOrError(response, err, "cannot install new cluster")
 }
 
+func (c * Clusters) Info(organizationID string, clusterID string){
+	c.load()
+	ctx, cancel := c.GetContext()
+	client, conn := c.getClient()
+	defer conn.Close()
+	defer cancel()
+	cID := &grpc_infrastructure_go.ClusterId{
+		OrganizationId:       organizationID,
+		ClusterId:            clusterID,
+	}
+	retrieved, err := client.Info(ctx, cID)
+	c.PrintResultOrError(retrieved, err, "cannot obtain cluster information")
+}
+
 func (c *Clusters) List(organizationID string) {
 	c.load()
 	ctx, cancel := c.GetContext()
