@@ -36,6 +36,25 @@ func (u *Users) getClient() (grpc_public_api_go.UsersClient, *grpc.ClientConn) {
 	return client, conn
 }
 
+// Add a new user to the organization.
+func (u *Users) Add(organizationID string, email string, password string, name string, roleName string){
+	u.load()
+	ctx, cancel := u.GetContext()
+	client, conn := u.getClient()
+	defer conn.Close()
+	defer cancel()
+	addRequest := &grpc_public_api_go.AddUserRequest{
+		OrganizationId:       organizationID,
+		Email:                email,
+		Password:             password,
+		Name:                 name,
+		RoleName:             roleName,
+	}
+	added, err := client.Add(ctx, addRequest)
+	u.PrintResultOrError(added, err, "cannot add user")
+}
+
+// Info retrieves the information of a user.
 func (u *Users) Info(organizationID string, email string) {
 	u.load()
 	ctx, cancel := u.GetContext()
@@ -51,6 +70,7 @@ func (u *Users) Info(organizationID string, email string) {
 	u.PrintResultOrError(info, err, "cannot obtain user info")
 }
 
+// List the users of an organization.
 func (u *Users) List(organizationID string) {
 	u.load()
 	ctx, cancel := u.GetContext()
@@ -65,6 +85,7 @@ func (u *Users) List(organizationID string) {
 	u.PrintResultOrError(users, err, "cannot obtain user list")
 }
 
+// Delete a user from an organization.
 func (u *Users) Delete(organizationID string, email string) {
 	u.load()
 	ctx, cancel := u.GetContext()
@@ -80,6 +101,7 @@ func (u *Users) Delete(organizationID string, email string) {
 	u.PrintResultOrError(done, err, "cannot delete user")
 }
 
+// Reset the password of a user.
 func (u *Users) ResetPassword(organizationID string, email string) {
 	u.load()
 	ctx, cancel := u.GetContext()
@@ -95,6 +117,7 @@ func (u *Users) ResetPassword(organizationID string, email string) {
 	u.PrintResultOrError(done, err, "cannot change password")
 }
 
+// Update the user information.
 func (u *Users) Update(organizationID string, email string, newName string, newRole string) {
 	u.load()
 	ctx, cancel := u.GetContext()
