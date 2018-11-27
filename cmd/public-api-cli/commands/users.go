@@ -30,6 +30,15 @@ func init() {
 	updateUserCmd.Flags().StringVar(&name, "name", "", "New name for the user")
 	updateUserCmd.Flags().StringVar(&roleName, "role", "", "New role for the user")
 	usersCmd.AddCommand(updateUserCmd)
+	addUserCmd.Flags().StringVar(&name, "name", "", "Full name")
+	addUserCmd.Flags().StringVar(&roleName, "role", "", "Rol name")
+	addUserCmd.Flags().StringVar(&password, "password", "", "Password")
+	addUserCmd.MarkPersistentFlagRequired("email")
+	addUserCmd.MarkFlagRequired("name")
+	addUserCmd.MarkFlagRequired("role")
+	addUserCmd.MarkFlagRequired("password")
+
+	usersCmd.AddCommand(addUserCmd)
 }
 
 var userInfoCmd = &cobra.Command{
@@ -38,7 +47,9 @@ var userInfoCmd = &cobra.Command{
 	Long:  `Get user info`,
 	Run: func(cmd *cobra.Command, args []string) {
 		SetupLogging()
-		u := cli.NewUsers(options.Resolve("nalejAddress", nalejAddress), options.ResolveAsInt("port", nalejPort))
+		u := cli.NewUsers(
+			options.Resolve("nalejAddress", nalejAddress),
+			options.ResolveAsInt("port", nalejPort))
 		u.Info(options.Resolve("organizationID", organizationID), email)
 	},
 }
@@ -49,7 +60,9 @@ var userListCmd = &cobra.Command{
 	Long:  `List users`,
 	Run: func(cmd *cobra.Command, args []string) {
 		SetupLogging()
-		u := cli.NewUsers(options.Resolve("nalejAddress", nalejAddress), options.ResolveAsInt("port", nalejPort))
+		u := cli.NewUsers(
+			options.Resolve("nalejAddress", nalejAddress),
+			options.ResolveAsInt("port", nalejPort))
 		u.List(options.Resolve("organizationID", organizationID))
 	},
 }
@@ -61,7 +74,9 @@ var deleteUserCmd = &cobra.Command{
 	Long:    `Delete a user`,
 	Run: func(cmd *cobra.Command, args []string) {
 		SetupLogging()
-		u := cli.NewUsers(options.Resolve("nalejAddress", nalejAddress), options.ResolveAsInt("port", nalejPort))
+		u := cli.NewUsers(
+			options.Resolve("nalejAddress", nalejAddress),
+			options.ResolveAsInt("port", nalejPort))
 		u.Delete(options.Resolve("organizationID", organizationID), email)
 	},
 }
@@ -73,7 +88,9 @@ var resetPasswordCmd = &cobra.Command{
 	Long:    `Reset the password of a user`,
 	Run: func(cmd *cobra.Command, args []string) {
 		SetupLogging()
-		u := cli.NewUsers(options.Resolve("nalejAddress", nalejAddress), options.ResolveAsInt("port", nalejPort))
+		u := cli.NewUsers(
+			options.Resolve("nalejAddress", nalejAddress),
+			options.ResolveAsInt("port", nalejPort))
 		u.ResetPassword(options.Resolve("organizationID", organizationID), email)
 	},
 }
@@ -84,11 +101,12 @@ var updateUserCmd = &cobra.Command{
 	Long:  `Update the info of a user`,
 	Run: func(cmd *cobra.Command, args []string) {
 		SetupLogging()
-		u := cli.NewUsers(options.Resolve("nalejAddress", nalejAddress), options.ResolveAsInt("port", nalejPort))
+		u := cli.NewUsers(
+			options.Resolve("nalejAddress", nalejAddress),
+			options.ResolveAsInt("port", nalejPort))
 		u.Update(options.Resolve("organizationID", organizationID), email, name, roleName)
 	},
 }
-
 
 var addUserCmd = &cobra.Command{
 	Use:   "add",
@@ -96,8 +114,9 @@ var addUserCmd = &cobra.Command{
 	Long:  `Add a new user`,
 	Run: func(cmd *cobra.Command, args []string) {
 		SetupLogging()
-		// TODO NP-337
-		//u := cli.NewUsers(options.Resolve("nalejAddress", nalejAddress), options.ResolveAsInt("port", nalejPort))
-		panic("not implemented")
+		u := cli.NewUsers(
+			options.Resolve("nalejAddress", nalejAddress),
+			options.ResolveAsInt("port", nalejPort))
+		u.Add(options.Resolve("organizationID", organizationID), email, password, name, roleName)
 	},
 }
