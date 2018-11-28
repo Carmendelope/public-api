@@ -29,11 +29,16 @@ func init() {
 	appsCmd.PersistentFlags().StringVar(&descriptorID, "descriptorID", "", "Application descriptor identifier")
 	appsCmd.AddCommand(descriptorCmd)
 	addDescriptorCmd.PersistentFlags().StringVar(&descriptorPath, "descriptorPath", "", "Application descriptor path containing a JSON spec")
+	addDescriptorCmd.MarkPersistentFlagRequired("descriptorPath")
 	descriptorCmd.AddCommand(addDescriptorCmd)
+
 	getDescriptorCmd.MarkPersistentFlagRequired("descriptorID")
 	descriptorCmd.AddCommand(getDescriptorCmd)
 	descriptorCmd.AddCommand(listDescriptorsCmd)
 	descriptorCmd.AddCommand(addDescriptorHelpCmd)
+	descriptorCmd.AddCommand(deleteDescriptorCmd)
+	listInstancesCmd.MarkPersistentFlagRequired("descriptorID")
+
 	instanceCmd.PersistentFlags().StringVar(&instanceID, "instanceID", "", "Application instance identifier")
 	appsCmd.AddCommand(instanceCmd)
 	deployInstanceCmd.Flags().StringVar(&name, "name", "", "Name of the application instance")
@@ -97,6 +102,17 @@ var getDescriptorCmd = &cobra.Command{
 		SetupLogging()
 		a := cli.NewApplications(options.Resolve("nalejAddress", nalejAddress), options.ResolveAsInt("port", nalejPort))
 		a.GetDescriptor(options.Resolve("organizationID", organizationID), descriptorID)
+	},
+}
+
+var deleteDescriptorCmd = &cobra.Command{
+	Use:   "delete",
+	Short: "Delete an application descriptor",
+	Long:  `Delete an application descriptor`,
+	Run: func(cmd *cobra.Command, args []string) {
+		SetupLogging()
+		a := cli.NewApplications(options.Resolve("nalejAddress", nalejAddress), options.ResolveAsInt("port", nalejPort))
+		a.DeleteDescriptor(options.Resolve("organizationID", organizationID), descriptorID)
 	},
 }
 

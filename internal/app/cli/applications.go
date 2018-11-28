@@ -137,6 +137,21 @@ func (a *Applications) GetDescriptor(organizationID string, descriptorID string)
 	a.PrintResultOrError(descriptor, err, "cannot obtain descriptor")
 }
 
+func (a *Applications) DeleteDescriptor(organizationID string, descriptorID string){
+	a.load()
+	ctx, cancel := a.GetContext()
+	client, conn := a.getClient()
+	defer conn.Close()
+	defer cancel()
+
+	appDescriptorID := &grpc_application_go.AppDescriptorId{
+		OrganizationId:  organizationID,
+		AppDescriptorId: descriptorID,
+	}
+	success, err := client.DeleteAppDescriptor(ctx, appDescriptorID)
+	a.PrintResultOrError(success, err, "cannot delete given descriptor")
+}
+
 func (a *Applications) ListDescriptors(organizationID string) {
 	a.load()
 	ctx, cancel := a.GetContext()
