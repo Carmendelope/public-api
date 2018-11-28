@@ -22,6 +22,7 @@ var rolesCmd = &cobra.Command{
 
 func init() {
 	rootCmd.AddCommand(rolesCmd)
+	listRolesCmd.Flags().BoolVar(&internal, "internal", false, "List internal services")
 	rolesCmd.AddCommand(listRolesCmd)
 }
 
@@ -32,6 +33,7 @@ var listRolesCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		SetupLogging()
 		r := cli.NewRoles(options.Resolve("nalejAddress", nalejAddress), options.ResolveAsInt("port", nalejPort))
-		r.List(options.Resolve("organizationID", organizationID))
+		r.List(options.Resolve("organizationID", organizationID), internal)
 	},
 }
+

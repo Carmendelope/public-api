@@ -35,7 +35,7 @@ func (r *Roles) getClient() (grpc_public_api_go.RolesClient, *grpc.ClientConn) {
 	return client, conn
 }
 
-func (r *Roles) List(organizationID string) {
+func (r *Roles) List(organizationID string, internal bool) {
 	r.load()
 	ctx, cancel := r.GetContext()
 	client, conn := r.getClient()
@@ -44,6 +44,12 @@ func (r *Roles) List(organizationID string) {
 	orgID := &grpc_organization_go.OrganizationId{
 		OrganizationId: organizationID,
 	}
-	roles, err := client.List(ctx, orgID)
+	var roles *grpc_public_api_go.RoleList
+	var err error
+	if internal{
+		roles, err = client.ListInternal(ctx, orgID)
+	}else{
+		roles, err = client.List(ctx, orgID)
+	}
 	r.PrintResultOrError(roles, err, "cannot obtain role list")
 }
