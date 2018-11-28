@@ -2,7 +2,7 @@
  * Copyright (C)  2018 Nalej - All Rights Reserved
  */
 
-// This file contains the variables that are used throught the commands.
+// This file contains the variables that are used through the commands.
 
 package commands
 

@@ -183,6 +183,21 @@ func (a *Applications) Deploy(organizationID string, appDescriptorID string, nam
 	a.PrintResultOrError(deployed, err, "cannot deploy application")
 }
 
+func (a *Applications) Undeploy(organizationID string, appInstanceID string) {
+	a.load()
+	ctx, cancel := a.GetContext()
+	client, conn := a.getClient()
+	defer conn.Close()
+	defer cancel()
+
+	undeployRequest := &grpc_application_go.AppInstanceId{
+		OrganizationId:  organizationID,
+		AppInstanceId: appInstanceID,
+	}
+	deployed, err := client.Undeploy(ctx, undeployRequest)
+	a.PrintResultOrError(deployed, err, "cannot undeploy application")
+}
+
 func (a *Applications) ListInstances(organizationID string) {
 	a.load()
 	ctx, cancel := a.GetContext()

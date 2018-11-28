@@ -138,6 +138,17 @@ var deployInstanceCmd = &cobra.Command{
 	},
 }
 
+var undeployInstanceCmd = &cobra.Command{
+	Use:   "undeploy",
+	Short: "Undeploy an application instance",
+	Long:  `Undeploy an application instance`,
+	Run: func(cmd *cobra.Command, args []string) {
+		SetupLogging()
+		a := cli.NewApplications(options.Resolve("nalejAddress", nalejAddress), options.ResolveAsInt("port", nalejPort))
+		a.Undeploy(options.Resolve("organizationID", organizationID), instanceID)
+	},
+}
+
 var listInstancesCmd = &cobra.Command{
 	Use:   "list",
 	Short: "List application instances",
