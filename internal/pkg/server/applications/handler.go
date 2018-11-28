@@ -78,6 +78,22 @@ func (h *Handler) GetAppDescriptor(ctx context.Context, appDescriptorID *grpc_ap
 	return h.Manager.GetAppDescriptor(appDescriptorID)
 }
 
+// GetAppDescriptor retrieves a given application descriptor.
+func (h *Handler) DeleteAppDescriptor(ctx context.Context, appDescriptorID *grpc_application_go.AppDescriptorId) (*grpc_common_go.Success, error) {
+	rm, err := authhelper.GetRequestMetadata(ctx)
+	if err != nil {
+		return nil, conversions.ToGRPCError(err)
+	}
+	if appDescriptorID.OrganizationId != rm.OrganizationID {
+		return nil, derrors.NewPermissionDeniedError("cannot access requested OrganizationID")
+	}
+	err = entities.ValidAppDescriptorID(appDescriptorID)
+	if err != nil {
+		return nil, conversions.ToGRPCError(err)
+	}
+	return h.Manager.DeleteAppDescriptor(appDescriptorID)
+}
+
 // Deploy an application descriptor.
 func (h *Handler) Deploy(ctx context.Context, deployRequest *grpc_application_manager_go.DeployRequest) (*grpc_conductor_go.DeploymentResponse, error) {
 	rm, err := authhelper.GetRequestMetadata(ctx)

@@ -34,6 +34,11 @@ func (m *Manager) GetAppDescriptor(appDescriptorID *grpc_application_go.AppDescr
 	return m.appClient.GetAppDescriptor(context.Background(), appDescriptorID)
 }
 
+// DeleteAppDescriptor deletes a given application descriptor.
+func (m *Manager) DeleteAppDescriptor(appDescriptorID *grpc_application_go.AppDescriptorId) (*grpc_common_go.Success, error) {
+	return m.appClient.RemoveAppDescriptor(context.Background(), appDescriptorID)
+}
+
 // Deploy an application descriptor.
 func (m *Manager) Deploy(deployRequest *grpc_application_manager_go.DeployRequest) (*grpc_conductor_go.DeploymentResponse, error) {
 	return m.appClient.Deploy(context.Background(), deployRequest)

@@ -25,3 +25,5 @@ var descriptorPath string
 var description string
 
 var instanceID string
+
+var internal bool
