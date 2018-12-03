@@ -43,11 +43,11 @@ func init() {
 	deployInstanceCmd.Flags().StringVar(&name, "name", "", "Name of the application instance")
 	deployInstanceCmd.Flags().StringVar(&description, "description", "", "Description of the application instance")
 	instanceCmd.AddCommand(deployInstanceCmd)
+	instanceCmd.AddCommand(undeployInstanceCmd)
 	listInstancesCmd.MarkPersistentFlagRequired("instanceID")
 	instanceCmd.AddCommand(listInstancesCmd)
 	getInstanceCmd.MarkPersistentFlagRequired("instanceID")
 	instanceCmd.AddCommand(getInstanceCmd)
-	appsCmd.AddCommand(undeployInstanceCmd)
 }
 
 var descriptorCmd = &cobra.Command{
