@@ -32,7 +32,11 @@ var listRolesCmd = &cobra.Command{
 	Long:  `List roles`,
 	Run: func(cmd *cobra.Command, args []string) {
 		SetupLogging()
-		r := cli.NewRoles(options.Resolve("nalejAddress", nalejAddress), options.ResolveAsInt("port", nalejPort))
+		r := cli.NewRoles(
+			options.Resolve("nalejAddress", nalejAddress),
+			options.ResolveAsInt("port", nalejPort),
+			insecure,
+			options.Resolve("cacert", caCertPath))
 		r.List(options.Resolve("organizationID", organizationID), internal)
 	},
 }

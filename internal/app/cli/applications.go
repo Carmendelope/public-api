@@ -18,9 +18,9 @@ type Applications struct {
 	Credentials
 }
 
-func NewApplications(address string, port int) *Applications {
+func NewApplications(address string, port int, insecure bool, caCertPath string) *Applications {
 	return &Applications{
-		Connection:  *NewConnection(address, port),
+		Connection:  *NewConnection(address, port, insecure, caCertPath),
 		Credentials: *NewEmptyCredentials(DefaultPath),
 	}
 }

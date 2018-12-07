@@ -49,7 +49,9 @@ var userInfoCmd = &cobra.Command{
 		SetupLogging()
 		u := cli.NewUsers(
 			options.Resolve("nalejAddress", nalejAddress),
-			options.ResolveAsInt("port", nalejPort))
+			options.ResolveAsInt("port", nalejPort),
+			insecure,
+			options.Resolve("cacert", caCertPath))
 		u.Info(options.Resolve("organizationID", organizationID), email)
 	},
 }
@@ -62,7 +64,9 @@ var userListCmd = &cobra.Command{
 		SetupLogging()
 		u := cli.NewUsers(
 			options.Resolve("nalejAddress", nalejAddress),
-			options.ResolveAsInt("port", nalejPort))
+			options.ResolveAsInt("port", nalejPort),
+			insecure,
+			options.Resolve("cacert", caCertPath))
 		u.List(options.Resolve("organizationID", organizationID))
 	},
 }
@@ -76,7 +80,9 @@ var deleteUserCmd = &cobra.Command{
 		SetupLogging()
 		u := cli.NewUsers(
 			options.Resolve("nalejAddress", nalejAddress),
-			options.ResolveAsInt("port", nalejPort))
+			options.ResolveAsInt("port", nalejPort),
+			insecure,
+			options.Resolve("cacert", caCertPath))
 		u.Delete(options.Resolve("organizationID", organizationID), email)
 	},
 }
@@ -90,7 +96,9 @@ var resetPasswordCmd = &cobra.Command{
 		SetupLogging()
 		u := cli.NewUsers(
 			options.Resolve("nalejAddress", nalejAddress),
-			options.ResolveAsInt("port", nalejPort))
+			options.ResolveAsInt("port", nalejPort),
+			insecure,
+			options.Resolve("cacert", caCertPath))
 		u.ResetPassword(options.Resolve("organizationID", organizationID), email)
 	},
 }
@@ -103,7 +111,9 @@ var updateUserCmd = &cobra.Command{
 		SetupLogging()
 		u := cli.NewUsers(
 			options.Resolve("nalejAddress", nalejAddress),
-			options.ResolveAsInt("port", nalejPort))
+			options.ResolveAsInt("port", nalejPort),
+			insecure,
+			options.Resolve("cacert", caCertPath))
 		u.Update(options.Resolve("organizationID", organizationID), email, name, roleName)
 	},
 }
@@ -116,7 +126,9 @@ var addUserCmd = &cobra.Command{
 		SetupLogging()
 		u := cli.NewUsers(
 			options.Resolve("nalejAddress", nalejAddress),
-			options.ResolveAsInt("port", nalejPort))
+			options.ResolveAsInt("port", nalejPort),
+			insecure,
+			options.Resolve("cacert", caCertPath))
 		u.Add(options.Resolve("organizationID", organizationID), email, password, name, roleName)
 	},
 }

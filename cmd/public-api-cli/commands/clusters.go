@@ -24,6 +24,7 @@ func init() {
 	rootCmd.AddCommand(clustersCmd)
 	installClustersCmd.Flags().StringVar(&clusterID, "clusterID", "", "Cluster identifier")
 	installClustersCmd.Flags().StringVar(&kubeConfigPath, "kubeConfigPath", "", "KubeConfig path for installing an existing cluster")
+	installClustersCmd.Flags().StringVar(&hostname, "ingressHostname", "", "Hostname of the application cluster ingress")
 	installClustersCmd.Flags().StringVar(&username, "username", "", "Username (for clusters requiring the install of Kubernetes)")
 	installClustersCmd.Flags().StringVar(&password, "password", "", "Password (for clusters requiring the install of Kubernetes)")
 	installClustersCmd.Flags().StringArrayVar(&nodes, "nodes", []string{}, "Nodes (for clusters requiring the install of Kubernetes)")
@@ -37,11 +38,16 @@ var installClustersCmd = &cobra.Command{
 	Long:  `Install an application cluster`,
 	Run: func(cmd *cobra.Command, args []string) {
 		SetupLogging()
-		c := cli.NewClusters(options.Resolve("nalejAddress", nalejAddress), options.ResolveAsInt("port", nalejPort))
+		c := cli.NewClusters(
+			options.Resolve("nalejAddress", nalejAddress),
+			options.ResolveAsInt("port", nalejPort),
+			insecure,
+			options.Resolve("cacert", caCertPath))
 		c.Install(
 			options.Resolve("organizationID", organizationID),
 			options.Resolve("clusterID", clusterID),
 			kubeConfigPath,
+			hostname,
 			username,
 			privateKeyPath,
 			nodes)
@@ -54,7 +60,11 @@ var infoClusterCmd = &cobra.Command{
 	Long:  `Get the cluster information`,
 	Run: func(cmd *cobra.Command, args []string) {
 		SetupLogging()
-		c := cli.NewClusters(options.Resolve("nalejAddress", nalejAddress), options.ResolveAsInt("port", nalejPort))
+		c := cli.NewClusters(
+			options.Resolve("nalejAddress", nalejAddress),
+			options.ResolveAsInt("port", nalejPort),
+			insecure,
+			options.Resolve("cacert", caCertPath))
 		c.Info(options.Resolve("organizationID", organizationID), options.Resolve("clusterID", clusterID))
 	},
 }
@@ -65,7 +75,11 @@ var listClustersCmd = &cobra.Command{
 	Long:  `List clusters`,
 	Run: func(cmd *cobra.Command, args []string) {
 		SetupLogging()
-		c := cli.NewClusters(options.Resolve("nalejAddress", nalejAddress), options.ResolveAsInt("port", nalejPort))
+		c := cli.NewClusters(
+			options.Resolve("nalejAddress", nalejAddress),
+			options.ResolveAsInt("port", nalejPort),
+			insecure,
+			options.Resolve("cacert", caCertPath))
 		c.List(options.Resolve("organizationID", organizationID))
 	},
 }
