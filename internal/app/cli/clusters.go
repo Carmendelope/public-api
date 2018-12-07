@@ -42,11 +42,14 @@ func (c *Clusters) getClient() (grpc_public_api_go.ClustersClient, *grpc.ClientC
 	return clusterClient, conn
 }
 
-func (c *Clusters) Install(organizationID string, clusterID string, kubeConfigPath string, username string, privateKeyPath string, nodes []string) {
+func (c *Clusters) Install(
+	organizationID string, clusterID string,
+	kubeConfigPath string, ingressHostname string, username string, privateKeyPath string, nodes []string) {
 	installRequest := &grpc_public_api_go.InstallRequest{
 		OrganizationId:    organizationID,
 		ClusterId:         clusterID,
 		ClusterType:       grpc_infrastructure_go.ClusterType_KUBERNETES,
+		Hostname: ingressHostname,
 		InstallBaseSystem: false,
 	}
 

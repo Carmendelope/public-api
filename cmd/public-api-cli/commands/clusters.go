@@ -24,6 +24,7 @@ func init() {
 	rootCmd.AddCommand(clustersCmd)
 	installClustersCmd.Flags().StringVar(&clusterID, "clusterID", "", "Cluster identifier")
 	installClustersCmd.Flags().StringVar(&kubeConfigPath, "kubeConfigPath", "", "KubeConfig path for installing an existing cluster")
+	installClustersCmd.Flags().StringVar(&hostname, "ingressHostname", "", "Hostname of the application cluster ingress")
 	installClustersCmd.Flags().StringVar(&username, "username", "", "Username (for clusters requiring the install of Kubernetes)")
 	installClustersCmd.Flags().StringVar(&password, "password", "", "Password (for clusters requiring the install of Kubernetes)")
 	installClustersCmd.Flags().StringArrayVar(&nodes, "nodes", []string{}, "Nodes (for clusters requiring the install of Kubernetes)")
@@ -46,6 +47,7 @@ var installClustersCmd = &cobra.Command{
 			options.Resolve("organizationID", organizationID),
 			options.Resolve("clusterID", clusterID),
 			kubeConfigPath,
+			hostname,
 			username,
 			privateKeyPath,
 			nodes)
