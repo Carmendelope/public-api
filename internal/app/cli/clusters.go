@@ -19,9 +19,9 @@ type Clusters struct {
 	Credentials
 }
 
-func NewClusters(address string, port int) *Clusters {
+func NewClusters(address string, port int, insecure bool, caCertPath string) *Clusters {
 	return &Clusters{
-		Connection:  *NewConnection(address, port),
+		Connection:  *NewConnection(address, port, insecure, caCertPath),
 		Credentials: *NewEmptyCredentials(DefaultPath),
 	}
 }

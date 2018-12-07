@@ -37,7 +37,11 @@ var installClustersCmd = &cobra.Command{
 	Long:  `Install an application cluster`,
 	Run: func(cmd *cobra.Command, args []string) {
 		SetupLogging()
-		c := cli.NewClusters(options.Resolve("nalejAddress", nalejAddress), options.ResolveAsInt("port", nalejPort))
+		c := cli.NewClusters(
+			options.Resolve("nalejAddress", nalejAddress),
+			options.ResolveAsInt("port", nalejPort),
+			insecure,
+			options.Resolve("cacert", caCertPath))
 		c.Install(
 			options.Resolve("organizationID", organizationID),
 			options.Resolve("clusterID", clusterID),
@@ -54,7 +58,11 @@ var infoClusterCmd = &cobra.Command{
 	Long:  `Get the cluster information`,
 	Run: func(cmd *cobra.Command, args []string) {
 		SetupLogging()
-		c := cli.NewClusters(options.Resolve("nalejAddress", nalejAddress), options.ResolveAsInt("port", nalejPort))
+		c := cli.NewClusters(
+			options.Resolve("nalejAddress", nalejAddress),
+			options.ResolveAsInt("port", nalejPort),
+			insecure,
+			options.Resolve("cacert", caCertPath))
 		c.Info(options.Resolve("organizationID", organizationID), options.Resolve("clusterID", clusterID))
 	},
 }
@@ -65,7 +73,11 @@ var listClustersCmd = &cobra.Command{
 	Long:  `List clusters`,
 	Run: func(cmd *cobra.Command, args []string) {
 		SetupLogging()
-		c := cli.NewClusters(options.Resolve("nalejAddress", nalejAddress), options.ResolveAsInt("port", nalejPort))
+		c := cli.NewClusters(
+			options.Resolve("nalejAddress", nalejAddress),
+			options.ResolveAsInt("port", nalejPort),
+			insecure,
+			options.Resolve("cacert", caCertPath))
 		c.List(options.Resolve("organizationID", organizationID))
 	},
 }

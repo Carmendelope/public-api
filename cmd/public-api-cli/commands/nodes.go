@@ -32,7 +32,11 @@ var listNodesCmd = &cobra.Command{
 	Long:  `List nodes`,
 	Run: func(cmd *cobra.Command, args []string) {
 		SetupLogging()
-		n := cli.NewNodes(options.Resolve("nalejAddress", nalejAddress), options.ResolveAsInt("port", nalejPort))
+		n := cli.NewNodes(
+			options.Resolve("nalejAddress", nalejAddress),
+			options.ResolveAsInt("port", nalejPort),
+			insecure,
+			options.Resolve("cacert", caCertPath))
 		n.List(options.Resolve("organizationID", organizationID),
 			options.Resolve("clusterID", clusterID))
 	},

@@ -22,6 +22,9 @@ var consoleLogging bool
 var nalejAddress string
 var nalejPort int
 
+var insecure bool
+var caCertPath string
+
 var options cli.Options
 
 var rootCmd = &cobra.Command{
@@ -40,6 +43,8 @@ func init() {
 	rootCmd.PersistentFlags().BoolVar(&consoleLogging, "consoleLogging", false, "Pretty print logging")
 	rootCmd.PersistentFlags().StringVar(&nalejAddress, "nalejAddress", "", "Address (host) of the Nalej platform")
 	rootCmd.PersistentFlags().IntVar(&nalejPort, "port", -1, "Port of the Nalej platform Public API")
+	rootCmd.PersistentFlags().BoolVar(&insecure, "insecure", false, "Use a insecure connection to connect to the server")
+	rootCmd.PersistentFlags().StringVar(&caCertPath, "cacert", "", "Path of the CA certificate to validate the server connection")
 }
 
 func Execute() {
