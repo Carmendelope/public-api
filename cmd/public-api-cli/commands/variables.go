@@ -10,6 +10,8 @@ var loginPort int
 var email string
 var password string
 
+var newPassword string
+
 var name string
 var roleName string
 

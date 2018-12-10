@@ -26,10 +26,18 @@ func init() {
 	usersCmd.AddCommand(userInfoCmd)
 	usersCmd.AddCommand(userListCmd)
 	usersCmd.AddCommand(deleteUserCmd)
+
+	resetPasswordCmd.Flags().StringVar(&password, "password", "", "Password")
+	resetPasswordCmd.Flags().StringVar(&newPassword, "newPassword", "", "New password")
+	resetPasswordCmd.MarkPersistentFlagRequired("email")
+	resetPasswordCmd.MarkFlagRequired("password")
+	resetPasswordCmd.MarkFlagRequired("newPassword")
 	usersCmd.AddCommand(resetPasswordCmd)
+
 	updateUserCmd.Flags().StringVar(&name, "name", "", "New name for the user")
 	updateUserCmd.Flags().StringVar(&roleName, "role", "", "New role for the user")
 	usersCmd.AddCommand(updateUserCmd)
+
 	addUserCmd.Flags().StringVar(&name, "name", "", "Full name")
 	addUserCmd.Flags().StringVar(&roleName, "role", "", "Rol name")
 	addUserCmd.Flags().StringVar(&password, "password", "", "Password")
@@ -37,7 +45,6 @@ func init() {
 	addUserCmd.MarkFlagRequired("name")
 	addUserCmd.MarkFlagRequired("role")
 	addUserCmd.MarkFlagRequired("password")
-
 	usersCmd.AddCommand(addUserCmd)
 }
 
@@ -99,7 +106,7 @@ var resetPasswordCmd = &cobra.Command{
 			options.ResolveAsInt("port", nalejPort),
 			insecure,
 			options.Resolve("cacert", caCertPath))
-		u.ResetPassword(options.Resolve("organizationID", organizationID), email)
+		u.ChangePassword(options.Resolve("organizationID", organizationID), email, password, newPassword)
 	},
 }
 

@@ -98,13 +98,15 @@ func (m *Manager) List(organizationID *grpc_organization_go.OrganizationId) (*gr
 }
 
 func (m *Manager) Delete(userID *grpc_user_go.UserId) (*grpc_common_go.Success, error) {
-	panic("implement me")
-}
-
-func (m *Manager) ResetPassword(userID *grpc_user_go.UserId) (*grpc_public_api_go.PasswordResetResponse, error) {
-	panic("implement me")
+	return m.umClient.RemoveUser(context.Background(),userID)
 }
 
 func (m *Manager) Update(updateUserRequest *grpc_user_go.UpdateUserRequest) (*grpc_common_go.Success, error) {
-	panic("implement me")
+	return m.umClient.Update(context.Background(),updateUserRequest)
 }
+
+func (m *Manager) ResetPassword(changePasswordRequest *grpc_user_manager_go.ChangePasswordRequest) (*grpc_common_go.Success, error) {
+	return m.umClient.ChangePassword(context.Background(),changePasswordRequest)
+}
+
+
