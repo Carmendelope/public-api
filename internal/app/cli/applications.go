@@ -64,7 +64,7 @@ func (a *Applications) createAddDescriptorRequest(organizationID string, descrip
 
 func (a *Applications) getBasicDescriptor() *grpc_application_go.AddAppDescriptorRequest {
 
-	service := &grpc_application_go.Service{
+	service1 := &grpc_application_go.Service{
 		ServiceId:   "1",
 		Name:        "simple-mysql",
 		Description: "A MySQL instance",
@@ -80,7 +80,7 @@ func (a *Applications) getBasicDescriptor() *grpc_application_go.AddAppDescripto
 		Labels:               map[string]string{"app": "simple-mysql", "component": "simple-app"},
 	}
 
-	service := &grpc_application_go.Service{
+	service2 := &grpc_application_go.Service{
 		ServiceId:   "2",
 		Name:        "simple-wordpress",
 		Description: "A Wordpress instance",
@@ -109,7 +109,7 @@ func (a *Applications) getBasicDescriptor() *grpc_application_go.AddAppDescripto
 		Description: "This is a basic descriptor of an application",
 		Labels:      map[string]string{"app": "simple-app"},
 		Rules:       []*grpc_application_go.SecurityRule{&secRule},
-		Services:    []*grpc_application_go.Service{service},
+		Services:    []*grpc_application_go.Service{service1, service2},
 	}
 }
 
