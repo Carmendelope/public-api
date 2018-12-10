@@ -151,4 +151,4 @@ publish-image:
 		if [ -f components/"$$app"/Dockerfile ]; then \
 			docker push $(DOCKER_REGISTRY)/$(DOCKER_REPO)/"$$app":$(VERSION) ; \
 		fi ; \
-    done
+  done
