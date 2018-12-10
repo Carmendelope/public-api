@@ -66,7 +66,7 @@ func (a *Applications) getBasicDescriptor() *grpc_application_go.AddAppDescripto
 
 	service := &grpc_application_go.Service{
 		ServiceId:   "1",
-		Name:        "Simple MySQL service",
+		Name:        "simple-mysql",
 		Description: "A MySQL instance",
 		Type:        grpc_application_go.ServiceType_DOCKER,
 		Image:       "mysql:5.6",
@@ -77,7 +77,23 @@ func (a *Applications) getBasicDescriptor() *grpc_application_go.AddAppDescripto
 		}},
 		EnvironmentVariables: map[string]string{"MYSQL_ROOT_PASSWORD": "root"},
 		Configs:              []*grpc_application_go.ConfigFile{&grpc_application_go.ConfigFile{MountPath: "/tmp"}},
-		Labels:               map[string]string{"app": "simple-app", "component": "mysql"},
+		Labels:               map[string]string{"app": "simple-mysql", "component": "simple-app"},
+	}
+
+	service := &grpc_application_go.Service{
+		ServiceId:   "2",
+		Name:        "simple-wordpress",
+		Description: "A Wordpress instance",
+		Type:        grpc_application_go.ServiceType_DOCKER,
+		Image:       "wordpress:4.8-apache",
+		Specs:       &grpc_application_go.DeploySpecs{Replicas: 1},
+		Storage:     []*grpc_application_go.Storage{&grpc_application_go.Storage{MountPath: "/tmp"}},
+		ExposedPorts: []*grpc_application_go.Port{&grpc_application_go.Port{
+			Name: "wordpressport", InternalPort: 80, ExposedPort: 80,
+		}},
+		EnvironmentVariables: map[string]string{"WORDPRESS_DB_HOST":"simple-mysql","WORDPRESS_DB_PASSWORD":"root"},
+		Configs:              []*grpc_application_go.ConfigFile{&grpc_application_go.ConfigFile{MountPath: "/tmp"}},
+		Labels:               map[string]string{"app": "simple-wordpress", "component": "simple-app"},
 	}
 
 	secRule := grpc_application_go.SecurityRule{
