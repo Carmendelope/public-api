@@ -44,13 +44,23 @@ func (c *Clusters) getClient() (grpc_public_api_go.ClustersClient, *grpc.ClientC
 
 func (c *Clusters) Install(
 	organizationID string, clusterID string,
-	kubeConfigPath string, ingressHostname string, username string, privateKeyPath string, nodes []string) {
+	kubeConfigPath string, ingressHostname string, username string, privateKeyPath string, nodes []string,
+	useCoreDNS bool, targetPlatform grpc_public_api_go.Platform) {
 	installRequest := &grpc_public_api_go.InstallRequest{
 		OrganizationId:    organizationID,
 		ClusterId:         clusterID,
 		ClusterType:       grpc_infrastructure_go.ClusterType_KUBERNETES,
 		Hostname: ingressHostname,
 		InstallBaseSystem: false,
+		TargetPlatform: targetPlatform,
+	}
+
+	if useCoreDNS {
+		installRequest.UseKubeDns = false
+		installRequest.UseCoreDns = true
+	} else {
+		installRequest.UseKubeDns = true
+		installRequest.UseCoreDns = false
 	}
 
 	if username != "" && privateKeyPath != "" && len(nodes) > 0 {
