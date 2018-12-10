@@ -137,8 +137,8 @@
 [[projects]]
   name = "github.com/nalej/grpc-public-api-go"
   packages = ["."]
-  revision = "a6df798097a619df756781f2c9d9b1cfe8f21bf6"
-  version = "v0.0.27"
+  revision = "1536c49ad6ad3891b53e49b68e4faf8d01ff8003"
+  version = "v0.0.28"
 
 [[projects]]
   name = "github.com/nalej/grpc-user-go"
@@ -149,8 +149,8 @@
 [[projects]]
   name = "github.com/nalej/grpc-user-manager-go"
   packages = ["."]
-  revision = "67e306a681f1c755f47ac1fb68488dcc6c7be444"
-  version = "v0.0.23"
+  revision = "c0ca6249a7d0d6e947a472bda48a98eaa9a88b3a"
+  version = "v0.0.24"
 
 [[projects]]
   name = "github.com/nalej/grpc-utils"
