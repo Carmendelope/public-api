@@ -42,22 +42,22 @@ dep:
 	    echo ">>> Create vendor folder" ; \
 	    mkdir vendor ; \
 	fi ;
-	$(info >>> Updating dependencies...)
+	@echo ">>> Updating dependencies..."
 	dep ensure -v
 
 test-all: test test-race test-coverage
 
 .PHONY: test test-race test-coverage
 test:
-	$(info >>> Launching tests...)
+	@echo ">>> Launching tests..."
 	$(GOTEST) ./...
 
 test-race:
-	$(info >>> Launching tests... (Race detector enabled))
+	@echo ">>> Launching tests... (Race detector enabled)"
 	$(GOTEST) -race ./...
 
 test-coverage:
-	$(info >>> Launching tests... (Coverage enabled))
+	@echo ">>> Launching tests... (Coverage enabled)"
 	$(GOTEST) -coverprofile=$(COVERAGE_FILE) -covermode=atomic  ./...
 
 # Check the codestyle using gometalinter
@@ -68,12 +68,12 @@ checkstyle:
 # Run go formatter
 .PHONY: format
 format:
-	$(info >>> Formatting...)
+	@echo ">>> Formatting..."
 	gofmt -s -w .
 
 .PHONY: clean
 clean:
-	$(info >>> Cleaning project...)
+	@echo ">>> Cleaning project..."
 	$(GOCLEAN)
 	rm -Rf $(TARGET)
 
@@ -103,7 +103,7 @@ linux:
 	done
 
 yaml:
-	$(info >>> Creating K8s files)
+	@echo ">>> Creating K8s files..."
 	for app in $(APPS); do \
 		if [ -d components/"$$app"/appcluster ]; then \
 			mkdir -p $(TARGET)/yaml/appcluster ; \
@@ -151,4 +151,4 @@ publish-image:
 		if [ -f components/"$$app"/Dockerfile ]; then \
 			docker push $(DOCKER_REGISTRY)/$(DOCKER_REPO)/"$$app":$(VERSION) ; \
 		fi ; \
-    done
+  done
