@@ -168,7 +168,11 @@ var undeployInstanceCmd = &cobra.Command{
 	Long:  `Undeploy an application instance`,
 	Run: func(cmd *cobra.Command, args []string) {
 		SetupLogging()
-		a := cli.NewApplications(options.Resolve("nalejAddress", nalejAddress), options.ResolveAsInt("port", nalejPort))
+		a := cli.NewApplications(
+			options.Resolve("nalejAddress", nalejAddress),
+			options.ResolveAsInt("port", nalejPort),
+			insecure,
+			options.Resolve("cacert", caCertPath))
 		a.Undeploy(options.Resolve("organizationID", organizationID), instanceID)
 	},
 }
