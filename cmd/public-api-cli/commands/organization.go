@@ -31,7 +31,11 @@ var infoCmd = &cobra.Command{
 	Long:  `Retrieve organization information`,
 	Run: func(cmd *cobra.Command, args []string) {
 		SetupLogging()
-		o := cli.NewOrganizations(options.Resolve("nalejAddress", nalejAddress), options.ResolveAsInt("port", nalejPort))
+		o := cli.NewOrganizations(
+			options.Resolve("nalejAddress", nalejAddress),
+			options.ResolveAsInt("port", nalejPort),
+			insecure,
+			options.Resolve("cacert", caCertPath))
 		o.Info(options.Resolve("organizationID", organizationID))
 	},
 }

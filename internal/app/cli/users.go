@@ -13,9 +13,9 @@ type Users struct {
 	Credentials
 }
 
-func NewUsers(address string, port int) *Users {
+func NewUsers(address string, port int, insecure bool, caCertPath string) *Users {
 	return &Users{
-		Connection:  *NewConnection(address, port),
+		Connection:  *NewConnection(address, port, insecure, caCertPath),
 		Credentials: *NewEmptyCredentials(DefaultPath),
 	}
 }

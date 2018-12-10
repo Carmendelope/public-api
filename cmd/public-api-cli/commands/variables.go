@@ -18,6 +18,7 @@ var clusterID string
 var username string
 var privateKeyPath string
 var kubeConfigPath string
+var hostname string
 var nodes []string
 
 var descriptorID string

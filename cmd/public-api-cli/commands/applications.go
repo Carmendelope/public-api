@@ -67,7 +67,11 @@ var addDescriptorCmd = &cobra.Command{
 	Long:  `Add a new application descriptor`,
 	Run: func(cmd *cobra.Command, args []string) {
 		SetupLogging()
-		a := cli.NewApplications(options.Resolve("nalejAddress", nalejAddress), options.ResolveAsInt("port", nalejPort))
+		a := cli.NewApplications(
+			options.Resolve("nalejAddress", nalejAddress),
+			options.ResolveAsInt("port", nalejPort),
+			insecure,
+			options.Resolve("cacert", caCertPath))
 		a.AddDescriptor(options.Resolve("organizationID", organizationID), descriptorPath)
 	},
 }
@@ -78,7 +82,11 @@ var addDescriptorHelpCmd = &cobra.Command{
 	Long:  `Show help related to adding a new application descriptor`,
 	Run: func(cmd *cobra.Command, args []string) {
 		SetupLogging()
-		a := cli.NewApplications(options.Resolve("nalejAddress", nalejAddress), options.ResolveAsInt("port", nalejPort))
+		a := cli.NewApplications(
+			options.Resolve("nalejAddress", nalejAddress),
+			options.ResolveAsInt("port", nalejPort),
+			insecure,
+			options.Resolve("cacert", caCertPath))
 		a.AddDescriptorHelp()
 	},
 }
@@ -89,7 +97,11 @@ var listDescriptorsCmd = &cobra.Command{
 	Long:  `List the application descriptors`,
 	Run: func(cmd *cobra.Command, args []string) {
 		SetupLogging()
-		a := cli.NewApplications(options.Resolve("nalejAddress", nalejAddress), options.ResolveAsInt("port", nalejPort))
+		a := cli.NewApplications(
+			options.Resolve("nalejAddress", nalejAddress),
+			options.ResolveAsInt("port", nalejPort),
+			insecure,
+			options.Resolve("cacert", caCertPath))
 		a.ListDescriptors(options.Resolve("organizationID", organizationID))
 	},
 }
@@ -100,7 +112,11 @@ var getDescriptorCmd = &cobra.Command{
 	Long:  `Get an application descriptor`,
 	Run: func(cmd *cobra.Command, args []string) {
 		SetupLogging()
-		a := cli.NewApplications(options.Resolve("nalejAddress", nalejAddress), options.ResolveAsInt("port", nalejPort))
+		a := cli.NewApplications(
+			options.Resolve("nalejAddress", nalejAddress),
+			options.ResolveAsInt("port", nalejPort),
+			insecure,
+			options.Resolve("cacert", caCertPath))
 		a.GetDescriptor(options.Resolve("organizationID", organizationID), descriptorID)
 	},
 }
@@ -111,7 +127,11 @@ var deleteDescriptorCmd = &cobra.Command{
 	Long:  `Delete an application descriptor`,
 	Run: func(cmd *cobra.Command, args []string) {
 		SetupLogging()
-		a := cli.NewApplications(options.Resolve("nalejAddress", nalejAddress), options.ResolveAsInt("port", nalejPort))
+		a := cli.NewApplications(
+			options.Resolve("nalejAddress", nalejAddress),
+			options.ResolveAsInt("port", nalejPort),
+			insecure,
+			options.Resolve("cacert", caCertPath))
 		a.DeleteDescriptor(options.Resolve("organizationID", organizationID), descriptorID)
 	},
 }
@@ -133,7 +153,11 @@ var deployInstanceCmd = &cobra.Command{
 	Long:  `Deploy an application instance`,
 	Run: func(cmd *cobra.Command, args []string) {
 		SetupLogging()
-		a := cli.NewApplications(options.Resolve("nalejAddress", nalejAddress), options.ResolveAsInt("port", nalejPort))
+		a := cli.NewApplications(
+			options.Resolve("nalejAddress", nalejAddress),
+			options.ResolveAsInt("port", nalejPort),
+			insecure,
+			options.Resolve("cacert", caCertPath))
 		a.Deploy(options.Resolve("organizationID", organizationID), descriptorID, name, description)
 	},
 }
@@ -155,7 +179,11 @@ var listInstancesCmd = &cobra.Command{
 	Long:  `List application intances`,
 	Run: func(cmd *cobra.Command, args []string) {
 		SetupLogging()
-		a := cli.NewApplications(options.Resolve("nalejAddress", nalejAddress), options.ResolveAsInt("port", nalejPort))
+		a := cli.NewApplications(
+			options.Resolve("nalejAddress", nalejAddress),
+			options.ResolveAsInt("port", nalejPort),
+			insecure,
+			options.Resolve("cacert", caCertPath))
 		a.ListInstances(options.Resolve("organizationID", organizationID))
 	},
 }
@@ -166,7 +194,11 @@ var getInstanceCmd = &cobra.Command{
 	Long:  `Get and application instance`,
 	Run: func(cmd *cobra.Command, args []string) {
 		SetupLogging()
-		a := cli.NewApplications(options.Resolve("nalejAddress", nalejAddress), options.ResolveAsInt("port", nalejPort))
+		a := cli.NewApplications(
+			options.Resolve("nalejAddress", nalejAddress),
+			options.ResolveAsInt("port", nalejPort),
+			insecure,
+			options.Resolve("cacert", caCertPath))
 		a.GetInstance(options.Resolve("organizationID", organizationID), instanceID)
 	},
 }

@@ -59,6 +59,7 @@ func (m *Manager) Install(request *grpc_public_api_go.InstallRequest) (*grpc_inf
 		ClusterType:       request.ClusterType,
 		InstallBaseSystem: request.InstallBaseSystem,
 		KubeConfigRaw:     request.KubeConfigRaw,
+		Hostname: 		request.Hostname,
 		Username:          request.Username,
 		PrivateKey:        request.PrivateKey,
 		Nodes:             request.Nodes,
