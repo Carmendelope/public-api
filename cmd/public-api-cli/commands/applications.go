@@ -3,7 +3,6 @@
  */
 
  // TODO Remove descriptor NP-338
- // TODO Undeploy application instance NP-339
 
 package commands
 
@@ -44,6 +43,7 @@ func init() {
 	deployInstanceCmd.Flags().StringVar(&name, "name", "", "Name of the application instance")
 	deployInstanceCmd.Flags().StringVar(&description, "description", "", "Description of the application instance")
 	instanceCmd.AddCommand(deployInstanceCmd)
+	instanceCmd.AddCommand(undeployInstanceCmd)
 	listInstancesCmd.MarkPersistentFlagRequired("instanceID")
 	instanceCmd.AddCommand(listInstancesCmd)
 	getInstanceCmd.MarkPersistentFlagRequired("instanceID")
@@ -159,6 +159,17 @@ var deployInstanceCmd = &cobra.Command{
 			insecure,
 			options.Resolve("cacert", caCertPath))
 		a.Deploy(options.Resolve("organizationID", organizationID), descriptorID, name, description)
+	},
+}
+
+var undeployInstanceCmd = &cobra.Command{
+	Use:   "undeploy",
+	Short: "Undeploy an application instance",
+	Long:  `Undeploy an application instance`,
+	Run: func(cmd *cobra.Command, args []string) {
+		SetupLogging()
+		a := cli.NewApplications(options.Resolve("nalejAddress", nalejAddress), options.ResolveAsInt("port", nalejPort))
+		a.Undeploy(options.Resolve("organizationID", organizationID), instanceID)
 	},
 }
 
