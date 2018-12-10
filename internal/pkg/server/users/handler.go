@@ -91,6 +91,11 @@ func (h *Handler) Delete(ctx context.Context, userID *grpc_user_go.UserId) (*grp
 	return h.Manager.Delete(userID)
 }
 
+func (h *Handler) ChangePassword(ctx context.Context, in *grpc_user_go.ChangePasswordRequest) (*grpc_common_go.Success, error) {
+	// TODO
+	return nil, nil
+}
+
 func (h *Handler) ResetPassword(ctx context.Context, userID *grpc_user_go.UserId) (*grpc_public_api_go.PasswordResetResponse, error) {
 	rm, err := authhelper.GetRequestMetadata(ctx)
 	if err != nil {

@@ -49,7 +49,7 @@
 
 [[constraint]]
     name="github.com/nalej/grpc-authx-go"
-    version="=v0.0.20"
+    version="v0.0.20"
 
 [[constraint]]
     name="github.com/nalej/authx"
@@ -57,7 +57,7 @@
 
 [[constraint]]
     name="github.com/nalej/grpc-user-go"
-    version="v0.0.22"
+    version="v0.0.25"
 
 [[constraint]]
     name="github.com/nalej/grpc-user-manager-go"
@@ -65,7 +65,7 @@
 
 [[constraint]]
     name="github.com/nalej/grpc-public-api-go"
-    version="v0.0.22"
+    version="v0.0.26"
 
 [[constraint]]
     name="github.com/nalej/grpc-login-api-go"

@@ -7,6 +7,8 @@ package commands
 import (
 	"github.com/nalej/public-api/internal/app/cli"
 	"github.com/spf13/cobra"
+	"github.com/nalej/grpc-public-api-go"
+	"github.com/rs/zerolog/log"
 )
 
 var clustersCmd = &cobra.Command{
@@ -28,6 +30,8 @@ func init() {
 	installClustersCmd.Flags().StringVar(&username, "username", "", "Username (for clusters requiring the install of Kubernetes)")
 	installClustersCmd.Flags().StringVar(&password, "password", "", "Password (for clusters requiring the install of Kubernetes)")
 	installClustersCmd.Flags().StringArrayVar(&nodes, "nodes", []string{}, "Nodes (for clusters requiring the install of Kubernetes)")
+	installClustersCmd.Flags().BoolVar(&useCoreDNS, "useCoreDNS", true, "Indicate if CoreDNS is going to be used. If not, kubeDNS will be set")
+	installClustersCmd.Flags().StringVar(&targetPlatform, "targetPlatform", "minikube", "Indicate the target platform between minikube azure")
 	clustersCmd.AddCommand(installClustersCmd)
 	clustersCmd.AddCommand(listClustersCmd)
 }
@@ -50,7 +54,9 @@ var installClustersCmd = &cobra.Command{
 			hostname,
 			username,
 			privateKeyPath,
-			nodes)
+			nodes,
+			useCoreDNS,
+			stringToTargetPlatform(targetPlatform))
 	},
 }
 
@@ -82,4 +88,19 @@ var listClustersCmd = &cobra.Command{
 			options.Resolve("cacert", caCertPath))
 		c.List(options.Resolve("organizationID", organizationID))
 	},
+}
+
+// Convert a string to the corresponding cluster platform
+func stringToTargetPlatform(p string) grpc_public_api_go.Platform {
+	var result grpc_public_api_go.Platform
+	switch p {
+		case grpc_public_api_go.Platform_AZURE.String():
+			result = grpc_public_api_go.Platform_AZURE
+		case grpc_public_api_go.Platform_MINIKUBE.String():
+			result = grpc_public_api_go.Platform_MINIKUBE
+		default:
+			log.Fatal().Str("platform",p).Msg("unknown platform")
+	}
+
+	return result
 }

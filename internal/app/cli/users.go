@@ -102,12 +102,16 @@ func (u *Users) Delete(organizationID string, email string) {
 }
 
 // Reset the password of a user.
-func (u *Users) ResetPassword(organizationID string, email string) {
+func (u *Users) ChangePassword(organizationID string, email string) {
+	log.Panic().Msg("not implemented")
+	// TODO
+	/*
 	u.load()
 	ctx, cancel := u.GetContext()
 	client, conn := u.getClient()
 	defer conn.Close()
 	defer cancel()
+
 
 	userID := &grpc_user_go.UserId{
 		OrganizationId: organizationID,
@@ -115,6 +119,7 @@ func (u *Users) ResetPassword(organizationID string, email string) {
 	}
 	done, err := client.ResetPassword(ctx, userID)
 	u.PrintResultOrError(done, err, "cannot change password")
+	*/
 }
 
 // Update the user information.
