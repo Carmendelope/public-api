@@ -157,7 +157,7 @@ var _ = ginkgo.Describe("Users", func() {
 		gomega.Expect(err).To(gomega.Succeed())
 		gomega.Expect(success).ToNot(gomega.BeNil())
 	})
-
+	/*
 	ginkgo.PIt("should be able to reset the password of a user", func() {
 		userID := &grpc_user_go.UserId{
 			OrganizationId: targetUser.OrganizationId,
@@ -167,7 +167,7 @@ var _ = ginkgo.Describe("Users", func() {
 		gomega.Expect(err).To(gomega.Succeed())
 		gomega.Expect(reset.NewPassword).ShouldNot(gomega.BeEmpty())
 	})
-
+	*/
 	ginkgo.PIt("should be able to update an existing user", func() {
 		updateUserRequest := &grpc_user_go.UpdateUserRequest{
 			OrganizationId: targetUser.OrganizationId,

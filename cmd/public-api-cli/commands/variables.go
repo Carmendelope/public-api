@@ -20,6 +20,8 @@ var privateKeyPath string
 var kubeConfigPath string
 var hostname string
 var nodes []string
+var useCoreDNS bool
+var targetPlatform string
 
 var descriptorID string
 var descriptorPath string

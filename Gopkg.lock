@@ -88,20 +88,20 @@
   version = "v2.0.0"
 
 [[projects]]
-  digest = "1:881af61d4c1760ca83c5a4fcd0d3522fbdc7d9b4ef67c86fbe15ed764ffd210f"
+  digest = "1:8163cd4653d9651870fa61f4d85535f158e52a9383cc3bd8d9091efbe2b439df"
   name = "github.com/nalej/grpc-application-go"
   packages = ["."]
   pruneopts = ""
-  revision = "23a1ba36c670f151715184c16a56189427db70e2"
-  version = "v0.0.33"
+  revision = "ee906a1016bdab719de57554e2ce923de954fc6e"
+  version = "v0.0.34"
 
 [[projects]]
-  digest = "1:f0c821466830fe1ab88190cded4fc319d383db43db66af074df9faa8fe53c415"
+  digest = "1:33009d403ba60c558e34bf88251200c8311292a8fd7f654fa9b3342bbc297aae"
   name = "github.com/nalej/grpc-application-manager-go"
   packages = ["."]
   pruneopts = ""
-  revision = "afe0b13e9319c97f1c9d87f8f69d7c8fa67510d1"
-  version = "v0.0.18"
+  revision = "a060fcff8b31ca99a6f86bc3de98f501e49cdbbc"
+  version = "v0.0.19"
 
 [[projects]]
   digest = "1:bc6a56ace9424f979cfaa2821155c8974477b64ddaeb7f16631faea10e46576d"
@@ -112,87 +112,87 @@
   version = "v0.0.20"
 
 [[projects]]
-  digest = "1:63181c8e8116240a2e3738d3e214b7c253a698cd03f6065028db489cc9b71389"
+  digest = "1:058b316520cc9d0f980063cf54893808c254bd5ca4da473ea71f40411d1bf2f3"
   name = "github.com/nalej/grpc-common-go"
   packages = ["."]
   pruneopts = ""
-  revision = "c7ff82134ab49f98295d02a1d3d17b43706103d0"
-  version = "v0.0.25"
-
-[[projects]]
-  digest = "1:8a38d3d08035191f37863127ff0883ad697143c1efb4cacc2597f1c2400d5001"
-  name = "github.com/nalej/grpc-conductor-go"
-  packages = ["."]
-  pruneopts = ""
-  revision = "807bbd77170e67dd2d4779bc5c72421151edae5d"
-  version = "v0.0.66"
-
-[[projects]]
-  digest = "1:1db0bb9bdf299a9cd0e52235a6be8a5be957a63a3450a91413960db376002a93"
-  name = "github.com/nalej/grpc-infrastructure-go"
-  packages = ["."]
-  pruneopts = ""
-  revision = "718711ac1f475ddd8a4cb2195375f1a4687228e4"
+  revision = "b049c8b3ecb08ad20226c7f4344f4ef36f21b8c2"
   version = "v0.0.26"
 
 [[projects]]
-  digest = "1:a75ed4d3491b1f6ddeb2e7a90be35de3ac36f14de2196a848d99e503487b9257"
+  digest = "1:36d85d3f358eca9ea1e1eca5fd68aa30c55261a4ed1abf523ec9c33e58e12597"
+  name = "github.com/nalej/grpc-conductor-go"
+  packages = ["."]
+  pruneopts = ""
+  revision = "cb3992f923b633814466ca1d636517cb75eb3aeb"
+  version = "v0.0.67"
+
+[[projects]]
+  digest = "1:969e271bbf2dabba18b50d2bc32f0c507549b71292176565b28a6fea4f3c6079"
+  name = "github.com/nalej/grpc-infrastructure-go"
+  packages = ["."]
+  pruneopts = ""
+  revision = "f56eec7531b5c7ebd5bc3c8248d17ecc0aca4f37"
+  version = "v0.0.27"
+
+[[projects]]
+  digest = "1:c049b4dd903f570da340405a8f5a0f1a5cd5a0d9b34f680a0b93e12ad21a91d6"
   name = "github.com/nalej/grpc-infrastructure-manager-go"
   packages = ["."]
   pruneopts = ""
-  revision = "607cf15637cbadfed68784d1d555298e67191103"
-  version = "v0.0.24"
+  revision = "11dcf90237ed2e4fda36a22b6f92ca4dc9091b16"
+  version = "v0.0.26"
 
 [[projects]]
-  digest = "1:6a5f28d45f6957a0583aebd57eb6accc71ea9e96f38658ed0027c81074b843ef"
+  digest = "1:c42cf036e65d565d1342afabf8b71e7ebe39bc57e30c9d326fa4233852adbb2e"
   name = "github.com/nalej/grpc-installer-go"
   packages = ["."]
   pruneopts = ""
-  revision = "9c41274b6b07e30d392419fd221c5cbfdbed2408"
-  version = "v0.0.23"
+  revision = "6bd5169852610f4c6562bb38c3aa50861ef1af81"
+  version = "v0.0.25"
 
 [[projects]]
-  digest = "1:5fe1f9b3b0b89c34395bb753724ad8f3e0d724bb47b5e915c2da192e4c5089eb"
+  digest = "1:163b4602f2da60d7026b4a1cb97a089b52dc5aee091b175b8887d17f31c0ce97"
   name = "github.com/nalej/grpc-login-api-go"
   packages = ["."]
   pruneopts = ""
-  revision = "26be5213ed60bdf143a38fce83229177aea4f2d2"
-  version = "v0.0.17"
+  revision = "e2a22dbf3d31d3663bd7aaabf76e1c2a4d8d2d5b"
+  version = "v0.0.18"
 
 [[projects]]
-  digest = "1:5f60ffe5e9b202c0e75844cf91340b3c4a3292adcdc3848d8e90730bb5bcfcf8"
+  digest = "1:1bd32b88077164b5c388e807ea40ed91f153d120cb231d4ab5c9c37e8d2a6906"
   name = "github.com/nalej/grpc-organization-go"
   packages = ["."]
   pruneopts = ""
-  revision = "ee09eef6191a86022657075d72d70335ea403e2a"
-  version = "v0.0.24"
+  revision = "fedd7501b367510ff9303baae94911948c68acab"
+  version = "v0.0.25"
 
 [[projects]]
-  digest = "1:678172f197b216bcf739af22cade56df69c3ae49a9f061aab9f38c3ce99a4ee7"
+  digest = "1:a30cd765ac482e3954ec6b8564ec1508eb43519893793b4b6cce3ba26782651c"
   name = "github.com/nalej/grpc-public-api-go"
   packages = ["."]
   pruneopts = ""
-  revision = "1cc877a49b955af9fe4053cd01a6983ff4f4ca5c"
-  version = "v0.0.22"
+  revision = "4b5a29d2c0ef762d9797bd5cd057db412e74b7a9"
+  version = "v0.0.26"
 
 [[projects]]
-  digest = "1:4f7d80e243e51aa774a1347d8b8fcdac21da41ce9ca3de1d889d4db36df0dce5"
+  digest = "1:145680f33a5fd1729afd0bd20d4e3f7ded8eac655616b7972553a869754c3259"
   name = "github.com/nalej/grpc-user-go"
   packages = ["."]
   pruneopts = ""
-  revision = "99c349ba763fae8a2c96dfb4b148c7447b733230"
-  version = "v0.0.22"
+  revision = "abed758012bcc763ccd1f57fe3b45cb027963a21"
+  version = "v0.0.25"
 
 [[projects]]
-  digest = "1:fc3268666affc9be45d941c29367ed276896f4018873ea66f2b2d7bd30233b24"
+  digest = "1:3c0e74d530949c6560d72ae3b24e417fac0cd7f696d6ec09d9d4162237b27280"
   name = "github.com/nalej/grpc-user-manager-go"
   packages = ["."]
   pruneopts = ""
-  revision = "b31895b783db4c408c10769dccc5b6da901f4557"
-  version = "v0.0.20"
+  revision = "97f003073ebb5bfb8b67e8e92ecccd5d712795c2"
+  version = "v0.0.22"
 
 [[projects]]
-  digest = "1:220e1579404d4114ffffa8f7ca924798523acae03326d1544c6cf166d1693bae"
+  digest = "1:5edfb9835193a7419f3b82d746644453c9cfa0a31534922bbabc1e65d393a259"
   name = "github.com/nalej/grpc-utils"
   packages = [
     "pkg/conversions",
@@ -200,8 +200,8 @@
     "pkg/tools",
   ]
   pruneopts = ""
-  revision = "120443cfc0335f46d85293d471189625d8b70483"
-  version = "v1.2.0"
+  revision = "fff7657002d0a5995a046522eace2bcb03830457"
+  version = "v1.3.0"
 
 [[projects]]
   digest = "1:a754db3c70741eeaeba73ec4cd970dc8918d06ced993d24891e9c0386d74f588"

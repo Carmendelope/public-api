@@ -99,7 +99,8 @@ var resetPasswordCmd = &cobra.Command{
 			options.ResolveAsInt("port", nalejPort),
 			insecure,
 			options.Resolve("cacert", caCertPath))
-		u.ResetPassword(options.Resolve("organizationID", organizationID), email)
+		u.ChangePassword(options.Resolve("organizationID", organizationID), email)
+		//u.ResetPassword(options.Resolve("organizationID", organizationID), email)
 	},
 }
 
