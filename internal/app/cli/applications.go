@@ -216,8 +216,8 @@ func (a *Applications) Undeploy(organizationID string, appInstanceID string) {
 		OrganizationId:  organizationID,
 		AppInstanceId: appInstanceID,
 	}
-	undeployed, err := client.Undeploy(ctx, undeployRequest)
-	a.PrintResultOrError(undeployed, err, "cannot undeploy application")
+	_, err := client.Undeploy(ctx, undeployRequest)
+	a.PrintSuccessOrError(err, "cannot undeploy application", "application undeployed")
 }
 
 func (a *Applications) ListInstances(organizationID string) {

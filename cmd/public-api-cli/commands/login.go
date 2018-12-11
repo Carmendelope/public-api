@@ -24,6 +24,8 @@ var loginCmd = &cobra.Command{
 		_, err := l.Login(email, password)
 		if err != nil {
 			log.Error().Str("trace", err.DebugReport()).Msg("unable to login into the platform")
+		}else{
+			log.Info().Msg("Successfully logged into the platform")
 		}
 	},
 }

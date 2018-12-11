@@ -76,6 +76,14 @@ func (c *Connection) PrintResultOrError(result interface{}, err error, errMsg st
 	}
 }
 
+func (c *Connection) PrintSuccessOrError(err error, errMsg string, successMsg string){
+	if err != nil{
+		log.Fatal().Str("trace", conversions.ToDerror(err).DebugReport()).Msg(errMsg)
+	}else{
+		fmt.Println(fmt.Sprintf("{\"msg\":\"%s\"}", successMsg))
+	}
+}
+
 func (c *Connection) PrintResult(result interface{}) error {
 	//Print descriptors
 	res, err := json.MarshalIndent(result, "", "  ")
