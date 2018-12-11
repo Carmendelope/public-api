@@ -15,6 +15,7 @@ import (
 	"github.com/nalej/grpc-utils/pkg/conversions"
 	"github.com/nalej/public-api/internal/pkg/authhelper"
 	"github.com/nalej/public-api/internal/pkg/entities"
+	"github.com/rs/zerolog/log"
 )
 
 // Handler structure for the cluster requests.
@@ -29,6 +30,7 @@ func NewHandler(manager Manager) *Handler {
 
 // Install a new cluster adding it to the system.
 func (h *Handler) Install(ctx context.Context, request *grpc_public_api_go.InstallRequest) (*grpc_infrastructure_manager_go.InstallResponse, error) {
+	log.Debug().Interface("request", request).Msg("Install")
 	rm, err := authhelper.GetRequestMetadata(ctx)
 	if err != nil {
 		return nil, conversions.ToGRPCError(err)

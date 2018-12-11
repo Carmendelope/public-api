@@ -89,7 +89,9 @@ func (c *Clusters) Install(
 	defer conn.Close()
 	defer cancel()
 
+	log.Debug().Interface("request", installRequest).Msg("Install request")
 	response, err := client.Install(ctx, installRequest)
+
 	c.PrintResultOrError(response, err, "cannot install new cluster")
 }
 
