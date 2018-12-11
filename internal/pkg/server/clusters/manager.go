@@ -54,15 +54,19 @@ func (m *Manager) clusterNodesStats(organizationID string, clusterID string) (in
 // Install a new cluster adding it to the system.
 func (m *Manager) Install(request *grpc_public_api_go.InstallRequest) (*grpc_infrastructure_manager_go.InstallResponse, error) {
 	installRequest := &grpc_installer_go.InstallRequest{
-		OrganizationId:    request.OrganizationId,
-		ClusterId:         request.ClusterId,
-		ClusterType:       request.ClusterType,
-		InstallBaseSystem: request.InstallBaseSystem,
-		KubeConfigRaw:     request.KubeConfigRaw,
-		Hostname: 		request.Hostname,
-		Username:          request.Username,
-		PrivateKey:        request.PrivateKey,
-		Nodes:             request.Nodes,
+		InstallId:            "",
+		OrganizationId:       request.OrganizationId,
+		ClusterId:            request.ClusterId,
+		ClusterType:          request.ClusterType,
+		InstallBaseSystem:    request.InstallBaseSystem,
+		KubeConfigRaw:        request.KubeConfigRaw,
+		Hostname:             request.Hostname,
+		Username:             request.Username,
+		PrivateKey:           request.PrivateKey,
+		Nodes:                request.Nodes,
+		UseKubeDns:           request.UseKubeDns,
+		UseCoreDns:           request.UseCoreDns,
+		TargetPlatform:       grpc_installer_go.Platform(grpc_installer_go.Platform_value[request.TargetPlatform.String()]),
 	}
 	return m.infraClient.InstallCluster(context.Background(), installRequest)
 }
