@@ -59,7 +59,7 @@ var userInfoCmd = &cobra.Command{
 			options.ResolveAsInt("port", nalejPort),
 			insecure,
 			options.Resolve("cacert", caCertPath))
-		u.Info(options.Resolve("organizationID", organizationID), email)
+		u.Info(options.Resolve("organizationID", organizationID), options.Resolve("email", email))
 	},
 }
 
