@@ -21,12 +21,18 @@ var loginCmd = &cobra.Command{
 			loginPort,
 			insecure,
 			options.Resolve("cacert", caCertPath))
-		_, err := l.Login(email, password)
+		creds, err := l.Login(email, password)
 		if err != nil {
-			log.Error().Str("trace", err.DebugReport()).Msg("unable to login into the platform")
-		}else{
-			log.Info().Msg("Successfully logged into the platform")
+			log.Fatal().Str("trace", err.DebugReport()).Msg("unable to login into the platform")
 		}
+		log.Info().Msg("Successfully logged into the platform")
+		claims, err := l.GetPersonalClaims(creds)
+		if err != nil{
+			log.Fatal().Str("trace", err.DebugReport()).Msg("unable to login into the platform")
+		}
+		opts := cli.NewOptions()
+		opts.Set("organizationID", claims.OrganizationID)
+		opts.Set("email", claims.UserID)
 	},
 }
 

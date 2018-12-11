@@ -24,6 +24,7 @@ func init() {
 	rootCmd.AddCommand(usersCmd)
 	usersCmd.PersistentFlags().StringVar(&email, "email", "", "User email")
 	usersCmd.AddCommand(userInfoCmd)
+	userInfoCmd.MarkPersistentFlagRequired("email")
 	usersCmd.AddCommand(userListCmd)
 	usersCmd.AddCommand(deleteUserCmd)
 

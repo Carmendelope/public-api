@@ -52,7 +52,7 @@ func (h *Handler) Info(ctx context.Context, userID *grpc_user_go.UserId) (*grpc_
 	if userID.OrganizationId != rm.OrganizationID {
 		return nil, derrors.NewPermissionDeniedError("cannot access requested OrganizationID")
 	}
-	if userID.Email != rm.UserID {
+	if !rm.OrgPrimitive && userID.Email != rm.UserID {
 		return nil, derrors.NewPermissionDeniedError("cannot access requested user")
 	}
 	err = entities.ValidUserId(userID)

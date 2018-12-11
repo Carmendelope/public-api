@@ -6,6 +6,8 @@ package cli
 
 import (
 	"context"
+	"github.com/dgrijalva/jwt-go"
+	"github.com/nalej/authx/pkg/token"
 	"github.com/nalej/derrors"
 	"github.com/nalej/grpc-authx-go"
 	"github.com/nalej/grpc-login-api-go"
@@ -49,4 +51,15 @@ func (l *Login) Login(email string, password string) (*Credentials, derrors.Erro
 		return nil, sErr
 	}
 	return credentials, nil
+}
+
+func (l * Login) GetPersonalClaims(credentials *Credentials) (*token.Claim, derrors.Error){
+	parser := jwt.Parser{
+		SkipClaimsValidation: true,
+	}
+	tk, _, err := parser.ParseUnverified(credentials.Token, &token.Claim{})
+	if err != nil{
+		return nil, derrors.AsError(err, "cannot parse token")
+	}
+	return tk.Claims.(*token.Claim), nil
 }
