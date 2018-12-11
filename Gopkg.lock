@@ -16,11 +16,15 @@
     "jsonpb",
     "proto",
     "protoc-gen-go/descriptor",
+    "protoc-gen-go/generator",
+    "protoc-gen-go/generator/internal/remap",
+    "protoc-gen-go/plugin",
     "ptypes",
     "ptypes/any",
     "ptypes/duration",
     "ptypes/struct",
     "ptypes/timestamp",
+    "ptypes/wrappers",
   ]
   pruneopts = ""
   revision = "aa810b61a9c79d51363740d207bb46cf8e620ed5"
@@ -35,7 +39,7 @@
   version = "v1.1.0"
 
 [[projects]]
-  digest = "1:dc70bd0ecd18729cf0ecf8828045e185ce0b15084f1bbe250422ab65e6fcd79c"
+  digest = "1:33cfc9ad4e5a50a9c7bac9be5799ac616b632d13db482686b23602284847bc4d"
   name = "github.com/grpc-ecosystem/grpc-gateway"
   packages = [
     "runtime",
@@ -43,8 +47,8 @@
     "utilities",
   ]
   pruneopts = ""
-  revision = "aeab1d96e0f1368d243e2e5f526aa29d495517bb"
-  version = "v1.5.1"
+  revision = "01c07cdabb480b6d67b5c5586ae3b66e806de513"
+  version = "v1.6.2"
 
 [[projects]]
   digest = "1:b3c5b95e56c06f5aa72cb2500e6ee5f44fcd122872d4fec2023a488e561218bc"
@@ -70,14 +74,14 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:61e8e61f7ed6bbb5cddd2c93c61266af77a301f2c76121b7b14edf229ecddd26"
+  digest = "1:ec5f9baf36aeb1affc159526abc0d651a36e6dcedf886752c7a1fb61314a2558"
   name = "github.com/nalej/authx"
   packages = [
     "pkg/interceptor",
     "pkg/token",
   ]
   pruneopts = ""
-  revision = "5f89759b6d665deed2138ff3bb33a7db12abebc2"
+  revision = "2587268527c5da686d37946200e574ef21875495"
 
 [[projects]]
   digest = "1:0cc441f3dfe124dd74f44dd7e466dfc17cc7edff468094fbc3847a96b5ebf6f7"
@@ -343,16 +347,16 @@
   version = "v0.3.0"
 
 [[projects]]
-  branch = "jba-regen"
-  digest = "1:b6225010c089d419d86aa7bc8e80f50364a9464adad138bb6b46f4012c052177"
+  digest = "1:3970150423e3f47a6d354b2868f7db632b665463755194aac1a30c4fb341be57"
   name = "google.golang.org/genproto"
   packages = [
     "googleapis/api/annotations",
     "googleapis/rpc/errdetails",
     "googleapis/rpc/status",
+    "protobuf/field_mask",
   ]
   pruneopts = ""
-  revision = "42f80515abfed431577ebeded4ab86390ce0a5cd"
+  revision = "383e8b2c3b9e36c4076b235b32537292176bae20"
 
 [[projects]]
   digest = "1:d141efe4aaad714e3059c340901aab3147b6253e58c85dafbcca3dd8b0e88ad6"
