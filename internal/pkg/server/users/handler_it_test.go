@@ -148,7 +148,7 @@ var _ = ginkgo.Describe("Users", func() {
 		gomega.Expect(len(list.Users)).Should(gomega.Equal(1))
 	})
 
-	ginkgo.PIt("should be able to delete a user", func() {
+	ginkgo.It("should be able to delete a user", func() {
 		userID := &grpc_user_go.UserId{
 			OrganizationId: targetUser.OrganizationId,
 			Email:          targetUser.Email,
@@ -168,12 +168,12 @@ var _ = ginkgo.Describe("Users", func() {
 		gomega.Expect(reset.NewPassword).ShouldNot(gomega.BeEmpty())
 	})
 	*/
-	ginkgo.PIt("should be able to update an existing user", func() {
+	ginkgo.It("should be able to update an existing user", func() {
 		updateUserRequest := &grpc_user_go.UpdateUserRequest{
 			OrganizationId: targetUser.OrganizationId,
 			Email:          targetUser.Email,
 			Name:           "newName",
-			Role:           "newRole",
+			PhotoUrl:		"newURL",
 		}
 		success, err := client.Update(context.Background(), updateUserRequest)
 		gomega.Expect(err).To(gomega.Succeed())
