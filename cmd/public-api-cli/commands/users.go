@@ -35,7 +35,6 @@ func init() {
 	usersCmd.AddCommand(resetPasswordCmd)
 
 	updateUserCmd.Flags().StringVar(&name, "name", "", "New name for the user")
-	updateUserCmd.Flags().StringVar(&roleName, "role", "", "New role for the user")
 	usersCmd.AddCommand(updateUserCmd)
 
 	addUserCmd.Flags().StringVar(&name, "name", "", "Full name")
@@ -121,7 +120,7 @@ var updateUserCmd = &cobra.Command{
 			options.ResolveAsInt("port", nalejPort),
 			insecure,
 			options.Resolve("cacert", caCertPath))
-		u.Update(options.Resolve("organizationID", organizationID), email, name, roleName)
+		u.Update(options.Resolve("organizationID", organizationID), email, name)
 	},
 }
 

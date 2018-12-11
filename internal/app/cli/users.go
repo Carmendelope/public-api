@@ -121,7 +121,7 @@ func (u *Users) ChangePassword(organizationID string, email string, password str
 }
 
 // Update the user information.
-func (u *Users) Update(organizationID string, email string, newName string, newRole string) {
+func (u *Users) Update(organizationID string, email string, newName string) {
 	u.load()
 	ctx, cancel := u.GetContext()
 	client, conn := u.getClient()
@@ -134,9 +134,6 @@ func (u *Users) Update(organizationID string, email string, newName string, newR
 	}
 	if newName != "" {
 		updateRequest.Name = newName
-	}
-	if newRole != "" {
-		updateRequest.Role = newRole
 	}
 	done, err := client.Update(ctx, updateRequest)
 	u.PrintResultOrError(done, err, "cannot change password")
