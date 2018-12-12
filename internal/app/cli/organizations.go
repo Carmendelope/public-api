@@ -23,7 +23,7 @@ func NewOrganizations(address string, port int, insecure bool, caCertPath string
 	}
 }
 
-func (o *Organizations) Info(organizationID string) {
+func (o *Organizations) Info(organizationID string) *grpc_public_api_go.OrganizationInfo {
 	err := o.LoadCredentials()
 	if err != nil {
 		log.Fatal().Str("trace", err.DebugReport()).Msg("cannot load credentials, try login first")
@@ -46,5 +46,5 @@ func (o *Organizations) Info(organizationID string) {
 		log.Fatal().Str("trace", conversions.ToDerror(iErr).DebugReport()).Msg("cannot obtain organization info")
 	}
 	o.PrintResult(info)
-
+	return info
 }
