@@ -11,6 +11,7 @@ import (
 	"github.com/nalej/grpc-organization-go"
 	"github.com/nalej/grpc-public-api-go"
 	"github.com/nalej/grpc-user-go"
+	"github.com/nalej/grpc-user-manager-go"
 	"github.com/nalej/grpc-utils/pkg/conversions"
 	"github.com/nalej/public-api/internal/pkg/authhelper"
 	"github.com/nalej/public-api/internal/pkg/entities"
@@ -51,7 +52,7 @@ func (h *Handler) Info(ctx context.Context, userID *grpc_user_go.UserId) (*grpc_
 	if userID.OrganizationId != rm.OrganizationID {
 		return nil, derrors.NewPermissionDeniedError("cannot access requested OrganizationID")
 	}
-	if userID.Email != rm.UserID {
+	if !rm.OrgPrimitive && userID.Email != rm.UserID {
 		return nil, derrors.NewPermissionDeniedError("cannot access requested user")
 	}
 	err = entities.ValidUserId(userID)
@@ -91,27 +92,22 @@ func (h *Handler) Delete(ctx context.Context, userID *grpc_user_go.UserId) (*grp
 	return h.Manager.Delete(userID)
 }
 
-func (h *Handler) ChangePassword(ctx context.Context, in *grpc_user_go.ChangePasswordRequest) (*grpc_common_go.Success, error) {
-	// TODO
-	return nil, nil
-}
-
-func (h *Handler) ResetPassword(ctx context.Context, userID *grpc_user_go.UserId) (*grpc_public_api_go.PasswordResetResponse, error) {
+func (h *Handler) ChangePassword(ctx context.Context, changePasswordRequest *grpc_user_manager_go.ChangePasswordRequest) (*grpc_common_go.Success, error) {
 	rm, err := authhelper.GetRequestMetadata(ctx)
 	if err != nil {
 		return nil, conversions.ToGRPCError(err)
 	}
-	if userID.OrganizationId != rm.OrganizationID {
+	if changePasswordRequest.OrganizationId != rm.OrganizationID {
 		return nil, derrors.NewPermissionDeniedError("cannot access requested OrganizationID")
 	}
-	if !rm.OrgPrimitive && userID.Email != rm.UserID {
+	if !rm.OrgPrimitive && changePasswordRequest.Email != rm.UserID {
 		return nil, derrors.NewPermissionDeniedError("cannot reset password of selected user")
 	}
-	err = entities.ValidUserId(userID)
+	err = entities.ValidChangePasswordRequest(changePasswordRequest)
 	if err != nil {
 		return nil, conversions.ToGRPCError(err)
 	}
-	return h.Manager.ResetPassword(userID)
+	return h.Manager.ResetPassword(changePasswordRequest)
 }
 
 func (h *Handler) Update(ctx context.Context, updateUserRequest *grpc_user_go.UpdateUserRequest) (*grpc_common_go.Success, error) {

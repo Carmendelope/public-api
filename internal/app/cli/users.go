@@ -4,6 +4,7 @@ import (
 	"github.com/nalej/grpc-organization-go"
 	"github.com/nalej/grpc-public-api-go"
 	"github.com/nalej/grpc-user-go"
+	"github.com/nalej/grpc-user-manager-go"
 	"github.com/rs/zerolog/log"
 	"google.golang.org/grpc"
 )
@@ -37,18 +38,18 @@ func (u *Users) getClient() (grpc_public_api_go.UsersClient, *grpc.ClientConn) {
 }
 
 // Add a new user to the organization.
-func (u *Users) Add(organizationID string, email string, password string, name string, roleName string){
+func (u *Users) Add(organizationID string, email string, password string, name string, roleName string) {
 	u.load()
 	ctx, cancel := u.GetContext()
 	client, conn := u.getClient()
 	defer conn.Close()
 	defer cancel()
 	addRequest := &grpc_public_api_go.AddUserRequest{
-		OrganizationId:       organizationID,
-		Email:                email,
-		Password:             password,
-		Name:                 name,
-		RoleName:             roleName,
+		OrganizationId: organizationID,
+		Email:          email,
+		Password:       password,
+		Name:           name,
+		RoleName:       roleName,
 	}
 	added, err := client.Add(ctx, addRequest)
 	u.PrintResultOrError(added, err, "cannot add user")
@@ -102,28 +103,25 @@ func (u *Users) Delete(organizationID string, email string) {
 }
 
 // Reset the password of a user.
-func (u *Users) ChangePassword(organizationID string, email string) {
-	log.Panic().Msg("not implemented")
-	// TODO
-	/*
+func (u *Users) ChangePassword(organizationID string, email string, password string, newPassword string) {
 	u.load()
 	ctx, cancel := u.GetContext()
 	client, conn := u.getClient()
 	defer conn.Close()
 	defer cancel()
 
-
-	userID := &grpc_user_go.UserId{
+	passwordRequest := &grpc_user_manager_go.ChangePasswordRequest{
 		OrganizationId: organizationID,
 		Email:          email,
+		Password:       password,
+		NewPassword:    newPassword,
 	}
-	done, err := client.ResetPassword(ctx, userID)
+	done, err := client.ChangePassword(ctx, passwordRequest)
 	u.PrintResultOrError(done, err, "cannot change password")
-	*/
 }
 
 // Update the user information.
-func (u *Users) Update(organizationID string, email string, newName string, newRole string) {
+func (u *Users) Update(organizationID string, email string, newName string) {
 	u.load()
 	ctx, cancel := u.GetContext()
 	client, conn := u.getClient()
@@ -136,9 +134,6 @@ func (u *Users) Update(organizationID string, email string, newName string, newR
 	}
 	if newName != "" {
 		updateRequest.Name = newName
-	}
-	if newRole != "" {
-		updateRequest.Role = newRole
 	}
 	done, err := client.Update(ctx, updateRequest)
 	u.PrintResultOrError(done, err, "cannot change password")

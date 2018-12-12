@@ -12,6 +12,7 @@ import (
 	"github.com/nalej/grpc-organization-go"
 	"github.com/nalej/grpc-public-api-go"
 	"github.com/nalej/grpc-user-go"
+	"github.com/nalej/grpc-user-manager-go"
 )
 
 const emptyOrganizationId = "organization_id cannot be empty"
@@ -21,6 +22,7 @@ const emptyClusterId = "cluster_id cannot be empty"
 const emptyEmail = "email cannot be empty"
 const emptyName = "name cannot be empty"
 const emptyPassword = "password cannot be empty"
+const emptyNewPassword = "new password cannot be empty"
 const emptyRoleName = "role_name cannot be empty"
 
 func ValidOrganizationId(organizationID *grpc_organization_go.OrganizationId) derrors.Error {
@@ -137,6 +139,22 @@ func ValidDeployRequest(request *grpc_application_manager_go.DeployRequest) derr
 func ValidInstallRequest(request *grpc_public_api_go.InstallRequest) derrors.Error {
 	if request.OrganizationId == "" {
 		return derrors.NewInvalidArgumentError(emptyOrganizationId)
+	}
+	return nil
+}
+
+func ValidChangePasswordRequest(request *grpc_user_manager_go.ChangePasswordRequest) derrors.Error {
+	if request.OrganizationId == "" {
+		return derrors.NewInvalidArgumentError(emptyOrganizationId)
+	}
+	if request.Password == "" {
+		return derrors.NewInvalidArgumentError(emptyPassword)
+	}
+	if request.NewPassword == "" {
+		return derrors.NewInvalidArgumentError(emptyNewPassword)
+	}
+	if request.Email == "" {
+		return derrors.NewInvalidArgumentError(emptyEmail)
 	}
 	return nil
 }

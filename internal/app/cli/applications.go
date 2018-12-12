@@ -90,6 +90,12 @@ func (a *Applications) getBasicDescriptor() *grpc_application_go.AddAppDescripto
 		Storage:     []*grpc_application_go.Storage{&grpc_application_go.Storage{MountPath: "/tmp"}},
 		ExposedPorts: []*grpc_application_go.Port{&grpc_application_go.Port{
 			Name: "wordpressport", InternalPort: 80, ExposedPort: 80,
+			Endpoints: []*grpc_application_go.Endpoint{
+				&grpc_application_go.Endpoint{
+					Type: grpc_application_go.EndpointType_WEB,
+					Path: "/",
+				},
+			},
 		}},
 		EnvironmentVariables: map[string]string{"WORDPRESS_DB_HOST":"simple-mysql","WORDPRESS_DB_PASSWORD":"root"},
 		Configs:              []*grpc_application_go.ConfigFile{&grpc_application_go.ConfigFile{MountPath: "/tmp"}},
@@ -97,11 +103,11 @@ func (a *Applications) getBasicDescriptor() *grpc_application_go.AddAppDescripto
 	}
 
 	secRule := grpc_application_go.SecurityRule{
-		Name:            "all open",
+		Name:            "allow access to wordpress",
 		Access:          grpc_application_go.PortAccess_PUBLIC,
 		RuleId:          "001",
-		SourcePort:      3306,
-		SourceServiceId: "1",
+		SourcePort:      80,
+		SourceServiceId: "2",
 	}
 
 	return &grpc_application_go.AddAppDescriptorRequest{
@@ -210,8 +216,8 @@ func (a *Applications) Undeploy(organizationID string, appInstanceID string) {
 		OrganizationId:  organizationID,
 		AppInstanceId: appInstanceID,
 	}
-	undeployed, err := client.Undeploy(ctx, undeployRequest)
-	a.PrintResultOrError(undeployed, err, "cannot undeploy application")
+	_, err := client.Undeploy(ctx, undeployRequest)
+	a.PrintSuccessOrError(err, "cannot undeploy application", "application undeployed")
 }
 
 func (a *Applications) ListInstances(organizationID string) {
