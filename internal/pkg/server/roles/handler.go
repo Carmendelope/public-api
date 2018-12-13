@@ -33,7 +33,7 @@ func (h*Handler) ToPublicRoleList(roles *grpc_authx_go.RoleList, internal bool) 
 		}
 	}
 	result := make([]*grpc_public_api_go.Role, 0)
-	for _, r := range roles.Roles{
+	for _, r := range aux {//roles.Roles{
 		primitives := make([]string, 0)
 		for _, p := range r.Primitives{
 			primitives = append(primitives, p.String())

@@ -136,5 +136,5 @@ func (u *Users) Update(organizationID string, email string, newName string) {
 		updateRequest.Name = newName
 	}
 	done, err := client.Update(ctx, updateRequest)
-	u.PrintResultOrError(done, err, "cannot change password")
+	u.PrintResultOrError(done, err, "cannot update user")
 }

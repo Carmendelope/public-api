@@ -118,6 +118,7 @@ func (h *Handler) Update(ctx context.Context, updateUserRequest *grpc_user_go.Up
 	if updateUserRequest.OrganizationId != rm.OrganizationID {
 		return nil, derrors.NewPermissionDeniedError("cannot access requested OrganizationID")
 	}
+
 	if !rm.OrgPrimitive && updateUserRequest.Email != rm.UserID {
 		return nil, derrors.NewPermissionDeniedError("cannot update the information of selected user")
 	}

@@ -16,7 +16,7 @@ data:
        "/public_api.Clusters/List":{"should":["ORG", "RESOURCES"]},
        "/public_api.Clusters/Update":{"should":["ORG", "RESOURCES"]},
        "/public_api.Nodes/ClusterNodes":{"should":["ORG", "RESOURCES"]},
-       "/public_api.Organizations/Info":{"must":["ORG"]},
+       "/public_api.Organizations/Info":{"should":["ORG", "RESOURCES", "APPS"]},
        "/public_api.Resources/Summary":{"should":["ORG", "RESOURCES"]},
        "/public_api.Roles/List":{"must":["ORG"]},
        "/public_api.Roles/ListInternal":{"must":["ORG"]},
