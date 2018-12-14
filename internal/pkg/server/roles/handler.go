@@ -13,6 +13,7 @@ import (
 	"github.com/nalej/grpc-utils/pkg/conversions"
 	"github.com/nalej/public-api/internal/pkg/authhelper"
 	"github.com/nalej/public-api/internal/pkg/entities"
+	"github.com/rs/zerolog/log"
 )
 
 // Handler structure for the roles requests.
@@ -26,14 +27,18 @@ func NewHandler(manager Manager) *Handler {
 }
 
 func (h*Handler) ToPublicRoleList(roles *grpc_authx_go.RoleList, internal bool) * grpc_public_api_go.RoleList{
+	log.Debug().Bool("internal", internal).Int("received", len(roles.Roles)).Msg("Transforming role list")
 	aux := make([]*grpc_authx_go.Role, 0)
 	for _, r := range roles.Roles{
+		log.Debug().Str("name", r.Name).Bool("internal", r.Internal).Msg("Checking role")
 		if internal == r.Internal {
 			aux = append(aux, r)
+			log.Debug().Str("name", r.Name).Msg("Adding role to list")
 		}
 	}
+	log.Debug().Int("number", len(aux)).Msg("roles selected")
 	result := make([]*grpc_public_api_go.Role, 0)
-	for _, r := range aux {//roles.Roles{
+	for _, r := range aux {
 		primitives := make([]string, 0)
 		for _, p := range r.Primitives{
 			primitives = append(primitives, p.String())

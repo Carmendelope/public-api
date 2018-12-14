@@ -135,6 +135,7 @@ func (u *Users) Update(organizationID string, email string, newName string) {
 	if newName != "" {
 		updateRequest.Name = newName
 	}
+	log.Debug().Interface("updateRequest", updateRequest).Msg("sending update request")
 	done, err := client.Update(ctx, updateRequest)
 	u.PrintResultOrError(done, err, "cannot update user")
 }
