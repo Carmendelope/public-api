@@ -114,6 +114,8 @@ func ToPublicAPIServiceInstances(source []*grpc_application_go.ServiceInstance) 
 			Labels:               si.Labels,
 			DeployAfter:          si.DeployAfter,
 			StatusName:           si.Status.String(),
+			Endpoints: si.Endpoints,
+			DeployedOnClusterId: si.DeployedOnClusterId,
 		}
 		result = append(result, toAdd)
 	}

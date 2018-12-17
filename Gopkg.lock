@@ -70,14 +70,14 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:3646b9fd65839901d793eeebecc92fd02a9b9ce237f4d92419fb107d1c086671"
+  digest = "1:bc2c2144a25c34025ed941d0c2791cdf71c9073a7226299e4fb64fd5a83951a5"
   name = "github.com/nalej/authx"
   packages = [
     "pkg/interceptor",
     "pkg/token",
   ]
   pruneopts = ""
-  revision = "644e8501a0aaea693f2ed11aaea9091afc2fc1d7"
+  revision = "e01f4c4987297eac28d0b01bb546b396c4805c80"
 
 [[projects]]
   digest = "1:0cc441f3dfe124dd74f44dd7e466dfc17cc7edff468094fbc3847a96b5ebf6f7"
@@ -88,20 +88,20 @@
   version = "v2.0.0"
 
 [[projects]]
-  digest = "1:db1d7629d423b5b5657fcaf840b8ab41e513e86967fd6fa155dc0425eb9f06d1"
+  digest = "1:d5d9087d1c5460e32fd78d86bcfabacd50eb05a8b5eee72fcdf23fa7b3013414"
   name = "github.com/nalej/grpc-application-go"
   packages = ["."]
   pruneopts = ""
-  revision = "06756283ba4fbcacb8d3283227bd515fd42cfcb4"
-  version = "v0.0.37"
+  revision = "54f544348a7c93d0dfc8f88a7739a12a43eff91d"
+  version = "v0.0.39"
 
 [[projects]]
-  digest = "1:2d39795ae28428a1da4fab6cca0e65379f659c9c6ed99d646e4d93e9ce640cb1"
+  digest = "1:79cb8c860d55a1ef3a4faecca6b1a170e2f4000c101efe76c27978b1f63f5fd4"
   name = "github.com/nalej/grpc-application-manager-go"
   packages = ["."]
   pruneopts = ""
-  revision = "e393bc72b1fc8090fdb54c64ac17c6d42188bbfa"
-  version = "v0.0.22"
+  revision = "d028aac540d9c189fd9c111d22d75f7a609b89d0"
+  version = "v0.0.24"
 
 [[projects]]
   digest = "1:bc6a56ace9424f979cfaa2821155c8974477b64ddaeb7f16631faea10e46576d"
@@ -120,12 +120,12 @@
   version = "v0.0.29"
 
 [[projects]]
-  digest = "1:76604249394a4c59ca8cd916d4ee76bbfbd9c5152f0d32481f4e638d15879c0d"
+  digest = "1:f52577182d3acc9280cb96a8f5b3d881f796cf206bacb940759686b0e91a6d44"
   name = "github.com/nalej/grpc-conductor-go"
   packages = ["."]
   pruneopts = ""
-  revision = "ba26e5edaa02a4a7f2290652f6fd4a1ca686b3c4"
-  version = "v0.0.70"
+  revision = "fa1b42e3756d0e99c7e06392136e9de4d35395c5"
+  version = "v0.0.71"
 
 [[projects]]
   digest = "1:6bd0e397a6fee6e75b0dbdb381cc83a4cea4317f27fe8fdac2ff6706016a601f"
@@ -168,12 +168,12 @@
   version = "v0.0.28"
 
 [[projects]]
-  digest = "1:d17a3fd5b7edb533bc9ca899772524c0f3c7ace9fd650a6eede505644f6435e1"
+  digest = "1:393c605da4387e1d10d9a088a7b47024c136526fd47d85a252b4b751385a2cc9"
   name = "github.com/nalej/grpc-public-api-go"
   packages = ["."]
   pruneopts = ""
-  revision = "d88c34af7ac9c32e3aeda727e52b73ef38a1a4de"
-  version = "v0.0.31"
+  revision = "4eb26d9caa23afe95b5838680161d90117cbf1b4"
+  version = "v0.0.34"
 
 [[projects]]
   digest = "1:2b6ef08f73e4e40c25b3cbe313d9727cf01210696fe73af5a03231f5a1a4fb21"
@@ -184,12 +184,12 @@
   version = "v0.0.29"
 
 [[projects]]
-  digest = "1:216904fadf283eb1f5982791ddf67d443866163feb6001dc3d6219cd2d1a2d99"
+  digest = "1:4c09c5e7ee1daa8e85927a745dc6c928ee2da9f7be3820c35ab1649d15ab5783"
   name = "github.com/nalej/grpc-user-manager-go"
   packages = ["."]
   pruneopts = ""
-  revision = "8d18ba7dae79ae0bf8c7781cce447469f1c498d9"
-  version = "v0.0.26"
+  revision = "647ceab0fbdf42fea3148ef2be4a13b4776a0a8f"
+  version = "v0.0.27"
 
 [[projects]]
   digest = "1:a55e0792c0a632d14fc0f7a1c4b55ed2973189c2267d7197c2e13b1a44371466"
@@ -282,7 +282,7 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:6728b48c3404cbbebd73186cb2de79bf03395e8c3a8e5fe2079367f2c3fa85b0"
+  digest = "1:3b4532388bb9dfcc98530527160974cf5ec03120002887777516a98092725ba0"
   name = "golang.org/x/net"
   packages = [
     "context",
@@ -297,15 +297,15 @@
     "trace",
   ]
   pruneopts = ""
-  revision = "610586996380ceef02dd726cc09df7e00a3f8e56"
+  revision = "e147a9138326bc0e9d4e179541ffd8af41cff8a9"
 
 [[projects]]
   branch = "master"
-  digest = "1:1762d94528e8f2d138a1ee746b1fc23a6ea81ff5d3db85a077ab1a05060a852e"
+  digest = "1:c2c4c39f961dde3f317a48713db65329863b61316edabf19b96784b2da8406ac"
   name = "golang.org/x/sys"
   packages = ["unix"]
   pruneopts = ""
-  revision = "73d4af5aa059c8c2dfcf25aad4efd6ce7bc9adc1"
+  revision = "4d1cda033e0619309c606fc686de3adcf599539e"
 
 [[projects]]
   digest = "1:5acd3512b047305d49e8763eef7ba423901e85d5dd2fd1e71778a0ea8de10bd4"

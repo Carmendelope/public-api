@@ -78,6 +78,7 @@ func (h *Handler) List(ctx context.Context, organizationID *grpc_organization_go
 }
 
 func (h *Handler) Delete(ctx context.Context, userID *grpc_user_go.UserId) (*grpc_common_go.Success, error) {
+	log.Debug().Str("organizationID", userID.OrganizationId).Str("email", userID.Email).Msg("delete user")
 	rm, err := authhelper.GetRequestMetadata(ctx)
 	if err != nil {
 		return nil, conversions.ToGRPCError(err)
@@ -118,6 +119,7 @@ func (h *Handler) Update(ctx context.Context, updateUserRequest *grpc_user_go.Up
 	if updateUserRequest.OrganizationId != rm.OrganizationID {
 		return nil, derrors.NewPermissionDeniedError("cannot access requested OrganizationID")
 	}
+	log.Debug().Interface("rm", rm).Interface("updateUserRequest", updateUserRequest).Msg("Processing update request")
 	if !rm.OrgPrimitive && updateUserRequest.Email != rm.UserID {
 		return nil, derrors.NewPermissionDeniedError("cannot update the information of selected user")
 	}
