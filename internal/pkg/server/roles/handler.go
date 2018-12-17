@@ -30,13 +30,10 @@ func (h*Handler) ToPublicRoleList(roles *grpc_authx_go.RoleList, internal bool) 
 	log.Debug().Bool("internal", internal).Int("received", len(roles.Roles)).Msg("Transforming role list")
 	aux := make([]*grpc_authx_go.Role, 0)
 	for _, r := range roles.Roles{
-		log.Debug().Str("name", r.Name).Bool("internal", r.Internal).Msg("Checking role")
 		if internal == r.Internal {
 			aux = append(aux, r)
-			log.Debug().Str("name", r.Name).Msg("Adding role to list")
 		}
 	}
-	log.Debug().Int("number", len(aux)).Msg("roles selected")
 	result := make([]*grpc_public_api_go.Role, 0)
 	for _, r := range aux {
 		primitives := make([]string, 0)
