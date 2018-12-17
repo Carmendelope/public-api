@@ -84,13 +84,15 @@ func (m *Manager) List(organizationID *grpc_organization_go.OrganizationId) (*gr
 	}
 	users := make([]*grpc_public_api_go.User, 0)
 	for _, u := range list.Users {
-		toAdd := &grpc_public_api_go.User{
-			OrganizationId: u.OrganizationId,
-			Email:          u.Email,
-			Name:           u.Name,
-			RoleName:       u.RoleName,
+		if !u.Internal{
+			toAdd := &grpc_public_api_go.User{
+				OrganizationId: u.OrganizationId,
+				Email:          u.Email,
+				Name:           u.Name,
+				RoleName:       u.RoleName,
+			}
+			users = append(users, toAdd)
 		}
-		users = append(users, toAdd)
 	}
 	return &grpc_public_api_go.UserList{
 		Users: users,
