@@ -3,6 +3,7 @@ package cli
 import (
 	"github.com/nalej/grpc-organization-go"
 	"github.com/nalej/grpc-public-api-go"
+	"github.com/nalej/grpc-user-manager-go"
 	"github.com/rs/zerolog/log"
 	"google.golang.org/grpc"
 )
@@ -46,10 +47,27 @@ func (r *Roles) List(organizationID string, internal bool) {
 	}
 	var roles *grpc_public_api_go.RoleList
 	var err error
-	if internal{
+	if internal {
 		roles, err = client.ListInternal(ctx, orgID)
-	}else{
+	} else {
 		roles, err = client.List(ctx, orgID)
 	}
 	r.PrintResultOrError(roles, err, "cannot obtain role list")
+}
+
+func (r *Roles) Assign(organizationID string, email string, roleID string) {
+	r.load()
+	ctx, cancel := r.GetContext()
+	client, conn := r.getClient()
+	defer conn.Close()
+	defer cancel()
+	request := &grpc_user_manager_go.AssignRoleRequest{
+		OrganizationId: organizationID,
+		Email:          email,
+		RoleId:         roleID,
+	}
+
+	user, err := client.AssignRole(ctx, request)
+
+	r.PrintResultOrError(user, err, "cannot obtain assign the new role")
 }
