@@ -22,8 +22,15 @@ var rolesCmd = &cobra.Command{
 
 func init() {
 	rootCmd.AddCommand(rolesCmd)
+
 	listRolesCmd.Flags().BoolVar(&internal, "internal", false, "List internal services")
 	rolesCmd.AddCommand(listRolesCmd)
+
+	assignRolesCmd.Flags().StringVar(&email, "email", "", "User email")
+	assignRolesCmd.Flags().StringVar(&email, "roleID", "", "User Role ID")
+	addUserCmd.MarkFlagRequired("email")
+	addUserCmd.MarkFlagRequired("roleID")
+
 }
 
 var listRolesCmd = &cobra.Command{
@@ -38,6 +45,21 @@ var listRolesCmd = &cobra.Command{
 			insecure,
 			options.Resolve("cacert", caCertPath))
 		r.List(options.Resolve("organizationID", organizationID), internal)
+	},
+}
+
+var assignRolesCmd = &cobra.Command{
+	Use:   "assign",
+	Short: "Assign new role",
+	Long:  `Assign new role`,
+	Run: func(cmd *cobra.Command, args []string) {
+		SetupLogging()
+		r := cli.NewRoles(
+			options.Resolve("nalejAddress", nalejAddress),
+			options.ResolveAsInt("port", nalejPort),
+			insecure,
+			options.Resolve("cacert", caCertPath))
+		r.Assign(options.Resolve("organizationID", organizationID), email, roleID)
 	},
 }
 
