@@ -20,7 +20,7 @@ data:
        "/public_api.Resources/Summary":{"should":["ORG", "RESOURCES"]},
        "/public_api.Roles/List":{"must":["ORG"]},
        "/public_api.Roles/ListInternal":{"must":["ORG"]},
-       "/public_api.Roles/AssignRole":{"should":["ORG", "PROFILE"]},
+       "/public_api.Roles/AssignRole":{"must":["ORG"]},
        "/public_api.Users/Add":{"must":["ORG"]},
        "/public_api.Users/Info":{"should":["ORG", "PROFILE"]},
        "/public_api.Users/List":{"must":["ORG"]},
