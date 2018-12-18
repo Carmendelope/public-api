@@ -28,9 +28,9 @@ func init() {
 
 	assignRolesCmd.Flags().StringVar(&email, "email", "", "User email")
 	assignRolesCmd.Flags().StringVar(&email, "roleID", "", "User Role ID")
-	addUserCmd.MarkFlagRequired("email")
-	addUserCmd.MarkFlagRequired("roleID")
-
+	assignRolesCmd.MarkFlagRequired("email")
+	assignRolesCmd.MarkFlagRequired("roleID")
+	rolesCmd.AddCommand(assignRolesCmd)
 }
 
 var listRolesCmd = &cobra.Command{
