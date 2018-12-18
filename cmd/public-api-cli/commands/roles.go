@@ -27,7 +27,7 @@ func init() {
 	rolesCmd.AddCommand(listRolesCmd)
 
 	assignRolesCmd.Flags().StringVar(&email, "email", "", "User email")
-	assignRolesCmd.Flags().StringVar(&email, "roleID", "", "User Role ID")
+	assignRolesCmd.Flags().StringVar(&roleID, "roleID", "", "User Role ID")
 	assignRolesCmd.MarkFlagRequired("email")
 	assignRolesCmd.MarkFlagRequired("roleID")
 	rolesCmd.AddCommand(assignRolesCmd)
