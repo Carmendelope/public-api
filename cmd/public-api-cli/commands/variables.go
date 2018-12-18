@@ -33,3 +33,5 @@ var description string
 var instanceID string
 
 var internal bool
+
+var exampleName string

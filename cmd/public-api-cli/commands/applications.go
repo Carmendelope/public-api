@@ -34,9 +34,11 @@ func init() {
 	getDescriptorCmd.MarkPersistentFlagRequired("descriptorID")
 	descriptorCmd.AddCommand(getDescriptorCmd)
 	descriptorCmd.AddCommand(listDescriptorsCmd)
+	listInstancesCmd.MarkPersistentFlagRequired("descriptorID")
+	addDescriptorHelpCmd.Flags().StringVar(&exampleName,"exampleName", "simple", "Example to show: simple or complex")
 	descriptorCmd.AddCommand(addDescriptorHelpCmd)
 	descriptorCmd.AddCommand(deleteDescriptorCmd)
-	listInstancesCmd.MarkPersistentFlagRequired("descriptorID")
+	deleteDescriptorCmd.MarkPersistentFlagRequired("descriptorID")
 
 	instanceCmd.PersistentFlags().StringVar(&instanceID, "instanceID", "", "Application instance identifier")
 	appsCmd.AddCommand(instanceCmd)
@@ -87,7 +89,7 @@ var addDescriptorHelpCmd = &cobra.Command{
 			options.ResolveAsInt("port", nalejPort),
 			insecure,
 			options.Resolve("cacert", caCertPath))
-		a.AddDescriptorHelp()
+		a.ShowDescriptorHelp(exampleName)
 	},
 }
 
