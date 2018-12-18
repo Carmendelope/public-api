@@ -14,6 +14,7 @@ var newPassword string
 
 var name string
 var roleName string
+var roleID string
 
 var organizationID string
 var clusterID string

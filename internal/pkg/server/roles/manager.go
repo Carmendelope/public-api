@@ -24,3 +24,7 @@ func NewManager(client grpc_user_manager_go.UserManagerClient) Manager {
 func (m *Manager) List(organizationID *grpc_organization_go.OrganizationId) (*grpc_authx_go.RoleList, error) {
 	return m.client.ListRoles(context.Background(), organizationID)
 }
+
+func (m *Manager) AssignRole(request *grpc_user_manager_go.AssignRoleRequest) (*grpc_user_manager_go.User, error) {
+	return m.client.AssignRole(context.Background(), request)
+}

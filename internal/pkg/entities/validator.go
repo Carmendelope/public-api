@@ -24,6 +24,7 @@ const emptyName = "name cannot be empty"
 const emptyPassword = "password cannot be empty"
 const emptyNewPassword = "new password cannot be empty"
 const emptyRoleName = "role_name cannot be empty"
+const emptyRoleID = "role_id cannot be empty"
 
 func ValidOrganizationId(organizationID *grpc_organization_go.OrganizationId) derrors.Error {
 	if organizationID.OrganizationId == "" {
@@ -152,6 +153,19 @@ func ValidChangePasswordRequest(request *grpc_user_manager_go.ChangePasswordRequ
 	}
 	if request.NewPassword == "" {
 		return derrors.NewInvalidArgumentError(emptyNewPassword)
+	}
+	if request.Email == "" {
+		return derrors.NewInvalidArgumentError(emptyEmail)
+	}
+	return nil
+}
+
+func ValidAssignRoleRequest(request *grpc_user_manager_go.AssignRoleRequest) derrors.Error {
+	if request.OrganizationId == "" {
+		return derrors.NewInvalidArgumentError(emptyOrganizationId)
+	}
+	if request.RoleId == "" {
+		return derrors.NewInvalidArgumentError(emptyRoleID)
 	}
 	if request.Email == "" {
 		return derrors.NewInvalidArgumentError(emptyEmail)
