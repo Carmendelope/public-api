@@ -76,7 +76,6 @@ func (a *Applications) getBasicDescriptor() *grpc_application_go.AddAppDescripto
 			Name: "mysqlport", InternalPort: 3306, ExposedPort: 3306,
 		}},
 		EnvironmentVariables: map[string]string{"MYSQL_ROOT_PASSWORD": "root"},
-		Configs:              []*grpc_application_go.ConfigFile{&grpc_application_go.ConfigFile{MountPath: "/tmp"}},
 		Labels:               map[string]string{"app": "simple-mysql", "component": "simple-app"},
 	}
 
@@ -85,7 +84,7 @@ func (a *Applications) getBasicDescriptor() *grpc_application_go.AddAppDescripto
 		Name:        "simple-wordpress",
 		Description: "A Wordpress instance",
 		Type:        grpc_application_go.ServiceType_DOCKER,
-		Image:       "wordpress:4.8-apache",
+		Image:       "wordpress:5.0.0",
 		Specs:       &grpc_application_go.DeploySpecs{Replicas: 1},
 		Storage:     []*grpc_application_go.Storage{&grpc_application_go.Storage{MountPath: "/tmp"}},
 		ExposedPorts: []*grpc_application_go.Port{&grpc_application_go.Port{
@@ -97,7 +96,7 @@ func (a *Applications) getBasicDescriptor() *grpc_application_go.AddAppDescripto
 				},
 			},
 		}},
-		EnvironmentVariables: map[string]string{"DB_HOST":"NALEJ_SERV_1","DB_PASSWORD":"root"},
+		EnvironmentVariables: map[string]string{"WORDPRESS_DB_HOST":"NALEJ_SERV_1:3306","WORDPRESS_DB_PASSWORD":"root"},
 		Configs:              []*grpc_application_go.ConfigFile{&grpc_application_go.ConfigFile{MountPath: "/tmp"}},
 		Labels:               map[string]string{"app": "simple-wordpress", "component": "simple-app"},
 	}
@@ -119,10 +118,26 @@ func (a *Applications) getBasicDescriptor() *grpc_application_go.AddAppDescripto
 	}
 }
 
-func (a *Applications) AddDescriptorHelp() {
+func (a * Applications) ShowDescriptorHelp(exampleName string) {
+	if exampleName == "simple"{
+		a.ShowDescriptorExample()
+	}else if exampleName == "complex" {
+		a.ShowComplexDescriptorExample()
+	}else{
+		fmt.Println("Supported examples: simple, complex")
+	}
+}
+
+func (a *Applications) ShowDescriptorExample() {
 	toAdd := a.getBasicDescriptor()
-	fmt.Println(`To add a new descriptor, write a JSON file with the descriptor and pass that path as
-parameter to the add command.`)
+	err := a.PrintResult(toAdd)
+	if err != nil {
+		log.Fatal().Err(err).Msg("cannot load sample application descriptor")
+	}
+}
+
+func (a *Applications) ShowComplexDescriptorExample() {
+	toAdd := a.getComplexDescriptor()
 	err := a.PrintResult(toAdd)
 	if err != nil {
 		log.Fatal().Err(err).Msg("cannot load sample application descriptor")
@@ -170,8 +185,8 @@ func (a *Applications) DeleteDescriptor(organizationID string, descriptorID stri
 		OrganizationId:  organizationID,
 		AppDescriptorId: descriptorID,
 	}
-	success, err := client.DeleteAppDescriptor(ctx, appDescriptorID)
-	a.PrintResultOrError(success, err, "cannot delete given descriptor")
+	_, err := client.DeleteAppDescriptor(ctx, appDescriptorID)
+	a.PrintSuccessOrError(err, "cannot delete given descriptor", "application descriptor removed")
 }
 
 func (a *Applications) ListDescriptors(organizationID string) {
@@ -217,7 +232,7 @@ func (a *Applications) Undeploy(organizationID string, appInstanceID string) {
 		AppInstanceId: appInstanceID,
 	}
 	_, err := client.Undeploy(ctx, undeployRequest)
-	a.PrintSuccessOrError(err, "cannot undeploy application", "application undeployed")
+	a.PrintSuccessOrError(err, "cannot undeploy application", "application instance undeployed")
 }
 
 func (a *Applications) ListInstances(organizationID string) {
