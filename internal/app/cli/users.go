@@ -39,11 +39,19 @@ func (u *Users) getClient() (grpc_public_api_go.UsersClient, *grpc.ClientConn) {
 
 // Add a new user to the organization.
 func (u *Users) Add(organizationID string, email string, password string, name string, roleName string) {
+	if organizationID == "" {
+		log.Fatal().Msg("organizationID cannot be empty")
+	}
+	if email == "" {
+		log.Fatal().Msg("email cannot be empty")
+	}
+
 	u.load()
 	ctx, cancel := u.GetContext()
 	client, conn := u.getClient()
 	defer conn.Close()
 	defer cancel()
+
 	addRequest := &grpc_public_api_go.AddUserRequest{
 		OrganizationId: organizationID,
 		Email:          email,
@@ -57,6 +65,10 @@ func (u *Users) Add(organizationID string, email string, password string, name s
 
 // Info retrieves the information of a user.
 func (u *Users) Info(organizationID string, email string) {
+	if organizationID == "" {
+		log.Fatal().Msg("organizationID cannot be empty")
+	}
+
 	u.load()
 	ctx, cancel := u.GetContext()
 	client, conn := u.getClient()
@@ -73,6 +85,10 @@ func (u *Users) Info(organizationID string, email string) {
 
 // List the users of an organization.
 func (u *Users) List(organizationID string) {
+	if organizationID == "" {
+		log.Fatal().Msg("organizationID cannot be empty")
+	}
+
 	u.load()
 	ctx, cancel := u.GetContext()
 	client, conn := u.getClient()
@@ -88,6 +104,10 @@ func (u *Users) List(organizationID string) {
 
 // Delete a user from an organization.
 func (u *Users) Delete(organizationID string, email string) {
+	if organizationID == "" {
+		log.Fatal().Msg("organizationID cannot be empty")
+	}
+
 	u.load()
 	ctx, cancel := u.GetContext()
 	client, conn := u.getClient()
@@ -104,6 +124,9 @@ func (u *Users) Delete(organizationID string, email string) {
 
 // Reset the password of a user.
 func (u *Users) ChangePassword(organizationID string, email string, password string, newPassword string) {
+	if organizationID == "" {
+		log.Fatal().Msg("organizationID cannot be empty")
+	}
 	u.load()
 	ctx, cancel := u.GetContext()
 	client, conn := u.getClient()
@@ -122,6 +145,9 @@ func (u *Users) ChangePassword(organizationID string, email string, password str
 
 // Update the user information.
 func (u *Users) Update(organizationID string, email string, newName string) {
+	if organizationID == "" {
+		log.Fatal().Msg("organizationID cannot be empty")
+	}
 	u.load()
 	ctx, cancel := u.GetContext()
 	client, conn := u.getClient()

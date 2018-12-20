@@ -145,6 +145,11 @@ func (a *Applications) ShowComplexDescriptorExample() {
 }
 
 func (a *Applications) AddDescriptor(organizationID string, descriptorPath string) {
+
+	if organizationID == "" {
+		log.Fatal().Msg("organizationID cannot be empty")
+	}
+
 	a.load()
 	ctx, cancel := a.GetContext()
 	client, conn := a.getClient()
@@ -160,6 +165,12 @@ func (a *Applications) AddDescriptor(organizationID string, descriptorPath strin
 }
 
 func (a *Applications) GetDescriptor(organizationID string, descriptorID string) {
+	if organizationID == "" {
+		log.Fatal().Msg("organizationID cannot be empty")
+	}
+	if descriptorID == "" {
+		log.Fatal().Msg("descriptorID cannot be empty")
+	}
 	a.load()
 	ctx, cancel := a.GetContext()
 	client, conn := a.getClient()
@@ -175,6 +186,13 @@ func (a *Applications) GetDescriptor(organizationID string, descriptorID string)
 }
 
 func (a *Applications) DeleteDescriptor(organizationID string, descriptorID string){
+	if organizationID == "" {
+		log.Fatal().Msg("organizationID cannot be empty")
+	}
+	if descriptorID == "" {
+		log.Fatal().Msg("descriptorID cannot be empty")
+	}
+
 	a.load()
 	ctx, cancel := a.GetContext()
 	client, conn := a.getClient()
@@ -190,6 +208,9 @@ func (a *Applications) DeleteDescriptor(organizationID string, descriptorID stri
 }
 
 func (a *Applications) ListDescriptors(organizationID string) {
+	if organizationID == "" {
+		log.Fatal().Msg("organizationID cannot be empty")
+	}
 	a.load()
 	ctx, cancel := a.GetContext()
 	client, conn := a.getClient()
@@ -204,6 +225,12 @@ func (a *Applications) ListDescriptors(organizationID string) {
 }
 
 func (a *Applications) Deploy(organizationID string, appDescriptorID string, name string, description string) {
+	if organizationID == "" {
+		log.Fatal().Msg("organizationID cannot be empty")
+	}
+	if appDescriptorID == "" {
+		log.Fatal().Msg("descriptorID cannot be empty")
+	}
 	a.load()
 	ctx, cancel := a.GetContext()
 	client, conn := a.getClient()
@@ -221,6 +248,12 @@ func (a *Applications) Deploy(organizationID string, appDescriptorID string, nam
 }
 
 func (a *Applications) Undeploy(organizationID string, appInstanceID string) {
+	if organizationID == "" {
+		log.Fatal().Msg("organizationID cannot be empty")
+	}
+	if appInstanceID == "" {
+		log.Fatal().Msg("instanceID cannot be empty")
+	}
 	a.load()
 	ctx, cancel := a.GetContext()
 	client, conn := a.getClient()
@@ -236,6 +269,10 @@ func (a *Applications) Undeploy(organizationID string, appInstanceID string) {
 }
 
 func (a *Applications) ListInstances(organizationID string) {
+	if organizationID == "" {
+		log.Fatal().Msg("organizationID cannot be empty")
+	}
+
 	a.load()
 	ctx, cancel := a.GetContext()
 	client, conn := a.getClient()
@@ -250,6 +287,13 @@ func (a *Applications) ListInstances(organizationID string) {
 }
 
 func (a *Applications) GetInstance(organizationID string, appInstanceID string) {
+
+	if organizationID == "" {
+		log.Fatal().Msg("organizationID cannot be empty")
+	}
+	if appInstanceID == "" {
+		log.Fatal().Msg("instanceID cannot be empty")
+	}
 	a.load()
 	ctx, cancel := a.GetContext()
 	client, conn := a.getClient()

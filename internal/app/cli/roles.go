@@ -37,6 +37,9 @@ func (r *Roles) getClient() (grpc_public_api_go.RolesClient, *grpc.ClientConn) {
 }
 
 func (r *Roles) List(organizationID string, internal bool) {
+	if organizationID == "" {
+		log.Fatal().Msg("organizationID cannot be empty")
+	}
 	r.load()
 	ctx, cancel := r.GetContext()
 	client, conn := r.getClient()
@@ -56,6 +59,9 @@ func (r *Roles) List(organizationID string, internal bool) {
 }
 
 func (r *Roles) Assign(organizationID string, email string, roleID string) {
+	if organizationID == "" {
+		log.Fatal().Msg("organizationID cannot be empty")
+		}
 	r.load()
 	ctx, cancel := r.GetContext()
 	client, conn := r.getClient()

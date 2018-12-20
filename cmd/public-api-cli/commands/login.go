@@ -40,5 +40,7 @@ func init() {
 	loginCmd.Flags().IntVar(&loginPort, "loginPort", 8444, "Port of the Login API (gRPC)")
 	loginCmd.Flags().StringVar(&email, "email", "", "User email")
 	loginCmd.Flags().StringVar(&password, "password", "", "User password")
+	loginCmd.MarkFlagRequired("email")
+	loginCmd.MarkFlagRequired("password")
 	rootCmd.AddCommand(loginCmd)
 }
