@@ -97,7 +97,6 @@ func (a *Applications) getBasicDescriptor() *grpc_application_go.AddAppDescripto
 			},
 		}},
 		EnvironmentVariables: map[string]string{"WORDPRESS_DB_HOST":"NALEJ_SERV_1:3306","WORDPRESS_DB_PASSWORD":"root"},
-		Configs:              []*grpc_application_go.ConfigFile{&grpc_application_go.ConfigFile{MountPath: "/tmp"}},
 		Labels:               map[string]string{"app": "simple-wordpress", "component": "simple-app"},
 	}
 
