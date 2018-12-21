@@ -87,8 +87,8 @@ var addDescriptorHelpCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		SetupLogging()
 		a := cli.NewApplications(
-			options.Resolve("nalejAddress", nalejAddress),
-			options.ResolveAsInt("port", nalejPort),
+			"",
+			0, 
 			insecure,
 			options.Resolve("cacert", caCertPath))
 		a.ShowDescriptorHelp(exampleName)
