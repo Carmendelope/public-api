@@ -24,6 +24,10 @@ func NewOrganizations(address string, port int, insecure bool, caCertPath string
 }
 
 func (o *Organizations) Info(organizationID string) *grpc_public_api_go.OrganizationInfo {
+	if organizationID == "" {
+		log.Fatal().Msg("organizationID cannot be empty")
+	}
+
 	err := o.LoadCredentials()
 	if err != nil {
 		log.Fatal().Str("trace", err.DebugReport()).Msg("cannot load credentials, try login first")

@@ -46,6 +46,13 @@ func (c *Clusters) Install(
 	organizationID string, clusterID string,
 	kubeConfigPath string, ingressHostname string, username string, privateKeyPath string, nodes []string,
 	useCoreDNS bool, targetPlatform grpc_public_api_go.Platform) {
+
+	if organizationID == "" {
+		log.Fatal().Msg("organizationID cannot be empty")
+	}
+	if clusterID == "" {
+		log.Fatal().Msg("clusterID cannot be empty")
+	}
 	installRequest := &grpc_public_api_go.InstallRequest{
 		OrganizationId:    organizationID,
 		ClusterId:         clusterID,
@@ -96,6 +103,12 @@ func (c *Clusters) Install(
 }
 
 func (c * Clusters) Info(organizationID string, clusterID string){
+	if organizationID == "" {
+		log.Fatal().Msg("organizationID cannot be empty")
+	}
+	if clusterID == "" {
+		log.Fatal().Msg("clusterID cannot be empty")
+	}
 	c.load()
 	ctx, cancel := c.GetContext()
 	client, conn := c.getClient()
@@ -110,6 +123,10 @@ func (c * Clusters) Info(organizationID string, clusterID string){
 }
 
 func (c *Clusters) List(organizationID string) {
+	if organizationID == "" {
+		log.Fatal().Msg("organizationID cannot be empty")
+	}
+
 	c.load()
 	ctx, cancel := c.GetContext()
 	client, conn := c.getClient()
@@ -123,6 +140,13 @@ func (c *Clusters) List(organizationID string) {
 }
 
 func (c *Clusters) Update(organizationID string, clusterID string, newName string, newDescription string) {
+	if organizationID == "" {
+		log.Fatal().Msg("organizationID cannot be empty")
+	}
+	if clusterID == "" {
+		log.Fatal().Msg("clusterID cannot be empty")
+	}
+
 	c.load()
 	ctx, cancel := c.GetContext()
 	client, conn := c.getClient()

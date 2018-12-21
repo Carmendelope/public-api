@@ -36,6 +36,7 @@ func init() {
 	usersCmd.AddCommand(resetPasswordCmd)
 
 	updateUserCmd.Flags().StringVar(&name, "name", "", "New name for the user")
+	updateUserCmd.MarkFlagRequired("name")
 	usersCmd.AddCommand(updateUserCmd)
 
 	addUserCmd.Flags().StringVar(&name, "name", "", "Full name")

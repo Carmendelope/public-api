@@ -40,6 +40,14 @@ func (n *Nodes) getClient() (grpc_public_api_go.NodesClient, *grpc.ClientConn) {
 }
 
 func (n *Nodes) List(organizationID string, clusterID string) {
+
+	if organizationID == "" {
+		log.Fatal().Msg("organizationID cannot be empty")
+	}
+	if clusterID == "" {
+		log.Fatal().Msg("clusterID cannot be empty")
+	}
+
 	n.load()
 	ctx, cancel := n.GetContext()
 	client, conn := n.getClient()
