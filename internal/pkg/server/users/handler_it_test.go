@@ -11,7 +11,6 @@ IT_USER_MANAGER_ADDRESS=localhost:8920
 package users
 
 import (
-	"context"
 	"fmt"
 	"github.com/nalej/authx/pkg/interceptor"
 	"github.com/nalej/grpc-authx-go"
@@ -65,16 +64,15 @@ var _ = ginkgo.Describe("Users", func() {
 	var targetRole *grpc_authx_go.Role
 	var targetUser *grpc_user_manager_go.User
 	var token string
+	var devToken string
+	var opToken string
 
 	ginkgo.BeforeSuite(func() {
 		rand.Seed(ginkgo.GinkgoRandomSeed())
 		listener = test.GetDefaultListener()
-		authConfig := ithelpers.GetAuthConfig(
-			"/public_api.Users/Add", "/public_api.Users/Info", "/public_api.Users/List",
-			"/public_api.Users/Delete", "/public_api.Users/ResetPassword",
-			"/public_api.Users/Update")
+
 		server = grpc.NewServer(interceptor.WithServerAuthxInterceptor(
-			interceptor.NewConfig(authConfig, "secret", ithelpers.AuthHeader)))
+				interceptor.NewConfig(ithelpers.GetAllAuthConfig(), "secret", ithelpers.AuthHeader)))
 
 		smConn = utils.GetConnection(systemModelAddress)
 		orgClient = grpc_organization_go.NewOrganizationsClient(smConn)
@@ -92,10 +90,17 @@ var _ = ginkgo.Describe("Users", func() {
 		client = grpc_public_api_go.NewUsersClient(conn)
 		targetOrganization = ithelpers.CreateOrganization(fmt.Sprintf("testOrg-%d", ginkgo.GinkgoRandomSeed()), orgClient)
 		targetRole = ithelpers.CreateRole(targetOrganization.OrganizationId, umClient)
-		targetUser = ithelpers.CreateUser(targetOrganization.OrganizationId, targetRole.RoleId, umClient)
-		token = ithelpers.GenerateToken(targetUser.Email,
+		//targetUser = ithelpers.CreateUser(targetOrganization.OrganizationId, targetRole.RoleId, umClient)
+		token = ithelpers.GenerateToken("owner@nalej.com",
 			targetOrganization.OrganizationId, "Owner", "secret",
 			[]grpc_authx_go.AccessPrimitive{grpc_authx_go.AccessPrimitive_ORG})
+		devToken = ithelpers.GenerateToken("dev@nalej.com",
+			targetOrganization.OrganizationId, "Developer", "secret",
+			[]grpc_authx_go.AccessPrimitive{grpc_authx_go.AccessPrimitive_PROFILE, grpc_authx_go.AccessPrimitive_APPS})
+		opToken = ithelpers.GenerateToken("ope@nalej.com",
+			targetOrganization.OrganizationId, "OPerator", "secret",
+			[]grpc_authx_go.AccessPrimitive{grpc_authx_go.AccessPrimitive_PROFILE, grpc_authx_go.AccessPrimitive_RESOURCES})
+
 	})
 
 	ginkgo.AfterSuite(func() {
@@ -103,6 +108,11 @@ var _ = ginkgo.Describe("Users", func() {
 		listener.Close()
 		smConn.Close()
 		umConn.Close()
+	})
+
+	ginkgo.BeforeEach(func() {
+		ithelpers.DeleteAllUsers(targetOrganization.OrganizationId, umClient)
+		targetUser = ithelpers.CreateUser(targetOrganization.OrganizationId, targetRole.RoleId, umClient)
 	})
 
 	ginkgo.It("should be able to add a new user", func(){
@@ -121,8 +131,35 @@ var _ = ginkgo.Describe("Users", func() {
 	    gomega.Expect(added.Email).Should(gomega.Equal(addRequest.Email))
 	    gomega.Expect(added.RoleName).Should(gomega.Equal(addRequest.RoleName))
 	})
+	ginkgo.It("Developer should NOT be able to add a new user", func(){
+		addRequest := &grpc_public_api_go.AddUserRequest{
+			OrganizationId:       targetOrganization.OrganizationId,
+			Email:                fmt.Sprintf("random%d@nalej.com", rand.Int()),
+			Password:             "password",
+			Name:                 "Name",
+			RoleName:             targetRole.Name,
+		}
+		ctx, cancel := ithelpers.GetContext(devToken)
+		defer cancel()
+		_, err := client.Add(ctx, addRequest)
+		gomega.Expect(err).NotTo(gomega.Succeed())
+	})
+	ginkgo.It("Operator should NOT be able to add a new user", func(){
+		addRequest := &grpc_public_api_go.AddUserRequest{
+			OrganizationId:       targetOrganization.OrganizationId,
+			Email:                fmt.Sprintf("random%d@nalej.com", rand.Int()),
+			Password:             "password",
+			Name:                 "Name",
+			RoleName:             targetRole.Name,
+		}
+		ctx, cancel := ithelpers.GetContext(opToken)
+		defer cancel()
+		_, err := client.Add(ctx, addRequest)
+		gomega.Expect(err).NotTo(gomega.Succeed())
+	})
 
 	ginkgo.It("should be able to retrieve the user information", func() {
+
 		userID := &grpc_user_go.UserId{
 			OrganizationId: targetUser.OrganizationId,
 			Email:          targetUser.Email,
@@ -137,7 +174,35 @@ var _ = ginkgo.Describe("Users", func() {
 		gomega.Expect(info.RoleName).Should(gomega.Equal(targetRole.Name))
 	})
 
+	ginkgo.It("Developer should NOT be able to retrieve the user information", func() {
+
+		userID := &grpc_user_go.UserId{
+			OrganizationId: targetUser.OrganizationId,
+			Email:          targetUser.Email,
+		}
+		ctx, cancel := ithelpers.GetContext(devToken)
+		defer cancel()
+		_, err := client.Info(ctx, userID)
+		gomega.Expect(err).NotTo(gomega.Succeed())
+
+	})
+
+	ginkgo.It("Operator should NOT be able to retrieve the user information", func() {
+
+		userID := &grpc_user_go.UserId{
+			OrganizationId: targetUser.OrganizationId,
+			Email:          targetUser.Email,
+		}
+		ctx, cancel := ithelpers.GetContext(opToken)
+		defer cancel()
+		_, err := client.Info(ctx, userID)
+		gomega.Expect(err).NotTo(gomega.Succeed())
+
+	})
+
+
 	ginkgo.It("should be able list users in an organization", func() {
+
 		organizationID := &grpc_organization_go.OrganizationId{
 			OrganizationId: targetOrganization.OrganizationId,
 		}
@@ -145,29 +210,75 @@ var _ = ginkgo.Describe("Users", func() {
 		defer cancel()
 		list, err := client.List(ctx, organizationID)
 		gomega.Expect(err).To(gomega.Succeed())
-		gomega.Expect(len(list.Users)).Should(gomega.Equal(1))
+		gomega.Expect(list).NotTo(gomega.BeNil())
+
+	})
+	ginkgo.It("Developer should NOT be able list users in an organization", func() {
+
+		organizationID := &grpc_organization_go.OrganizationId{
+			OrganizationId: targetOrganization.OrganizationId,
+		}
+		ctx, cancel := ithelpers.GetContext(devToken)
+		defer cancel()
+		_, err := client.List(ctx, organizationID)
+		gomega.Expect(err).NotTo(gomega.Succeed())
+
+	})
+	ginkgo.It("Operator should NOT be able list users in an organization", func() {
+
+		organizationID := &grpc_organization_go.OrganizationId{
+			OrganizationId: targetOrganization.OrganizationId,
+		}
+		ctx, cancel := ithelpers.GetContext(opToken)
+		defer cancel()
+		_, err := client.List(ctx, organizationID)
+		gomega.Expect(err).NotTo(gomega.Succeed())
+
 	})
 
 	ginkgo.It("should be able to delete a user", func() {
+
 		userID := &grpc_user_go.UserId{
 			OrganizationId: targetUser.OrganizationId,
 			Email:          targetUser.Email,
 		}
-		success, err := client.Delete(context.Background(), userID)
+
+		ctx, cancel := ithelpers.GetContext(token)
+		defer cancel()
+
+		success, err := client.Delete(ctx, userID)
 		gomega.Expect(err).To(gomega.Succeed())
 		gomega.Expect(success).ToNot(gomega.BeNil())
 	})
-	/*
-	ginkgo.PIt("should be able to reset the password of a user", func() {
+
+	ginkgo.It("Developer should NOT be able to delete a user", func() {
+
 		userID := &grpc_user_go.UserId{
 			OrganizationId: targetUser.OrganizationId,
 			Email:          targetUser.Email,
 		}
-		reset, err := client.ResetPassword(context.Background(), userID)
-		gomega.Expect(err).To(gomega.Succeed())
-		gomega.Expect(reset.NewPassword).ShouldNot(gomega.BeEmpty())
+
+		ctx, cancel := ithelpers.GetContext(devToken)
+		defer cancel()
+
+		_, err := client.Delete(ctx, userID)
+		gomega.Expect(err).NotTo(gomega.Succeed())
 	})
-	*/
+
+	ginkgo.It("Operator should NOT be able to delete a user", func() {
+
+		userID := &grpc_user_go.UserId{
+			OrganizationId: targetUser.OrganizationId,
+			Email:          targetUser.Email,
+		}
+
+		ctx, cancel := ithelpers.GetContext(opToken)
+		defer cancel()
+
+		_, err := client.Delete(ctx, userID)
+		gomega.Expect(err).NotTo(gomega.Succeed())
+	})
+
 	ginkgo.It("should be able to update an existing user", func() {
 		updateUserRequest := &grpc_user_go.UpdateUserRequest{
 			OrganizationId: targetUser.OrganizationId,
@@ -175,8 +286,41 @@ var _ = ginkgo.Describe("Users", func() {
 			Name:           "newName",
 			PhotoUrl:		"newURL",
 		}
-		success, err := client.Update(context.Background(), updateUserRequest)
+		ctx, cancel := ithelpers.GetContext(token)
+		defer cancel()
+
+		success, err := client.Update(ctx, updateUserRequest)
 		gomega.Expect(err).To(gomega.Succeed())
 		gomega.Expect(success).ToNot(gomega.BeNil())
 	})
+	ginkgo.It("Developer should NOT be able to update an existing user", func() {
+
+		updateUserRequest := &grpc_user_go.UpdateUserRequest{
+			OrganizationId: targetUser.OrganizationId,
+			Email:          targetUser.Email,
+			Name:           "newName",
+			PhotoUrl:		"newURL",
+		}
+		ctx, cancel := ithelpers.GetContext(devToken)
+		defer cancel()
+
+		_, err := client.Update(ctx, updateUserRequest)
+		gomega.Expect(err).NotTo(gomega.Succeed())
+	})
+	ginkgo.It("Operator should NOT be able to update an existing user", func() {
+
+		updateUserRequest := &grpc_user_go.UpdateUserRequest{
+			OrganizationId: targetUser.OrganizationId,
+			Email:          targetUser.Email,
+			Name:           "newName",
+			PhotoUrl:		"newURL",
+		}
+		ctx, cancel := ithelpers.GetContext(devToken)
+		defer cancel()
+
+		_, err := client.Update(ctx, updateUserRequest)
+		gomega.Expect(err).NotTo(gomega.Succeed())
+	})
+
+
 })

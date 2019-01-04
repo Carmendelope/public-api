@@ -59,12 +59,16 @@ var _ = ginkgo.Describe("Nodes", func() {
 	var targetOrganization *grpc_organization_go.Organization
 	var targetCluster *grpc_infrastructure_go.Cluster
 	var token string
+	var devToken string
+	var opeToken string
 
 	ginkgo.BeforeSuite(func() {
 		listener = test.GetDefaultListener()
-		authConfig := ithelpers.GetAuthConfig("/public_api.Nodes/ClusterNodes")
-		server = grpc.NewServer(interceptor.WithServerAuthxInterceptor(
-			interceptor.NewConfig(authConfig, "secret", ithelpers.AuthHeader)))
+		//authConfig := ithelpers.GetAuthConfig("/public_api.Nodes/ClusterNodes")
+		//server = grpc.NewServer(interceptor.WithServerAuthxInterceptor(
+		//	interceptor.NewConfig(authConfig, "secret", ithelpers.AuthHeader)))
+
+		server = grpc.NewServer(interceptor.WithServerAuthxInterceptor(interceptor.NewConfig(ithelpers.GetAllAuthConfig(), "secret", ithelpers.AuthHeader)))
 
 		smConn = utils.GetConnection(systemModelAddress)
 		orgClient = grpc_organization_go.NewOrganizationsClient(smConn)
@@ -86,6 +90,12 @@ var _ = ginkgo.Describe("Nodes", func() {
 		token = ithelpers.GenerateToken("email@nalej.com",
 			targetOrganization.OrganizationId, "Owner", "secret",
 			[]grpc_authx_go.AccessPrimitive{grpc_authx_go.AccessPrimitive_ORG})
+		devToken = ithelpers.GenerateToken("dev@nalej.com",
+			targetOrganization.OrganizationId, "Developer", "secret",
+			[]grpc_authx_go.AccessPrimitive{grpc_authx_go.AccessPrimitive_PROFILE, grpc_authx_go.AccessPrimitive_APPS})
+		opeToken = ithelpers.GenerateToken("op@nalej.com",
+			targetOrganization.OrganizationId, "Operator", "secret",
+			[]grpc_authx_go.AccessPrimitive{grpc_authx_go.AccessPrimitive_PROFILE, grpc_authx_go.AccessPrimitive_RESOURCES})
 	})
 
 	ginkgo.AfterSuite(func() {
@@ -108,4 +118,30 @@ var _ = ginkgo.Describe("Nodes", func() {
 		gomega.Expect(len(list.Nodes)).To(gomega.Equal(NumNodes))
 	})
 
+	ginkgo.It("Developer should NOT be able to list the nodes in a clusters", func() {
+
+		clusterID := &grpc_infrastructure_go.ClusterId{
+			OrganizationId: targetCluster.OrganizationId,
+			ClusterId:      targetCluster.ClusterId,
+		}
+		ctx, cancel := ithelpers.GetContext(devToken)
+		defer cancel()
+		_, err := client.List(ctx, clusterID)
+
+		gomega.Expect(err).NotTo(gomega.Succeed())
+
+	})
+	ginkgo.It("Operator should be able to list the nodes in a clusters", func() {
+
+		clusterID := &grpc_infrastructure_go.ClusterId{
+			OrganizationId: targetCluster.OrganizationId,
+			ClusterId:      targetCluster.ClusterId,
+		}
+		ctx, cancel := ithelpers.GetContext(opeToken)
+		defer cancel()
+		list, err := client.List(ctx, clusterID)
+
+		gomega.Expect(err).To(gomega.Succeed())
+		gomega.Expect(len(list.Nodes)).To(gomega.Equal(NumNodes))
+	})
 })

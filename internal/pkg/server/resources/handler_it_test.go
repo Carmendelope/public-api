@@ -72,12 +72,16 @@ var _ = ginkgo.Describe("Resources", func() {
 	// Target organization.
 	var targetOrganization *grpc_organization_go.Organization
 	var token string
+	var devToken string
+	var opeToken string
 
 	ginkgo.BeforeSuite(func() {
 		listener = test.GetDefaultListener()
-		authConfig := ithelpers.GetAuthConfig("/public_api.Resources/Summary")
-		server = grpc.NewServer(interceptor.WithServerAuthxInterceptor(
-			interceptor.NewConfig(authConfig, "secret", ithelpers.AuthHeader)))
+		//authConfig := ithelpers.GetAuthConfig("/public_api.Resources/Summary")
+		//server = grpc.NewServer(interceptor.WithServerAuthxInterceptor(
+		//	interceptor.NewConfig(authConfig, "secret", ithelpers.AuthHeader)))
+		server = grpc.NewServer(interceptor.WithServerAuthxInterceptor(interceptor.NewConfig(
+			ithelpers.GetAllAuthConfig(), "secret", ithelpers.AuthHeader)))
 
 		smConn = utils.GetConnection(systemModelAddress)
 		orgClient = grpc_organization_go.NewOrganizationsClient(smConn)
@@ -98,6 +102,10 @@ var _ = ginkgo.Describe("Resources", func() {
 		token = ithelpers.GenerateToken("email@nalej.com",
 			targetOrganization.OrganizationId, "Owner", "secret",
 			[]grpc_authx_go.AccessPrimitive{grpc_authx_go.AccessPrimitive_ORG})
+		devToken = ithelpers.GenerateToken("dev@nalej.com", targetOrganization.OrganizationId, "Developer",
+			"secret", []grpc_authx_go.AccessPrimitive{grpc_authx_go.AccessPrimitive_PROFILE, grpc_authx_go.AccessPrimitive_APPS})
+		opeToken = ithelpers.GenerateToken("ope@nalej.com", targetOrganization.OrganizationId, "Operator",
+			"secret", []grpc_authx_go.AccessPrimitive{grpc_authx_go.AccessPrimitive_PROFILE, grpc_authx_go.AccessPrimitive_RESOURCES})
 	})
 
 	ginkgo.AfterSuite(func() {
@@ -117,6 +125,28 @@ var _ = ginkgo.Describe("Resources", func() {
 		gomega.Expect(err).To(gomega.Succeed())
 		gomega.Expect(summary.TotalClusters).To(gomega.Equal(int64(NumClusters)))
 		gomega.Expect(summary.TotalNodes).To(gomega.Equal(int64(NumClusters * NumNodes)))
+	})
+	ginkgo.It("Developer should NOT be able to obtain the summary", func() {
+
+			organizationID := &grpc_organization_go.OrganizationId{
+				OrganizationId: targetOrganization.OrganizationId,
+			}
+			ctx, cancel := ithelpers.GetContext(devToken)
+			defer cancel()
+			_, err := client.Summary(ctx, organizationID)
+			gomega.Expect(err).NotTo(gomega.Succeed())
+	})
+	ginkgo.It("Operator should be able to obtain the summary", func() {
+
+			organizationID := &grpc_organization_go.OrganizationId{
+				OrganizationId: targetOrganization.OrganizationId,
+			}
+			ctx, cancel := ithelpers.GetContext(opeToken)
+			defer cancel()
+			summary, err := client.Summary(ctx, organizationID)
+			gomega.Expect(err).To(gomega.Succeed())
+			gomega.Expect(summary.TotalClusters).To(gomega.Equal(int64(NumClusters)))
+			gomega.Expect(summary.TotalNodes).To(gomega.Equal(int64(NumClusters * NumNodes)))
 	})
 
 })

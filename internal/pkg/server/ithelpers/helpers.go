@@ -16,6 +16,7 @@ import (
 	"github.com/nalej/grpc-authx-go"
 	"github.com/nalej/grpc-infrastructure-go"
 	"github.com/nalej/grpc-organization-go"
+	"github.com/nalej/grpc-user-go"
 	"github.com/nalej/grpc-user-manager-go"
 	"github.com/onsi/gomega"
 	"google.golang.org/grpc/metadata"
@@ -77,6 +78,18 @@ func CreateRole(organizationID string, userManagerClient grpc_user_manager_go.Us
 		Name:           "test role",
 		Description:    "test role",
 		Primitives:     []grpc_authx_go.AccessPrimitive{grpc_authx_go.AccessPrimitive_ORG},
+	}
+	added, err := userManagerClient.AddRole(context.Background(), addRoleRequest)
+	gomega.Expect(err).To(gomega.Succeed())
+	return added
+}
+
+func CreateOpertorRole(organizationID string, userManagerClient grpc_user_manager_go.UserManagerClient) *grpc_authx_go.Role {
+	addRoleRequest := &grpc_user_manager_go.AddRoleRequest{
+		OrganizationId: organizationID,
+		Name:           "Operator",
+		Description:    "operator role",
+		Primitives:     []grpc_authx_go.AccessPrimitive{grpc_authx_go.AccessPrimitive_PROFILE, grpc_authx_go.AccessPrimitive_RESOURCES},
 	}
 	added, err := userManagerClient.AddRole(context.Background(), addRoleRequest)
 	gomega.Expect(err).To(gomega.Succeed())
@@ -145,6 +158,15 @@ func CreateAppDescriptor(organizationID string, appClient grpc_application_manag
 	return added
 }
 
+func GenerateDeploy (organizationID string, appDescriptorID string) * grpc_application_manager_go.DeployRequest {
+	return &grpc_application_manager_go.DeployRequest{
+		OrganizationId:  organizationID,
+		AppDescriptorId: appDescriptorID,
+		Name:            GenerateUUID(),
+		Description:     "deploy-test",
+	}
+}
+
 // GenerateUUID creates a new random UUID.
 func GenerateUUID() string {
 	return uuid.New().String()
@@ -179,15 +201,99 @@ func GetContext(token string) (context.Context, context.CancelFunc) {
 
 func GetAuthConfig(endpoints ...string) *interceptor.AuthorizationConfig {
 	permissions := make(map[string]interceptor.Permission, 0)
+
 	for _, e := range endpoints {
 		permissions[e] = interceptor.Permission{
 			Must: []string{grpc_authx_go.AccessPrimitive_ORG.String()},
 		}
 	}
+
 	return &interceptor.AuthorizationConfig{
 		AllowsAll:   false,
 		Permissions: permissions,
 	}
+}
+
+func GetAllAuthConfig() *interceptor.AuthorizationConfig  {
+	permissions := make(map[string]interceptor.Permission, 0)
+	permissions["/public_api.Clusters/Install"] = interceptor.Permission{
+		Should: []string{grpc_authx_go.AccessPrimitive_ORG.String(), grpc_authx_go.AccessPrimitive_RESOURCES.String()},
+	}
+	permissions["/public_api.Clusters/Info"] = interceptor.Permission{
+		Should: []string{grpc_authx_go.AccessPrimitive_ORG.String(), grpc_authx_go.AccessPrimitive_RESOURCES.String()},
+	}
+	permissions["/public_api.Clusters/List"] = interceptor.Permission{
+		Should: []string{grpc_authx_go.AccessPrimitive_ORG.String(), grpc_authx_go.AccessPrimitive_RESOURCES.String()},
+	}
+	permissions["/public_api.Clusters/Update"] = interceptor.Permission{
+		Should: []string{grpc_authx_go.AccessPrimitive_ORG.String(), grpc_authx_go.AccessPrimitive_RESOURCES.String()},
+	}
+	permissions["/public_api.Nodes/List"] = interceptor.Permission{
+		Should: []string{grpc_authx_go.AccessPrimitive_ORG.String(), grpc_authx_go.AccessPrimitive_RESOURCES.String()},
+	}
+	permissions["/public_api.Organizations/Info"] = interceptor.Permission{
+		Should: []string{grpc_authx_go.AccessPrimitive_ORG.String(), grpc_authx_go.AccessPrimitive_RESOURCES.String(), grpc_authx_go.AccessPrimitive_APPS.String()},
+	}
+	permissions["/public_api.Resources/Summary"] = interceptor.Permission{
+		Should: []string{grpc_authx_go.AccessPrimitive_ORG.String(), grpc_authx_go.AccessPrimitive_RESOURCES.String()},
+	}
+	permissions["/public_api.Roles/List"] = interceptor.Permission{
+		Must: []string{grpc_authx_go.AccessPrimitive_ORG.String()},
+	}
+	permissions["/public_api.Roles/ListInternal"] = interceptor.Permission{
+		Must: []string{grpc_authx_go.AccessPrimitive_ORG.String()},
+	}
+	permissions["/public_api.Roles/AssignRole"] = interceptor.Permission{
+		Must: []string{grpc_authx_go.AccessPrimitive_ORG.String()},
+	}
+	permissions["/public_api.Users/Add"] = interceptor.Permission{
+		Must: []string{grpc_authx_go.AccessPrimitive_ORG.String()},
+	}
+	permissions["/public_api.Users/Info"] = interceptor.Permission{
+		Should: []string{grpc_authx_go.AccessPrimitive_ORG.String(), grpc_authx_go.AccessPrimitive_PROFILE.String()},
+	}
+	permissions["/public_api.Users/List"] = interceptor.Permission{
+		Must: []string{grpc_authx_go.AccessPrimitive_ORG.String()},
+	}
+	permissions["/public_api.Users/Delete"] = interceptor.Permission{
+		Must: []string{grpc_authx_go.AccessPrimitive_ORG.String()},
+	}
+	permissions["/public_api.Users/ChangePassword"] = interceptor.Permission{
+		Should: []string{grpc_authx_go.AccessPrimitive_ORG.String(), grpc_authx_go.AccessPrimitive_PROFILE.String()},
+	}
+	permissions["/public_api.Users/Update"] = interceptor.Permission{
+		Should: []string{grpc_authx_go.AccessPrimitive_ORG.String(), grpc_authx_go.AccessPrimitive_PROFILE.String()},
+	}
+	permissions["/public_api.Applications/AddAppDescriptor"] = interceptor.Permission{
+		Should: []string{grpc_authx_go.AccessPrimitive_ORG.String(), grpc_authx_go.AccessPrimitive_APPS.String()},
+	}
+	permissions["/public_api.Applications/ListAppDescriptors"] = interceptor.Permission{
+		Should: []string{grpc_authx_go.AccessPrimitive_ORG.String(), grpc_authx_go.AccessPrimitive_APPS.String()},
+	}
+	permissions["/public_api.Applications/GetAppDescriptor"] = interceptor.Permission{
+		Should: []string{grpc_authx_go.AccessPrimitive_ORG.String(), grpc_authx_go.AccessPrimitive_APPS.String()},
+	}
+	permissions["/public_api.Applications/DeleteAppDescriptor"] = interceptor.Permission{
+		Should: []string{grpc_authx_go.AccessPrimitive_ORG.String(), grpc_authx_go.AccessPrimitive_APPS.String()},
+	}
+	permissions["/public_api.Applications/Deploy"] = interceptor.Permission{
+		Should: []string{grpc_authx_go.AccessPrimitive_ORG.String(), grpc_authx_go.AccessPrimitive_APPS.String()},
+	}
+	permissions["/public_api.Applications/Undeploy"] = interceptor.Permission{
+		Should: []string{grpc_authx_go.AccessPrimitive_ORG.String(), grpc_authx_go.AccessPrimitive_APPS.String()},
+	}
+	permissions["/public_api.Applications/ListAppInstances"] = interceptor.Permission{
+		Should: []string{grpc_authx_go.AccessPrimitive_ORG.String(), grpc_authx_go.AccessPrimitive_APPS.String()},
+	}
+	permissions["/public_api.Applications/GetAppInstance"] = interceptor.Permission{
+		Should: []string{grpc_authx_go.AccessPrimitive_ORG.String(), grpc_authx_go.AccessPrimitive_APPS.String()},
+	}
+
+	return &interceptor.AuthorizationConfig{
+		AllowsAll:   false,
+		Permissions: permissions,
+	}
+
 }
 
 // DeleteAllInstances from system model.
@@ -203,6 +309,23 @@ func DeleteAllInstances(organizationID string, smAppClient grpc_application_go.A
 			AppInstanceId:        inst.AppInstanceId,
 		}
 		_, err := smAppClient.RemoveAppInstance(context.Background(), toRemove)
+		gomega.Expect(err).To(gomega.Succeed())
+	}
+}
+// DeleteAllUsers from system model
+func DeleteAllUsers(organizationID string, smUserClient grpc_user_manager_go.UserManagerClient){
+	orgID := &grpc_organization_go.OrganizationId{
+		OrganizationId: organizationID,
+	}
+	users, err := smUserClient.ListUsers(context.Background(), orgID)
+	gomega.Expect(err).To(gomega.Succeed())
+
+	for _, user := range users.Users{
+		toRemove := &grpc_user_go.UserId{
+			OrganizationId:       user.OrganizationId,
+			Email:        user.Email,
+		}
+		_, err := smUserClient.RemoveUser(context.Background(), toRemove)
 		gomega.Expect(err).To(gomega.Succeed())
 	}
 }

@@ -52,7 +52,7 @@ var _ = ginkgo.Describe("Applications", func() {
 	var listener *bufconn.Listener
 	// client
 	var orgClient grpc_organization_go.OrganizationsClient
-	var smAppClient grpc_application_go.ApplicationsClient
+	//var smAppClient grpc_application_go.ApplicationsClient
 	var appClient grpc_application_manager_go.ApplicationManagerClient
 	var smConn *grpc.ClientConn
 	var appConn *grpc.ClientConn
@@ -61,19 +61,18 @@ var _ = ginkgo.Describe("Applications", func() {
 	// Target organization.
 	var targetOrganization *grpc_organization_go.Organization
 	var token string
+	var devToken string
+	var operToken string
 
 	ginkgo.BeforeSuite(func() {
 		listener = test.GetDefaultListener()
-		authConfig := ithelpers.GetAuthConfig(
-			"/public_api.Applications/AddAppDescriptor", "/public_api.Applications/ListAppDescriptors",
-			"/public_api.Applications/GetAppDescriptor", "/public_api.Applications/Deploy", "/public_api.Applications/Undeploy",
-			"/public_api.Applications/ListAppInstances", "/public_api.Applications/GetAppInstance")
-		server = grpc.NewServer(interceptor.WithServerAuthxInterceptor(
-			interceptor.NewConfig(authConfig, "secret", ithelpers.AuthHeader)))
+
+		authConfig := ithelpers.GetAllAuthConfig()
+		server = grpc.NewServer(interceptor.WithServerAuthxInterceptor(interceptor.NewConfig(authConfig, "secret", ithelpers.AuthHeader)))
 
 		smConn = utils.GetConnection(systemModelAddress)
 		orgClient = grpc_organization_go.NewOrganizationsClient(smConn)
-		smAppClient = grpc_application_go.NewApplicationsClient(smConn)
+		//smAppClient = grpc_application_go.NewApplicationsClient(smConn)
 		appConn = utils.GetConnection(appManagerAddress)
 		appClient = grpc_application_manager_go.NewApplicationManagerClient(appConn)
 
@@ -90,6 +89,12 @@ var _ = ginkgo.Describe("Applications", func() {
 		token = ithelpers.GenerateToken("email@nalej.com",
 			targetOrganization.OrganizationId, "Owner", "secret",
 			[]grpc_authx_go.AccessPrimitive{grpc_authx_go.AccessPrimitive_ORG})
+
+		devToken = ithelpers.GenerateToken("dev@nalej.com", targetOrganization.OrganizationId, "Developer", "secret",
+			[]grpc_authx_go.AccessPrimitive{grpc_authx_go.AccessPrimitive_PROFILE, grpc_authx_go.AccessPrimitive_APPS})
+
+		operToken = ithelpers.GenerateToken("oper@nalej.com", targetOrganization.OrganizationId, "Operator", "secret",
+			[]grpc_authx_go.AccessPrimitive{grpc_authx_go.AccessPrimitive_PROFILE, grpc_authx_go.AccessPrimitive_RESOURCES})
 	})
 
 	ginkgo.AfterSuite(func() {
@@ -108,6 +113,22 @@ var _ = ginkgo.Describe("Applications", func() {
 			gomega.Expect(err).To(gomega.Succeed())
 			gomega.Expect(added.AppDescriptorId).ShouldNot(gomega.BeEmpty())
 		})
+		ginkgo.It("Developer should be able to register a new descriptor", func() {
+			toAdd := ithelpers.GetAddDescriptorRequest(targetOrganization.OrganizationId)
+			ctx, cancel := ithelpers.GetContext(devToken)
+			defer cancel()
+			added, err := client.AddAppDescriptor(ctx, toAdd)
+			gomega.Expect(err).To(gomega.Succeed())
+			gomega.Expect(added.AppDescriptorId).ShouldNot(gomega.BeEmpty())
+		})
+		ginkgo.It("Operator should NOT be able to register a new descriptor", func() {
+			toAdd := ithelpers.GetAddDescriptorRequest(targetOrganization.OrganizationId)
+			ctx, cancel := ithelpers.GetContext(operToken)
+			defer cancel()
+			_, err := client.AddAppDescriptor(ctx, toAdd)
+			gomega.Expect(err).NotTo(gomega.Succeed())
+		})
+
 		ginkgo.It("should be able to get the information of a descriptor", func() {
 			toAdd := ithelpers.GetAddDescriptorRequest(targetOrganization.OrganizationId)
 			ctx, cancel := ithelpers.GetContext(token)
@@ -124,6 +145,31 @@ var _ = ginkgo.Describe("Applications", func() {
 			retrieved, err := client.GetAppDescriptor(ctx2, appDescriptorID)
 			gomega.Expect(retrieved.AppDescriptorId).Should(gomega.Equal(added.AppDescriptorId))
 		})
+		ginkgo.It("Developer should be able to get the information of a descriptor", func() {
+			toAdd := ithelpers.CreateAppDescriptor(targetOrganization.OrganizationId, appClient)
+			appDescriptorID := &grpc_application_go.AppDescriptorId{
+						OrganizationId:  toAdd.OrganizationId,
+						AppDescriptorId: toAdd.AppDescriptorId,
+					}
+			ctx, cancel := ithelpers.GetContext(devToken)
+			defer cancel()
+			retrieved, err := client.GetAppDescriptor(ctx, appDescriptorID)
+			gomega.Expect(retrieved.AppDescriptorId).Should(gomega.Equal(toAdd.AppDescriptorId))
+			gomega.Expect(err).To(gomega.Succeed())
+		})
+		ginkgo.It("Operator should NOT be able to get the information of a descriptor", func() {
+			toAdd := ithelpers.CreateAppDescriptor(targetOrganization.OrganizationId, appClient)
+			appDescriptorID := &grpc_application_go.AppDescriptorId{
+				OrganizationId:  toAdd.OrganizationId,
+				AppDescriptorId: toAdd.AppDescriptorId,
+			}
+			ctx, cancel := ithelpers.GetContext(operToken)
+			defer cancel()
+			_, err := client.GetAppDescriptor(ctx, appDescriptorID)
+			gomega.Expect(err).NotTo(gomega.Succeed())
+		})
+
+
 		ginkgo.It("should be able to list the existing descriptors", func() {
 			numDescriptors := 5
 			org := ithelpers.CreateOrganization(fmt.Sprintf("list-desc-%d", ginkgo.GinkgoRandomSeed()), orgClient)
@@ -142,11 +188,41 @@ var _ = ginkgo.Describe("Applications", func() {
 			organizationID := &grpc_organization_go.OrganizationId{
 				OrganizationId: org.OrganizationId,
 			}
-			ctx, cancel := ithelpers.GetContext(orgToken)
-			defer cancel()
+			ctx, cancel2 := ithelpers.GetContext(orgToken)
+			defer cancel2()
 			list, err := client.ListAppDescriptors(ctx, organizationID)
 			gomega.Expect(err).To(gomega.Succeed())
 			gomega.Expect(len(list.Descriptors)).Should(gomega.Equal(numDescriptors))
+		})
+		ginkgo.It("Developer should be able to list the existing descriptors", func() {
+
+			for i := 0; i < 5; i++ {
+				ithelpers.GetAddDescriptorRequest(targetOrganization.OrganizationId)
+			}
+
+			organizationID := &grpc_organization_go.OrganizationId{
+				OrganizationId: targetOrganization.OrganizationId,
+			}
+			ctx, cancel2 := ithelpers.GetContext(devToken)
+			defer cancel2()
+			list, err := client.ListAppDescriptors(ctx, organizationID)
+			gomega.Expect(err).To(gomega.Succeed())
+			gomega.Expect(len(list.Descriptors)).NotTo(gomega.BeZero())
+
+		})
+		ginkgo.It("Operator should NOT be able to list the existing descriptors", func() {
+			for i := 0; i < 5; i++ {
+				ithelpers.GetAddDescriptorRequest(targetOrganization.OrganizationId)
+			}
+
+			organizationID := &grpc_organization_go.OrganizationId{
+				OrganizationId: targetOrganization.OrganizationId,
+			}
+			ctx, cancel2 := ithelpers.GetContext(operToken)
+			defer cancel2()
+			_, err := client.ListAppDescriptors(ctx, organizationID)
+			gomega.Expect(err).NotTo(gomega.Succeed())
+
 		})
 	})
 
@@ -156,7 +232,7 @@ var _ = ginkgo.Describe("Applications", func() {
 
 		ginkgo.BeforeEach(func() {
 			targetDescriptor = ithelpers.CreateAppDescriptor(targetOrganization.OrganizationId, appClient)
-			ithelpers.DeleteAllInstances(targetOrganization.OrganizationId, smAppClient)
+			//ithelpers.DeleteAllInstances(targetOrganization.OrganizationId, smAppClient)
 		})
 
 		ginkgo.It("should be able to deploy an application", func() {
@@ -174,6 +250,27 @@ var _ = ginkgo.Describe("Applications", func() {
 			}
 			gomega.Expect(err).To(gomega.Succeed())
 			gomega.Expect(deployed.AppInstanceId).ShouldNot(gomega.BeEmpty())
+		})
+		ginkgo.It("Developer should be able to deploy an application", func() {
+			toDeploy := ithelpers.GenerateDeploy(targetDescriptor.OrganizationId, targetDescriptor.AppDescriptorId)
+			ctx, cancel := ithelpers.GetContext(devToken)
+			defer cancel()
+			deployed, err := client.Deploy(ctx, toDeploy)
+			if err != nil {
+				log.Error().Str("trace", conversions.ToDerror(err).DebugReport()).Msg("error")
+			}
+			gomega.Expect(err).To(gomega.Succeed())
+			gomega.Expect(deployed.AppInstanceId).ShouldNot(gomega.BeEmpty())
+		})
+		ginkgo.It("Operator should NOT be able to deploy an application", func() {
+			toDeploy := ithelpers.GenerateDeploy(targetDescriptor.OrganizationId, targetDescriptor.AppDescriptorId)
+			ctx, cancel := ithelpers.GetContext(operToken)
+			defer cancel()
+			_, err := client.Deploy(ctx, toDeploy)
+			if err != nil {
+				log.Error().Str("trace", conversions.ToDerror(err).DebugReport()).Msg("error")
+			}
+			gomega.Expect(err).NotTo(gomega.Succeed())
 		})
 
 		ginkgo.PIt("should be able to undeploy an application", func() {
@@ -203,7 +300,47 @@ var _ = ginkgo.Describe("Applications", func() {
 			defer cancel2()
 			list, err := client.ListAppInstances(ctx2, orgID)
 			gomega.Expect(err).To(gomega.Succeed())
-			gomega.Expect(len(list.Instances)).Should(gomega.Equal(1))
+			gomega.Expect(len(list.Instances)).ShouldNot(gomega.Equal(0))
+		})
+		ginkgo.It("Developer should be able to list the running instances", func() {
+
+			toDeploy := ithelpers.GenerateDeploy(targetDescriptor.OrganizationId, targetDescriptor.AppDescriptorId)
+			ctx, cancel := ithelpers.GetContext(devToken)
+			defer cancel()
+			deployed, err := client.Deploy(ctx, toDeploy)
+			if err != nil {
+				log.Error().Str("trace", conversions.ToDerror(err).DebugReport()).Msg("error")
+			}
+			gomega.Expect(err).To(gomega.Succeed())
+			gomega.Expect(deployed.AppInstanceId).ShouldNot(gomega.BeEmpty())
+
+			orgID := &grpc_organization_go.OrganizationId{
+				OrganizationId:       toDeploy.OrganizationId,
+			}
+			ctx2, cancel2 := ithelpers.GetContext(devToken)
+			defer cancel2()
+			list, err := client.ListAppInstances(ctx2, orgID)
+			gomega.Expect(err).To(gomega.Succeed())
+			gomega.Expect(len(list.Instances)).ShouldNot(gomega.Equal(0))
+		})
+		ginkgo.It("Operator should NOT be able to list the running instances", func() {
+			toDeploy := ithelpers.GenerateDeploy(targetDescriptor.OrganizationId, targetDescriptor.AppDescriptorId)
+			ctx, cancel := ithelpers.GetContext(devToken)
+			defer cancel()
+			deployed, err := client.Deploy(ctx, toDeploy)
+			if err != nil {
+				log.Error().Str("trace", conversions.ToDerror(err).DebugReport()).Msg("error")
+			}
+			gomega.Expect(err).To(gomega.Succeed())
+			gomega.Expect(deployed.AppInstanceId).ShouldNot(gomega.BeEmpty())
+
+			orgID := &grpc_organization_go.OrganizationId{
+				OrganizationId:       targetOrganization.OrganizationId,
+			}
+			ctx2, cancel2 := ithelpers.GetContext(operToken)
+			defer cancel2()
+			_, err2 := client.ListAppInstances(ctx2, orgID)
+			gomega.Expect(err2).NotTo(gomega.Succeed())
 		})
 
 		ginkgo.It("should be able to retrieve the information of a running instance", func() {
@@ -231,6 +368,47 @@ var _ = ginkgo.Describe("Applications", func() {
 			info, err := client.GetAppInstance(ctx2, instanceID)
 			gomega.Expect(err).To(gomega.Succeed())
 			gomega.Expect(info).ShouldNot(gomega.BeNil())
+		})
+		ginkgo.It("Developer should be able to retrieve the information of a running instance", func() {
+			toDeploy := ithelpers.GenerateDeploy(targetDescriptor.OrganizationId, targetDescriptor.AppDescriptorId)
+			ctx, cancel := ithelpers.GetContext(devToken)
+			defer cancel()
+			deployed, err := client.Deploy(ctx, toDeploy)
+			if err != nil {
+				log.Error().Str("trace", conversions.ToDerror(err).DebugReport()).Msg("error")
+			}
+			gomega.Expect(err).To(gomega.Succeed())
+			gomega.Expect(deployed.AppInstanceId).ShouldNot(gomega.BeEmpty())
+
+			instanceID := &grpc_application_go.AppInstanceId{
+				OrganizationId:       targetOrganization.OrganizationId,
+				AppInstanceId:        deployed.AppInstanceId,
+			}
+			ctx2, cancel2 := ithelpers.GetContext(devToken)
+			defer cancel2()
+			info, err := client.GetAppInstance(ctx2, instanceID)
+			gomega.Expect(err).To(gomega.Succeed())
+			gomega.Expect(info).ShouldNot(gomega.BeNil())
+		})
+		ginkgo.It("Operator should NOT  be able to retrieve the information of a running instance", func() {
+			toDeploy := ithelpers.GenerateDeploy(targetDescriptor.OrganizationId, targetDescriptor.AppDescriptorId)
+			ctx, cancel := ithelpers.GetContext(devToken)
+			defer cancel()
+			deployed, err := client.Deploy(ctx, toDeploy)
+			if err != nil {
+				log.Error().Str("trace", conversions.ToDerror(err).DebugReport()).Msg("error")
+			}
+			gomega.Expect(err).To(gomega.Succeed())
+			gomega.Expect(deployed.AppInstanceId).ShouldNot(gomega.BeEmpty())
+
+			instanceID := &grpc_application_go.AppInstanceId{
+				OrganizationId:       targetOrganization.OrganizationId,
+				AppInstanceId:        deployed.AppInstanceId,
+			}
+			ctx2, cancel2 := ithelpers.GetContext(operToken)
+			defer cancel2()
+			_, err2 := client.GetAppInstance(ctx2, instanceID)
+			gomega.Expect(err2).NotTo(gomega.Succeed())
 		})
 	})
 
