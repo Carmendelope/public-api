@@ -64,9 +64,6 @@ var _ = ginkgo.Describe("Nodes", func() {
 
 	ginkgo.BeforeSuite(func() {
 		listener = test.GetDefaultListener()
-		//authConfig := ithelpers.GetAuthConfig("/public_api.Nodes/ClusterNodes")
-		//server = grpc.NewServer(interceptor.WithServerAuthxInterceptor(
-		//	interceptor.NewConfig(authConfig, "secret", ithelpers.AuthHeader)))
 
 		server = grpc.NewServer(interceptor.WithServerAuthxInterceptor(interceptor.NewConfig(ithelpers.GetAllAuthConfig(), "secret", ithelpers.AuthHeader)))
 
@@ -99,6 +96,9 @@ var _ = ginkgo.Describe("Nodes", func() {
 	})
 
 	ginkgo.AfterSuite(func() {
+
+		ithelpers.NewTestCleaner(smConn).DeleteOrganizationClusters(targetOrganization.OrganizationId)
+
 		server.Stop()
 		listener.Close()
 		smConn.Close()
@@ -106,42 +106,31 @@ var _ = ginkgo.Describe("Nodes", func() {
 
 	ginkgo.It("should be able to list the nodes in a clusters", func() {
 
-		clusterID := &grpc_infrastructure_go.ClusterId{
-			OrganizationId: targetCluster.OrganizationId,
-			ClusterId:      targetCluster.ClusterId,
-		}
-		ctx, cancel := ithelpers.GetContext(token)
-		defer cancel()
-		list, err := client.List(ctx, clusterID)
-
-		gomega.Expect(err).To(gomega.Succeed())
-		gomega.Expect(len(list.Nodes)).To(gomega.Equal(NumNodes))
-	})
-
-	ginkgo.It("Developer should NOT be able to list the nodes in a clusters", func() {
+		tests := make([]utils.TestResult, 0)
+		tests = append(tests, utils.TestResult{Token: token, Success: true, Msg: "Owner should be able to list the nodes in a clusters"})
+		tests = append(tests, utils.TestResult{Token: devToken, Success: false, Msg: "Developer should NOT be able to list the nodes in a clusters"})
+		tests = append(tests, utils.TestResult{Token: opeToken, Success: true, Msg: "Operator should be able to list the nodes in a clusters"})
 
 		clusterID := &grpc_infrastructure_go.ClusterId{
 			OrganizationId: targetCluster.OrganizationId,
 			ClusterId:      targetCluster.ClusterId,
 		}
-		ctx, cancel := ithelpers.GetContext(devToken)
-		defer cancel()
-		_, err := client.List(ctx, clusterID)
+		for _, test := range tests {
 
-		gomega.Expect(err).NotTo(gomega.Succeed())
+			ctx, cancel := ithelpers.GetContext(test.Token)
+			defer cancel()
 
-	})
-	ginkgo.It("Operator should be able to list the nodes in a clusters", func() {
+			list, err := client.List(ctx, clusterID)
 
-		clusterID := &grpc_infrastructure_go.ClusterId{
-			OrganizationId: targetCluster.OrganizationId,
-			ClusterId:      targetCluster.ClusterId,
+			if test.Success {
+				gomega.Expect(err).To(gomega.Succeed())
+				gomega.Expect(len(list.Nodes)).To(gomega.Equal(NumNodes))
+			}else{
+				gomega.Expect(err).NotTo(gomega.Succeed())
+			}
+
 		}
-		ctx, cancel := ithelpers.GetContext(opeToken)
-		defer cancel()
-		list, err := client.List(ctx, clusterID)
 
-		gomega.Expect(err).To(gomega.Succeed())
-		gomega.Expect(len(list.Nodes)).To(gomega.Equal(NumNodes))
 	})
+
 })

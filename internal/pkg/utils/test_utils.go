@@ -21,3 +21,9 @@ func GetConnection(address string) *grpc.ClientConn {
 	gomega.Expect(err).To(gomega.Succeed())
 	return conn
 }
+
+type TestResult struct {
+	Token string
+	Success bool
+	Msg string
+}

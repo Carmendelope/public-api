@@ -90,7 +90,7 @@ var _ = ginkgo.Describe("Users", func() {
 		client = grpc_public_api_go.NewUsersClient(conn)
 		targetOrganization = ithelpers.CreateOrganization(fmt.Sprintf("testOrg-%d", ginkgo.GinkgoRandomSeed()), orgClient)
 		targetRole = ithelpers.CreateRole(targetOrganization.OrganizationId, umClient)
-		//targetUser = ithelpers.CreateUser(targetOrganization.OrganizationId, targetRole.RoleId, umClient)
+		targetUser = ithelpers.CreateUser(targetOrganization.OrganizationId, targetRole.RoleId, umClient)
 		token = ithelpers.GenerateToken("owner@nalej.com",
 			targetOrganization.OrganizationId, "Owner", "secret",
 			[]grpc_authx_go.AccessPrimitive{grpc_authx_go.AccessPrimitive_ORG})
@@ -104,6 +104,8 @@ var _ = ginkgo.Describe("Users", func() {
 	})
 
 	ginkgo.AfterSuite(func() {
+		ithelpers.NewTestCleaner(umConn)
+		ithelpers.DeleteAllUsers(targetOrganization.OrganizationId, umClient)
 		server.Stop()
 		listener.Close()
 		smConn.Close()
@@ -111,7 +113,7 @@ var _ = ginkgo.Describe("Users", func() {
 	})
 
 	ginkgo.BeforeEach(func() {
-		ithelpers.DeleteAllUsers(targetOrganization.OrganizationId, umClient)
+	//	ithelpers.DeleteAllUsers(targetOrganization.OrganizationId, umClient)
 		targetUser = ithelpers.CreateUser(targetOrganization.OrganizationId, targetRole.RoleId, umClient)
 	})
 
@@ -134,7 +136,7 @@ var _ = ginkgo.Describe("Users", func() {
 	ginkgo.It("Developer should NOT be able to add a new user", func(){
 		addRequest := &grpc_public_api_go.AddUserRequest{
 			OrganizationId:       targetOrganization.OrganizationId,
-			Email:                fmt.Sprintf("random%d@nalej.com", rand.Int()),
+			Email:                fmt.Sprintf("developer%d@nalej.com", rand.Int()),
 			Password:             "password",
 			Name:                 "Name",
 			RoleName:             targetRole.Name,
@@ -147,7 +149,7 @@ var _ = ginkgo.Describe("Users", func() {
 	ginkgo.It("Operator should NOT be able to add a new user", func(){
 		addRequest := &grpc_public_api_go.AddUserRequest{
 			OrganizationId:       targetOrganization.OrganizationId,
-			Email:                fmt.Sprintf("random%d@nalej.com", rand.Int()),
+			Email:                fmt.Sprintf("operator%d@nalej.com", rand.Int()),
 			Password:             "password",
 			Name:                 "Name",
 			RoleName:             targetRole.Name,

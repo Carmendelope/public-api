@@ -19,6 +19,8 @@ import (
 	"github.com/nalej/grpc-user-go"
 	"github.com/nalej/grpc-user-manager-go"
 	"github.com/onsi/gomega"
+	"github.com/rs/zerolog/log"
+	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
 	"math/rand"
 	"time"
@@ -84,17 +86,6 @@ func CreateRole(organizationID string, userManagerClient grpc_user_manager_go.Us
 	return added
 }
 
-func CreateOpertorRole(organizationID string, userManagerClient grpc_user_manager_go.UserManagerClient) *grpc_authx_go.Role {
-	addRoleRequest := &grpc_user_manager_go.AddRoleRequest{
-		OrganizationId: organizationID,
-		Name:           "Operator",
-		Description:    "operator role",
-		Primitives:     []grpc_authx_go.AccessPrimitive{grpc_authx_go.AccessPrimitive_PROFILE, grpc_authx_go.AccessPrimitive_RESOURCES},
-	}
-	added, err := userManagerClient.AddRole(context.Background(), addRoleRequest)
-	gomega.Expect(err).To(gomega.Succeed())
-	return added
-}
 
 func CreateUser(organizationID string, roleID string, userManagerClient grpc_user_manager_go.UserManagerClient) *grpc_user_manager_go.User {
 
@@ -304,6 +295,20 @@ func DeleteAllInstances(organizationID string, smAppClient grpc_application_go.A
 	instances, err := smAppClient.ListAppInstances(context.Background(), orgID)
 	gomega.Expect(err).To(gomega.Succeed())
 	for _, inst := range instances.Instances{
+
+		instance := &grpc_application_go.AppInstanceId {
+			OrganizationId:organizationID,
+			AppInstanceId: inst.AppInstanceId,
+		}
+		// TODO: ask Dani if I have to ask for the instance another time
+		inst2, err2 := smAppClient.GetAppInstance(context.Background(), instance)
+		gomega.Expect(err2).To(gomega.Succeed())
+
+		if inst2.Status == grpc_application_go.ApplicationStatus_QUEUED {
+			log.Debug().Str("app_instance", inst.AppInstanceId).Msg("QUEUED, Waiting 3s to DEPLOY")
+			time.Sleep(time.Duration(3)*time.Second)
+		}
+
 		toRemove := &grpc_application_go.AppInstanceId{
 			OrganizationId:       inst.OrganizationId,
 			AppInstanceId:        inst.AppInstanceId,
@@ -328,4 +333,154 @@ func DeleteAllUsers(organizationID string, smUserClient grpc_user_manager_go.Use
 		_, err := smUserClient.RemoveUser(context.Background(), toRemove)
 		gomega.Expect(err).To(gomega.Succeed())
 	}
+}
+
+type TestCleaner struct {
+	client *grpc.ClientConn
+}
+func NewTestCleaner(smConn *grpc.ClientConn) * TestCleaner{
+	return &TestCleaner{smConn}
+}
+
+// DeleteAllInstances from system model
+func (tu * TestCleaner) DeleteAllInstances(organizationID string){
+	orgID := &grpc_organization_go.OrganizationId{
+		OrganizationId: organizationID,
+	}
+
+	smAppClient := grpc_application_go.NewApplicationsClient(tu.client)
+
+	instances, err := smAppClient.ListAppInstances(context.Background(), orgID)
+	gomega.Expect(err).To(gomega.Succeed())
+
+	log.Debug().Msg("Waiting 2s to conductor queue")
+	time.Sleep(time.Duration(2)*time.Second)
+
+	for _, inst := range instances.Instances{
+
+		toRemove := &grpc_application_go.AppInstanceId{
+			OrganizationId:       inst.OrganizationId,
+			AppInstanceId:        inst.AppInstanceId,
+		}
+		_, err := smAppClient.RemoveAppInstance(context.Background(), toRemove)
+		gomega.Expect(err).To(gomega.Succeed())
+	}
+}
+
+// DeleteAppDescriptors from system model
+func (tu * TestCleaner) DeleteAppDescriptors (organizationID string) {
+
+	smAppClient := grpc_application_go.NewApplicationsClient(tu.client)
+
+	orgID := &grpc_organization_go.OrganizationId{
+		OrganizationId: organizationID,
+	}
+	apps, err := smAppClient.ListAppDescriptors(context.Background(), orgID)
+	gomega.Expect(err).To(gomega.Succeed())
+
+	for _, app := range apps.Descriptors {
+
+		toRemove := &grpc_application_go.AppDescriptorId{
+			OrganizationId: app.OrganizationId,
+			AppDescriptorId: app.AppDescriptorId,
+		}
+
+		_, err := smAppClient.RemoveAppDescriptor(context.Background(), toRemove)
+		gomega.Expect(err).To(gomega.Succeed())
+
+	}
+
+}
+
+// DeleteAllUsers from system model
+func (tu * TestCleaner) DeleteAllUsers(organizationID string) {
+
+	client := grpc_user_manager_go.NewUserManagerClient(tu.client)
+
+	orgID := &grpc_organization_go.OrganizationId{
+		OrganizationId: organizationID,
+	}
+	users, err := client.ListUsers(context.Background(), orgID)
+	gomega.Expect(err).To(gomega.Succeed())
+
+	for _, user := range users.Users{
+		toRemove := &grpc_user_go.UserId{
+			OrganizationId:       user.OrganizationId,
+			Email:        user.Email,
+		}
+		_, err := client.RemoveUser(context.Background(), toRemove)
+		gomega.Expect(err).To(gomega.Succeed())
+	}
+}
+
+// Delete the nodes of a cluster from system model
+func (tu * TestCleaner) DeleteClusterNodes (organizationID string, clusterID string)  {
+
+	client := grpc_infrastructure_go.NewNodesClient(tu.client)
+
+	clusterId := &grpc_infrastructure_go.ClusterId{
+		ClusterId: clusterID,
+		OrganizationId: organizationID,
+	}
+	nodes, err := client.ListNodes(context.Background(), clusterId)
+	gomega.Expect(err).To(gomega.Succeed())
+
+	if nodes != nil {
+		nodeList := make([]string, 0)
+		for _, node := range nodes.Nodes {
+			nodeList = append(nodeList, node.NodeId)
+		}
+
+		toRemove := &grpc_infrastructure_go.RemoveNodesRequest{
+			RequestId:GenerateUUID(),
+			OrganizationId: organizationID,
+			Nodes:          nodeList,
+		}
+		_, err = client.RemoveNodes(context.Background(), toRemove)
+		gomega.Expect(err).To(gomega.Succeed())
+	}
+
+}
+
+// delete a cluster from system model
+func (tu * TestCleaner) DeleteOrganizationClusters (organizationID string){
+
+	client := grpc_infrastructure_go.NewClustersClient(tu.client)
+
+	orgID := &grpc_organization_go.OrganizationId{
+		OrganizationId: organizationID,
+	}
+	clusters, err := client.ListClusters(context.Background(), orgID)
+	gomega.Expect(err).To(gomega.Succeed())
+
+	for _, cluster := range clusters.Clusters {
+
+		tu.DeleteClusterNodes(organizationID, cluster.ClusterId)
+
+		toRemove := &grpc_infrastructure_go.RemoveClusterRequest{
+			OrganizationId: cluster.OrganizationId,
+			ClusterId: cluster.ClusterId,
+		}
+
+		_, err := client.RemoveCluster(context.Background(), toRemove)
+		gomega.Expect(err).To(gomega.Succeed())
+	}
+
+}
+
+func (tu * TestCleaner) DeleteOrganizationDescriptors (organizationID string){
+	// delete Instances
+	tu.DeleteAllInstances(organizationID)
+	// delete appDescriptors
+	tu.DeleteAppDescriptors(organizationID)
+
+}
+
+// delete all of an organization
+func (tu * TestCleaner) DeleteOrganization (organizationID string){
+
+	//
+	tu.DeleteOrganizationDescriptors(organizationID)
+	tu.DeleteOrganizationClusters(organizationID)
+	tu.DeleteAllUsers(organizationID)
 }

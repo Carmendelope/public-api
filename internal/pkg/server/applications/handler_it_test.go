@@ -57,6 +57,7 @@ var _ = ginkgo.Describe("Applications", func() {
 	var smConn *grpc.ClientConn
 	var appConn *grpc.ClientConn
 	var client grpc_public_api_go.ApplicationsClient
+	var targetDescriptor *grpc_application_go.AppDescriptor
 
 	// Target organization.
 	var targetOrganization *grpc_organization_go.Organization
@@ -72,9 +73,11 @@ var _ = ginkgo.Describe("Applications", func() {
 
 		smConn = utils.GetConnection(systemModelAddress)
 		orgClient = grpc_organization_go.NewOrganizationsClient(smConn)
-		//smAppClient = grpc_application_go.NewApplicationsClient(smConn)
+
 		appConn = utils.GetConnection(appManagerAddress)
 		appClient = grpc_application_manager_go.NewApplicationManagerClient(appConn)
+
+		//smAppClient = grpc_application_go.NewApplicationsClient(smConn)
 
 		conn, err := test.GetConn(*listener)
 		gomega.Expect(err).To(gomega.Succeed())
@@ -86,6 +89,8 @@ var _ = ginkgo.Describe("Applications", func() {
 
 		client = grpc_public_api_go.NewApplicationsClient(conn)
 		targetOrganization = ithelpers.CreateOrganization(fmt.Sprintf("testOrg-%d", ginkgo.GinkgoRandomSeed()), orgClient)
+		targetDescriptor = ithelpers.CreateAppDescriptor(targetOrganization.OrganizationId, appClient)
+
 		token = ithelpers.GenerateToken("email@nalej.com",
 			targetOrganization.OrganizationId, "Owner", "secret",
 			[]grpc_authx_go.AccessPrimitive{grpc_authx_go.AccessPrimitive_ORG})
@@ -98,6 +103,11 @@ var _ = ginkgo.Describe("Applications", func() {
 	})
 
 	ginkgo.AfterSuite(func() {
+
+		testCleaner := ithelpers.NewTestCleaner(smConn)
+
+		testCleaner.DeleteOrganizationDescriptors(targetOrganization.OrganizationId)
+
 		server.Stop()
 		listener.Close()
 		smConn.Close()
@@ -106,95 +116,65 @@ var _ = ginkgo.Describe("Applications", func() {
 
 	ginkgo.Context("descriptors", func() {
 		ginkgo.It("should be able to register a new descriptor", func() {
+
+			tests := make([]utils.TestResult, 0)
+			tests = append(tests, utils.TestResult{Token: token, Success: true, Msg: "Owner should be able to register a new descriptor"})
+			tests = append(tests, utils.TestResult{Token: devToken, Success: true, Msg: "Developer should be able to register a new descriptor"})
+			tests = append(tests, utils.TestResult{Token: operToken, Success: false, Msg: "Operator should NOT be able to register a new descriptor"})
+
 			toAdd := ithelpers.GetAddDescriptorRequest(targetOrganization.OrganizationId)
-			ctx, cancel := ithelpers.GetContext(token)
-			defer cancel()
-			added, err := client.AddAppDescriptor(ctx, toAdd)
-			gomega.Expect(err).To(gomega.Succeed())
-			gomega.Expect(added.AppDescriptorId).ShouldNot(gomega.BeEmpty())
-		})
-		ginkgo.It("Developer should be able to register a new descriptor", func() {
-			toAdd := ithelpers.GetAddDescriptorRequest(targetOrganization.OrganizationId)
-			ctx, cancel := ithelpers.GetContext(devToken)
-			defer cancel()
-			added, err := client.AddAppDescriptor(ctx, toAdd)
-			gomega.Expect(err).To(gomega.Succeed())
-			gomega.Expect(added.AppDescriptorId).ShouldNot(gomega.BeEmpty())
-		})
-		ginkgo.It("Operator should NOT be able to register a new descriptor", func() {
-			toAdd := ithelpers.GetAddDescriptorRequest(targetOrganization.OrganizationId)
-			ctx, cancel := ithelpers.GetContext(operToken)
-			defer cancel()
-			_, err := client.AddAppDescriptor(ctx, toAdd)
-			gomega.Expect(err).NotTo(gomega.Succeed())
+			for _, test := range tests {
+				ctx, cancel := ithelpers.GetContext(test.Token)
+				defer cancel()
+				added, err := client.AddAppDescriptor(ctx, toAdd)
+				if test.Success {
+					gomega.Expect(err).To(gomega.Succeed())
+					gomega.Expect(added.AppDescriptorId).ShouldNot(gomega.BeEmpty())
+				} else {
+					gomega.Expect(err).NotTo(gomega.Succeed())
+				}
+			}
+
 		})
 
 		ginkgo.It("should be able to get the information of a descriptor", func() {
+
+			tests := make([]utils.TestResult, 0)
+			tests = append(tests, utils.TestResult{Token: token, Success: true, Msg: "Owner should be able to get the information of a descriptor"})
+			tests = append(tests, utils.TestResult{Token: devToken, Success: true, Msg: "Developer should be able to get the information of a descriptor"})
+			tests = append(tests, utils.TestResult{Token: operToken, Success: false, Msg: "Operator should NOT be able to get the information of a descriptor"})
+
 			toAdd := ithelpers.GetAddDescriptorRequest(targetOrganization.OrganizationId)
 			ctx, cancel := ithelpers.GetContext(token)
 			defer cancel()
 			added, err := client.AddAppDescriptor(ctx, toAdd)
 			gomega.Expect(err).To(gomega.Succeed())
 			gomega.Expect(added.AppDescriptorId).ShouldNot(gomega.BeEmpty())
+
 			appDescriptorID := &grpc_application_go.AppDescriptorId{
 				OrganizationId:  added.OrganizationId,
 				AppDescriptorId: added.AppDescriptorId,
 			}
-			ctx2, cancel2 := ithelpers.GetContext(token)
-			defer cancel2()
-			retrieved, err := client.GetAppDescriptor(ctx2, appDescriptorID)
-			gomega.Expect(retrieved.AppDescriptorId).Should(gomega.Equal(added.AppDescriptorId))
-		})
-		ginkgo.It("Developer should be able to get the information of a descriptor", func() {
-			toAdd := ithelpers.CreateAppDescriptor(targetOrganization.OrganizationId, appClient)
-			appDescriptorID := &grpc_application_go.AppDescriptorId{
-						OrganizationId:  toAdd.OrganizationId,
-						AppDescriptorId: toAdd.AppDescriptorId,
-					}
-			ctx, cancel := ithelpers.GetContext(devToken)
-			defer cancel()
-			retrieved, err := client.GetAppDescriptor(ctx, appDescriptorID)
-			gomega.Expect(retrieved.AppDescriptorId).Should(gomega.Equal(toAdd.AppDescriptorId))
-			gomega.Expect(err).To(gomega.Succeed())
-		})
-		ginkgo.It("Operator should NOT be able to get the information of a descriptor", func() {
-			toAdd := ithelpers.CreateAppDescriptor(targetOrganization.OrganizationId, appClient)
-			appDescriptorID := &grpc_application_go.AppDescriptorId{
-				OrganizationId:  toAdd.OrganizationId,
-				AppDescriptorId: toAdd.AppDescriptorId,
-			}
-			ctx, cancel := ithelpers.GetContext(operToken)
-			defer cancel()
-			_, err := client.GetAppDescriptor(ctx, appDescriptorID)
-			gomega.Expect(err).NotTo(gomega.Succeed())
-		})
 
+			for _, test := range tests {
+				ctx2, cancel2 := ithelpers.GetContext(test.Token)
+				defer cancel2()
+				retrieved, err := client.GetAppDescriptor(ctx2, appDescriptorID)
+				if test.Success {
+					gomega.Expect(retrieved.AppDescriptorId).Should(gomega.Equal(added.AppDescriptorId))
+					gomega.Expect(err).To(gomega.Succeed())
+				} else {
+					gomega.Expect(err).NotTo(gomega.Succeed())
+				}
+			}
+		})
 
 		ginkgo.It("should be able to list the existing descriptors", func() {
-			numDescriptors := 5
-			org := ithelpers.CreateOrganization(fmt.Sprintf("list-desc-%d", ginkgo.GinkgoRandomSeed()), orgClient)
-			orgToken := ithelpers.GenerateToken("email@nalej.com",
-				org.OrganizationId, "Owner", "secret",
-				[]grpc_authx_go.AccessPrimitive{grpc_authx_go.AccessPrimitive_ORG})
-			for i := 0; i < numDescriptors; i++ {
-				toAdd := ithelpers.GetAddDescriptorRequest(org.OrganizationId)
-				ctx, cancel := ithelpers.GetContext(orgToken)
-				defer cancel()
-				added, err := client.AddAppDescriptor(ctx, toAdd)
-				gomega.Expect(err).To(gomega.Succeed())
-				gomega.Expect(added.AppDescriptorId).ShouldNot(gomega.BeEmpty())
-			}
 
-			organizationID := &grpc_organization_go.OrganizationId{
-				OrganizationId: org.OrganizationId,
-			}
-			ctx, cancel2 := ithelpers.GetContext(orgToken)
-			defer cancel2()
-			list, err := client.ListAppDescriptors(ctx, organizationID)
-			gomega.Expect(err).To(gomega.Succeed())
-			gomega.Expect(len(list.Descriptors)).Should(gomega.Equal(numDescriptors))
-		})
-		ginkgo.It("Developer should be able to list the existing descriptors", func() {
+			tests := make([]utils.TestResult, 0)
+			tests = append(tests, utils.TestResult{Token: token, Success: true, Msg: "Owner should be able to list the existing descriptors"})
+			tests = append(tests, utils.TestResult{Token: devToken, Success: true, Msg: "Developer should be able to list the existing descriptors"})
+			tests = append(tests, utils.TestResult{Token: operToken, Success: false, Msg: "Operator should NOT be able to list the existing descriptors"})
 
 			for i := 0; i < 5; i++ {
 				ithelpers.GetAddDescriptorRequest(targetOrganization.OrganizationId)
@@ -203,74 +183,52 @@ var _ = ginkgo.Describe("Applications", func() {
 			organizationID := &grpc_organization_go.OrganizationId{
 				OrganizationId: targetOrganization.OrganizationId,
 			}
-			ctx, cancel2 := ithelpers.GetContext(devToken)
-			defer cancel2()
-			list, err := client.ListAppDescriptors(ctx, organizationID)
-			gomega.Expect(err).To(gomega.Succeed())
-			gomega.Expect(len(list.Descriptors)).NotTo(gomega.BeZero())
 
-		})
-		ginkgo.It("Operator should NOT be able to list the existing descriptors", func() {
-			for i := 0; i < 5; i++ {
-				ithelpers.GetAddDescriptorRequest(targetOrganization.OrganizationId)
+			for _, test := range tests {
+				ctx, cancel2 := ithelpers.GetContext(test.Token)
+				defer cancel2()
+				list, err := client.ListAppDescriptors(ctx, organizationID)
+				if test.Success {
+					gomega.Expect(err).To(gomega.Succeed())
+					gomega.Expect(len(list.Descriptors)).NotTo(gomega.BeZero())
+				} else {
+					gomega.Expect(err).NotTo(gomega.Succeed())
+				}
 			}
-
-			organizationID := &grpc_organization_go.OrganizationId{
-				OrganizationId: targetOrganization.OrganizationId,
-			}
-			ctx, cancel2 := ithelpers.GetContext(operToken)
-			defer cancel2()
-			_, err := client.ListAppDescriptors(ctx, organizationID)
-			gomega.Expect(err).NotTo(gomega.Succeed())
-
 		})
+
 	})
 
 	ginkgo.Context("instances", func() {
 
-		var targetDescriptor *grpc_application_go.AppDescriptor
+		ginkgo.It("Test to deploy an application", func() {
 
-		ginkgo.BeforeEach(func() {
-			targetDescriptor = ithelpers.CreateAppDescriptor(targetOrganization.OrganizationId, appClient)
-			//ithelpers.DeleteAllInstances(targetOrganization.OrganizationId, smAppClient)
-		})
+			tests := make([]utils.TestResult, 0)
+			tests = append(tests, utils.TestResult{Token: token, Success: true, Msg: "Owner should be able to deploy an application"})
+			tests = append(tests, utils.TestResult{Token: devToken, Success: true, Msg: "Developer should be able to deploy an application"})
+			tests = append(tests, utils.TestResult{Token: operToken, Success: false, Msg: "Operator should NOT be able to deploy an application"})
 
-		ginkgo.It("should be able to deploy an application", func() {
 			toDeploy := &grpc_application_manager_go.DeployRequest{
 				OrganizationId:  targetDescriptor.OrganizationId,
 				AppDescriptorId: targetDescriptor.AppDescriptorId,
 				Name:            "deploy-test",
 				Description:     "deploy-test",
 			}
-			ctx, cancel := ithelpers.GetContext(token)
-			defer cancel()
-			deployed, err := client.Deploy(ctx, toDeploy)
-			if err != nil {
-				log.Error().Str("trace", conversions.ToDerror(err).DebugReport()).Msg("error")
+			for _, test := range tests {
+				ctx, cancel := ithelpers.GetContext(test.Token)
+				defer cancel()
+				deployed, err := client.Deploy(ctx, toDeploy)
+				if err != nil {
+					log.Error().Str("trace", conversions.ToDerror(err).DebugReport()).Msg("error")
+				}
+				if test.Success {
+					gomega.Expect(err).To(gomega.Succeed())
+					gomega.Expect(deployed.AppInstanceId).ShouldNot(gomega.BeEmpty())
+				} else {
+					gomega.Expect(err).NotTo(gomega.Succeed())
+				}
+
 			}
-			gomega.Expect(err).To(gomega.Succeed())
-			gomega.Expect(deployed.AppInstanceId).ShouldNot(gomega.BeEmpty())
-		})
-		ginkgo.It("Developer should be able to deploy an application", func() {
-			toDeploy := ithelpers.GenerateDeploy(targetDescriptor.OrganizationId, targetDescriptor.AppDescriptorId)
-			ctx, cancel := ithelpers.GetContext(devToken)
-			defer cancel()
-			deployed, err := client.Deploy(ctx, toDeploy)
-			if err != nil {
-				log.Error().Str("trace", conversions.ToDerror(err).DebugReport()).Msg("error")
-			}
-			gomega.Expect(err).To(gomega.Succeed())
-			gomega.Expect(deployed.AppInstanceId).ShouldNot(gomega.BeEmpty())
-		})
-		ginkgo.It("Operator should NOT be able to deploy an application", func() {
-			toDeploy := ithelpers.GenerateDeploy(targetDescriptor.OrganizationId, targetDescriptor.AppDescriptorId)
-			ctx, cancel := ithelpers.GetContext(operToken)
-			defer cancel()
-			_, err := client.Deploy(ctx, toDeploy)
-			if err != nil {
-				log.Error().Str("trace", conversions.ToDerror(err).DebugReport()).Msg("error")
-			}
-			gomega.Expect(err).NotTo(gomega.Succeed())
 		})
 
 		ginkgo.PIt("should be able to undeploy an application", func() {
@@ -278,6 +236,12 @@ var _ = ginkgo.Describe("Applications", func() {
 		})
 
 		ginkgo.It("should be able to list the running instances", func() {
+
+			tests := make([]utils.TestResult, 0)
+			tests = append(tests, utils.TestResult{Token: token, Success: true, Msg: "Owner should be able to list the running instances"})
+			tests = append(tests, utils.TestResult{Token: devToken, Success: true, Msg: "Developer should be able to list the running instances"})
+			tests = append(tests, utils.TestResult{Token: operToken, Success: false, Msg: "Operator should NOT be able to list the running instances"})
+
 			toDeploy := &grpc_application_manager_go.DeployRequest{
 				OrganizationId:  targetDescriptor.OrganizationId,
 				AppDescriptorId: targetDescriptor.AppDescriptorId,
@@ -296,54 +260,26 @@ var _ = ginkgo.Describe("Applications", func() {
 			orgID := &grpc_organization_go.OrganizationId{
 				OrganizationId:       targetOrganization.OrganizationId,
 			}
-			ctx2, cancel2 := ithelpers.GetContext(token)
-			defer cancel2()
-			list, err := client.ListAppInstances(ctx2, orgID)
-			gomega.Expect(err).To(gomega.Succeed())
-			gomega.Expect(len(list.Instances)).ShouldNot(gomega.Equal(0))
-		})
-		ginkgo.It("Developer should be able to list the running instances", func() {
-
-			toDeploy := ithelpers.GenerateDeploy(targetDescriptor.OrganizationId, targetDescriptor.AppDescriptorId)
-			ctx, cancel := ithelpers.GetContext(devToken)
-			defer cancel()
-			deployed, err := client.Deploy(ctx, toDeploy)
-			if err != nil {
-				log.Error().Str("trace", conversions.ToDerror(err).DebugReport()).Msg("error")
+			for _, test := range tests {
+				ctx2, cancel2 := ithelpers.GetContext(test.Token)
+				defer cancel2()
+				list, err := client.ListAppInstances(ctx2, orgID)
+				if test.Success {
+					gomega.Expect(err).To(gomega.Succeed())
+					gomega.Expect(len(list.Instances)).ShouldNot(gomega.Equal(0))
+				}else{
+					gomega.Expect(err).NotTo(gomega.Succeed())
+				}
 			}
-			gomega.Expect(err).To(gomega.Succeed())
-			gomega.Expect(deployed.AppInstanceId).ShouldNot(gomega.BeEmpty())
-
-			orgID := &grpc_organization_go.OrganizationId{
-				OrganizationId:       toDeploy.OrganizationId,
-			}
-			ctx2, cancel2 := ithelpers.GetContext(devToken)
-			defer cancel2()
-			list, err := client.ListAppInstances(ctx2, orgID)
-			gomega.Expect(err).To(gomega.Succeed())
-			gomega.Expect(len(list.Instances)).ShouldNot(gomega.Equal(0))
-		})
-		ginkgo.It("Operator should NOT be able to list the running instances", func() {
-			toDeploy := ithelpers.GenerateDeploy(targetDescriptor.OrganizationId, targetDescriptor.AppDescriptorId)
-			ctx, cancel := ithelpers.GetContext(devToken)
-			defer cancel()
-			deployed, err := client.Deploy(ctx, toDeploy)
-			if err != nil {
-				log.Error().Str("trace", conversions.ToDerror(err).DebugReport()).Msg("error")
-			}
-			gomega.Expect(err).To(gomega.Succeed())
-			gomega.Expect(deployed.AppInstanceId).ShouldNot(gomega.BeEmpty())
-
-			orgID := &grpc_organization_go.OrganizationId{
-				OrganizationId:       targetOrganization.OrganizationId,
-			}
-			ctx2, cancel2 := ithelpers.GetContext(operToken)
-			defer cancel2()
-			_, err2 := client.ListAppInstances(ctx2, orgID)
-			gomega.Expect(err2).NotTo(gomega.Succeed())
 		})
 
 		ginkgo.It("should be able to retrieve the information of a running instance", func() {
+
+			tests := make([]utils.TestResult, 0)
+			tests = append(tests, utils.TestResult{Token: token, Success: true, Msg: "Owner should be able to retrieve the information of a running instance"})
+			tests = append(tests, utils.TestResult{Token: devToken, Success: true, Msg: "Developer should be able to retrieve the information of a running instance"})
+			tests = append(tests, utils.TestResult{Token: operToken, Success: false, Msg: "Operator should NOT be able to retrieve the information of a running instance"})
+
 			toDeploy := &grpc_application_manager_go.DeployRequest{
 				OrganizationId:  targetDescriptor.OrganizationId,
 				AppDescriptorId: targetDescriptor.AppDescriptorId,
@@ -363,53 +299,20 @@ var _ = ginkgo.Describe("Applications", func() {
 				OrganizationId:       targetOrganization.OrganizationId,
 				AppInstanceId:        deployed.AppInstanceId,
 			}
-			ctx2, cancel2 := ithelpers.GetContext(token)
-			defer cancel2()
-			info, err := client.GetAppInstance(ctx2, instanceID)
-			gomega.Expect(err).To(gomega.Succeed())
-			gomega.Expect(info).ShouldNot(gomega.BeNil())
-		})
-		ginkgo.It("Developer should be able to retrieve the information of a running instance", func() {
-			toDeploy := ithelpers.GenerateDeploy(targetDescriptor.OrganizationId, targetDescriptor.AppDescriptorId)
-			ctx, cancel := ithelpers.GetContext(devToken)
-			defer cancel()
-			deployed, err := client.Deploy(ctx, toDeploy)
-			if err != nil {
-				log.Error().Str("trace", conversions.ToDerror(err).DebugReport()).Msg("error")
-			}
-			gomega.Expect(err).To(gomega.Succeed())
-			gomega.Expect(deployed.AppInstanceId).ShouldNot(gomega.BeEmpty())
+			for _, test := range tests {
+				ctx2, cancel2 := ithelpers.GetContext(test.Token)
+				defer cancel2()
+				info, err := client.GetAppInstance(ctx2, instanceID)
+				if test.Success {
+					gomega.Expect(err).To(gomega.Succeed())
+					gomega.Expect(info).ShouldNot(gomega.BeNil())
+				}else{
+					gomega.Expect(err).NotTo(gomega.Succeed())
+				}
 
-			instanceID := &grpc_application_go.AppInstanceId{
-				OrganizationId:       targetOrganization.OrganizationId,
-				AppInstanceId:        deployed.AppInstanceId,
 			}
-			ctx2, cancel2 := ithelpers.GetContext(devToken)
-			defer cancel2()
-			info, err := client.GetAppInstance(ctx2, instanceID)
-			gomega.Expect(err).To(gomega.Succeed())
-			gomega.Expect(info).ShouldNot(gomega.BeNil())
 		})
-		ginkgo.It("Operator should NOT  be able to retrieve the information of a running instance", func() {
-			toDeploy := ithelpers.GenerateDeploy(targetDescriptor.OrganizationId, targetDescriptor.AppDescriptorId)
-			ctx, cancel := ithelpers.GetContext(devToken)
-			defer cancel()
-			deployed, err := client.Deploy(ctx, toDeploy)
-			if err != nil {
-				log.Error().Str("trace", conversions.ToDerror(err).DebugReport()).Msg("error")
-			}
-			gomega.Expect(err).To(gomega.Succeed())
-			gomega.Expect(deployed.AppInstanceId).ShouldNot(gomega.BeEmpty())
 
-			instanceID := &grpc_application_go.AppInstanceId{
-				OrganizationId:       targetOrganization.OrganizationId,
-				AppInstanceId:        deployed.AppInstanceId,
-			}
-			ctx2, cancel2 := ithelpers.GetContext(operToken)
-			defer cancel2()
-			_, err2 := client.GetAppInstance(ctx2, instanceID)
-			gomega.Expect(err2).NotTo(gomega.Succeed())
-		})
 	})
 
 })

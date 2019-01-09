@@ -64,9 +64,7 @@ var _ = ginkgo.Describe("Roles", func() {
 
 	ginkgo.BeforeSuite(func() {
 		listener = test.GetDefaultListener()
-		//authConfig := ithelpers.GetAuthConfig("/public_api.Roles/List")
-		//server = grpc.NewServer(interceptor.WithServerAuthxInterceptor(
-		//	interceptor.NewConfig(authConfig, "secret", ithelpers.AuthHeader)))
+
 		server = grpc.NewServer(interceptor.WithServerAuthxInterceptor(interceptor.NewConfig(
 			ithelpers.GetAllAuthConfig(),"secret", ithelpers.AuthHeader)))
 
@@ -105,36 +103,29 @@ var _ = ginkgo.Describe("Roles", func() {
 	})
 
 	ginkgo.It("should be able to list the roles in the system", func() {
+
+		tests := make([]utils.TestResult, 0)
+		tests = append(tests, utils.TestResult{Token: token, Success: true, Msg: "Owner should be able to list the roles in the system"})
+		tests = append(tests, utils.TestResult{Token: devToken, Success: false, Msg: "Developer should NOT be able to list the roles in the system"})
+		tests = append(tests, utils.TestResult{Token: opeToken, Success: false, Msg: "Operator should NOT be able to list the roles in the system"})
+
 		organizationID := &grpc_organization_go.OrganizationId{
 			OrganizationId: targetOrganization.OrganizationId,
 		}
-		ctx, cancel := ithelpers.GetContext(token)
-		defer cancel()
-		roleList, err := client.List(ctx, organizationID)
+		for _, test := range tests {
+			ctx, cancel := ithelpers.GetContext(test.Token)
+			defer cancel()
+			roleList, err := client.List(ctx, organizationID)
 
-		gomega.Expect(err).To(gomega.Succeed())
-		gomega.Expect(len(roleList.Roles)).Should(gomega.Equal(1))
-		gomega.Expect(roleList.Roles[0].RoleId).Should(gomega.Equal(targetRole.RoleId))
-	})
-	ginkgo.It("Developer should NOT be able to list the roles in the system", func() {
-		organizationID := &grpc_organization_go.OrganizationId{
-			OrganizationId: targetOrganization.OrganizationId,
+			if test.Success {
+				gomega.Expect(err).To(gomega.Succeed())
+				gomega.Expect(len(roleList.Roles)).Should(gomega.Equal(1))
+				gomega.Expect(roleList.Roles[0].RoleId).Should(gomega.Equal(targetRole.RoleId))
+			}else{
+				gomega.Expect(err).NotTo(gomega.Succeed())
+			}
 		}
-		ctx, cancel := ithelpers.GetContext(devToken)
-		defer cancel()
-		_, err := client.List(ctx, organizationID)
 
-		gomega.Expect(err).NotTo(gomega.Succeed())
-	})
-	ginkgo.It("Operator should NOT be able to list the roles in the system", func() {
-		organizationID := &grpc_organization_go.OrganizationId{
-			OrganizationId: targetOrganization.OrganizationId,
-		}
-		ctx, cancel := ithelpers.GetContext(opeToken)
-		defer cancel()
-		_, err := client.List(ctx, organizationID)
-
-		gomega.Expect(err).NotTo(gomega.Succeed())
 	})
 
 })

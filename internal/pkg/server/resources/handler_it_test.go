@@ -77,9 +77,7 @@ var _ = ginkgo.Describe("Resources", func() {
 
 	ginkgo.BeforeSuite(func() {
 		listener = test.GetDefaultListener()
-		//authConfig := ithelpers.GetAuthConfig("/public_api.Resources/Summary")
-		//server = grpc.NewServer(interceptor.WithServerAuthxInterceptor(
-		//	interceptor.NewConfig(authConfig, "secret", ithelpers.AuthHeader)))
+
 		server = grpc.NewServer(interceptor.WithServerAuthxInterceptor(interceptor.NewConfig(
 			ithelpers.GetAllAuthConfig(), "secret", ithelpers.AuthHeader)))
 
@@ -109,6 +107,9 @@ var _ = ginkgo.Describe("Resources", func() {
 	})
 
 	ginkgo.AfterSuite(func() {
+
+		ithelpers.NewTestCleaner(smConn).DeleteOrganizationClusters(targetOrganization.OrganizationId)
+
 		server.Stop()
 		listener.Close()
 		smConn.Close()
@@ -116,37 +117,27 @@ var _ = ginkgo.Describe("Resources", func() {
 
 	ginkgo.It("should be able to obtain the summary", func() {
 
+		tests := make([]utils.TestResult, 0)
+		tests = append(tests, utils.TestResult{Token: token, Success: true, Msg: "Owner should be able to obtain the summary"})
+		tests = append(tests, utils.TestResult{Token: devToken, Success: false, Msg: "Developer should NOT be able to obtain the summary"})
+		tests = append(tests, utils.TestResult{Token: opeToken, Success: true, Msg: "Operator should be able to obtain the summary"})
+
 		organizationID := &grpc_organization_go.OrganizationId{
 			OrganizationId: targetOrganization.OrganizationId,
 		}
-		ctx, cancel := ithelpers.GetContext(token)
-		defer cancel()
-		summary, err := client.Summary(ctx, organizationID)
-		gomega.Expect(err).To(gomega.Succeed())
-		gomega.Expect(summary.TotalClusters).To(gomega.Equal(int64(NumClusters)))
-		gomega.Expect(summary.TotalNodes).To(gomega.Equal(int64(NumClusters * NumNodes)))
-	})
-	ginkgo.It("Developer should NOT be able to obtain the summary", func() {
-
-			organizationID := &grpc_organization_go.OrganizationId{
-				OrganizationId: targetOrganization.OrganizationId,
-			}
-			ctx, cancel := ithelpers.GetContext(devToken)
-			defer cancel()
-			_, err := client.Summary(ctx, organizationID)
-			gomega.Expect(err).NotTo(gomega.Succeed())
-	})
-	ginkgo.It("Operator should be able to obtain the summary", func() {
-
-			organizationID := &grpc_organization_go.OrganizationId{
-				OrganizationId: targetOrganization.OrganizationId,
-			}
-			ctx, cancel := ithelpers.GetContext(opeToken)
+		for _, test := range tests {
+			ctx, cancel := ithelpers.GetContext(test.Token)
 			defer cancel()
 			summary, err := client.Summary(ctx, organizationID)
-			gomega.Expect(err).To(gomega.Succeed())
-			gomega.Expect(summary.TotalClusters).To(gomega.Equal(int64(NumClusters)))
-			gomega.Expect(summary.TotalNodes).To(gomega.Equal(int64(NumClusters * NumNodes)))
+			if test.Success {
+				gomega.Expect(err).To(gomega.Succeed())
+				gomega.Expect(summary.TotalClusters).To(gomega.Equal(int64(NumClusters)))
+				gomega.Expect(summary.TotalNodes).To(gomega.Equal(int64(NumClusters * NumNodes)))
+			}else{
+				gomega.Expect(err).NotTo(gomega.Succeed())
+			}
+		}
 	})
+
 
 })
