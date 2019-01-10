@@ -86,8 +86,7 @@ func (a *Applications) getBasicDescriptor() *grpc_application_go.AddAppDescripto
 		Type:        grpc_application_go.ServiceType_DOCKER,
 		Image:       "wordpress:5.0.0",
 		Specs:       &grpc_application_go.DeploySpecs{Replicas: 1},
-		// TODO: Temporarily removed until NP-559 is done
-		//DeployAfter: []string{"1"},
+		DeployAfter: []string{"1"},
 		Storage:     []*grpc_application_go.Storage{&grpc_application_go.Storage{MountPath: "/tmp"}},
 		ExposedPorts: []*grpc_application_go.Port{&grpc_application_go.Port{
 			Name: "wordpressport", InternalPort: 80, ExposedPort: 80,
