@@ -52,7 +52,6 @@ var _ = ginkgo.Describe("Applications", func() {
 	var listener *bufconn.Listener
 	// client
 	var orgClient grpc_organization_go.OrganizationsClient
-	//var smAppClient grpc_application_go.ApplicationsClient
 	var appClient grpc_application_manager_go.ApplicationManagerClient
 	var smConn *grpc.ClientConn
 	var appConn *grpc.ClientConn
@@ -76,9 +75,7 @@ var _ = ginkgo.Describe("Applications", func() {
 
 		appConn = utils.GetConnection(appManagerAddress)
 		appClient = grpc_application_manager_go.NewApplicationManagerClient(appConn)
-
-		//smAppClient = grpc_application_go.NewApplicationsClient(smConn)
-
+		
 		conn, err := test.GetConn(*listener)
 		gomega.Expect(err).To(gomega.Succeed())
 
