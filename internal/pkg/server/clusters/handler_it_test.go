@@ -64,15 +64,13 @@ var _ = ginkgo.Describe("Clusters", func() {
 	var targetOrganization *grpc_organization_go.Organization
 	var targetCluster *grpc_infrastructure_go.Cluster
 	var token string
+	var devToken string
+	var opeToken string
 
 	ginkgo.BeforeSuite(func() {
 		listener = test.GetDefaultListener()
-		authConfig := ithelpers.GetAuthConfig(
-			"/public_api.Clusters/Info",
-			"/public_api.Clusters/List",
-			"/public_api.Clusters/Update")
-		server = grpc.NewServer(interceptor.WithServerAuthxInterceptor(
-			interceptor.NewConfig(authConfig, "secret", ithelpers.AuthHeader)))
+
+		server = grpc.NewServer(interceptor.WithServerAuthxInterceptor(interceptor.NewConfig(ithelpers.GetAllAuthConfig(), "secret", ithelpers.AuthHeader)))
 
 		smConn = utils.GetConnection(systemModelAddress)
 		orgClient = grpc_organization_go.NewOrganizationsClient(smConn)
@@ -96,9 +94,20 @@ var _ = ginkgo.Describe("Clusters", func() {
 		token = ithelpers.GenerateToken("email@nalej.com",
 			targetOrganization.OrganizationId, "Owner", "secret",
 			[]grpc_authx_go.AccessPrimitive{grpc_authx_go.AccessPrimitive_ORG})
+
+		devToken = ithelpers.GenerateToken("dev@nalej.com",
+			targetOrganization.OrganizationId, "Developer", "secret",
+			[]grpc_authx_go.AccessPrimitive{grpc_authx_go.AccessPrimitive_PROFILE, grpc_authx_go.AccessPrimitive_APPS})
+
+		opeToken = ithelpers.GenerateToken("oper@nalej.com",
+			targetOrganization.OrganizationId, "Operator", "secret",
+			[]grpc_authx_go.AccessPrimitive{grpc_authx_go.AccessPrimitive_PROFILE, grpc_authx_go.AccessPrimitive_RESOURCES})
 	})
 
 	ginkgo.AfterSuite(func() {
+
+		ithelpers.NewTestCleaner(smConn).DeleteOrganizationClusters(targetOrganization.OrganizationId)
+
 		server.Stop()
 		listener.Close()
 		smConn.Close()
@@ -109,57 +118,98 @@ var _ = ginkgo.Describe("Clusters", func() {
 			OrganizationId:       targetCluster.OrganizationId,
 			ClusterId:            targetCluster.ClusterId,
 		}
-		ctx, cancel := ithelpers.GetContext(token)
-		defer cancel()
-		retrieved, err := client.Info(ctx, clusterID)
-		gomega.Expect(err).To(gomega.Succeed())
-		gomega.Expect(retrieved.ClusterId).Should(gomega.Equal(targetCluster.ClusterId))
-		gomega.Expect(retrieved.MultitenantSupport).Should(gomega.Equal(targetCluster.Multitenant.String()))
-		gomega.Expect(retrieved.ClusterTypeName).Should(gomega.Equal(targetCluster.ClusterType.String()))
+
+		tests := make([]utils.TestResult, 0)
+		tests = append(tests, utils.TestResult{Token: token, Success: true, Msg: "Owner should be able to retrieve the information of a cluster"})
+		tests = append(tests, utils.TestResult{Token: devToken, Success: false, Msg: "Developer should NOT be able to retrieve the information of a cluster"})
+		tests = append(tests, utils.TestResult{Token: opeToken, Success: true, Msg: "Operator should be able  to retrieve the information of a cluster"})
+
+		for _, test := range tests {
+			ctx, cancel := ithelpers.GetContext(test.Token)
+			defer cancel()
+			retrieved, err := client.Info(ctx, clusterID)
+			if test.Success{
+				gomega.Expect(err).To(gomega.Succeed())
+				gomega.Expect(retrieved.ClusterId).Should(gomega.Equal(targetCluster.ClusterId))
+				gomega.Expect(retrieved.MultitenantSupport).Should(gomega.Equal(targetCluster.Multitenant.String()))
+				gomega.Expect(retrieved.ClusterTypeName).Should(gomega.Equal(targetCluster.ClusterType.String()))
+			}else{
+				gomega.Expect(err).NotTo(gomega.Succeed())
+			}
+		}
 	})
+
 
 	ginkgo.It("should be able to list the clusters", func() {
 
 		organizationID := &grpc_organization_go.OrganizationId{
 			OrganizationId: targetOrganization.OrganizationId,
 		}
-		ctx, cancel := ithelpers.GetContext(token)
-		defer cancel()
-		clusters, err := client.List(ctx, organizationID)
-		gomega.Expect(err).To(gomega.Succeed())
-		gomega.Expect(len(clusters.Clusters)).To(gomega.Equal(1))
-		c0 := clusters.Clusters[0]
-		gomega.Expect(c0.TotalNodes).Should(gomega.Equal(int64(NumNodes)))
-		gomega.Expect(c0.RunningNodes).Should(gomega.Equal(int64(0)))
+
+		tests := make([]utils.TestResult, 0)
+		tests = append(tests, utils.TestResult{Token: token, Success: true, Msg: "Owner should be able to list the clusters"})
+		tests = append(tests, utils.TestResult{Token: devToken, Success: false, Msg: "Developer should NOT be able to list the clusters"})
+		tests = append(tests, utils.TestResult{Token: opeToken, Success: true, Msg: "Operator should be able to list the clusters"})
+
+		for _, test := range tests{
+			ctx, cancel := ithelpers.GetContext(test.Token)
+			defer cancel()
+			clusters, err := client.List(ctx, organizationID)
+			if test.Success {
+				gomega.Expect(err).To(gomega.Succeed())
+				gomega.Expect(len(clusters.Clusters)).To(gomega.Equal(1))
+				c0 := clusters.Clusters[0]
+				gomega.Expect(c0.TotalNodes).Should(gomega.Equal(int64(NumNodes)))
+				gomega.Expect(c0.RunningNodes).Should(gomega.Equal(int64(0)))
+			}else{
+				gomega.Expect(err).NotTo(gomega.Succeed())
+			}
+		}
+
 	})
 
 	ginkgo.It("should be able to update a cluster", func() {
+
+		tests := make([]utils.TestResult, 0)
+		tests = append(tests, utils.TestResult{Token: token, Success: true, Msg: "Owner should be able to update a cluster"})
+		tests = append(tests, utils.TestResult{Token: devToken, Success: false, Msg: "Developer should NOT be able to update a cluster"})
+		tests = append(tests, utils.TestResult{Token: opeToken, Success: true, Msg: "Operator should be able to update a cluster"})
+
 		newLabels := make(map[string]string, 0)
 		newLabels["nk"] = "nv"
-		updateRequest := &grpc_public_api_go.UpdateClusterRequest{
-			OrganizationId: targetCluster.OrganizationId,
-			ClusterId:      targetCluster.ClusterId,
-			Name:           "newName",
-			Description:    "newDescription",
-			Labels:         newLabels,
-		}
-		ctx, cancel := ithelpers.GetContext(token)
-		defer cancel()
-		done, err := client.Update(ctx, updateRequest)
-		gomega.Expect(err).To(gomega.Succeed())
-		gomega.Expect(done).ToNot(gomega.BeNil())
 
-		clusterID := &grpc_infrastructure_go.ClusterId{
-			OrganizationId: targetCluster.OrganizationId,
-			ClusterId:      targetCluster.ClusterId,
+		for _, test := range tests {
+			updateRequest := &grpc_public_api_go.UpdateClusterRequest{
+				OrganizationId: targetCluster.OrganizationId,
+				ClusterId:      targetCluster.ClusterId,
+				Name:           "newName: " + ithelpers.GenerateUUID(),
+				Description:    "newDescription: " + ithelpers.GenerateUUID(),
+				Labels:         newLabels,
+			}
+
+			ctx, cancel := ithelpers.GetContext(test.Token)
+			defer cancel()
+			done, err := client.Update(ctx, updateRequest)
+			if test.Success {
+				gomega.Expect(err).To(gomega.Succeed())
+				gomega.Expect(done).ToNot(gomega.BeNil())
+
+				clusterID := &grpc_infrastructure_go.ClusterId{
+					OrganizationId: targetCluster.OrganizationId,
+					ClusterId:      targetCluster.ClusterId,
+				}
+				ctx2, cancel2 := ithelpers.GetContext(token)
+				defer cancel2()
+				retrieved, err := clustClient.GetCluster(ctx2, clusterID)
+				gomega.Expect(err).To(gomega.Succeed())
+				gomega.Expect(retrieved.Name).Should(gomega.Equal(updateRequest.Name))
+				gomega.Expect(retrieved.Description).Should(gomega.Equal(updateRequest.Description))
+				gomega.Expect(retrieved.Labels).Should(gomega.Equal(updateRequest.Labels))
+			}else{
+				gomega.Expect(err).NotTo(gomega.Succeed())
+			}
 		}
-		ctx2, cancel2 := ithelpers.GetContext(token)
-		defer cancel2()
-		retrieved, err := clustClient.GetCluster(ctx2, clusterID)
-		gomega.Expect(err).To(gomega.Succeed())
-		gomega.Expect(retrieved.Name).Should(gomega.Equal(updateRequest.Name))
-		gomega.Expect(retrieved.Description).Should(gomega.Equal(updateRequest.Description))
-		gomega.Expect(retrieved.Labels).Should(gomega.Equal(updateRequest.Labels))
+
 	})
 
 })
