@@ -116,6 +116,7 @@ func ToPublicAPIServiceInstances(source []*grpc_application_go.ServiceInstance) 
 			StatusName:           si.Status.String(),
 			Endpoints: si.Endpoints,
 			DeployedOnClusterId: si.DeployedOnClusterId,
+			RunArguments:        si.RunArguments,
 		}
 		result = append(result, toAdd)
 	}
@@ -165,7 +166,7 @@ func ToPublicAPIAppInstance(source *grpc_application_go.AppInstance) * grpc_publ
 		AppDescriptorId:      source.AppDescriptorId,
 		AppInstanceId:        source.AppInstanceId,
 		Name:                 source.Name,
-		Description:          source.Name,
+		Description:          source.Description,
 		ConfigurationOptions: source.ConfigurationOptions,
 		EnvironmentVariables: source.EnvironmentVariables,
 		Labels:               source.Labels,
