@@ -5,13 +5,14 @@
 package cli
 
 import (
+	"io/ioutil"
+	"time"
+
 	"github.com/nalej/grpc-infrastructure-go"
 	"github.com/nalej/grpc-organization-go"
 	"github.com/nalej/grpc-public-api-go"
 	"github.com/rs/zerolog/log"
 	"google.golang.org/grpc"
-	"io/ioutil"
-	"time"
 )
 
 type Clusters struct {
@@ -50,16 +51,13 @@ func (c *Clusters) Install(
 	if organizationID == "" {
 		log.Fatal().Msg("organizationID cannot be empty")
 	}
-	if clusterID == "" {
-		log.Fatal().Msg("clusterID cannot be empty")
-	}
 	installRequest := &grpc_public_api_go.InstallRequest{
 		OrganizationId:    organizationID,
 		ClusterId:         clusterID,
 		ClusterType:       grpc_infrastructure_go.ClusterType_KUBERNETES,
-		Hostname: ingressHostname,
+		Hostname:          ingressHostname,
 		InstallBaseSystem: false,
-		TargetPlatform: targetPlatform,
+		TargetPlatform:    targetPlatform,
 	}
 
 	if useCoreDNS {
@@ -102,7 +100,7 @@ func (c *Clusters) Install(
 	c.PrintResultOrError(response, err, "cannot install new cluster")
 }
 
-func (c * Clusters) Info(organizationID string, clusterID string){
+func (c *Clusters) Info(organizationID string, clusterID string) {
 	if organizationID == "" {
 		log.Fatal().Msg("organizationID cannot be empty")
 	}
@@ -115,8 +113,8 @@ func (c * Clusters) Info(organizationID string, clusterID string){
 	defer conn.Close()
 	defer cancel()
 	cID := &grpc_infrastructure_go.ClusterId{
-		OrganizationId:       organizationID,
-		ClusterId:            clusterID,
+		OrganizationId: organizationID,
+		ClusterId:      clusterID,
 	}
 	retrieved, err := client.Info(ctx, cID)
 	c.PrintResultOrError(retrieved, err, "cannot obtain cluster information")
