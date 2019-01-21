@@ -35,3 +35,5 @@ var instanceID string
 var internal bool
 
 var exampleName string
+
+var storageType  string

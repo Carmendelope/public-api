@@ -62,7 +62,8 @@ func (a *Applications) createAddDescriptorRequest(organizationID string, descrip
 	return addDescriptorRequest, nil
 }
 
-func (a *Applications) getBasicDescriptor() *grpc_application_go.AddAppDescriptorRequest {
+func (a *Applications) getBasicDescriptor(sType grpc_application_go.StorageType) *grpc_application_go.AddAppDescriptorRequest {
+
 
 	service1 := &grpc_application_go.Service{
 		ServiceId:   "1",
@@ -101,6 +102,12 @@ func (a *Applications) getBasicDescriptor() *grpc_application_go.AddAppDescripto
 		Labels:               map[string]string{"app": "simple-wordpress", "component": "simple-app"},
 	}
 
+	// add additional storage for persistence example
+	if sType == grpc_application_go.StorageType_CLUSTER_LOCAL {
+		// use persistence storage SQL and wordpress
+		service1.Storage = append(service1.Storage, &grpc_application_go.Storage{MountPath: "/var/lib/mysql", Type: sType, Size: int64(1024 * 1024 * 1024)})
+		service2.Storage = append(service2.Storage, &grpc_application_go.Storage{MountPath: "/var/www/html", Type: sType, Size: int64(512 * 1024 * 1024)})
+	}
 	secRule := grpc_application_go.SecurityRule{
 		Name:            "allow access to wordpress",
 		Access:          grpc_application_go.PortAccess_PUBLIC,
@@ -118,30 +125,42 @@ func (a *Applications) getBasicDescriptor() *grpc_application_go.AddAppDescripto
 	}
 }
 
-func (a * Applications) ShowDescriptorHelp(exampleName string) {
+func (a * Applications) ShowDescriptorHelp(exampleName string, storageType string) {
+	// convert string sType to StorageType
+	sType := a.GetStorageType(storageType)
 	if exampleName == "simple"{
-		a.ShowDescriptorExample()
+		a.ShowDescriptorExample(sType)
 	}else if exampleName == "complex" {
-		a.ShowComplexDescriptorExample()
+		a.ShowComplexDescriptorExample(sType)
 	}else{
 		fmt.Println("Supported examples: simple, complex")
 	}
 }
 
-func (a *Applications) ShowDescriptorExample() {
-	toAdd := a.getBasicDescriptor()
+func (a *Applications) ShowDescriptorExample(sType grpc_application_go.StorageType) {
+	toAdd := a.getBasicDescriptor(sType)
 	err := a.PrintResult(toAdd)
 	if err != nil {
 		log.Fatal().Err(err).Msg("cannot load sample application descriptor")
 	}
 }
 
-func (a *Applications) ShowComplexDescriptorExample() {
-	toAdd := a.getComplexDescriptor()
+func (a *Applications) ShowComplexDescriptorExample(sType grpc_application_go.StorageType) {
+	toAdd := a.getComplexDescriptor(sType)
 	err := a.PrintResult(toAdd)
 	if err != nil {
 		log.Fatal().Err(err).Msg("cannot load sample application descriptor")
 	}
+}
+
+func (a *Applications) GetStorageType(sType string) grpc_application_go.StorageType {
+	switch(sType) {
+	case "ephemeral": return grpc_application_go.StorageType_EPHEMERAL
+	case "local": return grpc_application_go.StorageType_CLUSTER_LOCAL
+	case "replica": return grpc_application_go.StorageType_CLUSTER_REPLICA
+	case "cloud" : return grpc_application_go.StorageType_CLOUD_PERSISTENT
+	}
+	return grpc_application_go.StorageType_EPHEMERAL
 }
 
 func (a *Applications) AddDescriptor(organizationID string, descriptorPath string) {
