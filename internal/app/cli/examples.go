@@ -16,7 +16,7 @@ output.elasticsearch:
   hosts: ["${NALEJ_SERV_ELASTIC}:9200"]
 `
 
-func (a *Applications) getComplexDescriptor() *grpc_application_go.AddAppDescriptorRequest {
+func (a *Applications) getComplexDescriptor(sType grpc_application_go.StorageType) *grpc_application_go.AddAppDescriptorRequest {
 
 	service1 := &grpc_application_go.Service{
 		ServiceId:   "mysql",
@@ -54,6 +54,13 @@ func (a *Applications) getComplexDescriptor() *grpc_application_go.AddAppDescrip
 		Labels:               map[string]string{"app": "simple-wordpress", "component": "simple-app"},
 	}
 
+	// add additional storage for persistence example
+	if sType == grpc_application_go.StorageType_CLUSTER_LOCAL {
+		// use persistence storage SQL and wordpress
+		service1.Storage = append(service1.Storage, &grpc_application_go.Storage{MountPath: "/var/lib/mysql", Type: sType, Size: int64(1024 * 1024 * 1024)})
+		service2.Storage = append(service2.Storage, &grpc_application_go.Storage{MountPath: "/var/www/html", Type: sType, Size: int64(512 * 1024 * 1024)})
+	}
+
 	service3 := &grpc_application_go.Service{
 		ServiceId:            "kibana",
 		Name:                 "kibana",
@@ -81,7 +88,7 @@ func (a *Applications) getComplexDescriptor() *grpc_application_go.AddAppDescrip
 		Type:                 grpc_application_go.ServiceType_DOCKER,
 		Image:                "docker.elastic.co/elasticsearch/elasticsearch:6.4.2",
 		Specs:                &grpc_application_go.DeploySpecs{Replicas: 1},
-		Storage:              []*grpc_application_go.Storage{&grpc_application_go.Storage{MountPath: "/usr/share/elasticsearch/data"}},
+		Storage:              []*grpc_application_go.Storage{&grpc_application_go.Storage{MountPath: "/usr/share/elasticsearch/data",Type:sType}},
 		ExposedPorts:         []*grpc_application_go.Port{&grpc_application_go.Port{
 			Name: "elasticport", InternalPort: 9200, ExposedPort: 9200,
 		}},

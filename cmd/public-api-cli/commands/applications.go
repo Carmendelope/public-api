@@ -35,7 +35,8 @@ func init() {
 	descriptorCmd.AddCommand(getDescriptorCmd)
 	descriptorCmd.AddCommand(listDescriptorsCmd)
 	listInstancesCmd.MarkPersistentFlagRequired("descriptorID")
-	addDescriptorHelpCmd.Flags().StringVar(&exampleName,"exampleName", "simple", "Example to show: simple or complex")
+	addDescriptorHelpCmd.Flags().StringVar(&exampleName,"exampleName", "simple", "Example to show: simple or complex or pstorage")
+	addDescriptorHelpCmd.Flags().StringVar(&storageType,"storage", "ephemeral", "Type: ephemeral local replica cloud")
 	descriptorCmd.AddCommand(addDescriptorHelpCmd)
 	deleteDescriptorCmd.MarkPersistentFlagRequired("descriptorID")
 	descriptorCmd.AddCommand(deleteDescriptorCmd)
@@ -91,7 +92,7 @@ var addDescriptorHelpCmd = &cobra.Command{
 			0, 
 			insecure,
 			options.Resolve("cacert", caCertPath))
-		a.ShowDescriptorHelp(exampleName)
+		a.ShowDescriptorHelp(exampleName, storageType)
 	},
 }
 
