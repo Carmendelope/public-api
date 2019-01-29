@@ -64,7 +64,6 @@ func (a *Applications) createAddDescriptorRequest(organizationID string, descrip
 
 func (a *Applications) getBasicDescriptor(sType grpc_application_go.StorageType) *grpc_application_go.AddAppDescriptorRequest {
 
-
 	service1 := &grpc_application_go.Service{
 		ServiceId:   "1",
 		Name:        "simple-mysql",
@@ -72,7 +71,7 @@ func (a *Applications) getBasicDescriptor(sType grpc_application_go.StorageType)
 		Type:        grpc_application_go.ServiceType_DOCKER,
 		Image:       "mysql:5.6",
 		Specs:       &grpc_application_go.DeploySpecs{Replicas: 1},
-		Storage:     []*grpc_application_go.Storage{&grpc_application_go.Storage{MountPath: "/tmp",Type: grpc_application_go.StorageType_EPHEMERAL, Size: int64(100 * 1024 * 1024)}},
+		Storage:     []*grpc_application_go.Storage{&grpc_application_go.Storage{MountPath: "/tmp", Type: grpc_application_go.StorageType_EPHEMERAL, Size: int64(100 * 1024 * 1024)}},
 		ExposedPorts: []*grpc_application_go.Port{&grpc_application_go.Port{
 			Name: "mysqlport", InternalPort: 3306, ExposedPort: 3306,
 		}},
@@ -88,7 +87,7 @@ func (a *Applications) getBasicDescriptor(sType grpc_application_go.StorageType)
 		Image:       "wordpress:5.0.0",
 		Specs:       &grpc_application_go.DeploySpecs{Replicas: 1},
 		DeployAfter: []string{"1"},
-		Storage:     []*grpc_application_go.Storage{&grpc_application_go.Storage{MountPath: "/tmp",Type: grpc_application_go.StorageType_EPHEMERAL, Size: int64(100 * 1024 * 1024)}},
+		Storage:     []*grpc_application_go.Storage{&grpc_application_go.Storage{MountPath: "/tmp", Type: grpc_application_go.StorageType_EPHEMERAL, Size: int64(100 * 1024 * 1024)}},
 		ExposedPorts: []*grpc_application_go.Port{&grpc_application_go.Port{
 			Name: "wordpressport", InternalPort: 80, ExposedPort: 80,
 			Endpoints: []*grpc_application_go.Endpoint{
@@ -98,7 +97,7 @@ func (a *Applications) getBasicDescriptor(sType grpc_application_go.StorageType)
 				},
 			},
 		}},
-		EnvironmentVariables: map[string]string{"WORDPRESS_DB_HOST":"NALEJ_SERV_1:3306","WORDPRESS_DB_PASSWORD":"root"},
+		EnvironmentVariables: map[string]string{"WORDPRESS_DB_HOST": "NALEJ_SERV_1:3306", "WORDPRESS_DB_PASSWORD": "root"},
 		Labels:               map[string]string{"app": "simple-wordpress", "component": "simple-app"},
 	}
 
@@ -125,14 +124,14 @@ func (a *Applications) getBasicDescriptor(sType grpc_application_go.StorageType)
 	}
 }
 
-func (a * Applications) ShowDescriptorHelp(exampleName string, storageType string) {
+func (a *Applications) ShowDescriptorHelp(exampleName string, storageType string) {
 	// convert string sType to StorageType
 	sType := a.GetStorageType(storageType)
-	if exampleName == "simple"{
+	if exampleName == "simple" {
 		a.ShowDescriptorExample(sType)
-	}else if exampleName == "complex" {
+	} else if exampleName == "complex" {
 		a.ShowComplexDescriptorExample(sType)
-	}else{
+	} else {
 		fmt.Println("Supported examples: simple, complex")
 	}
 }
@@ -154,11 +153,15 @@ func (a *Applications) ShowComplexDescriptorExample(sType grpc_application_go.St
 }
 
 func (a *Applications) GetStorageType(sType string) grpc_application_go.StorageType {
-	switch(sType) {
-	case "ephemeral": return grpc_application_go.StorageType_EPHEMERAL
-	case "local": return grpc_application_go.StorageType_CLUSTER_LOCAL
-	case "replica": return grpc_application_go.StorageType_CLUSTER_REPLICA
-	case "cloud" : return grpc_application_go.StorageType_CLOUD_PERSISTENT
+	switch sType {
+	case "ephemeral":
+		return grpc_application_go.StorageType_EPHEMERAL
+	case "local":
+		return grpc_application_go.StorageType_CLUSTER_LOCAL
+	case "replica":
+		return grpc_application_go.StorageType_CLUSTER_REPLICA
+	case "cloud":
+		return grpc_application_go.StorageType_CLOUD_PERSISTENT
 	}
 	return grpc_application_go.StorageType_EPHEMERAL
 }
@@ -204,7 +207,7 @@ func (a *Applications) GetDescriptor(organizationID string, descriptorID string)
 	a.PrintResultOrError(descriptor, err, "cannot obtain descriptor")
 }
 
-func (a *Applications) DeleteDescriptor(organizationID string, descriptorID string){
+func (a *Applications) DeleteDescriptor(organizationID string, descriptorID string) {
 	if organizationID == "" {
 		log.Fatal().Msg("organizationID cannot be empty")
 	}
@@ -280,8 +283,8 @@ func (a *Applications) Undeploy(organizationID string, appInstanceID string) {
 	defer cancel()
 
 	undeployRequest := &grpc_application_go.AppInstanceId{
-		OrganizationId:  organizationID,
-		AppInstanceId: appInstanceID,
+		OrganizationId: organizationID,
+		AppInstanceId:  appInstanceID,
 	}
 	_, err := client.Undeploy(ctx, undeployRequest)
 	a.PrintSuccessOrError(err, "cannot undeploy application", "application instance undeployed")
@@ -320,10 +323,9 @@ func (a *Applications) GetInstance(organizationID string, appInstanceID string) 
 	defer cancel()
 
 	instID := &grpc_application_go.AppInstanceId{
-		OrganizationId:       organizationID,
-		AppInstanceId:        appInstanceID,
+		OrganizationId: organizationID,
+		AppInstanceId:  appInstanceID,
 	}
 	inst, err := client.GetAppInstance(ctx, instID)
 	a.PrintResultOrError(inst, err, "cannot obtain application instance information")
 }
-

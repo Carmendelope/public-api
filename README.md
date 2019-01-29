@@ -40,3 +40,4 @@ $ minikube config set embed-certs true
  | IT_INFRAMGR_ADDRESS  | localhost:8860 | Infrastructure Manager Address |
  | IT_APPMGR_ADDRESS  | localhost:8910 | Applications Manager Address |
  | IT_USER_MANAGER_ADDRESS  | localhost:8920 | User Manager Address |
+ | IT_DEVICE_MANAGER_ADDRESS | localhost:6010 | Device Manager Address |

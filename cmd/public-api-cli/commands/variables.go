@@ -36,4 +36,13 @@ var internal bool
 
 var exampleName string
 
-var storageType  string
+var storageType string
+
+var updateEnabled bool
+var enabled bool
+var updateDefaultConnectivity bool
+var defaultConnectivity bool
+
+var deviceGroupID string
+var deviceID string
+var rawLabels string

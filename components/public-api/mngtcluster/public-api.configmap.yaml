@@ -34,6 +34,14 @@ data:
        "/public_api.Applications/Deploy":{"should":["ORG", "APPS"]},
        "/public_api.Applications/Undeploy":{"should":["ORG", "APPS"]},
        "/public_api.Applications/ListAppInstances":{"should":["ORG", "APPS"]},
-       "/public_api.Applications/GetAppInstance":{"should":["ORG", "APPS"]}
+       "/public_api.Applications/GetAppInstance":{"should":["ORG", "APPS"]},
+       "/public_api.Devices/AddDeviceGroup":{"should":["ORG", "DEVMNGR"]},
+       "/public_api.Devices/UpdateDeviceGroup":{"should":["ORG", "DEVMNGR"]},
+       "/public_api.Devices/RemoveDeviceGroup":{"should":["ORG", "DEVMNGR"]},
+       "/public_api.Devices/ListDeviceGroups":{"should":["ORG", "DEVMNGR"]},
+       "/public_api.Devices/ListDevices":{"should":["ORG", "DEVMNGR"]},
+       "/public_api.Devices/AddLabelToDevice":{"should":["ORG", "DEVMNGR"]},
+       "/public_api.Devices/RemoveLabelFromDevice":{"should":["ORG", "DEVMNGR"]},
+       "/public_api.Devices/UpdateDevice":{"should":["ORG", "DEVMNGR"]}
      }
     }

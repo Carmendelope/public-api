@@ -109,7 +109,7 @@ var _ = ginkgo.Describe("Organizations", func() {
 				gomega.Expect(err).To(gomega.Succeed())
 				gomega.Expect(info.OrganizationId).Should(gomega.Equal(targetOrganization.OrganizationId))
 				gomega.Expect(info.Name).Should(gomega.Equal(targetOrganization.Name))
-			}else{
+			} else {
 				gomega.Expect(err).NotTo(gomega.Succeed())
 			}
 		}
@@ -126,13 +126,13 @@ var _ = ginkgo.Describe("Organizations", func() {
 		orgID := &grpc_organization_go.OrganizationId{
 			OrganizationId: "does-not-exists",
 		}
-		for _, test := range tests{
+		for _, test := range tests {
 			ctx, cancel := ithelpers.GetContext(test.Token)
 			defer cancel()
 			info, err := client.Info(ctx, orgID)
 			if test.Success {
 				gomega.Expect(info).NotTo(gomega.BeNil())
-			}else {
+			} else {
 				gomega.Expect(err).To(gomega.HaveOccurred())
 				gomega.Expect(info).To(gomega.BeNil())
 			}

@@ -61,7 +61,7 @@ func (r *Roles) List(organizationID string, internal bool) {
 func (r *Roles) Assign(organizationID string, email string, roleID string) {
 	if organizationID == "" {
 		log.Fatal().Msg("organizationID cannot be empty")
-		}
+	}
 	r.load()
 	ctx, cancel := r.GetContext()
 	client, conn := r.getClient()

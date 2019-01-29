@@ -14,6 +14,7 @@ import (
 	"github.com/nalej/grpc-application-go"
 	"github.com/nalej/grpc-application-manager-go"
 	"github.com/nalej/grpc-authx-go"
+	"github.com/nalej/grpc-device-manager-go"
 	"github.com/nalej/grpc-infrastructure-go"
 	"github.com/nalej/grpc-organization-go"
 	"github.com/nalej/grpc-user-go"
@@ -86,7 +87,6 @@ func CreateRole(organizationID string, userManagerClient grpc_user_manager_go.Us
 	return added
 }
 
-
 func CreateUser(organizationID string, roleID string, userManagerClient grpc_user_manager_go.UserManagerClient) *grpc_user_manager_go.User {
 
 	addUserRequest := &grpc_user_manager_go.AddUserRequest{
@@ -149,7 +149,7 @@ func CreateAppDescriptor(organizationID string, appClient grpc_application_manag
 	return added
 }
 
-func GenerateDeploy (organizationID string, appDescriptorID string) * grpc_application_manager_go.DeployRequest {
+func GenerateDeploy(organizationID string, appDescriptorID string) *grpc_application_manager_go.DeployRequest {
 	return &grpc_application_manager_go.DeployRequest{
 		OrganizationId:  organizationID,
 		AppDescriptorId: appDescriptorID,
@@ -205,7 +205,7 @@ func GetAuthConfig(endpoints ...string) *interceptor.AuthorizationConfig {
 	}
 }
 
-func GetAllAuthConfig() *interceptor.AuthorizationConfig  {
+func GetAllAuthConfig() *interceptor.AuthorizationConfig {
 	permissions := make(map[string]interceptor.Permission, 0)
 	permissions["/public_api.Clusters/Install"] = interceptor.Permission{
 		Should: []string{grpc_authx_go.AccessPrimitive_ORG.String(), grpc_authx_go.AccessPrimitive_RESOURCES.String()},
@@ -279,6 +279,33 @@ func GetAllAuthConfig() *interceptor.AuthorizationConfig  {
 	permissions["/public_api.Applications/GetAppInstance"] = interceptor.Permission{
 		Should: []string{grpc_authx_go.AccessPrimitive_ORG.String(), grpc_authx_go.AccessPrimitive_APPS.String()},
 	}
+	permissions["/public_api.Devices/AddDeviceGroup"] = interceptor.Permission{
+		Should: []string{grpc_authx_go.AccessPrimitive_ORG.String(), grpc_authx_go.AccessPrimitive_DEVMNGR.String()},
+	}
+	permissions["/public_api.Devices/AddDeviceGroup"] = interceptor.Permission{
+		Should: []string{grpc_authx_go.AccessPrimitive_ORG.String(), grpc_authx_go.AccessPrimitive_DEVMNGR.String()},
+	}
+	permissions["/public_api.Devices/UpdateDeviceGroup"] = interceptor.Permission{
+		Should: []string{grpc_authx_go.AccessPrimitive_ORG.String(), grpc_authx_go.AccessPrimitive_DEVMNGR.String()},
+	}
+	permissions["/public_api.Devices/RemoveDeviceGroup"] = interceptor.Permission{
+		Should: []string{grpc_authx_go.AccessPrimitive_ORG.String(), grpc_authx_go.AccessPrimitive_DEVMNGR.String()},
+	}
+	permissions["/public_api.Devices/ListDeviceGroups"] = interceptor.Permission{
+		Should: []string{grpc_authx_go.AccessPrimitive_ORG.String(), grpc_authx_go.AccessPrimitive_DEVMNGR.String()},
+	}
+	permissions["/public_api.Devices/ListDevices"] = interceptor.Permission{
+		Should: []string{grpc_authx_go.AccessPrimitive_ORG.String(), grpc_authx_go.AccessPrimitive_DEVMNGR.String()},
+	}
+	permissions["/public_api.Devices/AddLabelToDevice"] = interceptor.Permission{
+		Should: []string{grpc_authx_go.AccessPrimitive_ORG.String(), grpc_authx_go.AccessPrimitive_DEVMNGR.String()},
+	}
+	permissions["/public_api.Devices/RemoveLabelFromDevice"] = interceptor.Permission{
+		Should: []string{grpc_authx_go.AccessPrimitive_ORG.String(), grpc_authx_go.AccessPrimitive_DEVMNGR.String()},
+	}
+	permissions["/public_api.Devices/UpdateDevice"] = interceptor.Permission{
+		Should: []string{grpc_authx_go.AccessPrimitive_ORG.String(), grpc_authx_go.AccessPrimitive_DEVMNGR.String()},
+	}
 
 	return &interceptor.AuthorizationConfig{
 		AllowsAll:   false,
@@ -287,18 +314,51 @@ func GetAllAuthConfig() *interceptor.AuthorizationConfig  {
 
 }
 
+func CreateDeviceGroup(organizationID string, name string, dmClient grpc_device_manager_go.DevicesClient) *grpc_device_manager_go.DeviceGroup{
+	request := &grpc_device_manager_go.AddDeviceGroupRequest{
+		OrganizationId:            organizationID,
+		Name:                      name,
+		Enabled:                   true,
+		DeviceDefaultConnectivity: true,
+	}
+	added, err := dmClient.AddDeviceGroup(context.Background(), request)
+	gomega.Expect(err).To(gomega.Succeed())
+	return added
+}
+
+func CreateDevice (organizationID string, deviceGroupID string, groupApiKey string,
+	devClient grpc_device_manager_go.DevicesClient) *grpc_device_manager_go.RegisterResponse {
+	request := &grpc_device_manager_go.RegisterDeviceRequest{
+		OrganizationId: organizationID,
+		DeviceGroupId: deviceGroupID,
+		DeviceGroupApiKey: groupApiKey,
+		DeviceId: GenerateUUID(),
+	}
+	added, err := devClient.RegisterDevice(context.Background(), request)
+	gomega.Expect(err).To(gomega.Succeed())
+	return added
+}
+
+func GenerateLabels (tam int) map[string]string {
+	labels := make (map[string]string, tam)
+	for i:= 0; i< tam; i ++ {
+		labels[fmt.Sprintf("label_%d", i)] = fmt.Sprintf("value_%d", i)
+	}
+	return labels
+}
+
 // DeleteAllInstances from system model.
-func DeleteAllInstances(organizationID string, smAppClient grpc_application_go.ApplicationsClient){
+func DeleteAllInstances(organizationID string, smAppClient grpc_application_go.ApplicationsClient) {
 	orgID := &grpc_organization_go.OrganizationId{
 		OrganizationId: organizationID,
 	}
 	instances, err := smAppClient.ListAppInstances(context.Background(), orgID)
 	gomega.Expect(err).To(gomega.Succeed())
-	for _, inst := range instances.Instances{
+	for _, inst := range instances.Instances {
 
-		instance := &grpc_application_go.AppInstanceId {
-			OrganizationId:organizationID,
-			AppInstanceId: inst.AppInstanceId,
+		instance := &grpc_application_go.AppInstanceId{
+			OrganizationId: organizationID,
+			AppInstanceId:  inst.AppInstanceId,
 		}
 		// TODO: ask Dani if I have to ask for the instance another time
 		inst2, err2 := smAppClient.GetAppInstance(context.Background(), instance)
@@ -306,29 +366,30 @@ func DeleteAllInstances(organizationID string, smAppClient grpc_application_go.A
 
 		if inst2.Status == grpc_application_go.ApplicationStatus_QUEUED {
 			log.Debug().Str("app_instance", inst.AppInstanceId).Msg("QUEUED, Waiting 3s to DEPLOY")
-			time.Sleep(time.Duration(3)*time.Second)
+			time.Sleep(time.Duration(3) * time.Second)
 		}
 
 		toRemove := &grpc_application_go.AppInstanceId{
-			OrganizationId:       inst.OrganizationId,
-			AppInstanceId:        inst.AppInstanceId,
+			OrganizationId: inst.OrganizationId,
+			AppInstanceId:  inst.AppInstanceId,
 		}
 		_, err := smAppClient.RemoveAppInstance(context.Background(), toRemove)
 		gomega.Expect(err).To(gomega.Succeed())
 	}
 }
+
 // DeleteAllUsers from system model
-func DeleteAllUsers(organizationID string, smUserClient grpc_user_manager_go.UserManagerClient){
+func DeleteAllUsers(organizationID string, smUserClient grpc_user_manager_go.UserManagerClient) {
 	orgID := &grpc_organization_go.OrganizationId{
 		OrganizationId: organizationID,
 	}
 	users, err := smUserClient.ListUsers(context.Background(), orgID)
 	gomega.Expect(err).To(gomega.Succeed())
 
-	for _, user := range users.Users{
+	for _, user := range users.Users {
 		toRemove := &grpc_user_go.UserId{
-			OrganizationId:       user.OrganizationId,
-			Email:        user.Email,
+			OrganizationId: user.OrganizationId,
+			Email:          user.Email,
 		}
 		_, err := smUserClient.RemoveUser(context.Background(), toRemove)
 		gomega.Expect(err).To(gomega.Succeed())
@@ -338,12 +399,13 @@ func DeleteAllUsers(organizationID string, smUserClient grpc_user_manager_go.Use
 type TestCleaner struct {
 	client *grpc.ClientConn
 }
-func NewTestCleaner(smConn *grpc.ClientConn) * TestCleaner{
+
+func NewTestCleaner(smConn *grpc.ClientConn) *TestCleaner {
 	return &TestCleaner{smConn}
 }
 
 // DeleteAllInstances from system model
-func (tu * TestCleaner) DeleteAllInstances(organizationID string){
+func (tu *TestCleaner) DeleteAllInstances(organizationID string) {
 	orgID := &grpc_organization_go.OrganizationId{
 		OrganizationId: organizationID,
 	}
@@ -354,13 +416,13 @@ func (tu * TestCleaner) DeleteAllInstances(organizationID string){
 	gomega.Expect(err).To(gomega.Succeed())
 
 	log.Debug().Msg("Waiting 2s to conductor queue")
-	time.Sleep(time.Duration(2)*time.Second)
+	time.Sleep(time.Duration(2) * time.Second)
 
-	for _, inst := range instances.Instances{
+	for _, inst := range instances.Instances {
 
 		toRemove := &grpc_application_go.AppInstanceId{
-			OrganizationId:       inst.OrganizationId,
-			AppInstanceId:        inst.AppInstanceId,
+			OrganizationId: inst.OrganizationId,
+			AppInstanceId:  inst.AppInstanceId,
 		}
 		_, err := smAppClient.RemoveAppInstance(context.Background(), toRemove)
 		gomega.Expect(err).To(gomega.Succeed())
@@ -368,7 +430,7 @@ func (tu * TestCleaner) DeleteAllInstances(organizationID string){
 }
 
 // DeleteAppDescriptors from system model
-func (tu * TestCleaner) DeleteAppDescriptors (organizationID string) {
+func (tu *TestCleaner) DeleteAppDescriptors(organizationID string) {
 
 	smAppClient := grpc_application_go.NewApplicationsClient(tu.client)
 
@@ -381,7 +443,7 @@ func (tu * TestCleaner) DeleteAppDescriptors (organizationID string) {
 	for _, app := range apps.Descriptors {
 
 		toRemove := &grpc_application_go.AppDescriptorId{
-			OrganizationId: app.OrganizationId,
+			OrganizationId:  app.OrganizationId,
 			AppDescriptorId: app.AppDescriptorId,
 		}
 
@@ -393,7 +455,7 @@ func (tu * TestCleaner) DeleteAppDescriptors (organizationID string) {
 }
 
 // DeleteAllUsers from system model
-func (tu * TestCleaner) DeleteAllUsers(organizationID string) {
+func (tu *TestCleaner) DeleteAllUsers(organizationID string) {
 
 	client := grpc_user_manager_go.NewUserManagerClient(tu.client)
 
@@ -403,10 +465,10 @@ func (tu * TestCleaner) DeleteAllUsers(organizationID string) {
 	users, err := client.ListUsers(context.Background(), orgID)
 	gomega.Expect(err).To(gomega.Succeed())
 
-	for _, user := range users.Users{
+	for _, user := range users.Users {
 		toRemove := &grpc_user_go.UserId{
-			OrganizationId:       user.OrganizationId,
-			Email:        user.Email,
+			OrganizationId: user.OrganizationId,
+			Email:          user.Email,
 		}
 		_, err := client.RemoveUser(context.Background(), toRemove)
 		gomega.Expect(err).To(gomega.Succeed())
@@ -414,12 +476,12 @@ func (tu * TestCleaner) DeleteAllUsers(organizationID string) {
 }
 
 // Delete the nodes of a cluster from system model
-func (tu * TestCleaner) DeleteClusterNodes (organizationID string, clusterID string)  {
+func (tu *TestCleaner) DeleteClusterNodes(organizationID string, clusterID string) {
 
 	client := grpc_infrastructure_go.NewNodesClient(tu.client)
 
 	clusterId := &grpc_infrastructure_go.ClusterId{
-		ClusterId: clusterID,
+		ClusterId:      clusterID,
 		OrganizationId: organizationID,
 	}
 	nodes, err := client.ListNodes(context.Background(), clusterId)
@@ -432,7 +494,7 @@ func (tu * TestCleaner) DeleteClusterNodes (organizationID string, clusterID str
 		}
 
 		toRemove := &grpc_infrastructure_go.RemoveNodesRequest{
-			RequestId:GenerateUUID(),
+			RequestId:      GenerateUUID(),
 			OrganizationId: organizationID,
 			Nodes:          nodeList,
 		}
@@ -443,7 +505,7 @@ func (tu * TestCleaner) DeleteClusterNodes (organizationID string, clusterID str
 }
 
 // delete a cluster from system model
-func (tu * TestCleaner) DeleteOrganizationClusters (organizationID string){
+func (tu *TestCleaner) DeleteOrganizationClusters(organizationID string) {
 
 	client := grpc_infrastructure_go.NewClustersClient(tu.client)
 
@@ -459,7 +521,7 @@ func (tu * TestCleaner) DeleteOrganizationClusters (organizationID string){
 
 		toRemove := &grpc_infrastructure_go.RemoveClusterRequest{
 			OrganizationId: cluster.OrganizationId,
-			ClusterId: cluster.ClusterId,
+			ClusterId:      cluster.ClusterId,
 		}
 
 		_, err := client.RemoveCluster(context.Background(), toRemove)
@@ -468,7 +530,7 @@ func (tu * TestCleaner) DeleteOrganizationClusters (organizationID string){
 
 }
 
-func (tu * TestCleaner) DeleteOrganizationDescriptors (organizationID string){
+func (tu *TestCleaner) DeleteOrganizationDescriptors(organizationID string) {
 	// delete Instances
 	tu.DeleteAllInstances(organizationID)
 	// delete appDescriptors
@@ -477,7 +539,7 @@ func (tu * TestCleaner) DeleteOrganizationDescriptors (organizationID string){
 }
 
 // delete all of an organization
-func (tu * TestCleaner) DeleteOrganization (organizationID string){
+func (tu *TestCleaner) DeleteOrganization(organizationID string) {
 
 	//
 	tu.DeleteOrganizationDescriptors(organizationID)
