@@ -326,6 +326,27 @@ func CreateDeviceGroup(organizationID string, name string, dmClient grpc_device_
 	return added
 }
 
+func CreateDevice (organizationID string, deviceGroupID string, groupApiKey string,
+	devClient grpc_device_manager_go.DevicesClient) *grpc_device_manager_go.RegisterResponse {
+	request := &grpc_device_manager_go.RegisterDeviceRequest{
+		OrganizationId: organizationID,
+		DeviceGroupId: deviceGroupID,
+		DeviceGroupApiKey: groupApiKey,
+		DeviceId: GenerateUUID(),
+	}
+	added, err := devClient.RegisterDevice(context.Background(), request)
+	gomega.Expect(err).To(gomega.Succeed())
+	return added
+}
+
+func GenerateLabels (tam int) map[string]string {
+	labels := make (map[string]string, tam)
+	for i:= 0; i< tam; i ++ {
+		labels[fmt.Sprintf("label_%d", i)] = fmt.Sprintf("value_%d", i)
+	}
+	return labels
+}
+
 // DeleteAllInstances from system model.
 func DeleteAllInstances(organizationID string, smAppClient grpc_application_go.ApplicationsClient) {
 	orgID := &grpc_organization_go.OrganizationId{
