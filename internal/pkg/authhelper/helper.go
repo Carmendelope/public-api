@@ -12,12 +12,12 @@ const UserIdField = "user_id"
 const OrganizationIdField = "organization_id"
 
 type RequestMetadata struct {
-	UserID            string
-	OrganizationID    string
-	OrgPrimitive      bool
-	AppsPrimitive     bool
-	ResourcePrimitive bool
-	ProfilePrimitive  bool
+	UserID                 string
+	OrganizationID         string
+	OrgPrimitive           bool
+	AppsPrimitive          bool
+	ResourcePrimitive      bool
+	ProfilePrimitive       bool
 	AppClusterOpsPrimitive bool
 }
 

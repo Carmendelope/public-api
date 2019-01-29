@@ -125,7 +125,7 @@ var _ = ginkgo.Describe("Nodes", func() {
 			if test.Success {
 				gomega.Expect(err).To(gomega.Succeed())
 				gomega.Expect(len(list.Nodes)).To(gomega.Equal(NumNodes))
-			}else{
+			} else {
 				gomega.Expect(err).NotTo(gomega.Succeed())
 			}
 

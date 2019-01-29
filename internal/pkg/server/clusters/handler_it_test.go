@@ -113,10 +113,10 @@ var _ = ginkgo.Describe("Clusters", func() {
 		smConn.Close()
 	})
 
-	ginkgo.It("should be able to retrieve the information of a cluster", func(){
+	ginkgo.It("should be able to retrieve the information of a cluster", func() {
 		clusterID := &grpc_infrastructure_go.ClusterId{
-			OrganizationId:       targetCluster.OrganizationId,
-			ClusterId:            targetCluster.ClusterId,
+			OrganizationId: targetCluster.OrganizationId,
+			ClusterId:      targetCluster.ClusterId,
 		}
 
 		tests := make([]utils.TestResult, 0)
@@ -128,17 +128,16 @@ var _ = ginkgo.Describe("Clusters", func() {
 			ctx, cancel := ithelpers.GetContext(test.Token)
 			defer cancel()
 			retrieved, err := client.Info(ctx, clusterID)
-			if test.Success{
+			if test.Success {
 				gomega.Expect(err).To(gomega.Succeed())
 				gomega.Expect(retrieved.ClusterId).Should(gomega.Equal(targetCluster.ClusterId))
 				gomega.Expect(retrieved.MultitenantSupport).Should(gomega.Equal(targetCluster.Multitenant.String()))
 				gomega.Expect(retrieved.ClusterTypeName).Should(gomega.Equal(targetCluster.ClusterType.String()))
-			}else{
+			} else {
 				gomega.Expect(err).NotTo(gomega.Succeed())
 			}
 		}
 	})
-
 
 	ginkgo.It("should be able to list the clusters", func() {
 
@@ -151,7 +150,7 @@ var _ = ginkgo.Describe("Clusters", func() {
 		tests = append(tests, utils.TestResult{Token: devToken, Success: false, Msg: "Developer should NOT be able to list the clusters"})
 		tests = append(tests, utils.TestResult{Token: opeToken, Success: true, Msg: "Operator should be able to list the clusters"})
 
-		for _, test := range tests{
+		for _, test := range tests {
 			ctx, cancel := ithelpers.GetContext(test.Token)
 			defer cancel()
 			clusters, err := client.List(ctx, organizationID)
@@ -161,7 +160,7 @@ var _ = ginkgo.Describe("Clusters", func() {
 				c0 := clusters.Clusters[0]
 				gomega.Expect(c0.TotalNodes).Should(gomega.Equal(int64(NumNodes)))
 				gomega.Expect(c0.RunningNodes).Should(gomega.Equal(int64(0)))
-			}else{
+			} else {
 				gomega.Expect(err).NotTo(gomega.Succeed())
 			}
 		}
@@ -205,7 +204,7 @@ var _ = ginkgo.Describe("Clusters", func() {
 				gomega.Expect(retrieved.Name).Should(gomega.Equal(updateRequest.Name))
 				gomega.Expect(retrieved.Description).Should(gomega.Equal(updateRequest.Description))
 				gomega.Expect(retrieved.Labels).Should(gomega.Equal(updateRequest.Labels))
-			}else{
+			} else {
 				gomega.Expect(err).NotTo(gomega.Succeed())
 			}
 		}

@@ -23,7 +23,7 @@ func GetConnection(address string) *grpc.ClientConn {
 }
 
 type TestResult struct {
-	Token string
+	Token   string
 	Success bool
-	Msg string
+	Msg     string
 }

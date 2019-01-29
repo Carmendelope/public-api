@@ -5,10 +5,10 @@
 package commands
 
 import (
-	"github.com/nalej/public-api/internal/app/cli"
-	"github.com/spf13/cobra"
 	"github.com/nalej/grpc-public-api-go"
+	"github.com/nalej/public-api/internal/app/cli"
 	"github.com/rs/zerolog/log"
+	"github.com/spf13/cobra"
 )
 
 var clustersCmd = &cobra.Command{
@@ -94,12 +94,12 @@ var listClustersCmd = &cobra.Command{
 func stringToTargetPlatform(p string) grpc_public_api_go.Platform {
 	var result grpc_public_api_go.Platform
 	switch p {
-		case grpc_public_api_go.Platform_AZURE.String():
-			result = grpc_public_api_go.Platform_AZURE
-		case grpc_public_api_go.Platform_MINIKUBE.String():
-			result = grpc_public_api_go.Platform_MINIKUBE
-		default:
-			log.Fatal().Str("platform",p).Msg("unknown platform")
+	case grpc_public_api_go.Platform_AZURE.String():
+		result = grpc_public_api_go.Platform_AZURE
+	case grpc_public_api_go.Platform_MINIKUBE.String():
+		result = grpc_public_api_go.Platform_MINIKUBE
+	default:
+		log.Fatal().Str("platform", p).Msg("unknown platform")
 	}
 
 	return result

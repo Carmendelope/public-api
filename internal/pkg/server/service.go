@@ -7,6 +7,7 @@ import (
 	"github.com/nalej/authx/pkg/interceptor"
 	"github.com/nalej/derrors"
 	"github.com/nalej/grpc-application-manager-go"
+	"github.com/nalej/grpc-device-manager-go"
 	"github.com/nalej/grpc-infrastructure-go"
 	"github.com/nalej/grpc-infrastructure-manager-go"
 	"github.com/nalej/grpc-organization-go"
@@ -15,6 +16,7 @@ import (
 	"github.com/nalej/grpc-utils/pkg/tools"
 	"github.com/nalej/public-api/internal/pkg/server/applications"
 	"github.com/nalej/public-api/internal/pkg/server/clusters"
+	"github.com/nalej/public-api/internal/pkg/server/devices"
 	"github.com/nalej/public-api/internal/pkg/server/nodes"
 	"github.com/nalej/public-api/internal/pkg/server/organizations"
 	"github.com/nalej/public-api/internal/pkg/server/resources"
@@ -48,6 +50,7 @@ type Clients struct {
 	infraClient grpc_infrastructure_manager_go.InfrastructureManagerClient
 	umClient    grpc_user_manager_go.UserManagerClient
 	appClient   grpc_application_manager_go.ApplicationManagerClient
+	deviceClient grpc_device_manager_go.DevicesClient
 }
 
 func (s *Service) GetClients() (*Clients, derrors.Error) {
@@ -67,6 +70,10 @@ func (s *Service) GetClients() (*Clients, derrors.Error) {
 	if err != nil {
 		return nil, derrors.AsError(err, "cannot create connection with the applications manager")
 	}
+	devConn, err := grpc.Dial(s.Configuration.DeviceManagerAddress, grpc.WithInsecure())
+	if err != nil {
+		return nil, derrors.AsError(err, "cannot create connection with the device manager")
+	}
 
 	oClient := grpc_organization_go.NewOrganizationsClient(smConn)
 	cClient := grpc_infrastructure_go.NewClustersClient(smConn)
@@ -74,8 +81,9 @@ func (s *Service) GetClients() (*Clients, derrors.Error) {
 	infraClient := grpc_infrastructure_manager_go.NewInfrastructureManagerClient(infraConn)
 	umClient := grpc_user_manager_go.NewUserManagerClient(umConn)
 	appClient := grpc_application_manager_go.NewApplicationManagerClient(appConn)
+	deviceClient := grpc_device_manager_go.NewDevicesClient(devConn)
 
-	return &Clients{oClient, cClient, nClient, infraClient, umClient, appClient}, nil
+	return &Clients{oClient, cClient, nClient, infraClient, umClient, appClient, deviceClient}, nil
 }
 
 // Run the service, launch the REST service handler.
@@ -147,7 +155,9 @@ func (s *Service) LaunchHTTP() error {
 	if err := grpc_public_api_go.RegisterUsersHandlerFromEndpoint(context.Background(), mux, clientAddr, opts); err != nil {
 		log.Fatal().Err(err).Msg("failed to start applications handler")
 	}
-
+	if err := grpc_public_api_go.RegisterDevicesHandlerFromEndpoint(context.Background(), mux, clientAddr, opts); err != nil {
+		log.Fatal().Err(err).Msg("failed to start device handler")
+	}
 
 	server := &http.Server{
 		Addr:    addr,
@@ -190,6 +200,9 @@ func (s *Service) LaunchGRPC(authConfig *interceptor.AuthorizationConfig) error 
 	appManager := applications.NewManager(clients.appClient)
 	appHandler := applications.NewHandler(appManager)
 
+	devManager := devices.NewManager(clients.deviceClient)
+	devHandler := devices.NewHandler(devManager)
+
 	grpcServer := grpc.NewServer(interceptor.WithServerAuthxInterceptor(
 		interceptor.NewConfig(authConfig, s.Configuration.AuthSecret, s.Configuration.AuthHeader)))
 	grpc_public_api_go.RegisterOrganizationsServer(grpcServer, orgHandler)
@@ -199,6 +212,7 @@ func (s *Service) LaunchGRPC(authConfig *interceptor.AuthorizationConfig) error 
 	grpc_public_api_go.RegisterUsersServer(grpcServer, userHandler)
 	grpc_public_api_go.RegisterRolesServer(grpcServer, roleHandler)
 	grpc_public_api_go.RegisterApplicationsServer(grpcServer, appHandler)
+	grpc_public_api_go.RegisterDevicesServer(grpcServer, devHandler)
 
 	// Register reflection service on gRPC server.
 	reflection.Register(grpcServer)

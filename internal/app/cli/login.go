@@ -53,12 +53,12 @@ func (l *Login) Login(email string, password string) (*Credentials, derrors.Erro
 	return credentials, nil
 }
 
-func (l * Login) GetPersonalClaims(credentials *Credentials) (*token.Claim, derrors.Error){
+func (l *Login) GetPersonalClaims(credentials *Credentials) (*token.Claim, derrors.Error) {
 	parser := jwt.Parser{
 		SkipClaimsValidation: true,
 	}
 	tk, _, err := parser.ParseUnverified(credentials.Token, &token.Claim{})
-	if err != nil{
+	if err != nil {
 		return nil, derrors.AsError(err, "cannot parse token")
 	}
 	return tk.Claims.(*token.Claim), nil

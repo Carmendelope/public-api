@@ -75,7 +75,7 @@ var _ = ginkgo.Describe("Applications", func() {
 
 		appConn = utils.GetConnection(appManagerAddress)
 		appClient = grpc_application_manager_go.NewApplicationManagerClient(appConn)
-		
+
 		conn, err := test.GetConn(*listener)
 		gomega.Expect(err).To(gomega.Succeed())
 
@@ -255,7 +255,7 @@ var _ = ginkgo.Describe("Applications", func() {
 			gomega.Expect(deployed.AppInstanceId).ShouldNot(gomega.BeEmpty())
 
 			orgID := &grpc_organization_go.OrganizationId{
-				OrganizationId:       targetOrganization.OrganizationId,
+				OrganizationId: targetOrganization.OrganizationId,
 			}
 			for _, test := range tests {
 				ctx2, cancel2 := ithelpers.GetContext(test.Token)
@@ -264,7 +264,7 @@ var _ = ginkgo.Describe("Applications", func() {
 				if test.Success {
 					gomega.Expect(err).To(gomega.Succeed())
 					gomega.Expect(len(list.Instances)).ShouldNot(gomega.Equal(0))
-				}else{
+				} else {
 					gomega.Expect(err).NotTo(gomega.Succeed())
 				}
 			}
@@ -293,8 +293,8 @@ var _ = ginkgo.Describe("Applications", func() {
 			gomega.Expect(deployed.AppInstanceId).ShouldNot(gomega.BeEmpty())
 
 			instanceID := &grpc_application_go.AppInstanceId{
-				OrganizationId:       targetOrganization.OrganizationId,
-				AppInstanceId:        deployed.AppInstanceId,
+				OrganizationId: targetOrganization.OrganizationId,
+				AppInstanceId:  deployed.AppInstanceId,
 			}
 			for _, test := range tests {
 				ctx2, cancel2 := ithelpers.GetContext(test.Token)
@@ -303,7 +303,7 @@ var _ = ginkgo.Describe("Applications", func() {
 				if test.Success {
 					gomega.Expect(err).To(gomega.Succeed())
 					gomega.Expect(info).ShouldNot(gomega.BeNil())
-				}else{
+				} else {
 					gomega.Expect(err).NotTo(gomega.Succeed())
 				}
 
