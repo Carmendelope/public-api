@@ -5,6 +5,7 @@
 package cli
 
 import (
+	"fmt"
 	"github.com/nalej/grpc-device-go"
 	"github.com/nalej/grpc-device-manager-go"
 	"github.com/nalej/grpc-organization-go"
@@ -42,12 +43,24 @@ func (d*Devices) getClient() (grpc_public_api_go.DevicesClient, *grpc.ClientConn
 	return client, conn
 }
 
-func (d*Devices) AddDeviceGroup(organizationID string, name string, enabled bool, defaultConnectivity bool) {
+func (d*Devices) AddDeviceGroup(organizationID string, name string, enabled bool, disabled bool,  enabledDefaultConnectivity bool, disabledDefaultConnectivity bool) {
 	if organizationID == "" {
 		log.Fatal().Msg("organizationID cannot be empty")
 	}
 	if name == "" {
 		log.Fatal().Msg("name cannot be empty")
+	}
+	if enabled && disabled{
+		log.Fatal().Msg("impossible to apply enabled and disabled flag at the same time")
+	}
+	if enabledDefaultConnectivity && disabledDefaultConnectivity {
+		log.Fatal().Msg("impossible to apply enabledDefaultConnectivity and disabledDefaultConnectivity flag at the same time")
+	}
+	if !enabled && !disabled {
+		log.Fatal().Msg("Either enabled or disabled must be set")
+	}
+	if !enabledDefaultConnectivity && !disabledDefaultConnectivity{
+		log.Fatal().Msg("Either enabledDefaultConnectivity or disabledDefaultConnectivity must be set")
 	}
 
 	d.load()
@@ -60,34 +73,54 @@ func (d*Devices) AddDeviceGroup(organizationID string, name string, enabled bool
 		OrganizationId:            organizationID,
 		Name:                      name,
 		Enabled:                   enabled,
-		DeviceDefaultConnectivity: defaultConnectivity,
+		DeviceDefaultConnectivity: enabledDefaultConnectivity,
 	}
 	added, err := client.AddDeviceGroup(ctx, addRequest)
 	d.PrintResultOrError(added, err, "cannot add device group")
 }
 
-func (d*Devices) UpdateDeviceGroup(organizationID string, deviceGroupID string, updateEnabled bool, enabled bool, updateDefaultConnectivity bool, defaultConnectivy bool) {
+func (d*Devices) UpdateDeviceGroup(organizationID string, deviceGroupID string, enabled bool, disabled bool, enabledDefaultConnectivity bool, disabledDefaultConnectivity bool) {
+
+	log.Info().Msg("***************************")
+	log.Info().Msg(fmt.Sprintf("organizationID: %s", organizationID))
+	log.Info().Msg(fmt.Sprintf("deviceGroupID: %s", deviceGroupID))
+	log.Info().Msg(fmt.Sprintf("enabled: %t", enabled))
+	log.Info().Msg(fmt.Sprintf("disabled: %t", disabled))
+	log.Info().Msg(fmt.Sprintf("enabledDefaultConnectivy: %t", enabledDefaultConnectivity))
+	log.Info().Msg(fmt.Sprintf("disabledDefaultConnectivy: %t", disabledDefaultConnectivity))
+	log.Info().Msg("***************************")
+
 	if organizationID == "" {
 		log.Fatal().Msg("organizationID cannot be empty")
 	}
 	if deviceGroupID == "" {
 		log.Fatal().Msg("deviceGroupID cannot be empty")
 	}
-	if !updateEnabled && !updateDefaultConnectivity{
-		log.Fatal().Msg("Either updateEnabled or updateDefaultConnectivity must be set")
+	if enabled && disabled{
+		log.Fatal().Msg("impossible to apply enabled and disabled flag at the same time")
+	}
+	if enabledDefaultConnectivity && disabledDefaultConnectivity {
+		log.Fatal().Msg("impossible to apply enabledDefaultConnectivity and disabledDefaultConnectivity flag at the same time")
+	}
+	if !enabled && !disabled && !enabledDefaultConnectivity && !disabledDefaultConnectivity{
+		log.Fatal().Msg("Either enabled, disabled, enabledDefaultConnectivity or disabledDefaultConnectivity must be set")
 	}
 	d.load()
 	ctx, cancel := d.GetContext()
 	client, conn := d.getClient()
 	defer conn.Close()
 	defer cancel()
+
+	updateEnabled := enabled || disabled
+	updateDefaultConnectivity := enabledDefaultConnectivity || disabledDefaultConnectivity
+
 	updateRequest := &grpc_device_manager_go.UpdateDeviceGroupRequest{
 		OrganizationId:            organizationID,
 		DeviceGroupId:             deviceGroupID,
 		UpdateEnabled:             updateEnabled,
 		Enabled:                   enabled,
 		UpdateDeviceConnectivity:  updateDefaultConnectivity,
-		DefaultDeviceConnectivity: defaultConnectivy,
+		DefaultDeviceConnectivity: enabledDefaultConnectivity,
 	}
 	updated, err := client.UpdateDeviceGroup(ctx, updateRequest)
 	d.PrintResultOrError(updated, err, "cannot update device group")
@@ -227,7 +260,7 @@ func (d*Devices) RemoveLabelFromDevice(organizationID string, deviceGroupID stri
 	d.PrintSuccessOrError(err, "cannot remove labels from device", "labels have been removed")
 }
 
-func (d*Devices) UpdateDevice(organizationID string, deviceGroupID string, deviceID string, enabled bool) {
+func (d*Devices) UpdateDevice(organizationID string, deviceGroupID string, deviceID string, enabled bool, disabled bool) {
 	if organizationID == "" {
 		log.Fatal().Msg("organizationID cannot be empty")
 	}
@@ -236,6 +269,12 @@ func (d*Devices) UpdateDevice(organizationID string, deviceGroupID string, devic
 	}
 	if deviceID == "" {
 		log.Fatal().Msg("deviceID cannot be empty")
+	}
+	if !enabled && !disabled {
+		log.Fatal().Msg("Either enabled or disabled must be set")
+	}
+	if enabled && disabled{
+		log.Fatal().Msg("impossible to apply enabled and disabled flag at the same time")
 	}
 
 	d.load()
