@@ -89,6 +89,15 @@ func (d*Devices) UpdateDeviceGroup(organizationID string, deviceGroupID string, 
 	if enabled && disabled{
 		log.Fatal().Msg("impossible to apply enabled and disabled flag at the same time")
 	}
+
+	/*
+	I have verified that one of the four flags is informed (at least one)
+	1) If enabled is informed, disabled is not -> enable = true and updateEnable = true
+	2) If disabled is informed, enabled is not -> enabled = false and updateEnable = true
+	3) neither enabled nor disabled are informed -> updateEnable = false
+	The same as defaultEnableConnectivity
+	*/
+
 	if enabledDefaultConnectivity && disabledDefaultConnectivity {
 		log.Fatal().Msg("impossible to apply enabledDefaultConnectivity and disabledDefaultConnectivity flag at the same time")
 	}
