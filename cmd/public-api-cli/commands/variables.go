@@ -38,10 +38,10 @@ var exampleName string
 
 var storageType string
 
-var updateEnabled bool
 var enabled bool
-var updateDefaultConnectivity bool
-var defaultConnectivity bool
+var disabled bool
+var enabledDefaultConnectivity bool
+var disabledDefaultConnectivity bool
 
 var deviceGroupID string
 var deviceID string
