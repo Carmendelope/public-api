@@ -5,7 +5,6 @@
 package cli
 
 import (
-	"fmt"
 	"github.com/nalej/grpc-device-go"
 	"github.com/nalej/grpc-device-manager-go"
 	"github.com/nalej/grpc-organization-go"
@@ -80,15 +79,6 @@ func (d*Devices) AddDeviceGroup(organizationID string, name string, enabled bool
 }
 
 func (d*Devices) UpdateDeviceGroup(organizationID string, deviceGroupID string, enabled bool, disabled bool, enabledDefaultConnectivity bool, disabledDefaultConnectivity bool) {
-
-	log.Info().Msg("***************************")
-	log.Info().Msg(fmt.Sprintf("organizationID: %s", organizationID))
-	log.Info().Msg(fmt.Sprintf("deviceGroupID: %s", deviceGroupID))
-	log.Info().Msg(fmt.Sprintf("enabled: %t", enabled))
-	log.Info().Msg(fmt.Sprintf("disabled: %t", disabled))
-	log.Info().Msg(fmt.Sprintf("enabledDefaultConnectivy: %t", enabledDefaultConnectivity))
-	log.Info().Msg(fmt.Sprintf("disabledDefaultConnectivy: %t", disabledDefaultConnectivity))
-	log.Info().Msg("***************************")
 
 	if organizationID == "" {
 		log.Fatal().Msg("organizationID cannot be empty")
