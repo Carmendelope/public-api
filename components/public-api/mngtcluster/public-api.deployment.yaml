@@ -41,7 +41,7 @@ spec:
             mountPath: "/nalej/config"
             readOnly: true
         # TODO link secret, file, etc.
-        imagePullPolicy: IfNotPresent
+        imagePullPolicy: Always
         args:
         - "run"
         - "--debug"
