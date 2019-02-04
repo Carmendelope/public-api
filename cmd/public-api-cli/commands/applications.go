@@ -2,7 +2,7 @@
  * Copyright (C) 2018 Nalej - All Rights Reserved
  */
 
- // TODO Remove descriptor NP-338
+// TODO Remove descriptor NP-338
 
 package commands
 
@@ -35,8 +35,8 @@ func init() {
 	descriptorCmd.AddCommand(getDescriptorCmd)
 	descriptorCmd.AddCommand(listDescriptorsCmd)
 	listInstancesCmd.MarkPersistentFlagRequired("descriptorID")
-	addDescriptorHelpCmd.Flags().StringVar(&exampleName,"exampleName", "simple", "Example to show: simple or complex or pstorage")
-	addDescriptorHelpCmd.Flags().StringVar(&storageType,"storage", "ephemeral", "Type: ephemeral local replica cloud")
+	addDescriptorHelpCmd.Flags().StringVar(&exampleName, "exampleName", "simple", "Example to show: simple or complex or pstorage")
+	addDescriptorHelpCmd.Flags().StringVar(&storageType, "storage", "ephemeral", "Type: ephemeral local replica cloud")
 	descriptorCmd.AddCommand(addDescriptorHelpCmd)
 	deleteDescriptorCmd.MarkPersistentFlagRequired("descriptorID")
 	descriptorCmd.AddCommand(deleteDescriptorCmd)
@@ -89,7 +89,7 @@ var addDescriptorHelpCmd = &cobra.Command{
 		SetupLogging()
 		a := cli.NewApplications(
 			"",
-			0, 
+			0,
 			insecure,
 			options.Resolve("cacert", caCertPath))
 		a.ShowDescriptorHelp(exampleName, storageType)

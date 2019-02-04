@@ -41,7 +41,7 @@ spec:
             mountPath: "/nalej/config"
             readOnly: true
         # TODO link secret, file, etc.
-        imagePullPolicy: IfNotPresent
+        imagePullPolicy: Always
         args:
         - "run"
         - "--debug"
@@ -49,6 +49,7 @@ spec:
         - "--infrastructureManagerAddress=infrastructure-manager.nalej:8081"
         - "--applicationsManagerAddress=application-manager.nalej:8910"
         - "--userManagerAddress=user-manager.nalej:8920"
+        - "--deviceManagerAddress=device-manager.nalej:6010"
         - "--authHeader=authorization"
         - "--authSecret=$(AUTH_SECRET)"
         - "--authConfigPath=/nalej/config/authx-config.json"

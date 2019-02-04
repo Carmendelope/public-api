@@ -25,16 +25,16 @@ func NewManager(client grpc_user_manager_go.UserManagerClient) Manager {
 	return Manager{client}
 }
 
-func (m *Manager) Add(addUserRequest * grpc_public_api_go.AddUserRequest) (*grpc_public_api_go.User, error){
+func (m *Manager) Add(addUserRequest *grpc_public_api_go.AddUserRequest) (*grpc_public_api_go.User, error) {
 	orgID := &grpc_organization_go.OrganizationId{
 		OrganizationId: addUserRequest.OrganizationId,
 	}
 	role, err := m.umClient.ListRoles(context.Background(), orgID)
-	if err != nil{
+	if err != nil {
 		return nil, err
 	}
 	var roleId string
-	for _, r := range role.Roles{
+	for _, r := range role.Roles {
 		if r.Name == addUserRequest.RoleName {
 			roleId = r.RoleId
 		}
@@ -43,23 +43,23 @@ func (m *Manager) Add(addUserRequest * grpc_public_api_go.AddUserRequest) (*grpc
 		return nil, conversions.ToGRPCError(derrors.NewInvalidArgumentError("role not found"))
 	}
 	toAdd := &grpc_user_manager_go.AddUserRequest{
-		OrganizationId:       addUserRequest.OrganizationId,
-		Email:                addUserRequest.Email,
-		Password:             addUserRequest.Password,
-		Name:                 addUserRequest.Name,
-		PhotoUrl:             "",
-		RoleId:               roleId,
+		OrganizationId: addUserRequest.OrganizationId,
+		Email:          addUserRequest.Email,
+		Password:       addUserRequest.Password,
+		Name:           addUserRequest.Name,
+		PhotoUrl:       "",
+		RoleId:         roleId,
 	}
 
 	added, err := m.umClient.AddUser(context.Background(), toAdd)
-	if err != nil{
+	if err != nil {
 		return nil, err
 	}
 	return &grpc_public_api_go.User{
-		OrganizationId:       added.OrganizationId,
-		Email:                added.Email,
-		Name:                 added.Name,
-		RoleName:             added.RoleName,
+		OrganizationId: added.OrganizationId,
+		Email:          added.Email,
+		Name:           added.Name,
+		RoleName:       added.RoleName,
 	}, nil
 }
 
@@ -84,7 +84,7 @@ func (m *Manager) List(organizationID *grpc_organization_go.OrganizationId) (*gr
 	}
 	users := make([]*grpc_public_api_go.User, 0)
 	for _, u := range list.Users {
-		if !u.Internal{
+		if !u.Internal {
 			toAdd := &grpc_public_api_go.User{
 				OrganizationId: u.OrganizationId,
 				Email:          u.Email,
@@ -100,15 +100,13 @@ func (m *Manager) List(organizationID *grpc_organization_go.OrganizationId) (*gr
 }
 
 func (m *Manager) Delete(userID *grpc_user_go.UserId) (*grpc_common_go.Success, error) {
-	return m.umClient.RemoveUser(context.Background(),userID)
+	return m.umClient.RemoveUser(context.Background(), userID)
 }
 
 func (m *Manager) Update(updateUserRequest *grpc_user_go.UpdateUserRequest) (*grpc_common_go.Success, error) {
-	return m.umClient.Update(context.Background(),updateUserRequest)
+	return m.umClient.Update(context.Background(), updateUserRequest)
 }
 
 func (m *Manager) ResetPassword(changePasswordRequest *grpc_user_manager_go.ChangePasswordRequest) (*grpc_common_go.Success, error) {
-	return m.umClient.ChangePassword(context.Background(),changePasswordRequest)
+	return m.umClient.ChangePassword(context.Background(), changePasswordRequest)
 }
-
-

@@ -25,7 +25,7 @@ func (a *Applications) getComplexDescriptor(sType grpc_application_go.StorageTyp
 		Type:        grpc_application_go.ServiceType_DOCKER,
 		Image:       "mysql:5.6",
 		Specs:       &grpc_application_go.DeploySpecs{Replicas: 1},
-		Storage:     []*grpc_application_go.Storage{&grpc_application_go.Storage{MountPath: "/tmp",Type: grpc_application_go.StorageType_EPHEMERAL, Size: int64(100 * 1024 * 1024)}},
+		Storage:     []*grpc_application_go.Storage{&grpc_application_go.Storage{MountPath: "/tmp", Type: grpc_application_go.StorageType_EPHEMERAL, Size: int64(100 * 1024 * 1024)}},
 		ExposedPorts: []*grpc_application_go.Port{&grpc_application_go.Port{
 			Name: "mysqlport", InternalPort: 3306, ExposedPort: 3306,
 		}},
@@ -40,7 +40,7 @@ func (a *Applications) getComplexDescriptor(sType grpc_application_go.StorageTyp
 		Type:        grpc_application_go.ServiceType_DOCKER,
 		Image:       "wordpress:5.0.0",
 		Specs:       &grpc_application_go.DeploySpecs{Replicas: 1},
-		Storage:     []*grpc_application_go.Storage{&grpc_application_go.Storage{MountPath: "/tmp",Type: grpc_application_go.StorageType_EPHEMERAL, Size: int64(100 * 1024 * 1024)}},
+		Storage:     []*grpc_application_go.Storage{&grpc_application_go.Storage{MountPath: "/tmp", Type: grpc_application_go.StorageType_EPHEMERAL, Size: int64(100 * 1024 * 1024)}},
 		ExposedPorts: []*grpc_application_go.Port{&grpc_application_go.Port{
 			Name: "wordpressport", InternalPort: 80, ExposedPort: 80,
 			Endpoints: []*grpc_application_go.Endpoint{
@@ -50,7 +50,7 @@ func (a *Applications) getComplexDescriptor(sType grpc_application_go.StorageTyp
 				},
 			},
 		}},
-		EnvironmentVariables: map[string]string{"WORDPRESS_DB_HOST":"NALEJ_SERV_MYSQL:3306","WORDPRESS_DB_PASSWORD":"root"},
+		EnvironmentVariables: map[string]string{"WORDPRESS_DB_HOST": "NALEJ_SERV_MYSQL:3306", "WORDPRESS_DB_PASSWORD": "root"},
 		Labels:               map[string]string{"app": "simple-wordpress", "component": "simple-app"},
 	}
 
@@ -62,13 +62,13 @@ func (a *Applications) getComplexDescriptor(sType grpc_application_go.StorageTyp
 	}
 
 	service3 := &grpc_application_go.Service{
-		ServiceId:            "kibana",
-		Name:                 "kibana",
-		Description:          "A Kibana dashboard",
-		Type:                 grpc_application_go.ServiceType_DOCKER,
-		Image:                "docker.elastic.co/kibana/kibana:6.4.2",
-		Specs:                &grpc_application_go.DeploySpecs{Replicas: 1},
-		ExposedPorts:         []*grpc_application_go.Port{&grpc_application_go.Port{
+		ServiceId:   "kibana",
+		Name:        "kibana",
+		Description: "A Kibana dashboard",
+		Type:        grpc_application_go.ServiceType_DOCKER,
+		Image:       "docker.elastic.co/kibana/kibana:6.4.2",
+		Specs:       &grpc_application_go.DeploySpecs{Replicas: 1},
+		ExposedPorts: []*grpc_application_go.Port{&grpc_application_go.Port{
 			Name: "kibanaport", InternalPort: 5601, ExposedPort: 5601,
 			Endpoints: []*grpc_application_go.Endpoint{
 				&grpc_application_go.Endpoint{
@@ -77,48 +77,48 @@ func (a *Applications) getComplexDescriptor(sType grpc_application_go.StorageTyp
 				},
 			},
 		}},
-		EnvironmentVariables: map[string]string{"ELASTICSEARCH_URL":"http://NALEJ_SERV_ELASTIC:9200"},
+		EnvironmentVariables: map[string]string{"ELASTICSEARCH_URL": "http://NALEJ_SERV_ELASTIC:9200"},
 		Labels:               map[string]string{"app": "kibana"},
 	}
 
 	service4 := &grpc_application_go.Service{
-		ServiceId:            "elastic",
-		Name:                 "elastic",
-		Description:          "Elastic gathering metrics",
-		Type:                 grpc_application_go.ServiceType_DOCKER,
-		Image:                "docker.elastic.co/elasticsearch/elasticsearch:6.4.2",
-		Specs:                &grpc_application_go.DeploySpecs{Replicas: 1},
-		Storage:              []*grpc_application_go.Storage{&grpc_application_go.Storage{MountPath: "/usr/share/elasticsearch/data",Type:sType}},
-		ExposedPorts:         []*grpc_application_go.Port{&grpc_application_go.Port{
+		ServiceId:   "elastic",
+		Name:        "elastic",
+		Description: "Elastic gathering metrics",
+		Type:        grpc_application_go.ServiceType_DOCKER,
+		Image:       "docker.elastic.co/elasticsearch/elasticsearch:6.4.2",
+		Specs:       &grpc_application_go.DeploySpecs{Replicas: 1},
+		Storage:     []*grpc_application_go.Storage{&grpc_application_go.Storage{MountPath: "/usr/share/elasticsearch/data", Type: sType}},
+		ExposedPorts: []*grpc_application_go.Port{&grpc_application_go.Port{
 			Name: "elasticport", InternalPort: 9200, ExposedPort: 9200,
 		}},
 		EnvironmentVariables: map[string]string{
-			"cluster.name":"elastic-cluster",
-			"bootstrap.memory_lock":"true",
-			"ES_JAVA_OPTS":"-Xms512m -Xmx512m",
-			"discovery.type":"single-node",
+			"cluster.name":          "elastic-cluster",
+			"bootstrap.memory_lock": "true",
+			"ES_JAVA_OPTS":          "-Xms512m -Xmx512m",
+			"discovery.type":        "single-node",
 		},
-		Labels:               map[string]string{"app": "elastic"},
+		Labels: map[string]string{"app": "elastic"},
 	}
 
 	service5 := &grpc_application_go.Service{
-		ServiceId:            "heartbeat",
-		Name:                 "heartbeat",
-		Description:          "A tool to gather data from ",
-		Type:                 grpc_application_go.ServiceType_DOCKER,
+		ServiceId:   "heartbeat",
+		Name:        "heartbeat",
+		Description: "A tool to gather data from ",
+		Type:        grpc_application_go.ServiceType_DOCKER,
 		//Image:                "docker.elastic.co/beats/heartbeat:6.4.2",
-		Image:                "nalejops/heartbeat:1.0.0",
-		Specs:                &grpc_application_go.DeploySpecs{Replicas: 1},
+		Image: "nalejops/heartbeat:1.0.0",
+		Specs: &grpc_application_go.DeploySpecs{Replicas: 1},
 		/*
-		Configs:              []*grpc_application_go.ConfigFile{
-			&grpc_application_go.ConfigFile{
-				ConfigFileId:         "heartbeat-config",
-				Content:              []byte(HeartBeatConfigContent),
-				MountPath:            "/conf/heartbeat.yml",
+			Configs:              []*grpc_application_go.ConfigFile{
+				&grpc_application_go.ConfigFile{
+					ConfigFileId:         "heartbeat-config",
+					Content:              []byte(HeartBeatConfigContent),
+					MountPath:            "/conf/heartbeat.yml",
+				},
 			},
-		},
 		*/
-		Labels:               map[string]string{"app": "heartbeat"},
+		Labels: map[string]string{"app": "heartbeat"},
 	}
 
 	secRuleWP := grpc_application_go.SecurityRule{
@@ -127,33 +127,33 @@ func (a *Applications) getComplexDescriptor(sType grpc_application_go.StorageTyp
 		RuleId:          "001",
 		SourcePort:      80,
 		SourceServiceId: "wordpress",
-		AuthServices: []string{"heartbeat"},
+		AuthServices:    []string{"heartbeat"},
 	}
 
 	secRuleMysql := grpc_application_go.SecurityRule{
-		RuleId:               "002",
-		Name:                 "allow access to mysql",
-		SourceServiceId:      "mysql",
-		SourcePort:           3306,
-		Access:               grpc_application_go.PortAccess_APP_SERVICES,
-		AuthServices:         []string{"wordpress"},
+		RuleId:          "002",
+		Name:            "allow access to mysql",
+		SourceServiceId: "mysql",
+		SourcePort:      3306,
+		Access:          grpc_application_go.PortAccess_APP_SERVICES,
+		AuthServices:    []string{"wordpress"},
 	}
 
 	secRuleK := grpc_application_go.SecurityRule{
-		RuleId: "003",
-		Name:                 "allow access to kibana",
-		SourceServiceId:      "kibana",
-		SourcePort:           5601,
-		Access:               grpc_application_go.PortAccess_PUBLIC,
+		RuleId:          "003",
+		Name:            "allow access to kibana",
+		SourceServiceId: "kibana",
+		SourcePort:      5601,
+		Access:          grpc_application_go.PortAccess_PUBLIC,
 	}
 
 	secRuleElastic := grpc_application_go.SecurityRule{
-		RuleId: "004",
-		Name:                 "allow access to elastic",
-		SourceServiceId:      "elastic",
-		SourcePort:           9200,
-		Access:               grpc_application_go.PortAccess_APP_SERVICES,
-		AuthServices: []string{"kibana", "heartbeat"},
+		RuleId:          "004",
+		Name:            "allow access to elastic",
+		SourceServiceId: "elastic",
+		SourcePort:      9200,
+		Access:          grpc_application_go.PortAccess_APP_SERVICES,
+		AuthServices:    []string{"kibana", "heartbeat"},
 	}
 
 	return &grpc_application_go.AddAppDescriptorRequest{

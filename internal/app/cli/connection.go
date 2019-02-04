@@ -13,9 +13,9 @@ import (
 )
 
 type Connection struct {
-	Address string
-	Port    int
-	Insecure bool
+	Address    string
+	Port       int
+	Insecure   bool
 	CACertPath string
 }
 
@@ -23,18 +23,18 @@ func NewConnection(address string, port int, insecure bool, caCertPath string) *
 	return &Connection{address, port, insecure, caCertPath}
 }
 
-func (c* Connection) GetSecureConnection() (*grpc.ClientConn, derrors.Error){
+func (c *Connection) GetSecureConnection() (*grpc.ClientConn, derrors.Error) {
 	rootCAs := x509.NewCertPool()
 
-		log.Debug().Str("caCertPath", c.CACertPath).Msg("loading CA cert")
-		caCert, err := ioutil.ReadFile(c.CACertPath)
-		if err != nil {
-			return nil, derrors.NewInternalError("Error loading CA certificate")
-		}
-		added := rootCAs.AppendCertsFromPEM(caCert)
-		if !added {
-			return nil, derrors.NewInternalError("cannot add CA certificate to the pool")
-		}
+	log.Debug().Str("caCertPath", c.CACertPath).Msg("loading CA cert")
+	caCert, err := ioutil.ReadFile(c.CACertPath)
+	if err != nil {
+		return nil, derrors.NewInternalError("Error loading CA certificate")
+	}
+	added := rootCAs.AppendCertsFromPEM(caCert)
+	if !added {
+		return nil, derrors.NewInternalError("cannot add CA certificate to the pool")
+	}
 
 	targetAddress := fmt.Sprintf("%s:%d", c.Address, c.Port)
 	log.Debug().Str("address", targetAddress).Msg("creating connection")
@@ -48,7 +48,7 @@ func (c* Connection) GetSecureConnection() (*grpc.ClientConn, derrors.Error){
 	return sConn, nil
 }
 
-func (c * Connection) GetInsecureConnection() (*grpc.ClientConn, derrors.Error){
+func (c *Connection) GetInsecureConnection() (*grpc.ClientConn, derrors.Error) {
 	log.Warn().Msg("Using insecure connection")
 	targetAddress := fmt.Sprintf("%s:%d", c.Address, c.Port)
 	log.Debug().Str("address", targetAddress).Msg("creating connection")
@@ -62,7 +62,7 @@ func (c * Connection) GetInsecureConnection() (*grpc.ClientConn, derrors.Error){
 func (c *Connection) GetConnection() (*grpc.ClientConn, derrors.Error) {
 	if c.Insecure {
 		return c.GetInsecureConnection()
-	}else if c.CACertPath != "" {
+	} else if c.CACertPath != "" {
 		return c.GetSecureConnection()
 	}
 	return nil, derrors.NewInvalidArgumentError("type of connection must be set, either insecure or a CA cert must be provided")
@@ -76,10 +76,10 @@ func (c *Connection) PrintResultOrError(result interface{}, err error, errMsg st
 	}
 }
 
-func (c *Connection) PrintSuccessOrError(err error, errMsg string, successMsg string){
-	if err != nil{
+func (c *Connection) PrintSuccessOrError(err error, errMsg string, successMsg string) {
+	if err != nil {
 		log.Fatal().Str("trace", conversions.ToDerror(err).DebugReport()).Msg(errMsg)
-	}else{
+	} else {
 		fmt.Println(fmt.Sprintf("{\"msg\":\"%s\"}", successMsg))
 	}
 }

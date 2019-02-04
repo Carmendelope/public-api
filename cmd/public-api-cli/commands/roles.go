@@ -62,4 +62,3 @@ var assignRolesCmd = &cobra.Command{
 		r.Assign(options.Resolve("organizationID", organizationID), email, roleID)
 	},
 }
-

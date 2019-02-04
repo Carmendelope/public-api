@@ -27,7 +27,7 @@ var loginCmd = &cobra.Command{
 		}
 		log.Info().Msg("Successfully logged into the platform")
 		claims, err := l.GetPersonalClaims(creds)
-		if err != nil{
+		if err != nil {
 			log.Fatal().Str("trace", err.DebugReport()).Msg("unable to login into the platform")
 		}
 		opts := cli.NewOptions()

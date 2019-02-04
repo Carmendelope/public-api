@@ -66,7 +66,7 @@ var _ = ginkgo.Describe("Roles", func() {
 		listener = test.GetDefaultListener()
 
 		server = grpc.NewServer(interceptor.WithServerAuthxInterceptor(interceptor.NewConfig(
-			ithelpers.GetAllAuthConfig(),"secret", ithelpers.AuthHeader)))
+			ithelpers.GetAllAuthConfig(), "secret", ithelpers.AuthHeader)))
 
 		smConn = utils.GetConnection(systemModelAddress)
 		orgClient = grpc_organization_go.NewOrganizationsClient(smConn)
@@ -121,7 +121,7 @@ var _ = ginkgo.Describe("Roles", func() {
 				gomega.Expect(err).To(gomega.Succeed())
 				gomega.Expect(len(roleList.Roles)).Should(gomega.Equal(1))
 				gomega.Expect(roleList.Roles[0].RoleId).Should(gomega.Equal(targetRole.RoleId))
-			}else{
+			} else {
 				gomega.Expect(err).NotTo(gomega.Succeed())
 			}
 		}

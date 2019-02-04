@@ -133,11 +133,10 @@ var _ = ginkgo.Describe("Resources", func() {
 				gomega.Expect(err).To(gomega.Succeed())
 				gomega.Expect(summary.TotalClusters).To(gomega.Equal(int64(NumClusters)))
 				gomega.Expect(summary.TotalNodes).To(gomega.Equal(int64(NumClusters * NumNodes)))
-			}else{
+			} else {
 				gomega.Expect(err).NotTo(gomega.Succeed())
 			}
 		}
 	})
-
 
 })

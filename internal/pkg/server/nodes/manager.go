@@ -26,7 +26,7 @@ func NewManager(nodeClient grpc_infrastructure_go.NodesClient) Manager {
 // List retrieves information about the nodes of a cluster.
 func (m *Manager) List(clusterId *grpc_infrastructure_go.ClusterId) (*grpc_public_api_go.NodeList, error) {
 	nodes, err := m.nodeClient.ListNodes(context.Background(), clusterId)
-	if err != nil{
+	if err != nil {
 		return nil, err
 	}
 	result := make([]*grpc_public_api_go.Node, 0)
@@ -34,6 +34,6 @@ func (m *Manager) List(clusterId *grpc_infrastructure_go.ClusterId) (*grpc_publi
 		result = append(result, entities.ToPublicAPINode(n))
 	}
 	return &grpc_public_api_go.NodeList{
-		Nodes:                result,
+		Nodes: result,
 	}, nil
 }
