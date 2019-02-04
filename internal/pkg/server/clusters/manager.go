@@ -6,6 +6,7 @@ package clusters
 
 import (
 	"context"
+
 	"github.com/nalej/grpc-common-go"
 	"github.com/nalej/grpc-infrastructure-go"
 	"github.com/nalej/grpc-infrastructure-manager-go"
@@ -54,24 +55,25 @@ func (m *Manager) clusterNodesStats(organizationID string, clusterID string) (in
 // Install a new cluster adding it to the system.
 func (m *Manager) Install(request *grpc_public_api_go.InstallRequest) (*grpc_infrastructure_manager_go.InstallResponse, error) {
 	installRequest := &grpc_installer_go.InstallRequest{
-		InstallId:            "",
-		OrganizationId:       request.OrganizationId,
-		ClusterId:            request.ClusterId,
-		ClusterType:          request.ClusterType,
-		InstallBaseSystem:    request.InstallBaseSystem,
-		KubeConfigRaw:        request.KubeConfigRaw,
-		Hostname:             request.Hostname,
-		Username:             request.Username,
-		PrivateKey:           request.PrivateKey,
-		Nodes:                request.Nodes,
-		UseKubeDns:           request.UseKubeDns,
-		UseCoreDns:           request.UseCoreDns,
-		TargetPlatform:       grpc_installer_go.Platform(grpc_installer_go.Platform_value[request.TargetPlatform.String()]),
+		InstallId:         "",
+		OrganizationId:    request.OrganizationId,
+		ClusterId:         request.ClusterId,
+		ClusterType:       request.ClusterType,
+		InstallBaseSystem: request.InstallBaseSystem,
+		KubeConfigRaw:     request.KubeConfigRaw,
+		Hostname:          request.Hostname,
+		Username:          request.Username,
+		PrivateKey:        request.PrivateKey,
+		Nodes:             request.Nodes,
+		UseKubeDns:        request.UseKubeDns,
+		UseCoreDns:        request.UseCoreDns,
+		TargetPlatform:    grpc_installer_go.Platform(grpc_installer_go.Platform_value[request.TargetPlatform.String()]),
+		StaticIpAddresses: request.StaticIpAddresses,
 	}
 	return m.infraClient.InstallCluster(context.Background(), installRequest)
 }
 
-func (m * Manager) extendInfo(source *grpc_infrastructure_go.Cluster) (*grpc_public_api_go.Cluster, error) {
+func (m *Manager) extendInfo(source *grpc_infrastructure_go.Cluster) (*grpc_public_api_go.Cluster, error) {
 	totalNodes, runningNodes, err := m.clusterNodesStats(source.OrganizationId, source.ClusterId)
 	if err != nil {
 		return nil, err

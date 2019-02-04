@@ -28,6 +28,10 @@
     version="v1.2.0"
 
 [[constraint]]
+    name="github.com/nalej/grpc-installer-go"
+    version="v0.0.29"
+
+[[constraint]]
     name="github.com/nalej/grpc-organization-go"
     version="v0.0.24"
 
@@ -65,7 +69,7 @@
 
 [[constraint]]
     name="github.com/nalej/grpc-public-api-go"
-    version="v0.0.36"
+    version="v0.0.38"
 
 [[constraint]]
     name="github.com/nalej/grpc-login-api-go"
@@ -82,4 +86,3 @@
 [[constraint]]
   name = "github.com/dgrijalva/jwt-go"
   version = "3.2.0"
-

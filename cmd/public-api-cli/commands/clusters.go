@@ -5,10 +5,10 @@
 package commands
 
 import (
-	"github.com/nalej/public-api/internal/app/cli"
-	"github.com/spf13/cobra"
 	"github.com/nalej/grpc-public-api-go"
+	"github.com/nalej/public-api/internal/app/cli"
 	"github.com/rs/zerolog/log"
+	"github.com/spf13/cobra"
 )
 
 var clustersCmd = &cobra.Command{
@@ -32,6 +32,10 @@ func init() {
 	installClustersCmd.Flags().StringArrayVar(&nodes, "nodes", []string{}, "Nodes (for clusters requiring the install of Kubernetes)")
 	installClustersCmd.Flags().BoolVar(&useCoreDNS, "useCoreDNS", true, "Indicate if CoreDNS is going to be used. If not, kubeDNS will be set")
 	installClustersCmd.Flags().StringVar(&targetPlatform, "targetPlatform", "minikube", "Indicate the target platform between minikube azure")
+	installClustersCmd.Flags().BoolVar(&useStaticIPAddresses, "useStaticIPAddresses", false,
+		"Use statically assigned IP Addresses for the public facing services")
+	installClustersCmd.Flags().StringVar(&ipAddressIngress, "ipAddressIngress", "",
+		"Public IP Address assigned to the public ingress service")
 	clustersCmd.AddCommand(installClustersCmd)
 	clustersCmd.AddCommand(listClustersCmd)
 }
@@ -56,7 +60,9 @@ var installClustersCmd = &cobra.Command{
 			privateKeyPath,
 			nodes,
 			useCoreDNS,
-			stringToTargetPlatform(targetPlatform))
+			stringToTargetPlatform(targetPlatform),
+			useStaticIPAddresses,
+			ipAddressIngress)
 	},
 }
 
@@ -94,12 +100,12 @@ var listClustersCmd = &cobra.Command{
 func stringToTargetPlatform(p string) grpc_public_api_go.Platform {
 	var result grpc_public_api_go.Platform
 	switch p {
-		case grpc_public_api_go.Platform_AZURE.String():
-			result = grpc_public_api_go.Platform_AZURE
-		case grpc_public_api_go.Platform_MINIKUBE.String():
-			result = grpc_public_api_go.Platform_MINIKUBE
-		default:
-			log.Fatal().Str("platform",p).Msg("unknown platform")
+	case grpc_public_api_go.Platform_AZURE.String():
+		result = grpc_public_api_go.Platform_AZURE
+	case grpc_public_api_go.Platform_MINIKUBE.String():
+		result = grpc_public_api_go.Platform_MINIKUBE
+	default:
+		log.Fatal().Str("platform", p).Msg("unknown platform")
 	}
 
 	return result

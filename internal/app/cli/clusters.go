@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/nalej/grpc-infrastructure-go"
+	"github.com/nalej/grpc-installer-go"
 	"github.com/nalej/grpc-organization-go"
 	"github.com/nalej/grpc-public-api-go"
 	"github.com/rs/zerolog/log"
@@ -46,11 +47,17 @@ func (c *Clusters) getClient() (grpc_public_api_go.ClustersClient, *grpc.ClientC
 func (c *Clusters) Install(
 	organizationID string, clusterID string,
 	kubeConfigPath string, ingressHostname string, username string, privateKeyPath string, nodes []string,
-	useCoreDNS bool, targetPlatform grpc_public_api_go.Platform) {
+	useCoreDNS bool, targetPlatform grpc_public_api_go.Platform, useStaticIPAddresses bool, ipAddressIngress string) {
 
 	if organizationID == "" {
 		log.Fatal().Msg("organizationID cannot be empty")
 	}
+
+	staticIPAddresses := grpc_installer_go.StaticIPAddresses{
+		UseStaticIp: useStaticIPAddresses,
+		Ingress:     ipAddressIngress,
+	}
+
 	installRequest := &grpc_public_api_go.InstallRequest{
 		OrganizationId:    organizationID,
 		ClusterId:         clusterID,
@@ -58,6 +65,7 @@ func (c *Clusters) Install(
 		Hostname:          ingressHostname,
 		InstallBaseSystem: false,
 		TargetPlatform:    targetPlatform,
+		StaticIpAddresses: &staticIPAddresses,
 	}
 
 	if useCoreDNS {
