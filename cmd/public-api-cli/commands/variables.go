@@ -25,6 +25,8 @@ var hostname string
 var nodes []string
 var useCoreDNS bool
 var targetPlatform string
+var useStaticIPAddresses bool
+var ipAddressIngress string
 
 var descriptorID string
 var descriptorPath string

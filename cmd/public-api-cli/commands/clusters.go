@@ -32,6 +32,10 @@ func init() {
 	installClustersCmd.Flags().StringArrayVar(&nodes, "nodes", []string{}, "Nodes (for clusters requiring the install of Kubernetes)")
 	installClustersCmd.Flags().BoolVar(&useCoreDNS, "useCoreDNS", true, "Indicate if CoreDNS is going to be used. If not, kubeDNS will be set")
 	installClustersCmd.Flags().StringVar(&targetPlatform, "targetPlatform", "minikube", "Indicate the target platform between minikube azure")
+	installClustersCmd.Flags().BoolVar(&useStaticIPAddresses, "useStaticIPAddresses", false,
+		"Use statically assigned IP Addresses for the public facing services")
+	installClustersCmd.Flags().StringVar(&ipAddressIngress, "ipAddressIngress", "",
+		"Public IP Address assigned to the public ingress service")
 	clustersCmd.AddCommand(installClustersCmd)
 	clustersCmd.AddCommand(listClustersCmd)
 }
@@ -56,7 +60,9 @@ var installClustersCmd = &cobra.Command{
 			privateKeyPath,
 			nodes,
 			useCoreDNS,
-			stringToTargetPlatform(targetPlatform))
+			stringToTargetPlatform(targetPlatform),
+			useStaticIPAddresses,
+			ipAddressIngress)
 	},
 }
 

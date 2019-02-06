@@ -6,6 +6,7 @@ package clusters
 
 import (
 	"context"
+
 	"github.com/nalej/grpc-common-go"
 	"github.com/nalej/grpc-infrastructure-go"
 	"github.com/nalej/grpc-infrastructure-manager-go"
@@ -67,6 +68,7 @@ func (m *Manager) Install(request *grpc_public_api_go.InstallRequest) (*grpc_inf
 		UseKubeDns:        request.UseKubeDns,
 		UseCoreDns:        request.UseCoreDns,
 		TargetPlatform:    grpc_installer_go.Platform(grpc_installer_go.Platform_value[request.TargetPlatform.String()]),
+		StaticIpAddresses: request.StaticIpAddresses,
 	}
 	return m.infraClient.InstallCluster(context.Background(), installRequest)
 }
