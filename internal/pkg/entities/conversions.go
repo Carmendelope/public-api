@@ -96,13 +96,17 @@ func ToPublicAPIStorage(source []*grpc_application_go.Storage) []*grpc_public_ap
 func ToPublicAPIServiceInstances(source []*grpc_application_go.ServiceInstance) []*grpc_public_api_go.ServiceInstance {
 	result := make([]*grpc_public_api_go.ServiceInstance, 0)
 	for _, si := range source {
+		endpoints := make([]string,len(si.Endpoints))
+		for i,e := range si.Endpoints {
+			endpoints[i] = e.Fqdn
+		}
+
 		toAdd := &grpc_public_api_go.ServiceInstance{
 			OrganizationId:       si.OrganizationId,
 			AppDescriptorId:      si.AppDescriptorId,
 			AppInstanceId:        si.AppInstanceId,
 			ServiceId:            si.ServiceId,
 			Name:                 si.Name,
-			Description:          si.Description,
 			TypeName:             si.Type.String(),
 			Image:                si.Image,
 			Credentials:          si.Credentials,
@@ -114,9 +118,10 @@ func ToPublicAPIServiceInstances(source []*grpc_application_go.ServiceInstance) 
 			Labels:               si.Labels,
 			DeployAfter:          si.DeployAfter,
 			StatusName:           si.Status.String(),
-			Endpoints:            si.Endpoints,
+			Endpoints:            endpoints,
 			DeployedOnClusterId:  si.DeployedOnClusterId,
 			RunArguments:         si.RunArguments,
+
 		}
 		result = append(result, toAdd)
 	}
@@ -126,14 +131,18 @@ func ToPublicAPIServiceInstances(source []*grpc_application_go.ServiceInstance) 
 func ToPublicAPIGroupInstances(source []*grpc_application_go.ServiceGroupInstance) []*grpc_public_api_go.ServiceGroupInstance {
 	result := make([]*grpc_public_api_go.ServiceGroupInstance, 0)
 	for _, sgi := range source {
+		servs := make([]string, len(sgi.ServiceInstances))
+		for i, s := range sgi.ServiceInstances {
+			servs[i] = s.ServiceInstanceId
+		}
+
 		toAdd := &grpc_public_api_go.ServiceGroupInstance{
 			OrganizationId:   sgi.OrganizationId,
 			AppDescriptorId:  sgi.AppDescriptorId,
 			AppInstanceId:    sgi.AppInstanceId,
 			ServiceGroupId:   sgi.ServiceGroupId,
 			Name:             sgi.Name,
-			Description:      sgi.Description,
-			ServiceInstances: sgi.ServiceInstances,
+			ServiceInstances: servs,
 			PolicyName:       sgi.Policy.String(),
 		}
 		result = append(result, toAdd)

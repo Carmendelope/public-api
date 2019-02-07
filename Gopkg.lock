@@ -79,7 +79,6 @@
   pruneopts = ""
   revision = "858a0a27b35f0f12801f041f81d5935cdccf40da"
 
-
 [[projects]]
   digest = "1:0cc441f3dfe124dd74f44dd7e466dfc17cc7edff468094fbc3847a96b5ebf6f7"
   name = "github.com/nalej/derrors"
@@ -89,20 +88,20 @@
   version = "v2.0.0"
 
 [[projects]]
-  digest = "1:20f598b92b4dccb04e04bff00ac3a917023f02213e5183f8d171b820b9288ba9"
+  digest = "1:4c82fca334e6c749696e32c026c15ef368516c73942445da32af5b356061384a"
   name = "github.com/nalej/grpc-application-go"
   packages = ["."]
   pruneopts = ""
-  revision = "ef56ef206b789be24f35823ac55afa9b4703bd8b"
-  version = "v0.0.42"
+  revision = "3c6b2ffd25de8c422828ccffec73d294594a9b16"
+  version = "v0.0.47"
 
 [[projects]]
-  digest = "1:bc0ddc3b7d248c928347ef88db5a3802c4388c169992bdff6f65673253e63f7c"
+  digest = "1:8990ffaf083c8fb2a12bfbeedd04868f3fefc002f293d3cfbfc181beb547a33c"
   name = "github.com/nalej/grpc-application-manager-go"
   packages = ["."]
   pruneopts = ""
-  revision = "627ae0ca926a9968f7e3fd1862eda41a387d823b"
-  version = "v0.0.25"
+  revision = "bba310ce14f205eaca8cc80407e6cd955a374290"
+  version = "v0.0.27"
 
 [[projects]]
   digest = "1:bb69634b2e62f03ff03e45a938ef940d75ef7731c6379cef81acf55aba79d32f"
@@ -121,12 +120,12 @@
   version = "v0.0.30"
 
 [[projects]]
-  digest = "1:e4891b7e05d4786ca43f1f87f3cf117b59c7cc949860cd60990adcc5063540f2"
+  digest = "1:641003678316abde4774749d926e2fef456abb8d852cfa4fc1c9e9d20aa5bccd"
   name = "github.com/nalej/grpc-conductor-go"
   packages = ["."]
   pruneopts = ""
-  revision = "3955e1481d10aebe85ec8c52ffaff635eeb5fe0e"
-  version = "v0.0.75"
+  revision = "dca14451232bc32c317cc18be096a250406eacdb"
+  version = "v0.0.79"
 
 [[projects]]
   digest = "1:856391a26533c0a6fc8a0798631f2248838a703398580db0e044cb1ab96a2b9b"
@@ -185,12 +184,20 @@
   version = "v0.0.28"
 
 [[projects]]
-  digest = "1:767b3a6a946243f637a31d1fb05acf268f4a1196ed5e24c9cbf6d448adfc8c01"
+  digest = "1:4e84e56df7ab951445c96bef4ec7a26b54a8331e23db586ce750a30ae8d7d302"
   name = "github.com/nalej/grpc-public-api-go"
   packages = ["."]
   pruneopts = ""
-  revision = "73429c7e3f1618270f05b128e9838ffdd669e177"
-  version = "v0.0.38"
+  revision = "1fd6ad8124a76ce4625af4368d884241f6fc2912"
+  version = "v0.0.39"
+
+[[projects]]
+  digest = "1:1e7d571bfac19c7e5987941eeb223793cd2b249949b987fa31d04408707105b2"
+  name = "github.com/nalej/grpc-unified-logging-go"
+  packages = ["."]
+  pruneopts = ""
+  revision = "c566655bd803e2d57ef351269e82f401ab6537c1"
+  version = "v0.0.1"
 
 [[projects]]
   digest = "1:2b6ef08f73e4e40c25b3cbe313d9727cf01210696fe73af5a03231f5a1a4fb21"
@@ -299,7 +306,7 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:1e9704e5379e68ac473c28aeb3f7e7cd4036ae8a246bf0285b5ebdbb8e0cfacf"
+  digest = "1:1d52dac9bdc355f83ad9916bc657baa7d8735a108ae749da8e8d3513a1b15f28"
   name = "golang.org/x/net"
   packages = [
     "context",
@@ -314,15 +321,15 @@
     "trace",
   ]
   pruneopts = ""
-  revision = "d26f9f9a57f3fab6a695bec0d84433c2c50f8bbf"
+  revision = "65e2d4e15006aab9813ff8769e768bbf4bb667a0"
 
 [[projects]]
   branch = "master"
-  digest = "1:74735405accc0bed59f47aaa35f1d0bc47a193a8da4fe71d8151906fa00efa7f"
+  digest = "1:489610147902fe0c7229218c749bb25a8a9ecce0d726ae4f8662517319f32554"
   name = "golang.org/x/sys"
   packages = ["unix"]
   pruneopts = ""
-  revision = "302c3dd5f1cc82baae8e44d9c3178e89b6e2b345"
+  revision = "41f3e6584952bb034a481797859f6ab34b6803bd"
 
 [[projects]]
   digest = "1:5acd3512b047305d49e8763eef7ba423901e85d5dd2fd1e71778a0ea8de10bd4"
@@ -361,7 +368,7 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:96ad251f71dd69e0f15071720f9970f599f075b28fa96ebd8a547dcd04435856"
+  digest = "1:91f75dc679abcf04b29b064a5b9c40a0b0561c86c322010fbf6fc08040cc48bc"
   name = "google.golang.org/genproto"
   packages = [
     "googleapis/api/annotations",
@@ -369,7 +376,7 @@
     "googleapis/rpc/status",
   ]
   pruneopts = ""
-  revision = "8ac453e89fca495c0d17f98932642f392e2a11f3"
+  revision = "4b09977fb92221987e99d190c8f88f2c92727a29"
 
 [[projects]]
   digest = "1:39d4d828b87d58d114fdc211f0638f32dcae84019fe17d6b48f9b697f4b60213"
