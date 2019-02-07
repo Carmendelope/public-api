@@ -9,7 +9,7 @@ metadata:
     cluster: management
     component: public-api
   name: public-api
-  namespace: nalej
+  namespace: __NPH_NAMESPACE
 spec:
   replicas: 1
   revisionHistoryLimit: 10
@@ -29,7 +29,8 @@ spec:
           name: public-api-authx-config
       containers:
       - name: public-api
-        image: nalejregistry.azurecr.io/nalej/public-api:VERSION
+        image: __NPH_REGISTRY.azurecr.io/__NPH_REGISTRY_NAMESPACE/public-api:__NPH_VERSION
+        imagePullPolicy: Always
         env:
           - name: AUTH_SECRET
             valueFrom:
@@ -41,15 +42,14 @@ spec:
             mountPath: "/nalej/config"
             readOnly: true
         # TODO link secret, file, etc.
-        imagePullPolicy: Always
         args:
         - "run"
         - "--debug"
-        - "--systemModelAddress=system-model.nalej:8800"
-        - "--infrastructureManagerAddress=infrastructure-manager.nalej:8081"
-        - "--applicationsManagerAddress=application-manager.nalej:8910"
-        - "--userManagerAddress=user-manager.nalej:8920"
-        - "--deviceManagerAddress=device-manager.nalej:6010"
+        - "--systemModelAddress=system-model.__NPH_NAMESPACE:8800"
+        - "--infrastructureManagerAddress=infrastructure-manager.__NPH_NAMESPACE:8081"
+        - "--applicationsManagerAddress=application-manager.__NPH_NAMESPACE:8910"
+        - "--userManagerAddress=user-manager.__NPH_NAMESPACE:8920"
+        - "--deviceManagerAddress=device-manager.__NPH_NAMESPACE:6010"
         - "--authHeader=authorization"
         - "--authSecret=$(AUTH_SECRET)"
         - "--authConfigPath=/nalej/config/authx-config.json"
