@@ -69,7 +69,6 @@ func (a *Applications) createAddDescriptorRequest(organizationID string, descrip
 func (a *Applications) getBasicDescriptor(sType grpc_application_go.StorageType) *grpc_application_go.AddAppDescriptorRequest {
 
 	service1 := &grpc_application_go.Service{
-		ServiceId:   "1",
 		Name:        "simple-mysql",
 		Type:        grpc_application_go.ServiceType_DOCKER,
 		Image:       "mysql:5.6",
@@ -83,7 +82,6 @@ func (a *Applications) getBasicDescriptor(sType grpc_application_go.StorageType)
 	}
 
 	service2 := &grpc_application_go.Service{
-		ServiceId:   "2",
 		Name:        "simple-wordpress",
 		Type:        grpc_application_go.ServiceType_DOCKER,
 		Image:       "wordpress:5.0.0",
@@ -99,7 +97,7 @@ func (a *Applications) getBasicDescriptor(sType grpc_application_go.StorageType)
 				},
 			},
 		}},
-		EnvironmentVariables: map[string]string{"WORDPRESS_DB_HOST": "NALEJ_SERV_1:3306", "WORDPRESS_DB_PASSWORD": "root"},
+		EnvironmentVariables: map[string]string{"WORDPRESS_DB_HOST": "NALEJ_SERV_SIMPLE-MYSQL:3306", "WORDPRESS_DB_PASSWORD": "root"},
 		Labels:               map[string]string{"app": "simple-wordpress", "component": "simple-app"},
 	}
 

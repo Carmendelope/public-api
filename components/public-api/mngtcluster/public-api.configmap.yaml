@@ -5,7 +5,7 @@ metadata:
     cluster: management
     component: public-api
   name: public-api-authx-config
-  namespace: nalej
+  namespace: __NPH_NAMESPACE
 data:
   # Primitives: ORG, APPS, RESOURCES, PROFILE
   authx-config.json: |

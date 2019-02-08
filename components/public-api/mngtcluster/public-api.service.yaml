@@ -5,7 +5,7 @@ metadata:
   labels:
     cluster: management
     component: public-api
-  namespace: nalej
+  namespace: __NPH_NAMESPACE
 spec:
   selector:
     cluster: management
