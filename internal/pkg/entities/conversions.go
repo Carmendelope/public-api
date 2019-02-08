@@ -140,6 +140,7 @@ func ToPublicAPIGroupInstances(source []*grpc_application_go.ServiceGroupInstanc
 			OrganizationId:   sgi.OrganizationId,
 			AppDescriptorId:  sgi.AppDescriptorId,
 			AppInstanceId:    sgi.AppInstanceId,
+			ServiceGroupInstanceId: sgi.ServiceGroupInstanceId,
 			ServiceGroupId:   sgi.ServiceGroupId,
 			Name:             sgi.Name,
 			ServiceInstances: servs,
@@ -158,11 +159,12 @@ func ToPublicAPISecurityRules(source []*grpc_application_go.SecurityRule) []*grp
 			AppDescriptorId: sr.AppDescriptorId,
 			RuleId:          sr.RuleId,
 			Name:            sr.Name,
-			SourceServiceId: sr.SourceServiceId,
-			SourcePort:      sr.SourcePort,
 			AccessName:      sr.Access.String(),
 			AuthServices:    sr.AuthServices,
 			DeviceGroups:    sr.DeviceGroups,
+			TargetPort:      sr.TargetPort,
+			TargetServiceName: sr.TargetServiceName,
+			TargetServiceGroupName: sr.TargetServiceGroupName,
 		}
 		result = append(result, toAdd)
 	}
@@ -175,13 +177,11 @@ func ToPublicAPIAppInstance(source *grpc_application_go.AppInstance) *grpc_publi
 		AppDescriptorId:      source.AppDescriptorId,
 		AppInstanceId:        source.AppInstanceId,
 		Name:                 source.Name,
-		Description:          source.Description,
 		ConfigurationOptions: source.ConfigurationOptions,
 		EnvironmentVariables: source.EnvironmentVariables,
 		Labels:               source.Labels,
 		Rules:                ToPublicAPISecurityRules(source.Rules),
 		Groups:               ToPublicAPIGroupInstances(source.Groups),
-		Services:             ToPublicAPIServiceInstances(source.Services),
 		StatusName:           source.Status.String(),
 	}
 }

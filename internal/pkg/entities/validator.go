@@ -5,6 +5,7 @@
 package entities
 
 import (
+	"fmt"
 	"github.com/nalej/derrors"
 	"github.com/nalej/grpc-application-go"
 	"github.com/nalej/grpc-application-manager-go"
@@ -122,14 +123,20 @@ func ValidAddAppDescriptor(request *grpc_application_go.AddAppDescriptorRequest)
 	if request.OrganizationId == "" {
 		return derrors.NewInvalidArgumentError(emptyOrganizationId)
 	}
-	if len(request.Services) == 0 {
-		return derrors.NewInvalidArgumentError("expecting at least one service")
+	if len(request.Groups) == 0 {
+		return derrors.NewInvalidArgumentError("expecting at least one service group")
 	}
-	for _, s := range request.Services {
-		if s.OrganizationId != request.OrganizationId {
-			return derrors.NewInvalidArgumentError("organization_id mismatch")
+	for _, g := range request.Groups {
+		if len(g.Services) == 0 {
+			return derrors.NewInvalidArgumentError(fmt.Sprintf("group %s has no services",g.Name))
+		}
+		for _, s := range g.Services {
+			if s.OrganizationId != request.OrganizationId {
+				return derrors.NewInvalidArgumentError("organization_id mismatch")
+			}
 		}
 	}
+
 	return nil
 }
 

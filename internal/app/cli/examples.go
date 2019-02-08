@@ -19,9 +19,9 @@ output.elasticsearch:
 func (a *Applications) getComplexDescriptor(sType grpc_application_go.StorageType) *grpc_application_go.AddAppDescriptorRequest {
 
 	service1 := &grpc_application_go.Service{
+		ServiceGroupId: "g1",
 		ServiceId:   "mysql",
 		Name:        "simple-mysql",
-		Description: "A MySQL instance",
 		Type:        grpc_application_go.ServiceType_DOCKER,
 		Image:       "mysql:5.6",
 		Specs:       &grpc_application_go.DeploySpecs{Replicas: 1},
@@ -34,9 +34,9 @@ func (a *Applications) getComplexDescriptor(sType grpc_application_go.StorageTyp
 	}
 
 	service2 := &grpc_application_go.Service{
+		ServiceGroupId: "g1",
 		ServiceId:   "wordpress",
 		Name:        "simple-wordpress",
-		Description: "A Wordpress instance",
 		Type:        grpc_application_go.ServiceType_DOCKER,
 		Image:       "wordpress:5.0.0",
 		Specs:       &grpc_application_go.DeploySpecs{Replicas: 1},
@@ -62,9 +62,9 @@ func (a *Applications) getComplexDescriptor(sType grpc_application_go.StorageTyp
 	}
 
 	service3 := &grpc_application_go.Service{
+		ServiceGroupId: "g1",
 		ServiceId:   "kibana",
 		Name:        "kibana",
-		Description: "A Kibana dashboard",
 		Type:        grpc_application_go.ServiceType_DOCKER,
 		Image:       "docker.elastic.co/kibana/kibana:6.4.2",
 		Specs:       &grpc_application_go.DeploySpecs{Replicas: 1},
@@ -82,9 +82,9 @@ func (a *Applications) getComplexDescriptor(sType grpc_application_go.StorageTyp
 	}
 
 	service4 := &grpc_application_go.Service{
+		ServiceGroupId: "g1",
 		ServiceId:   "elastic",
 		Name:        "elastic",
-		Description: "Elastic gathering metrics",
 		Type:        grpc_application_go.ServiceType_DOCKER,
 		Image:       "docker.elastic.co/elasticsearch/elasticsearch:6.4.2",
 		Specs:       &grpc_application_go.DeploySpecs{Replicas: 1},
@@ -102,9 +102,9 @@ func (a *Applications) getComplexDescriptor(sType grpc_application_go.StorageTyp
 	}
 
 	service5 := &grpc_application_go.Service{
+		ServiceGroupId: "g1",
 		ServiceId:   "heartbeat",
 		Name:        "heartbeat",
-		Description: "A tool to gather data from ",
 		Type:        grpc_application_go.ServiceType_DOCKER,
 		//Image:                "docker.elastic.co/beats/heartbeat:6.4.2",
 		Image: "nalejops/heartbeat:1.0.0",
@@ -125,16 +125,18 @@ func (a *Applications) getComplexDescriptor(sType grpc_application_go.StorageTyp
 		Name:            "allow access to wordpress",
 		Access:          grpc_application_go.PortAccess_PUBLIC,
 		RuleId:          "001",
-		SourcePort:      80,
-		SourceServiceId: "wordpress",
+		TargetPort:      80,
+		TargetServiceName: "wordpress",
+		TargetServiceGroupName: "g1",
 		AuthServices:    []string{"heartbeat"},
 	}
 
 	secRuleMysql := grpc_application_go.SecurityRule{
 		RuleId:          "002",
 		Name:            "allow access to mysql",
-		SourceServiceId: "mysql",
-		SourcePort:      3306,
+		TargetPort:      3306,
+		TargetServiceName: "mysql",
+		TargetServiceGroupName: "g1",
 		Access:          grpc_application_go.PortAccess_APP_SERVICES,
 		AuthServices:    []string{"wordpress"},
 	}
@@ -142,25 +144,34 @@ func (a *Applications) getComplexDescriptor(sType grpc_application_go.StorageTyp
 	secRuleK := grpc_application_go.SecurityRule{
 		RuleId:          "003",
 		Name:            "allow access to kibana",
-		SourceServiceId: "kibana",
-		SourcePort:      5601,
+		TargetPort:      5601,
+		TargetServiceName: "kibana",
+		TargetServiceGroupName: "g1",
 		Access:          grpc_application_go.PortAccess_PUBLIC,
 	}
 
 	secRuleElastic := grpc_application_go.SecurityRule{
 		RuleId:          "004",
 		Name:            "allow access to elastic",
-		SourceServiceId: "elastic",
-		SourcePort:      9200,
+		TargetPort:      9200,
+		TargetServiceName: "elastic",
+		TargetServiceGroupName: "g1",
 		Access:          grpc_application_go.PortAccess_APP_SERVICES,
 		AuthServices:    []string{"kibana", "heartbeat"},
 	}
 
+	group1 := &grpc_application_go.ServiceGroup{
+		Name: "g1",
+		Services: []*grpc_application_go.Service{
+			service1, service2, service3, service4, service5,
+		},
+		Specs: &grpc_application_go.ServiceGroupDeploymentSpecs{NumReplicas:1,MultiClusterReplica:false},
+	}
+
 	return &grpc_application_go.AddAppDescriptorRequest{
 		Name:        "Sample application with 5 elements",
-		Description: "Wordpress with a Kibana monitoring backend",
 		Labels:      map[string]string{"app": "simple-app"},
 		Rules:       []*grpc_application_go.SecurityRule{&secRuleMysql, &secRuleWP, &secRuleElastic, &secRuleK},
-		Services:    []*grpc_application_go.Service{service1, service2, service3, service4, service5},
+		Groups:      []*grpc_application_go.ServiceGroup{group1},
 	}
 }
