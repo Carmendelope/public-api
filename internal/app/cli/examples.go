@@ -20,7 +20,6 @@ func (a *Applications) getComplexDescriptor(sType grpc_application_go.StorageTyp
 
 	service1 := &grpc_application_go.Service{
 		ServiceGroupId: "g1",
-		ServiceId:   "mysql",
 		Name:        "simple-mysql",
 		Type:        grpc_application_go.ServiceType_DOCKER,
 		Image:       "mysql:5.6",
@@ -35,7 +34,6 @@ func (a *Applications) getComplexDescriptor(sType grpc_application_go.StorageTyp
 
 	service2 := &grpc_application_go.Service{
 		ServiceGroupId: "g1",
-		ServiceId:   "wordpress",
 		Name:        "simple-wordpress",
 		Type:        grpc_application_go.ServiceType_DOCKER,
 		Image:       "wordpress:5.0.0",
