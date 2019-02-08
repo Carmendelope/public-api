@@ -37,3 +37,19 @@ func (m *Manager) List(clusterId *grpc_infrastructure_go.ClusterId) (*grpc_publi
 		Nodes: result,
 	}, nil
 }
+
+// UpdateNode allows the user to update the information of a node.
+func (m *Manager) UpdateNode(request *grpc_public_api_go.UpdateNodeRequest) (*grpc_public_api_go.Node, error) {
+	updateRequest := &grpc_infrastructure_go.UpdateNodeRequest{
+		OrganizationId:       request.OrganizationId,
+		NodeId:               request.NodeId,
+		AddLabels:            request.AddLabels,
+		RemoveLabels:         request.RemoveLabels,
+		Labels:               request.Labels,
+	}
+	updated, err := m.nodeClient.UpdateNode(context.Background(), updateRequest)
+	if err != nil{
+		return nil, err
+	}
+	return entities.ToPublicAPINode(updated), nil
+}

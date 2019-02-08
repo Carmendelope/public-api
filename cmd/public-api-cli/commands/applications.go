@@ -124,6 +124,49 @@ var getDescriptorCmd = &cobra.Command{
 	},
 }
 
+var appDescLabelsCmd = &cobra.Command{
+	Use:   "label",
+	Aliases: []string{"labels", "l"},
+	Short: "Manage application descriptor labels",
+	Long:  `Manage application descriptor labels`,
+	Run: func(cmd *cobra.Command, args []string) {
+		SetupLogging()
+		cmd.Help()
+	},
+}
+
+var addLabelToAppDescriptorCmd = &cobra.Command{
+	Use:   "add",
+	Short: "Add a set of labels to an application descriptor",
+	Long:  `Add a set of labels to an application descriptor`,
+	Run: func(cmd *cobra.Command, args []string) {
+		SetupLogging()
+		a := cli.NewApplications(
+			options.Resolve("nalejAddress", nalejAddress),
+			options.ResolveAsInt("port", nalejPort),
+			insecure,
+			options.Resolve("cacert", caCertPath))
+		a.ModifyAppDescriptorLabels(options.Resolve("organizationID", organizationID),
+			descriptorID, true, rawLabels)
+	},
+}
+
+var removeLabelFromAppDescriptorCmd = &cobra.Command{
+	Use:   "remove",
+	Short: "Remove a set of labels from an application descriptor",
+	Long:  `Remove a set of labels from an application descriptor`,
+	Run: func(cmd *cobra.Command, args []string) {
+		SetupLogging()
+		a := cli.NewApplications(
+			options.Resolve("nalejAddress", nalejAddress),
+			options.ResolveAsInt("port", nalejPort),
+			insecure,
+			options.Resolve("cacert", caCertPath))
+		a.ModifyAppDescriptorLabels(options.Resolve("organizationID", organizationID),
+			descriptorID, false, rawLabels)
+	},
+}
+
 var deleteDescriptorCmd = &cobra.Command{
 	Use:   "delete",
 	Short: "Delete an application descriptor",

@@ -18,9 +18,8 @@ func ToInfraClusterUpdate(update grpc_public_api_go.UpdateClusterRequest) *grpc_
 		ClusterId:         update.ClusterId,
 		UpdateName:        update.Name != "",
 		Name:              update.Name,
-		UpdateDescription: update.Description != "",
-		Description:       update.Description,
-		UpdateLabels:      update.Labels != nil,
+		AddLabels: update.AddLabels,
+		RemoveLabels: update.RemoveLabels,
 		Labels:            update.Labels,
 	}
 

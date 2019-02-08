@@ -145,7 +145,33 @@ func (c *Clusters) List(organizationID string) {
 	c.PrintResultOrError(clusters, err, "cannot obtain cluster list")
 }
 
-func (c *Clusters) Update(organizationID string, clusterID string, newName string, newDescription string) {
+func (c* Clusters) ModifyClusterLabels(organizationID string, clusterID string, add bool, rawLabels string){
+	if organizationID == "" {
+		log.Fatal().Msg("organizationID cannot be empty")
+	}
+	if clusterID == "" {
+		log.Fatal().Msg("clusterID cannot be empty")
+	}
+	if rawLabels == "" {
+		log.Fatal().Msg("labels cannot be empty")
+	}
+	c.load()
+	ctx, cancel := c.GetContext()
+	client, conn := c.getClient()
+	defer conn.Close()
+	defer cancel()
+	updateRequest := &grpc_public_api_go.UpdateClusterRequest{
+		OrganizationId: organizationID,
+		ClusterId:      clusterID,
+		AddLabels: add,
+		RemoveLabels: !add,
+		Labels: GetLabels(rawLabels),
+	}
+	updated, err := client.Update(ctx, updateRequest)
+	c.PrintResultOrError(updated, err, "cannot update cluster labels")
+}
+
+func (c *Clusters) Update(organizationID string, clusterID string, newName string) {
 	if organizationID == "" {
 		log.Fatal().Msg("organizationID cannot be empty")
 	}
@@ -161,8 +187,8 @@ func (c *Clusters) Update(organizationID string, clusterID string, newName strin
 	updateRequest := &grpc_public_api_go.UpdateClusterRequest{
 		OrganizationId: organizationID,
 		ClusterId:      clusterID,
+		UpdateName: true,
 		Name:           newName,
-		Description:    newDescription,
 	}
 	success, err := client.Update(ctx, updateRequest)
 	c.PrintResultOrError(success, err, "cannot update cluster information")

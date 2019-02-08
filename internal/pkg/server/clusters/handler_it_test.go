@@ -182,7 +182,6 @@ var _ = ginkgo.Describe("Clusters", func() {
 				OrganizationId: targetCluster.OrganizationId,
 				ClusterId:      targetCluster.ClusterId,
 				Name:           "newName: " + ithelpers.GenerateUUID(),
-				Description:    "newDescription: " + ithelpers.GenerateUUID(),
 				Labels:         newLabels,
 			}
 
@@ -202,7 +201,6 @@ var _ = ginkgo.Describe("Clusters", func() {
 				retrieved, err := clustClient.GetCluster(ctx2, clusterID)
 				gomega.Expect(err).To(gomega.Succeed())
 				gomega.Expect(retrieved.Name).Should(gomega.Equal(updateRequest.Name))
-				gomega.Expect(retrieved.Description).Should(gomega.Equal(updateRequest.Description))
 				gomega.Expect(retrieved.Labels).Should(gomega.Equal(updateRequest.Labels))
 			} else {
 				gomega.Expect(err).NotTo(gomega.Succeed())

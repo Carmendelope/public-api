@@ -7,7 +7,6 @@ package clusters
 import (
 	"context"
 	"github.com/nalej/derrors"
-	"github.com/nalej/grpc-common-go"
 	"github.com/nalej/grpc-infrastructure-go"
 	"github.com/nalej/grpc-infrastructure-manager-go"
 	"github.com/nalej/grpc-organization-go"
@@ -78,7 +77,7 @@ func (h *Handler) List(ctx context.Context, organizationID *grpc_organization_go
 }
 
 // Update the cluster information.
-func (h *Handler) Update(ctx context.Context, updateClusterRequest *grpc_public_api_go.UpdateClusterRequest) (*grpc_common_go.Success, error) {
+func (h *Handler) Update(ctx context.Context, updateClusterRequest *grpc_public_api_go.UpdateClusterRequest) (*grpc_public_api_go.Cluster, error) {
 	rm, err := authhelper.GetRequestMetadata(ctx)
 	if err != nil {
 		return nil, conversions.ToGRPCError(err)

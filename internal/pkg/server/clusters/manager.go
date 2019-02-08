@@ -7,7 +7,6 @@ package clusters
 import (
 	"context"
 
-	"github.com/nalej/grpc-common-go"
 	"github.com/nalej/grpc-infrastructure-go"
 	"github.com/nalej/grpc-infrastructure-manager-go"
 	"github.com/nalej/grpc-installer-go"
@@ -109,11 +108,15 @@ func (m *Manager) List(organizationID *grpc_organization_go.OrganizationId) (*gr
 }
 
 // Update the cluster information.
-func (m *Manager) Update(updateClusterRequest *grpc_public_api_go.UpdateClusterRequest) (*grpc_common_go.Success, error) {
+func (m *Manager) Update(updateClusterRequest *grpc_public_api_go.UpdateClusterRequest) (*grpc_public_api_go.Cluster, error) {
 	toSend := entities.ToInfraClusterUpdate(*updateClusterRequest)
-	_, err := m.clustClient.UpdateCluster(context.Background(), toSend)
+	updated, err := m.clustClient.UpdateCluster(context.Background(), toSend)
 	if err != nil {
 		return nil, err
 	}
-	return &grpc_common_go.Success{}, nil
+	result, err := m.extendInfo(updated)
+	if err != nil{
+		return nil, err
+	}
+	return result, nil
 }

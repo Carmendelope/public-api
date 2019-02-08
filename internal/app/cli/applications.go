@@ -254,6 +254,33 @@ func (a *Applications) ListDescriptors(organizationID string) {
 	a.PrintResultOrError(list, err, "cannot obtain descriptor list")
 }
 
+func (a *Applications) ModifyAppDescriptorLabels(organizationID string, descriptorID string, add bool, rawLabels string){
+	if organizationID == "" {
+		log.Fatal().Msg("organizationID cannot be empty")
+	}
+	if descriptorID == "" {
+		log.Fatal().Msg("descriptorID cannot be empty")
+	}
+	if rawLabels == "" {
+		log.Fatal().Msg("labels cannot be empty")
+	}
+	a.load()
+	ctx, cancel := a.GetContext()
+	client, conn := a.getClient()
+	defer conn.Close()
+	defer cancel()
+	updateRequest := &grpc_application_go.UpdateAppDescriptorRequest{
+		OrganizationId: organizationID,
+		AppDescriptorId:      descriptorID,
+		AddLabels: add,
+		RemoveLabels: !add,
+		Labels: GetLabels(rawLabels),
+	}
+	updated, err := client.UpdateAppDescriptor(ctx, updateRequest)
+	a.PrintResultOrError(updated, err, "cannot update application descriptor labels")
+}
+
+
 func (a *Applications) Deploy(organizationID string, appDescriptorID string, name string, description string) {
 	if organizationID == "" {
 		log.Fatal().Msg("organizationID cannot be empty")

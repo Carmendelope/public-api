@@ -39,3 +39,19 @@ func (h *Handler) List(ctx context.Context, clusterId *grpc_infrastructure_go.Cl
 	}
 	return h.Manager.List(clusterId)
 }
+
+// UpdateNode allows the user to update the information of a node.
+func (h *Handler) UpdateNode(ctx context.Context, request *grpc_public_api_go.UpdateNodeRequest) (*grpc_public_api_go.Node, error){
+	rm, err := authhelper.GetRequestMetadata(ctx)
+	if err != nil {
+		return nil, conversions.ToGRPCError(err)
+	}
+	if request.OrganizationId != rm.OrganizationID {
+		return nil, derrors.NewPermissionDeniedError("cannot access requested OrganizationID")
+	}
+	err = entities.ValidUpdateNodeRequest(request)
+	if err != nil {
+		return nil, conversions.ToGRPCError(err)
+	}
+	return h.Manager.UpdateNode(request)
+}

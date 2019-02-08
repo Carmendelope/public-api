@@ -34,6 +34,11 @@ func (m *Manager) GetAppDescriptor(appDescriptorID *grpc_application_go.AppDescr
 	return m.appClient.GetAppDescriptor(context.Background(), appDescriptorID)
 }
 
+// UpdateAppDescriptor allows the user to update the information of a registered descriptor.
+func (m *Manager) UpdateAppDescriptor(request *grpc_application_go.UpdateAppDescriptorRequest) (*grpc_application_go.AppDescriptor, error) {
+	return m.appClient.UpdateAppDescriptor(context.Background(), request)
+}
+
 // DeleteAppDescriptor deletes a given application descriptor.
 func (m *Manager) DeleteAppDescriptor(appDescriptorID *grpc_application_go.AppDescriptorId) (*grpc_common_go.Success, error) {
 	return m.appClient.RemoveAppDescriptor(context.Background(), appDescriptorID)
