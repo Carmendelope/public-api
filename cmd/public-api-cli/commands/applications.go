@@ -51,6 +51,7 @@ func init() {
 	instanceCmd.PersistentFlags().StringVar(&instanceID, "instanceID", "", "Application instance identifier")
 	appsCmd.AddCommand(instanceCmd)
 	deployInstanceCmd.Flags().StringVar(&name, "name", "", "Name of the application instance")
+	deployInstanceCmd.Flags().StringVar(&descriptorID, "descriptorID", "", "Application descriptor identifier")
 	deployInstanceCmd.MarkFlagRequired("name")
 	instanceCmd.AddCommand(deployInstanceCmd)
 	instanceCmd.AddCommand(undeployInstanceCmd)
