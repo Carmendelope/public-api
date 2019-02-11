@@ -48,3 +48,4 @@ var disabledDefaultConnectivity bool
 var deviceGroupID string
 var deviceID string
 var rawLabels string
+var nodeID string

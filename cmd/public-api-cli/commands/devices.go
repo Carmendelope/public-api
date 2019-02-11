@@ -181,8 +181,8 @@ var addLabelToDeviceCmd = &cobra.Command{
 
 var removeLabelFromDeviceCmd = &cobra.Command{
 	Use:   "remove",
-	Short: "Remove a set of labels to a device",
-	Long:  `Remove a set of labels to a device`,
+	Short: "Remove a set of labels from a device",
+	Long:  `Remove a set of labels from a device`,
 	Run: func(cmd *cobra.Command, args []string) {
 		SetupLogging()
 		n := cli.NewDevices(

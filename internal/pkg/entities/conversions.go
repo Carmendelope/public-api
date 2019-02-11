@@ -18,9 +18,8 @@ func ToInfraClusterUpdate(update grpc_public_api_go.UpdateClusterRequest) *grpc_
 		ClusterId:         update.ClusterId,
 		UpdateName:        update.Name != "",
 		Name:              update.Name,
-		UpdateDescription: update.Description != "",
-		Description:       update.Description,
-		UpdateLabels:      update.Labels != nil,
+		AddLabels: update.AddLabels,
+		RemoveLabels: update.RemoveLabels,
 		Labels:            update.Labels,
 	}
 
@@ -96,13 +95,17 @@ func ToPublicAPIStorage(source []*grpc_application_go.Storage) []*grpc_public_ap
 func ToPublicAPIServiceInstances(source []*grpc_application_go.ServiceInstance) []*grpc_public_api_go.ServiceInstance {
 	result := make([]*grpc_public_api_go.ServiceInstance, 0)
 	for _, si := range source {
+		endpoints := make([]string,len(si.Endpoints))
+		for i,e := range si.Endpoints {
+			endpoints[i] = e.Fqdn
+		}
+
 		toAdd := &grpc_public_api_go.ServiceInstance{
 			OrganizationId:       si.OrganizationId,
 			AppDescriptorId:      si.AppDescriptorId,
 			AppInstanceId:        si.AppInstanceId,
 			ServiceId:            si.ServiceId,
 			Name:                 si.Name,
-			Description:          si.Description,
 			TypeName:             si.Type.String(),
 			Image:                si.Image,
 			Credentials:          si.Credentials,
@@ -114,9 +117,10 @@ func ToPublicAPIServiceInstances(source []*grpc_application_go.ServiceInstance) 
 			Labels:               si.Labels,
 			DeployAfter:          si.DeployAfter,
 			StatusName:           si.Status.String(),
-			Endpoints:            si.Endpoints,
+			Endpoints:            endpoints,
 			DeployedOnClusterId:  si.DeployedOnClusterId,
 			RunArguments:         si.RunArguments,
+
 		}
 		result = append(result, toAdd)
 	}
@@ -126,14 +130,19 @@ func ToPublicAPIServiceInstances(source []*grpc_application_go.ServiceInstance) 
 func ToPublicAPIGroupInstances(source []*grpc_application_go.ServiceGroupInstance) []*grpc_public_api_go.ServiceGroupInstance {
 	result := make([]*grpc_public_api_go.ServiceGroupInstance, 0)
 	for _, sgi := range source {
+		servs := make([]string, len(sgi.ServiceInstances))
+		for i, s := range sgi.ServiceInstances {
+			servs[i] = s.ServiceInstanceId
+		}
+
 		toAdd := &grpc_public_api_go.ServiceGroupInstance{
 			OrganizationId:   sgi.OrganizationId,
 			AppDescriptorId:  sgi.AppDescriptorId,
 			AppInstanceId:    sgi.AppInstanceId,
+			ServiceGroupInstanceId: sgi.ServiceGroupInstanceId,
 			ServiceGroupId:   sgi.ServiceGroupId,
 			Name:             sgi.Name,
-			Description:      sgi.Description,
-			ServiceInstances: sgi.ServiceInstances,
+			ServiceInstances: servs,
 			PolicyName:       sgi.Policy.String(),
 		}
 		result = append(result, toAdd)
@@ -149,11 +158,12 @@ func ToPublicAPISecurityRules(source []*grpc_application_go.SecurityRule) []*grp
 			AppDescriptorId: sr.AppDescriptorId,
 			RuleId:          sr.RuleId,
 			Name:            sr.Name,
-			SourceServiceId: sr.SourceServiceId,
-			SourcePort:      sr.SourcePort,
 			AccessName:      sr.Access.String(),
 			AuthServices:    sr.AuthServices,
 			DeviceGroups:    sr.DeviceGroups,
+			TargetPort:      sr.TargetPort,
+			TargetServiceName: sr.TargetServiceName,
+			TargetServiceGroupName: sr.TargetServiceGroupName,
 		}
 		result = append(result, toAdd)
 	}
@@ -166,13 +176,11 @@ func ToPublicAPIAppInstance(source *grpc_application_go.AppInstance) *grpc_publi
 		AppDescriptorId:      source.AppDescriptorId,
 		AppInstanceId:        source.AppInstanceId,
 		Name:                 source.Name,
-		Description:          source.Description,
 		ConfigurationOptions: source.ConfigurationOptions,
 		EnvironmentVariables: source.EnvironmentVariables,
 		Labels:               source.Labels,
 		Rules:                ToPublicAPISecurityRules(source.Rules),
 		Groups:               ToPublicAPIGroupInstances(source.Groups),
-		Services:             ToPublicAPIServiceInstances(source.Services),
 		StatusName:           source.Status.String(),
 	}
 }

@@ -78,6 +78,23 @@ func (h *Handler) GetAppDescriptor(ctx context.Context, appDescriptorID *grpc_ap
 	return h.Manager.GetAppDescriptor(appDescriptorID)
 }
 
+// UpdateAppDescriptor allows the user to update the information of a registered descriptor.
+func (h *Handler) UpdateAppDescriptor(ctx context.Context, request *grpc_application_go.UpdateAppDescriptorRequest) (*grpc_application_go.AppDescriptor, error){
+	rm, err := authhelper.GetRequestMetadata(ctx)
+	if err != nil {
+		return nil, conversions.ToGRPCError(err)
+	}
+	if request.OrganizationId != rm.OrganizationID {
+		return nil, derrors.NewPermissionDeniedError("cannot access requested OrganizationID")
+	}
+	err = entities.ValidUpdateAppDescriptor(request)
+	if err != nil {
+		return nil, conversions.ToGRPCError(err)
+	}
+	return h.Manager.UpdateAppDescriptor(request)
+}
+
+
 // GetAppDescriptor retrieves a given application descriptor.
 func (h *Handler) DeleteAppDescriptor(ctx context.Context, appDescriptorID *grpc_application_go.AppDescriptorId) (*grpc_common_go.Success, error) {
 	rm, err := authhelper.GetRequestMetadata(ctx)

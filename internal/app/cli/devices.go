@@ -11,7 +11,6 @@ import (
 	"github.com/nalej/grpc-public-api-go"
 	"github.com/rs/zerolog/log"
 	"google.golang.org/grpc"
-	"strings"
 )
 
 type Devices struct{
@@ -187,17 +186,7 @@ func (d*Devices) ListDevices(organizationID string, deviceGroupID string) {
 }
 
 func (d*Devices) getDeviceLabelRequest(organizationID string, deviceGroupID string, deviceID string, rawLabels string) *grpc_device_manager_go.DeviceLabelRequest{
-	labels := make(map[string]string, 0)
-
-	split := strings.Split(rawLabels, ";")
-	for _, l := range split{
-		ls := strings.Split(l, ":")
-		if len(ls) != 2{
-			log.Fatal().Str("label", l).Msg("malformed label, expecting key:value")
-		}
-		labels[ls[0]] = ls[1]
-	}
-
+	labels := GetLabels(rawLabels)
 	return &grpc_device_manager_go.DeviceLabelRequest{
 		OrganizationId:       organizationID,
 		DeviceGroupId:        deviceGroupID,

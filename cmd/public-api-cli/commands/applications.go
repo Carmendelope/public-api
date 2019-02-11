@@ -25,28 +25,33 @@ var appsCmd = &cobra.Command{
 func init() {
 	rootCmd.AddCommand(appsCmd)
 	appsCmd.PersistentFlags().StringVar(&organizationID, "organizationID", "", "Organization identifier")
-	appsCmd.PersistentFlags().StringVar(&descriptorID, "descriptorID", "", "Application descriptor identifier")
 	appsCmd.AddCommand(descriptorCmd)
+
 	addDescriptorCmd.PersistentFlags().StringVar(&descriptorPath, "descriptorPath", "", "Application descriptor path containing a JSON spec")
 	addDescriptorCmd.MarkPersistentFlagRequired("descriptorPath")
 	descriptorCmd.AddCommand(addDescriptorCmd)
 
-	getDescriptorCmd.MarkPersistentFlagRequired("descriptorID")
+	getDescriptorCmd.Flags().StringVar(&descriptorID, "descriptorID", "", "Application descriptor identifier")
 	descriptorCmd.AddCommand(getDescriptorCmd)
+
 	descriptorCmd.AddCommand(listDescriptorsCmd)
 	listInstancesCmd.MarkPersistentFlagRequired("descriptorID")
 	addDescriptorHelpCmd.Flags().StringVar(&exampleName, "exampleName", "simple", "Example to show: simple or complex or pstorage")
 	addDescriptorHelpCmd.Flags().StringVar(&storageType, "storage", "ephemeral", "Type: ephemeral local replica cloud")
 	descriptorCmd.AddCommand(addDescriptorHelpCmd)
-	deleteDescriptorCmd.MarkPersistentFlagRequired("descriptorID")
+	deleteDescriptorCmd.Flags().StringVar(&descriptorID, "descriptorID", "", "Application descriptor identifier")
 	descriptorCmd.AddCommand(deleteDescriptorCmd)
+
+	appDescLabelsCmd.Flags().StringVar(&descriptorID, "descriptorID", "", "Application descriptor identifier")
+	appDescLabelsCmd.PersistentFlags().StringVar(&rawLabels, "labels", "", "Labels separated by ; as in key1:value;key2:value")
+	descriptorCmd.AddCommand(appDescLabelsCmd)
+	appDescLabelsCmd.AddCommand(addLabelToAppDescriptorCmd)
+	appDescLabelsCmd.AddCommand(removeLabelFromAppDescriptorCmd)
 
 	instanceCmd.PersistentFlags().StringVar(&instanceID, "instanceID", "", "Application instance identifier")
 	appsCmd.AddCommand(instanceCmd)
 	deployInstanceCmd.Flags().StringVar(&name, "name", "", "Name of the application instance")
-	deployInstanceCmd.Flags().StringVar(&description, "description", "", "Description of the application instance")
 	deployInstanceCmd.MarkFlagRequired("name")
-	deployInstanceCmd.MarkFlagRequired("description")
 	instanceCmd.AddCommand(deployInstanceCmd)
 	instanceCmd.AddCommand(undeployInstanceCmd)
 	listInstancesCmd.MarkPersistentFlagRequired("instanceID")
@@ -123,6 +128,49 @@ var getDescriptorCmd = &cobra.Command{
 			insecure,
 			options.Resolve("cacert", caCertPath))
 		a.GetDescriptor(options.Resolve("organizationID", organizationID), descriptorID)
+	},
+}
+
+var appDescLabelsCmd = &cobra.Command{
+	Use:   "label",
+	Aliases: []string{"labels", "l"},
+	Short: "Manage application descriptor labels",
+	Long:  `Manage application descriptor labels`,
+	Run: func(cmd *cobra.Command, args []string) {
+		SetupLogging()
+		cmd.Help()
+	},
+}
+
+var addLabelToAppDescriptorCmd = &cobra.Command{
+	Use:   "add",
+	Short: "Add a set of labels to an application descriptor",
+	Long:  `Add a set of labels to an application descriptor`,
+	Run: func(cmd *cobra.Command, args []string) {
+		SetupLogging()
+		a := cli.NewApplications(
+			options.Resolve("nalejAddress", nalejAddress),
+			options.ResolveAsInt("port", nalejPort),
+			insecure,
+			options.Resolve("cacert", caCertPath))
+		a.ModifyAppDescriptorLabels(options.Resolve("organizationID", organizationID),
+			descriptorID, true, rawLabels)
+	},
+}
+
+var removeLabelFromAppDescriptorCmd = &cobra.Command{
+	Use:   "remove",
+	Short: "Remove a set of labels from an application descriptor",
+	Long:  `Remove a set of labels from an application descriptor`,
+	Run: func(cmd *cobra.Command, args []string) {
+		SetupLogging()
+		a := cli.NewApplications(
+			options.Resolve("nalejAddress", nalejAddress),
+			options.ResolveAsInt("port", nalejPort),
+			insecure,
+			options.Resolve("cacert", caCertPath))
+		a.ModifyAppDescriptorLabels(options.Resolve("organizationID", organizationID),
+			descriptorID, false, rawLabels)
 	},
 }
 

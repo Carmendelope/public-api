@@ -5,6 +5,7 @@
 package entities
 
 import (
+	"fmt"
 	"github.com/nalej/derrors"
 	"github.com/nalej/grpc-application-go"
 	"github.com/nalej/grpc-application-manager-go"
@@ -21,6 +22,7 @@ const emptyOrganizationId = "organization_id cannot be empty"
 const emptyInstanceId = "app_instance_id cannot be empty"
 const emptyDescriptorId = "app_descriptor_id cannot be empty"
 const emptyClusterId = "cluster_id cannot be empty"
+const emptyNodeId = "node_id cannot be empty"
 const emptyEmail = "email cannot be empty"
 const emptyName = "name cannot be empty"
 const emptyPassword = "password cannot be empty"
@@ -79,12 +81,50 @@ func ValidAppDescriptorID(appDescriptorID *grpc_application_go.AppDescriptorId) 
 	return nil
 }
 
-func ValidUpdateClusterRequest(updateClusterRequest *grpc_public_api_go.UpdateClusterRequest) derrors.Error {
-	if updateClusterRequest.OrganizationId == "" {
+func ValidUpdateAppDescriptor(request *grpc_application_go.UpdateAppDescriptorRequest) derrors.Error{
+	if request.OrganizationId == "" {
 		return derrors.NewInvalidArgumentError(emptyOrganizationId)
 	}
-	if updateClusterRequest.ClusterId == "" {
+	if request.AppDescriptorId == "" {
+		return derrors.NewInvalidArgumentError(emptyDescriptorId)
+	}
+	if request.AddLabels && request.RemoveLabels {
+		return derrors.NewInvalidArgumentError("add_labels and remove_labels cannot be set at the same time")
+	}
+	if (request.AddLabels || request.RemoveLabels) && (len(request.Labels) == 0){
+		return derrors.NewInvalidArgumentError(emptyLabels)
+	}
+	return nil
+}
+
+func ValidUpdateClusterRequest(request *grpc_public_api_go.UpdateClusterRequest) derrors.Error {
+	if request.OrganizationId == "" {
+		return derrors.NewInvalidArgumentError(emptyOrganizationId)
+	}
+	if request.ClusterId == "" {
 		return derrors.NewInvalidArgumentError(emptyClusterId)
+	}
+	if request.AddLabels && request.RemoveLabels {
+		return derrors.NewInvalidArgumentError("add_labels and remove_labels cannot be set at the same time")
+	}
+	if (request.AddLabels || request.RemoveLabels) && (len(request.Labels) == 0){
+		return derrors.NewInvalidArgumentError(emptyLabels)
+	}
+	return nil
+}
+
+func ValidUpdateNodeRequest(request *grpc_public_api_go.UpdateNodeRequest) derrors.Error{
+	if request.OrganizationId == "" {
+		return derrors.NewInvalidArgumentError(emptyOrganizationId)
+	}
+	if request.NodeId == "" {
+		return derrors.NewInvalidArgumentError(emptyNodeId)
+	}
+	if request.AddLabels && request.RemoveLabels {
+		return derrors.NewInvalidArgumentError("add_labels and remove_labels cannot be set at the same time")
+	}
+	if (request.AddLabels || request.RemoveLabels) && (len(request.Labels) == 0){
+		return derrors.NewInvalidArgumentError(emptyLabels)
 	}
 	return nil
 }
@@ -122,14 +162,20 @@ func ValidAddAppDescriptor(request *grpc_application_go.AddAppDescriptorRequest)
 	if request.OrganizationId == "" {
 		return derrors.NewInvalidArgumentError(emptyOrganizationId)
 	}
-	if len(request.Services) == 0 {
-		return derrors.NewInvalidArgumentError("expecting at least one service")
+	if len(request.Groups) == 0 {
+		return derrors.NewInvalidArgumentError("expecting at least one service group")
 	}
-	for _, s := range request.Services {
-		if s.OrganizationId != request.OrganizationId {
-			return derrors.NewInvalidArgumentError("organization_id mismatch")
+	for _, g := range request.Groups {
+		if len(g.Services) == 0 {
+			return derrors.NewInvalidArgumentError(fmt.Sprintf("group %s has no services",g.Name))
+		}
+		for _, s := range g.Services {
+			if s.OrganizationId != request.OrganizationId {
+				return derrors.NewInvalidArgumentError("organization_id mismatch")
+			}
 		}
 	}
+
 	return nil
 }
 

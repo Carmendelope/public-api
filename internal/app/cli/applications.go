@@ -55,9 +55,13 @@ func (a *Applications) createAddDescriptorRequest(organizationID string, descrip
 	}
 
 	addDescriptorRequest.OrganizationId = organizationID
-	for _, s := range addDescriptorRequest.Services {
-		s.OrganizationId = organizationID
+	for _, g := range addDescriptorRequest.Groups {
+		g.OrganizationId = organizationID
+		for _, s := range g.Services {
+			s.OrganizationId = organizationID
+		}
 	}
+
 
 	return addDescriptorRequest, nil
 }
@@ -65,9 +69,7 @@ func (a *Applications) createAddDescriptorRequest(organizationID string, descrip
 func (a *Applications) getBasicDescriptor(sType grpc_application_go.StorageType) *grpc_application_go.AddAppDescriptorRequest {
 
 	service1 := &grpc_application_go.Service{
-		ServiceId:   "1",
 		Name:        "simple-mysql",
-		Description: "A MySQL instance",
 		Type:        grpc_application_go.ServiceType_DOCKER,
 		Image:       "mysql:5.6",
 		Specs:       &grpc_application_go.DeploySpecs{Replicas: 1},
@@ -80,9 +82,7 @@ func (a *Applications) getBasicDescriptor(sType grpc_application_go.StorageType)
 	}
 
 	service2 := &grpc_application_go.Service{
-		ServiceId:   "2",
 		Name:        "simple-wordpress",
-		Description: "A Wordpress instance",
 		Type:        grpc_application_go.ServiceType_DOCKER,
 		Image:       "wordpress:5.0.0",
 		Specs:       &grpc_application_go.DeploySpecs{Replicas: 1},
@@ -97,8 +97,14 @@ func (a *Applications) getBasicDescriptor(sType grpc_application_go.StorageType)
 				},
 			},
 		}},
-		EnvironmentVariables: map[string]string{"WORDPRESS_DB_HOST": "NALEJ_SERV_1:3306", "WORDPRESS_DB_PASSWORD": "root"},
+		EnvironmentVariables: map[string]string{"WORDPRESS_DB_HOST": "NALEJ_SERV_SIMPLE-MYSQL:3306", "WORDPRESS_DB_PASSWORD": "root"},
 		Labels:               map[string]string{"app": "simple-wordpress", "component": "simple-app"},
+	}
+
+	group1 := &grpc_application_go.ServiceGroup{
+		Name: "g1",
+		Services: []*grpc_application_go.Service{service1, service2},
+		Specs: &grpc_application_go.ServiceGroupDeploymentSpecs{NumReplicas:1,MultiClusterReplica:false},
 	}
 
 	// add additional storage for persistence example
@@ -111,16 +117,16 @@ func (a *Applications) getBasicDescriptor(sType grpc_application_go.StorageType)
 		Name:            "allow access to wordpress",
 		Access:          grpc_application_go.PortAccess_PUBLIC,
 		RuleId:          "001",
-		SourcePort:      80,
-		SourceServiceId: "2",
+		TargetPort:      80,
+		TargetServiceName: "2",
+		TargetServiceGroupName: "g1",
 	}
 
 	return &grpc_application_go.AddAppDescriptorRequest{
 		Name:        "Sample application",
-		Description: "This is a basic descriptor of an application",
 		Labels:      map[string]string{"app": "simple-app"},
 		Rules:       []*grpc_application_go.SecurityRule{&secRule},
-		Services:    []*grpc_application_go.Service{service1, service2},
+		Groups:      []*grpc_application_go.ServiceGroup{group1},
 	}
 }
 
@@ -245,6 +251,33 @@ func (a *Applications) ListDescriptors(organizationID string) {
 	list, err := client.ListAppDescriptors(ctx, orgID)
 	a.PrintResultOrError(list, err, "cannot obtain descriptor list")
 }
+
+func (a *Applications) ModifyAppDescriptorLabels(organizationID string, descriptorID string, add bool, rawLabels string){
+	if organizationID == "" {
+		log.Fatal().Msg("organizationID cannot be empty")
+	}
+	if descriptorID == "" {
+		log.Fatal().Msg("descriptorID cannot be empty")
+	}
+	if rawLabels == "" {
+		log.Fatal().Msg("labels cannot be empty")
+	}
+	a.load()
+	ctx, cancel := a.GetContext()
+	client, conn := a.getClient()
+	defer conn.Close()
+	defer cancel()
+	updateRequest := &grpc_application_go.UpdateAppDescriptorRequest{
+		OrganizationId: organizationID,
+		AppDescriptorId:      descriptorID,
+		AddLabels: add,
+		RemoveLabels: !add,
+		Labels: GetLabels(rawLabels),
+	}
+	updated, err := client.UpdateAppDescriptor(ctx, updateRequest)
+	a.PrintResultOrError(updated, err, "cannot update application descriptor labels")
+}
+
 
 func (a *Applications) Deploy(organizationID string, appDescriptorID string, name string, description string) {
 	if organizationID == "" {

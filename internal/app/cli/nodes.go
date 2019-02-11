@@ -61,3 +61,30 @@ func (n *Nodes) List(organizationID string, clusterID string) {
 	list, err := client.List(ctx, cID)
 	n.PrintResultOrError(list, err, "cannot list nodes")
 }
+
+func (n *Nodes) ModifyNodeLabels(organizationID string, nodeID string, add bool, rawLabels string){
+	if organizationID == "" {
+		log.Fatal().Msg("organizationID cannot be empty")
+	}
+	if nodeID == "" {
+		log.Fatal().Msg("nodeID cannot be empty")
+	}
+	if rawLabels == "" {
+		log.Fatal().Msg("labels cannot be empty")
+	}
+	n.load()
+	ctx, cancel := n.GetContext()
+	client, conn := n.getClient()
+	defer conn.Close()
+	defer cancel()
+	updateRequest := &grpc_public_api_go.UpdateNodeRequest{
+		OrganizationId: organizationID,
+		NodeId:      nodeID,
+		AddLabels: add,
+		RemoveLabels: !add,
+		Labels: GetLabels(rawLabels),
+	}
+	updated, err := client.UpdateNode(ctx, updateRequest)
+	n.PrintResultOrError(updated, err, "cannot update node labels")
+}
+

@@ -38,6 +38,13 @@ func init() {
 		"Public IP Address assigned to the public ingress service")
 	clustersCmd.AddCommand(installClustersCmd)
 	clustersCmd.AddCommand(listClustersCmd)
+
+	clusterLabelsCmd.PersistentFlags().StringVar(&clusterID, "clusterID", "", "Cluster identifier")
+	clusterLabelsCmd.PersistentFlags().StringVar(&rawLabels, "labels", "", "Labels separated by ; as in key1:value;key2:value")
+
+	clusterLabelsCmd.AddCommand(addLabelToClusterCmd)
+	clusterLabelsCmd.AddCommand(removeLabelFromClusterCmd)
+	clustersCmd.AddCommand(clusterLabelsCmd)
 }
 
 var installClustersCmd = &cobra.Command{
@@ -109,4 +116,47 @@ func stringToTargetPlatform(p string) grpc_public_api_go.Platform {
 	}
 
 	return result
+}
+
+var clusterLabelsCmd = &cobra.Command{
+	Use:   "label",
+	Aliases: []string{"labels", "l"},
+	Short: "Manage cluster labels",
+	Long:  `Manage cluster labels`,
+	Run: func(cmd *cobra.Command, args []string) {
+		SetupLogging()
+		cmd.Help()
+	},
+}
+
+var addLabelToClusterCmd = &cobra.Command{
+	Use:   "add",
+	Short: "Add a set of labels to a cluster",
+	Long:  `Add a set of labels to a cluster`,
+	Run: func(cmd *cobra.Command, args []string) {
+		SetupLogging()
+		c := cli.NewClusters(
+			options.Resolve("nalejAddress", nalejAddress),
+			options.ResolveAsInt("port", nalejPort),
+			insecure,
+			options.Resolve("cacert", caCertPath))
+		c.ModifyClusterLabels(options.Resolve("organizationID", organizationID),
+			clusterID, true, rawLabels)
+	},
+}
+
+var removeLabelFromClusterCmd = &cobra.Command{
+	Use:   "remove",
+	Short: "Remove a set of labels from a cluster",
+	Long:  `Remove a set of labels from a cluster`,
+	Run: func(cmd *cobra.Command, args []string) {
+		SetupLogging()
+		c := cli.NewClusters(
+			options.Resolve("nalejAddress", nalejAddress),
+			options.ResolveAsInt("port", nalejPort),
+			insecure,
+			options.Resolve("cacert", caCertPath))
+		c.ModifyClusterLabels(options.Resolve("organizationID", organizationID),
+			clusterID, false, rawLabels)
+	},
 }

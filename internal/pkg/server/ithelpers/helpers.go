@@ -109,7 +109,6 @@ func GetAddDescriptorRequest(organizationID string) *grpc_application_go.AddAppD
 		OrganizationId: organizationID,
 		ServiceId:      "1",
 		Name:           "Simple MySQL service",
-		Description:    "A MySQL instance",
 		Type:           grpc_application_go.ServiceType_DOCKER,
 		Image:          "mysql:5.6",
 		Specs:          &grpc_application_go.DeploySpecs{Replicas: 1},
@@ -122,23 +121,27 @@ func GetAddDescriptorRequest(organizationID string) *grpc_application_go.AddAppD
 		Labels:               map[string]string{"app": "simple-app", "component": "mysql"},
 	}
 
+	group1 := &grpc_application_go.ServiceGroup{
+		Name: "g1",
+		Services: []*grpc_application_go.Service{service},
+		Specs: &grpc_application_go.ServiceGroupDeploymentSpecs{NumReplicas:1,MultiClusterReplica:false},
+	}
 	secRule := grpc_application_go.SecurityRule{
-		OrganizationId:  organizationID,
-		Name:            "all open",
+		Name:            "allow access to mysql",
 		Access:          grpc_application_go.PortAccess_PUBLIC,
 		RuleId:          "001",
-		SourcePort:      3306,
-		SourceServiceId: "1",
+		TargetPort:      3306,
+		TargetServiceName: "1",
+		TargetServiceGroupName: "g1",
 	}
 
 	return &grpc_application_go.AddAppDescriptorRequest{
 		RequestId:      GenerateUUID(),
 		OrganizationId: organizationID,
 		Name:           "Sample application",
-		Description:    "This is a basic descriptor of an application",
 		Labels:         map[string]string{"app": "simple-app"},
 		Rules:          []*grpc_application_go.SecurityRule{&secRule},
-		Services:       []*grpc_application_go.Service{service},
+		Groups:      []*grpc_application_go.ServiceGroup{group1},
 	}
 }
 
