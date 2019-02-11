@@ -25,39 +25,52 @@ var appsCmd = &cobra.Command{
 func init() {
 	rootCmd.AddCommand(appsCmd)
 	appsCmd.PersistentFlags().StringVar(&organizationID, "organizationID", "", "Organization identifier")
+	// Descriptor commands
 	appsCmd.AddCommand(descriptorCmd)
-
-	addDescriptorCmd.PersistentFlags().StringVar(&descriptorPath, "descriptorPath", "", "Application descriptor path containing a JSON spec")
-	addDescriptorCmd.MarkPersistentFlagRequired("descriptorPath")
+	// Add descriptor
+	addDescriptorCmd.Flags().StringVar(&descriptorPath, "descriptorPath", "", "Application descriptor path containing a JSON spec")
+	addDescriptorCmd.MarkFlagRequired("descriptorPath")
 	descriptorCmd.AddCommand(addDescriptorCmd)
-
+	// Get descriptor
 	getDescriptorCmd.Flags().StringVar(&descriptorID, "descriptorID", "", "Application descriptor identifier")
+	getDescriptorCmd.MarkFlagRequired("descriptorID")
 	descriptorCmd.AddCommand(getDescriptorCmd)
-
+	// List descriptors
 	descriptorCmd.AddCommand(listDescriptorsCmd)
-	listInstancesCmd.MarkPersistentFlagRequired("descriptorID")
+	// Help
 	addDescriptorHelpCmd.Flags().StringVar(&exampleName, "exampleName", "simple", "Example to show: simple or complex or pstorage")
 	addDescriptorHelpCmd.Flags().StringVar(&storageType, "storage", "ephemeral", "Type: ephemeral local replica cloud")
 	descriptorCmd.AddCommand(addDescriptorHelpCmd)
+	// Delete descriptor
 	deleteDescriptorCmd.Flags().StringVar(&descriptorID, "descriptorID", "", "Application descriptor identifier")
+	deleteDescriptorCmd.MarkFlagRequired("descriptorID")
 	descriptorCmd.AddCommand(deleteDescriptorCmd)
-
-	appDescLabelsCmd.Flags().StringVar(&descriptorID, "descriptorID", "", "Application descriptor identifier")
+	// Application descriptor labels
+	appDescLabelsCmd.PersistentFlags().StringVar(&descriptorID, "descriptorID", "", "Application descriptor identifier")
 	appDescLabelsCmd.PersistentFlags().StringVar(&rawLabels, "labels", "", "Labels separated by ; as in key1:value;key2:value")
 	descriptorCmd.AddCommand(appDescLabelsCmd)
 	appDescLabelsCmd.AddCommand(addLabelToAppDescriptorCmd)
+	addLabelToAppDescriptorCmd.MarkPersistentFlagRequired("descriptorID")
 	appDescLabelsCmd.AddCommand(removeLabelFromAppDescriptorCmd)
+	removeLabelFromAppDescriptorCmd.MarkPersistentFlagRequired("descriptorID")
 
-	instanceCmd.PersistentFlags().StringVar(&instanceID, "instanceID", "", "Application instance identifier")
+	// Instances
 	appsCmd.AddCommand(instanceCmd)
-	deployInstanceCmd.Flags().StringVar(&name, "name", "", "Name of the application instance")
-	deployInstanceCmd.Flags().StringVar(&descriptorID, "descriptorID", "", "Application descriptor identifier")
-	deployInstanceCmd.MarkFlagRequired("name")
-	instanceCmd.AddCommand(deployInstanceCmd)
-	instanceCmd.AddCommand(undeployInstanceCmd)
-	listInstancesCmd.MarkPersistentFlagRequired("instanceID")
+	// List
 	instanceCmd.AddCommand(listInstancesCmd)
-	getInstanceCmd.MarkPersistentFlagRequired("instanceID")
+	// Deploy
+	deployInstanceCmd.Flags().StringVar(&name, "name", "", "Name of the application instance")
+	deployInstanceCmd.Flags().StringVar(&instanceID, "instanceID", "", "Application instance identifier")
+	deployInstanceCmd.MarkFlagRequired("name")
+	deployInstanceCmd.MarkFlagRequired("instanceID")
+	instanceCmd.AddCommand(deployInstanceCmd)
+	// Undeploy
+	undeployInstanceCmd.Flags().StringVar(&instanceID, "instanceID", "", "Application instance identifier")
+	undeployInstanceCmd.MarkFlagRequired("instanceID")
+	instanceCmd.AddCommand(undeployInstanceCmd)
+	// Get
+	getInstanceCmd.Flags().StringVar(&instanceID, "instanceID", "", "Application instance identifier")
+	getInstanceCmd.MarkFlagRequired("instanceID")
 	instanceCmd.AddCommand(getInstanceCmd)
 }
 
