@@ -25,21 +25,28 @@ var appsCmd = &cobra.Command{
 func init() {
 	rootCmd.AddCommand(appsCmd)
 	appsCmd.PersistentFlags().StringVar(&organizationID, "organizationID", "", "Organization identifier")
-	appsCmd.PersistentFlags().StringVar(&descriptorID, "descriptorID", "", "Application descriptor identifier")
 	appsCmd.AddCommand(descriptorCmd)
+
 	addDescriptorCmd.PersistentFlags().StringVar(&descriptorPath, "descriptorPath", "", "Application descriptor path containing a JSON spec")
 	addDescriptorCmd.MarkPersistentFlagRequired("descriptorPath")
 	descriptorCmd.AddCommand(addDescriptorCmd)
 
-	getDescriptorCmd.MarkPersistentFlagRequired("descriptorID")
+	getDescriptorCmd.Flags().StringVar(&descriptorID, "descriptorID", "", "Application descriptor identifier")
 	descriptorCmd.AddCommand(getDescriptorCmd)
+
 	descriptorCmd.AddCommand(listDescriptorsCmd)
 	listInstancesCmd.MarkPersistentFlagRequired("descriptorID")
 	addDescriptorHelpCmd.Flags().StringVar(&exampleName, "exampleName", "simple", "Example to show: simple or complex or pstorage")
 	addDescriptorHelpCmd.Flags().StringVar(&storageType, "storage", "ephemeral", "Type: ephemeral local replica cloud")
 	descriptorCmd.AddCommand(addDescriptorHelpCmd)
-	deleteDescriptorCmd.MarkPersistentFlagRequired("descriptorID")
+	deleteDescriptorCmd.Flags().StringVar(&descriptorID, "descriptorID", "", "Application descriptor identifier")
 	descriptorCmd.AddCommand(deleteDescriptorCmd)
+
+	appDescLabelsCmd.Flags().StringVar(&descriptorID, "descriptorID", "", "Application descriptor identifier")
+	appDescLabelsCmd.PersistentFlags().StringVar(&rawLabels, "labels", "", "Labels separated by ; as in key1:value;key2:value")
+	descriptorCmd.AddCommand(appDescLabelsCmd)
+	appDescLabelsCmd.AddCommand(addLabelToAppDescriptorCmd)
+	appDescLabelsCmd.AddCommand(removeLabelFromAppDescriptorCmd)
 
 	instanceCmd.PersistentFlags().StringVar(&instanceID, "instanceID", "", "Application instance identifier")
 	appsCmd.AddCommand(instanceCmd)
