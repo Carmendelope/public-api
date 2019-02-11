@@ -15,6 +15,7 @@ var value string
 
 var optionsCmd = &cobra.Command{
 	Use:   "options",
+	Aliases: []string{"option", "opt"},
 	Short: "Manage default options",
 	Long:  `Manage default values for the commands parameters`,
 	Run: func(cmd *cobra.Command, args []string) {

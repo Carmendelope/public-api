@@ -16,8 +16,14 @@ var loginCmd = &cobra.Command{
 	Long:  `Login into the Nalej platform`,
 	Run: func(cmd *cobra.Command, args []string) {
 		SetupLogging()
+
+		targetAddress := options.Resolve("loginAddress", loginAddress)
+		if targetAddress == ""{
+			log.Fatal().Msg("loginAddress is required")
+		}
+
 		l := cli.NewLogin(
-			options.Resolve("nalejAddress", nalejAddress),
+			targetAddress,
 			loginPort,
 			insecure,
 			options.Resolve("cacert", caCertPath))
@@ -37,7 +43,9 @@ var loginCmd = &cobra.Command{
 }
 
 func init() {
-	loginCmd.Flags().IntVar(&loginPort, "loginPort", 8444, "Port of the Login API (gRPC)")
+	loginCmd.Flags().StringVar(&loginAddress, "loginAddress", "", "Address (host) of the login endpoint of the Nalej platform")
+	loginCmd.Flags().IntVar(&loginPort, "loginPort", 443, "Port of the Login API (gRPC)")
+	loginCmd.Flags().MarkHidden("loginPort")
 	loginCmd.Flags().StringVar(&email, "email", "", "User email")
 	loginCmd.Flags().StringVar(&password, "password", "", "User password")
 	loginCmd.MarkFlagRequired("email")
