@@ -19,6 +19,7 @@ import (
 var debugLevel bool
 var consoleLogging bool
 
+var loginAddress string
 var nalejAddress string
 var nalejPort int
 
@@ -42,7 +43,8 @@ func init() {
 	rootCmd.PersistentFlags().BoolVar(&debugLevel, "debug", false, "Set debug level")
 	rootCmd.PersistentFlags().BoolVar(&consoleLogging, "consoleLogging", false, "Pretty print logging")
 	rootCmd.PersistentFlags().StringVar(&nalejAddress, "nalejAddress", "", "Address (host) of the Nalej platform")
-	rootCmd.PersistentFlags().IntVar(&nalejPort, "port", -1, "Port of the Nalej platform Public API")
+	rootCmd.PersistentFlags().IntVar(&nalejPort, "port", 443, "Port of the Nalej platform Public API")
+	rootCmd.PersistentFlags().MarkHidden("port")
 	rootCmd.PersistentFlags().BoolVar(&insecure, "insecure", false, "Use a insecure connection to connect to the server")
 	rootCmd.PersistentFlags().StringVar(&caCertPath, "cacert", "", "Path of the CA certificate to validate the server connection")
 }
