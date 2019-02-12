@@ -60,9 +60,9 @@ func init() {
 	instanceCmd.AddCommand(listInstancesCmd)
 	// Deploy
 	deployInstanceCmd.Flags().StringVar(&name, "name", "", "Name of the application instance")
-	deployInstanceCmd.Flags().StringVar(&instanceID, "instanceID", "", "Application instance identifier")
+	deployInstanceCmd.Flags().StringVar(&descriptorID, "descriptorID", "", "Application instance identifier")
 	deployInstanceCmd.MarkFlagRequired("name")
-	deployInstanceCmd.MarkFlagRequired("instanceID")
+	deployInstanceCmd.MarkFlagRequired("descriptorID")
 	instanceCmd.AddCommand(deployInstanceCmd)
 	// Undeploy
 	undeployInstanceCmd.Flags().StringVar(&instanceID, "instanceID", "", "Application instance identifier")
