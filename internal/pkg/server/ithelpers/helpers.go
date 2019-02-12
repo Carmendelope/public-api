@@ -44,7 +44,6 @@ func CreateCluster(organization *grpc_organization_go.Organization, clusterName 
 		RequestId:      organization.OrganizationId,
 		OrganizationId: organization.OrganizationId,
 		Name:           clusterName,
-		Description:    clusterName,
 		Hostname:       clusterName,
 		Labels:         nil,
 	}
