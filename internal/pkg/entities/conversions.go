@@ -31,7 +31,6 @@ func ToPublicAPICluster(source *grpc_infrastructure_go.Cluster, totalNodes int64
 		OrganizationId:     source.OrganizationId,
 		ClusterId:          source.ClusterId,
 		Name:               source.Name,
-		Description:        source.Description,
 		ClusterTypeName:    source.ClusterType.String(),
 		MultitenantSupport: source.Multitenant.String(),
 		StatusName:         source.Status.String(),
