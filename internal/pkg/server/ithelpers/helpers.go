@@ -281,6 +281,9 @@ func GetAllAuthConfig() *interceptor.AuthorizationConfig {
 	permissions["/public_api.Applications/GetAppInstance"] = interceptor.Permission{
 		Should: []string{grpc_authx_go.AccessPrimitive_ORG.String(), grpc_authx_go.AccessPrimitive_APPS.String()},
 	}
+	permissions["/public_api.UnifiedLogging/Search"] = interceptor.Permission{
+		Should: []string{grpc_authx_go.AccessPrimitive_ORG.String(), grpc_authx_go.AccessPrimitive_APPS.String()},
+	}
 	permissions["/public_api.Devices/AddDeviceGroup"] = interceptor.Permission{
 		Should: []string{grpc_authx_go.AccessPrimitive_ORG.String(), grpc_authx_go.AccessPrimitive_DEVMNGR.String()},
 	}

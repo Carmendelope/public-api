@@ -14,6 +14,7 @@ import (
 	"github.com/nalej/grpc-infrastructure-go"
 	"github.com/nalej/grpc-organization-go"
 	"github.com/nalej/grpc-public-api-go"
+	"github.com/nalej/grpc-unified-logging-go"
 	"github.com/nalej/grpc-user-go"
 	"github.com/nalej/grpc-user-manager-go"
 )
@@ -314,6 +315,17 @@ func ValidUpdateDeviceRequest(request *grpc_device_manager_go.UpdateDeviceReques
 	}
 	if request.DeviceId == "" {
 		return derrors.NewInvalidArgumentError(emptyDeviceId)
+	}
+
+	return nil
+}
+
+func ValidSearchRequest(request *grpc_unified_logging_go.SearchRequest) derrors.Error {
+	if request.OrganizationId == "" {
+		return derrors.NewInvalidArgumentError(emptyOrganizationId)
+	}
+	if request.AppInstanceId == "" {
+		return derrors.NewInvalidArgumentError(emptyInstanceId)
 	}
 
 	return nil

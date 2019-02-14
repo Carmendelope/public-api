@@ -40,5 +40,7 @@ func init() {
 	runCmd.PersistentFlags().StringVar(&config.AuthConfigPath, "authConfigPath", "", "Authorization config path")
 	runCmd.PersistentFlags().StringVar(&config.DeviceManagerAddress, "deviceManagerAddress", "localhost:6010",
 		"Device Manager address (host:port)")
+	runCmd.PersistentFlags().StringVar(&config.UnifiedLoggingAddress, "unifiedLoggingAddress", "localhost:8323",
+		"Unified Logging Coordinator address (host:port)")
 	rootCmd.AddCommand(runCmd)
 }

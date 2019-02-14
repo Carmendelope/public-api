@@ -21,10 +21,10 @@ type Config struct {
 	ApplicationsManagerAddress string
 	// UserManagerAddress with the host:port to connect to the Access manager.
 	UserManagerAddress string
-	// LoggingAddress with the host:port to connect to the Logging component.
-	LoggingAddress string
 	// DeviceManagerAddress with the host:port to connect to the Device Manager component.
 	DeviceManagerAddress string
+	// UnifiedLoggingAddress with the host:port to connect to the Unified Logging Coordinator component.
+	UnifiedLoggingAddress string
 	// AuthSecret contains the shared authx secret.
 	AuthSecret string
 	// AuthHeader contains the name of the target header.
@@ -58,8 +58,13 @@ func (conf *Config) Validate() derrors.Error {
 	if conf.UserManagerAddress == "" {
 		return derrors.NewInvalidArgumentError("userManagerAddress must be set")
 	}
+
 	if conf.DeviceManagerAddress == "" {
 		return derrors.NewInvalidArgumentError("deviceManagerAddress must be set")
+	}
+
+	if conf.UnifiedLoggingAddress == "" {
+		return derrors.NewInvalidArgumentError("unifiedLoggingAddress must be set")
 	}
 
 	if conf.AuthHeader == "" || conf.AuthSecret == "" {
@@ -86,7 +91,7 @@ func (conf *Config) Print() {
 	log.Info().Str("URL", conf.InfrastructureManagerAddress).Msg("Infrastructure Manager")
 	log.Info().Str("URL", conf.ApplicationsManagerAddress).Msg("Applications Manager")
 	log.Info().Str("URL", conf.UserManagerAddress).Msg("User Manager")
-	log.Info().Str("URL", conf.LoggingAddress).Msg("Logging Service")
+	log.Info().Str("URL", conf.UnifiedLoggingAddress).Msg("Unified Logging Coordinator Service")
 	log.Info().Str("URL", conf.DeviceManagerAddress).Msg("Device Manager Service")
 	log.Info().Str("header", conf.AuthHeader).Str("secret", strings.Repeat("*", len(conf.AuthSecret))).Msg("Authorization")
 	log.Info().Str("path", conf.AuthConfigPath).Msg("Permissions file")
