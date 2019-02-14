@@ -442,7 +442,7 @@ func (tu *TestCleaner) DeleteAppDescriptors(organizationID string) {
 	orgID := &grpc_organization_go.OrganizationId{
 		OrganizationId: organizationID,
 	}
-	apps, _ := smAppClient.ListAppDescriptors(context.Background(), orgID)
+	apps, err := smAppClient.ListAppDescriptors(context.Background(), orgID)
 	gomega.Expect(err).To(gomega.Succeed())
 
 	if apps.Descriptors != nil {
