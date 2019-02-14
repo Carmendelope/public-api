@@ -33,6 +33,7 @@ var descriptorPath string
 var description string
 
 var instanceID string
+var sgInstanceID string
 
 var internal bool
 
@@ -49,3 +50,7 @@ var deviceGroupID string
 var deviceID string
 var rawLabels string
 var nodeID string
+
+var message string
+var from string
+var to string
