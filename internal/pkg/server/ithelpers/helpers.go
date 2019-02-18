@@ -106,11 +106,13 @@ func CreateUser(organizationID string, roleID string, userManagerClient grpc_use
 func GetAddDescriptorRequest(organizationID string) *grpc_application_go.AddAppDescriptorRequest {
 	service := &grpc_application_go.Service{
 		OrganizationId: organizationID,
+		ServiceGroupId: "Sg_1",
 		ServiceId:      "1",
 		Name:           "Simple MySQL service",
 		Type:           grpc_application_go.ServiceType_DOCKER,
 		Image:          "mysql:5.6",
 		Specs:          &grpc_application_go.DeploySpecs{Replicas: 1},
+		Credentials:    &grpc_application_go.ImageCredentials{Username:"user_name", Password:"***", Email:"email@email.es"},
 		Storage:        []*grpc_application_go.Storage{&grpc_application_go.Storage{MountPath: "/tmp"}},
 		ExposedPorts: []*grpc_application_go.Port{&grpc_application_go.Port{
 			Name: "mysqlport", InternalPort: 3306, ExposedPort: 3306,
@@ -118,6 +120,7 @@ func GetAddDescriptorRequest(organizationID string) *grpc_application_go.AddAppD
 		EnvironmentVariables: map[string]string{"MYSQL_ROOT_PASSWORD": "root"},
 		Configs:              []*grpc_application_go.ConfigFile{&grpc_application_go.ConfigFile{MountPath: "/tmp"}},
 		Labels:               map[string]string{"app": "simple-app", "component": "mysql"},
+		DeploymentSelectors: map[string]string{"clusterSelector":"EDGE"},
 	}
 
 	group1 := &grpc_application_go.ServiceGroup{
@@ -445,16 +448,18 @@ func (tu *TestCleaner) DeleteAppDescriptors(organizationID string) {
 	apps, err := smAppClient.ListAppDescriptors(context.Background(), orgID)
 	gomega.Expect(err).To(gomega.Succeed())
 
-	for _, app := range apps.Descriptors {
+	if apps.Descriptors != nil {
+		for _, app := range apps.Descriptors {
 
-		toRemove := &grpc_application_go.AppDescriptorId{
-			OrganizationId:  app.OrganizationId,
-			AppDescriptorId: app.AppDescriptorId,
+			toRemove := &grpc_application_go.AppDescriptorId{
+				OrganizationId:  app.OrganizationId,
+				AppDescriptorId: app.AppDescriptorId,
+			}
+
+			_, err := smAppClient.RemoveAppDescriptor(context.Background(), toRemove)
+			gomega.Expect(err).To(gomega.Succeed())
+
 		}
-
-		_, err := smAppClient.RemoveAppDescriptor(context.Background(), toRemove)
-		gomega.Expect(err).To(gomega.Succeed())
-
 	}
 
 }
