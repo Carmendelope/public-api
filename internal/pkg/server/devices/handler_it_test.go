@@ -5,9 +5,11 @@
 package devices
 
 import (
+	"context"
 	"fmt"
 	"github.com/nalej/authx/pkg/interceptor"
 	"github.com/nalej/grpc-authx-go"
+	"github.com/nalej/grpc-device-controller-go"
 	"github.com/nalej/grpc-device-go"
 	"github.com/nalej/grpc-device-manager-go"
 	"github.com/nalej/grpc-organization-go"
@@ -55,9 +57,10 @@ var _ = ginkgo.Describe("Devices", func() {
 	// client
 	var orgClient grpc_organization_go.OrganizationsClient
 	var dmClient grpc_device_manager_go.DevicesClient
-	//var deviceSMClient grpc_device_go.DevicesClient
+	var latClient grpc_device_manager_go.LatencyClient
 	var smConn *grpc.ClientConn
 	var dmConn *grpc.ClientConn
+	var latConn *grpc.ClientConn
 	var client grpc_public_api_go.DevicesClient
 
 	// Target organization.
@@ -75,15 +78,17 @@ var _ = ginkgo.Describe("Devices", func() {
 
 		smConn = utils.GetConnection(systemModelAddress)
 		dmConn = utils.GetConnection(deviceManagerAddress)
+		latConn = utils.GetConnection(deviceManagerAddress)
 		orgClient = grpc_organization_go.NewOrganizationsClient(smConn)
 		dmClient = grpc_device_manager_go.NewDevicesClient(dmConn)
-		//deviceSMClient = grpc_device_go.NewDevicesClient(smConn)
+		latClient = grpc_device_manager_go.NewLatencyClient(latConn)
 
 		conn, err := test.GetConn(*listener)
 		gomega.Expect(err).To(gomega.Succeed())
 
 		manager := NewManager(dmClient)
 		handler := NewHandler(manager)
+
 		grpc_public_api_go.RegisterDevicesServer(server, handler)
 		test.LaunchServer(server, listener)
 
@@ -380,6 +385,33 @@ var _ = ginkgo.Describe("Devices", func() {
 				}
 
 			}
+		})
+
+		ginkgo.It("should be able to get the device status", func(){
+
+			ping := &grpc_device_controller_go.RegisterLatencyRequest{
+				OrganizationId:targetOrganization.OrganizationId,
+				DeviceGroupId: targetDeviceGroup.DeviceGroupId,
+				DeviceId: targetDevice.DeviceId,
+				Latency: 20,
+			}
+
+			success, err := latClient.RegisterLatency(context.Background(), ping)
+			gomega.Expect(err).To(gomega.BeNil())
+			gomega.Expect(success).NotTo(gomega.BeNil())
+
+			request:= &grpc_device_go.DeviceGroupId{
+				OrganizationId: targetOrganization.OrganizationId,
+				DeviceGroupId: targetDeviceGroup.DeviceGroupId,
+			}
+
+			ctx, cancel := ithelpers.GetContext(ownerToken)
+			defer cancel()
+			list, err := client.ListDevices(ctx, request)
+			gomega.Expect(err).To(gomega.Succeed())
+			gomega.Expect(list.Devices).ShouldNot(gomega.BeEmpty())
+			gomega.Expect(list.Devices[0].DeviceStatusName).Should(gomega.Equal(grpc_device_manager_go.DeviceStatus_ONLINE.String()))
+
 		})
 	})
 

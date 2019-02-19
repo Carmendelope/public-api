@@ -11,6 +11,7 @@ import (
 	"github.com/nalej/grpc-device-go"
 	"github.com/nalej/grpc-device-manager-go"
 	"github.com/nalej/grpc-organization-go"
+	"github.com/nalej/grpc-public-api-go"
 	"github.com/nalej/grpc-utils/pkg/conversions"
 	"github.com/nalej/public-api/internal/pkg/authhelper"
 	"github.com/nalej/public-api/internal/pkg/entities"
@@ -86,7 +87,7 @@ func (h *Handler) ListDeviceGroups(ctx context.Context, request *grpc_organizati
 	return h.Manager.ListDeviceGroups(request)
 }
 
-func (h *Handler) ListDevices(ctx context.Context, request *grpc_device_go.DeviceGroupId) (*grpc_device_manager_go.DeviceList, error) {
+func (h *Handler) ListDevices(ctx context.Context, request *grpc_device_go.DeviceGroupId) (*grpc_public_api_go.DeviceList, error) {
 	rm, err := authhelper.GetRequestMetadata(ctx)
 	if err != nil {
 		return nil, conversions.ToGRPCError(err)
@@ -131,7 +132,7 @@ func (h *Handler) RemoveLabelFromDevice(ctx context.Context, request *grpc_devic
 	return h.Manager.RemoveLabelFromDevice(request)
 }
 
-func (h *Handler) UpdateDevice(ctx context.Context, request *grpc_device_manager_go.UpdateDeviceRequest) (*grpc_device_manager_go.Device, error) {
+func (h *Handler) UpdateDevice(ctx context.Context, request *grpc_device_manager_go.UpdateDeviceRequest) (*grpc_public_api_go.Device, error) {
 	rm, err := authhelper.GetRequestMetadata(ctx)
 	if err != nil {
 		return nil, conversions.ToGRPCError(err)
