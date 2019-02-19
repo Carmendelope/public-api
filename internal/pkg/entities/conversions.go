@@ -6,6 +6,7 @@ package entities
 
 import (
 	"github.com/nalej/grpc-application-go"
+	"github.com/nalej/grpc-device-manager-go"
 	"github.com/nalej/grpc-infrastructure-go"
 	"github.com/nalej/grpc-public-api-go"
 )
@@ -229,4 +230,29 @@ func ToPublicAPIAppInstance(source *grpc_application_go.AppInstance) *grpc_publi
 		StatusName:           source.Status.String(),
 		Metadata:			  metadata,
 	}
+}
+
+func ToPublicAPIDevice(device * grpc_device_manager_go.Device) * grpc_public_api_go.Device  {
+	return &grpc_public_api_go.Device{
+		OrganizationId: device.OrganizationId,
+		DeviceGroupId: device.DeviceGroupId,
+		DeviceId: device.DeviceId,
+		RegisterSince: device.RegisterSince,
+		Labels: device.Labels,
+		Enabled: device.Enabled,
+		DeviceStatusName: device.DeviceStatus.String(),
+	}
+}
+
+func ToPublicAPIDeviceList(list * grpc_device_manager_go.DeviceList) * grpc_public_api_go.DeviceList  {
+	result := make([]*grpc_public_api_go.Device, 0)
+	for _, device := range list.Devices {
+		toAdd := ToPublicAPIDevice(device)
+		result = append(result, toAdd)
+	}
+	return & grpc_public_api_go.DeviceList {
+		Devices: result,
+	}
+
+
 }

@@ -144,12 +144,12 @@
   version = "v0.0.30"
 
 [[projects]]
-  digest = "1:82bfacbdc12ebe62666b3fe44a6fe2f33e54c42d019263b7ff49f510829abafa"
+  digest = "1:fb479de2eaa2ba61fae1f839838ecb6a198bd4680e942f1efb67010c79aa4829"
   name = "github.com/nalej/grpc-device-manager-go"
   packages = ["."]
   pruneopts = ""
-  revision = "6086922d62cb52782e0a7c5efea321841eccbabc"
-  version = "v0.0.4"
+  revision = "d8756adfcd58f2caf0e898eee2301055a1c0f606"
+  version = "v0.0.5"
 
 [[projects]]
   digest = "1:6973c345abcc2530f5ae4ddaa179521470a37b9cc8a2b7568227190df7f381e2"
@@ -192,12 +192,12 @@
   version = "v0.0.28"
 
 [[projects]]
-  digest = "1:26661a04d39f7e55f9c509302ab710fcfc2357e4f7ea78f562445c99c2891931"
+  digest = "1:41b209d670581f20370585a264a1cec61de562a5ffed571d0637815bf56d757c"
   name = "github.com/nalej/grpc-public-api-go"
   packages = ["."]
   pruneopts = ""
-  revision = "5c59153b4db0fb7e1f8fc2e0ff46be1a940b8c49"
-  version = "v0.0.45"
+  revision = "834e6ac5ff970e7a91e86ecc9fd98f0f5a83715d"
+  version = "v0.0.46"
 
 [[projects]]
   digest = "1:1e7d571bfac19c7e5987941eeb223793cd2b249949b987fa31d04408707105b2"
@@ -333,11 +333,11 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:7b42c9a7f12584d8f351c3f3757f6a9f6894cd7ea987170fe472ce3a8f9bb6b8"
+  digest = "1:991cf54090eb6e382daf2f243a0bcabdda4964a664e07feefbef2b7fb6bf2ae1"
   name = "golang.org/x/sys"
   packages = ["unix"]
   pruneopts = ""
-  revision = "983097b1a8a340cd1cc7df17d735154d89e10b1a"
+  revision = "d0b11bdaac8adb652bff00e49bcacf992835621a"
 
 [[projects]]
   digest = "1:5acd3512b047305d49e8763eef7ba423901e85d5dd2fd1e71778a0ea8de10bd4"
@@ -376,7 +376,7 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:91f75dc679abcf04b29b064a5b9c40a0b0561c86c322010fbf6fc08040cc48bc"
+  digest = "1:60a223de357ab7164a5f8dd20cf0f5e17f76530ff40f33f7ecde0c09ec19c67a"
   name = "google.golang.org/genproto"
   packages = [
     "googleapis/api/annotations",
@@ -384,7 +384,7 @@
     "googleapis/rpc/status",
   ]
   pruneopts = ""
-  revision = "4b09977fb92221987e99d190c8f88f2c92727a29"
+  revision = "bd968387e4aa590b3c6e4ba38ecac1ed314d43ad"
 
 [[projects]]
   digest = "1:39d4d828b87d58d114fdc211f0638f32dcae84019fe17d6b48f9b697f4b60213"
