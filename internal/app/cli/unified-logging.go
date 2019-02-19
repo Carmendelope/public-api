@@ -43,7 +43,7 @@ func (u *UnifiedLogging) getClient() (grpc_public_api_go.UnifiedLoggingClient, *
 }
 
 func parseTime(timeString string) (*timestamp.Timestamp, error) {
-	t, err := dateparse.ParseAny(timeString)
+	t, err := dateparse.ParseLocal(timeString)
 	if err != nil {
 		return nil, err
 	}
