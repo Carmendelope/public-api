@@ -2,6 +2,14 @@
 
 
 [[projects]]
+  branch = "master"
+  digest = "1:fe15592f1ee97e2dc5acdaf5b5423afb145cc2953bff25f8d54b61316c79f59e"
+  name = "github.com/araddon/dateparse"
+  packages = ["."]
+  pruneopts = ""
+  revision = "21df004e09ca46e07ce99bbba1e8c2422ba4ecf9"
+
+[[projects]]
   digest = "1:6098222470fe0172157ce9bbef5d2200df4edde17ee649c5d6e48330e4afa4c6"
   name = "github.com/dgrijalva/jwt-go"
   packages = ["."]
@@ -296,6 +304,8 @@
   packages = [
     ".",
     "format",
+    "gstruct",
+    "gstruct/errors",
     "internal/assertion",
     "internal/asyncassertion",
     "internal/oraclematcher",
@@ -486,7 +496,10 @@
   analyzer-name = "dep"
   analyzer-version = 1
   input-imports = [
+    "github.com/araddon/dateparse",
     "github.com/dgrijalva/jwt-go",
+    "github.com/golang/protobuf/ptypes",
+    "github.com/golang/protobuf/ptypes/timestamp",
     "github.com/google/uuid",
     "github.com/grpc-ecosystem/grpc-gateway/runtime",
     "github.com/nalej/authx/pkg/interceptor",
@@ -506,6 +519,7 @@
     "github.com/nalej/grpc-login-api-go",
     "github.com/nalej/grpc-organization-go",
     "github.com/nalej/grpc-public-api-go",
+    "github.com/nalej/grpc-unified-logging-go",
     "github.com/nalej/grpc-user-go",
     "github.com/nalej/grpc-user-manager-go",
     "github.com/nalej/grpc-utils/pkg/conversions",
@@ -513,6 +527,7 @@
     "github.com/nalej/grpc-utils/pkg/tools",
     "github.com/onsi/ginkgo",
     "github.com/onsi/gomega",
+    "github.com/onsi/gomega/gstruct",
     "github.com/rs/zerolog",
     "github.com/rs/zerolog/log",
     "github.com/spf13/cobra",

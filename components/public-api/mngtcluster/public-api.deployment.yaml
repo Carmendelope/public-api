@@ -50,6 +50,7 @@ spec:
         - "--applicationsManagerAddress=application-manager.__NPH_NAMESPACE:8910"
         - "--userManagerAddress=user-manager.__NPH_NAMESPACE:8920"
         - "--deviceManagerAddress=device-manager.__NPH_NAMESPACE:6010"
+        - "--unifiedLoggingAddress=unified-logging-coord.__NPH_NAMESPACE:8323"
         - "--authHeader=authorization"
         - "--authSecret=$(AUTH_SECRET)"
         - "--authConfigPath=/nalej/config/authx-config.json"

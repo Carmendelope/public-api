@@ -12,6 +12,7 @@ import (
 	"github.com/nalej/grpc-infrastructure-manager-go"
 	"github.com/nalej/grpc-organization-go"
 	"github.com/nalej/grpc-public-api-go"
+	"github.com/nalej/grpc-unified-logging-go"
 	"github.com/nalej/grpc-user-manager-go"
 	"github.com/nalej/grpc-utils/pkg/tools"
 	"github.com/nalej/public-api/internal/pkg/server/applications"
@@ -21,6 +22,7 @@ import (
 	"github.com/nalej/public-api/internal/pkg/server/organizations"
 	"github.com/nalej/public-api/internal/pkg/server/resources"
 	"github.com/nalej/public-api/internal/pkg/server/roles"
+	"github.com/nalej/public-api/internal/pkg/server/unified-logging"
 	"github.com/nalej/public-api/internal/pkg/server/users"
 	"github.com/rs/zerolog/log"
 	"google.golang.org/grpc"
@@ -51,6 +53,7 @@ type Clients struct {
 	umClient    grpc_user_manager_go.UserManagerClient
 	appClient   grpc_application_manager_go.ApplicationManagerClient
 	deviceClient grpc_device_manager_go.DevicesClient
+	ulClient    grpc_unified_logging_go.CoordinatorClient
 }
 
 func (s *Service) GetClients() (*Clients, derrors.Error) {
@@ -74,6 +77,10 @@ func (s *Service) GetClients() (*Clients, derrors.Error) {
 	if err != nil {
 		return nil, derrors.AsError(err, "cannot create connection with the device manager")
 	}
+	ulConn, err := grpc.Dial(s.Configuration.UnifiedLoggingAddress, grpc.WithInsecure())
+	if err != nil {
+		return nil, derrors.AsError(err, "cannot create connection with unified logging coordinator")
+	}
 
 	oClient := grpc_organization_go.NewOrganizationsClient(smConn)
 	cClient := grpc_infrastructure_go.NewClustersClient(smConn)
@@ -82,8 +89,9 @@ func (s *Service) GetClients() (*Clients, derrors.Error) {
 	umClient := grpc_user_manager_go.NewUserManagerClient(umConn)
 	appClient := grpc_application_manager_go.NewApplicationManagerClient(appConn)
 	deviceClient := grpc_device_manager_go.NewDevicesClient(devConn)
+	ulClient := grpc_unified_logging_go.NewCoordinatorClient(ulConn)
 
-	return &Clients{oClient, cClient, nClient, infraClient, umClient, appClient, deviceClient}, nil
+	return &Clients{oClient, cClient, nClient, infraClient, umClient, appClient, deviceClient, ulClient}, nil
 }
 
 // Run the service, launch the REST service handler.
@@ -158,6 +166,9 @@ func (s *Service) LaunchHTTP() error {
 	if err := grpc_public_api_go.RegisterDevicesHandlerFromEndpoint(context.Background(), mux, clientAddr, opts); err != nil {
 		log.Fatal().Err(err).Msg("failed to start device handler")
 	}
+	if err := grpc_public_api_go.RegisterUnifiedLoggingHandlerFromEndpoint(context.Background(), mux, clientAddr, opts); err != nil {
+		log.Fatal().Err(err).Msg("failed to start unified logging handler")
+	}
 
 	server := &http.Server{
 		Addr:    addr,
@@ -203,6 +214,9 @@ func (s *Service) LaunchGRPC(authConfig *interceptor.AuthorizationConfig) error 
 	devManager := devices.NewManager(clients.deviceClient)
 	devHandler := devices.NewHandler(devManager)
 
+	ulManager := unified_logging.NewManager(clients.ulClient)
+	ulHandler := unified_logging.NewHandler(ulManager)
+
 	grpcServer := grpc.NewServer(interceptor.WithServerAuthxInterceptor(
 		interceptor.NewConfig(authConfig, s.Configuration.AuthSecret, s.Configuration.AuthHeader)))
 	grpc_public_api_go.RegisterOrganizationsServer(grpcServer, orgHandler)
@@ -213,6 +227,7 @@ func (s *Service) LaunchGRPC(authConfig *interceptor.AuthorizationConfig) error 
 	grpc_public_api_go.RegisterRolesServer(grpcServer, roleHandler)
 	grpc_public_api_go.RegisterApplicationsServer(grpcServer, appHandler)
 	grpc_public_api_go.RegisterDevicesServer(grpcServer, devHandler)
+	grpc_public_api_go.RegisterUnifiedLoggingServer(grpcServer, ulHandler)
 
 	// Register reflection service on gRPC server.
 	reflection.Register(grpcServer)
