@@ -10,6 +10,9 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
 	"io/ioutil"
+	"os/user"
+	"path/filepath"
+	"strings"
 )
 
 type Connection struct {
@@ -23,11 +26,23 @@ func NewConnection(address string, port int, insecure bool, caCertPath string) *
 	return &Connection{address, port, insecure, caCertPath}
 }
 
+func GetPath(path string) string {
+	if strings.HasPrefix(path, "~") {
+		usr, _ := user.Current()
+		return strings.Replace(path, "~", usr.HomeDir, 1)
+	}
+	if strings.HasPrefix(path, "."){
+		abs, _ := filepath.Abs("./")
+		return strings.Replace(path, ".", abs, 1)
+	}
+	return path
+}
+
 func (c *Connection) GetSecureConnection() (*grpc.ClientConn, derrors.Error) {
 	rootCAs := x509.NewCertPool()
-
-	log.Debug().Str("caCertPath", c.CACertPath).Msg("loading CA cert")
-	caCert, err := ioutil.ReadFile(c.CACertPath)
+	caPath := GetPath(c.CACertPath)
+	log.Debug().Str("caCertPath", caPath).Msg("loading CA cert")
+	caCert, err := ioutil.ReadFile(caPath)
 	if err != nil {
 		return nil, derrors.NewInternalError("Error loading CA certificate")
 	}
@@ -49,7 +64,7 @@ func (c *Connection) GetSecureConnection() (*grpc.ClientConn, derrors.Error) {
 }
 
 func (c *Connection) GetInsecureConnection() (*grpc.ClientConn, derrors.Error) {
-	log.Warn().Msg("Using insecure connection")
+	log.Warn().Msg("Using insecure connection, TLS options will be ignored")
 	targetAddress := fmt.Sprintf("%s:%d", c.Address, c.Port)
 	log.Debug().Str("address", targetAddress).Msg("creating connection")
 	conn, err := grpc.Dial(targetAddress, grpc.WithInsecure())

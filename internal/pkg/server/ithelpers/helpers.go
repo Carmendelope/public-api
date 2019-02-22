@@ -327,7 +327,7 @@ func CreateDeviceGroup(organizationID string, name string, dmClient grpc_device_
 		OrganizationId:            organizationID,
 		Name:                      name,
 		Enabled:                   true,
-		DeviceDefaultConnectivity: true,
+		DefaultDeviceConnectivity: true,
 	}
 	added, err := dmClient.AddDeviceGroup(context.Background(), request)
 	gomega.Expect(err).To(gomega.Succeed())

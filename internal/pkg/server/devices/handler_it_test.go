@@ -127,7 +127,7 @@ var _ = ginkgo.Describe("Devices", func() {
 				OrganizationId:            targetOrganization.OrganizationId,
 				Name:                      fmt.Sprintf("dg-%d", rand.Int()),
 				Enabled:                   false,
-				DeviceDefaultConnectivity: false,
+				DefaultDeviceConnectivity: false,
 			}
 
 			for _, test := range tests {
@@ -154,7 +154,7 @@ var _ = ginkgo.Describe("Devices", func() {
 				OrganizationId:            targetOrganization.OrganizationId,
 				Name:                      fmt.Sprintf("dg-%d", rand.Int()),
 				Enabled:                   false,
-				DeviceDefaultConnectivity: false,
+				DefaultDeviceConnectivity: false,
 			}
 
 			for _, test := range tests {
@@ -198,7 +198,7 @@ var _ = ginkgo.Describe("Devices", func() {
 				OrganizationId:            targetOrganization.OrganizationId,
 				Name:                      fmt.Sprintf("dg-%d", rand.Int()),
 				Enabled:                   false,
-				DeviceDefaultConnectivity: false,
+				DefaultDeviceConnectivity: false,
 			}
 
 			for _, test := range tests {
@@ -245,7 +245,7 @@ var _ = ginkgo.Describe("Devices", func() {
 				OrganizationId:            targetOrganization.OrganizationId,
 				Name:                      fmt.Sprintf("dg-%d", rand.Int()),
 				Enabled:                   false,
-				DeviceDefaultConnectivity: false,
+				DefaultDeviceConnectivity: false,
 			}
 
 			for _, test := range tests {
