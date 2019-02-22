@@ -43,7 +43,8 @@ func (a *Applications) getClient() (grpc_public_api_go.ApplicationsClient, *grpc
 
 func (a *Applications) createAddDescriptorRequest(organizationID string, descriptorPath string) (*grpc_application_go.AddAppDescriptorRequest, derrors.Error) {
 
-	content, err := ioutil.ReadFile(descriptorPath)
+	descPath := GetPath(descriptorPath)
+	content, err := ioutil.ReadFile(descPath)
 	if err != nil {
 		return nil, derrors.AsError(err, "cannot read descriptor")
 	}

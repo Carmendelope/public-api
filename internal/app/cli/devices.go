@@ -71,7 +71,7 @@ func (d*Devices) AddDeviceGroup(organizationID string, name string, enabled bool
 		OrganizationId:            organizationID,
 		Name:                      name,
 		Enabled:                   enabled,
-		DeviceDefaultConnectivity: enabledDefaultConnectivity,
+		DefaultDeviceConnectivity: enabledDefaultConnectivity,
 	}
 	added, err := client.AddDeviceGroup(ctx, addRequest)
 	d.PrintResultOrError(added, err, "cannot add device group")

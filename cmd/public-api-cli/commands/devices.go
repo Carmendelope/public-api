@@ -42,10 +42,10 @@ func init() {
 	deviceGroupCmd.AddCommand(addDeviceGroupCmd)
 
 	updateDeviceGroupCmd.Flags().StringVar(&deviceGroupID, "deviceGroupId", "", "Device group identifier")
-	updateDeviceGroupCmd.Flags().BoolVar(&enabled, "enabled", false, "Whether the group is enabled")
-	updateDeviceGroupCmd.Flags().BoolVar(&disabled, "disabled", false, "Whether the group is disabled")
-	updateDeviceGroupCmd.Flags().BoolVar(&enabledDefaultConnectivity, "enabledDefaultConnectivity", false, "Default connectivity for devices joining the device group (enabled)")
-	updateDeviceGroupCmd.Flags().BoolVar(&disabledDefaultConnectivity, "disabledDefaultConnectivity", false, "Default connectivity for devices joining the device group (disabled)")
+	updateDeviceGroupCmd.Flags().BoolVar(&enabled, "enable", false, "Whether the group is enabled")
+	updateDeviceGroupCmd.Flags().BoolVar(&disabled, "disable", false, "Whether the group is disabled")
+	updateDeviceGroupCmd.Flags().BoolVar(&enabledDefaultConnectivity, "enableDefaultConnectivity", false, "Default connectivity for devices joining the device group (enabled)")
+	updateDeviceGroupCmd.Flags().BoolVar(&disabledDefaultConnectivity, "disableDefaultConnectivity", false, "Default connectivity for devices joining the device group (disabled)")
 	deviceGroupCmd.AddCommand(updateDeviceGroupCmd)
 
 	removeDeviceGroupCmd.Flags().StringVar(&deviceGroupID, "deviceGroupId", "", "Device group identifier")
