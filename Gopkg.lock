@@ -2,7 +2,6 @@
 
 
 [[projects]]
-  branch = "master"
   digest = "1:fe15592f1ee97e2dc5acdaf5b5423afb145cc2953bff25f8d54b61316c79f59e"
   name = "github.com/araddon/dateparse"
   packages = ["."]

@@ -5,11 +5,13 @@
 package cli
 
 import (
+	"fmt"
 	"github.com/nalej/grpc-unified-logging-go"
 	"github.com/nalej/grpc-public-api-go"
         "github.com/golang/protobuf/ptypes"
         "github.com/golang/protobuf/ptypes/timestamp"
 	"github.com/araddon/dateparse"
+	"github.com/nalej/grpc-utils/pkg/conversions"
 	"github.com/rs/zerolog/log"
 	"google.golang.org/grpc"
 )
@@ -55,7 +57,7 @@ func parseTime(timeString string) (*timestamp.Timestamp, error) {
 	return timeProto, nil
 }
 
-func (u *UnifiedLogging) Search(organizationId, instanceId, sgInstanceId, msgFilter, from, to string) {
+func (u *UnifiedLogging) Search(organizationId, instanceId, sgInstanceId, msgFilter, from, to string, redirectLog bool) {
 	// Validate options
 	if organizationId == "" {
 		log.Fatal().Msg("organizationID cannot be empty")
@@ -97,5 +99,17 @@ func (u *UnifiedLogging) Search(organizationId, instanceId, sgInstanceId, msgFil
 	}
 
 	result, err := client.Search(ctx, searchRequest)
-	u.PrintResultOrError(result, err, "cannot search logs")
+	if redirectLog{
+		if err != nil {
+			log.Fatal().Str("trace", conversions.ToDerror(err).DebugReport()).Msg("cannot search logs")
+		} else {
+			log.Info().Str("AppInstanceId", result.AppInstanceId).Str("from", result.From.String()).Str("to", result.To.String()).Msg("app log")
+			for _, le := range result.Entries{
+				log.Info().Msg(fmt.Sprintf("[%s] %s", le.Timestamp.String(), le.Msg))
+			}
+		}
+	}else{
+		u.PrintResultOrError(result, err, "cannot search logs")
+	}
+
 }
