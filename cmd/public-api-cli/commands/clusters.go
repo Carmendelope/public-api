@@ -45,6 +45,9 @@ func init() {
 	clusterLabelsCmd.AddCommand(addLabelToClusterCmd)
 	clusterLabelsCmd.AddCommand(removeLabelFromClusterCmd)
 	clustersCmd.AddCommand(clusterLabelsCmd)
+
+	clustersCmd.AddCommand(infoClusterCmd)
+	infoClusterCmd.Flags().StringVar(&clusterID, "clusterID", "", "Cluster identifier")
 }
 
 var installClustersCmd = &cobra.Command{
