@@ -54,3 +54,4 @@ var nodeID string
 var message string
 var from string
 var to string
+var redirectLog bool

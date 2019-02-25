@@ -30,6 +30,7 @@ func init() {
 	searchCmd.Flags().StringVar(&sgInstanceID, "sgInstanceID", "", "Service group instance identifier")
 	searchCmd.Flags().StringVar(&from, "from", "", "Start time of logs")
 	searchCmd.Flags().StringVar(&to, "to", "", "End time of logs")
+	searchCmd.Flags().BoolVar(&redirectLog, "redirectResultAsLog", false, "Redirect the result to the CLI log")
 }
 
 var searchCmd = &cobra.Command{
@@ -49,6 +50,6 @@ var searchCmd = &cobra.Command{
 			options.ResolveAsInt("port", nalejPort),
 			insecure,
 			options.Resolve("cacert", caCertPath))
-		l.Search(options.Resolve("organizationID", organizationID), instanceID, sgInstanceID, message, from, to)
+		l.Search(options.Resolve("organizationID", organizationID), instanceID, sgInstanceID, message, from, to, redirectLog)
 	},
 }
