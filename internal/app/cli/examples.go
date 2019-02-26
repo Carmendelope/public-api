@@ -105,7 +105,7 @@ func (a *Applications) getComplexDescriptor(sType grpc_application_go.StorageTyp
 		Name:        "heartbeat",
 		Type:        grpc_application_go.ServiceType_DOCKER,
 		//Image:                "docker.elastic.co/beats/heartbeat:6.4.2",
-		Image: "nalejops/heartbeat:1.0.0",
+		Image: "nalejpublic.azurecr.io/heartbeat:v1.0.0",
 		Specs: &grpc_application_go.DeploySpecs{Replicas: 1},
 		/*
 			Configs:              []*grpc_application_go.ConfigFile{
