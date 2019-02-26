@@ -162,7 +162,9 @@ func ToPublicAPIGroupInstances(source []*grpc_application_go.ServiceGroupInstanc
 	groupNames := make (map[string]bool, 0)
 
 	result := make([]*grpc_public_api_go.ServiceGroupInstance, 0)
-	for _, sgi := range source {
+	//for _, sgi := range source { // TODO: uncomment
+	for i:= len(source)-1; i >=0; i--{ // TODO: remove
+		sgi := source[i] // TODO: remove
 		_, exists := groupNames[sgi.ServiceGroupId] // TODO: remove
 		if !exists { // TODO: remove
 			groupNames[sgi.ServiceGroupId] = true
