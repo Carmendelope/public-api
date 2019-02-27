@@ -7,7 +7,7 @@ import (
 const HeartBeatConfigContent = `heartbeat.monitors:
 - type: http
   schedule: '@every 5s'
-  urls: ["http://${NALEJ_SERV_WORDPRESS}:80/"]
+  urls: ["http://${NALEJ_SERV_SIMPLE-WORDPRESS}:80/"]
   check.request:
     method: "GET"
   check.response:
@@ -106,7 +106,15 @@ func (a *Applications) getComplexDescriptor(sType grpc_application_go.StorageTyp
 		Type:        grpc_application_go.ServiceType_DOCKER,
 		Image:       "docker.elastic.co/beats/heartbeat:6.4.2",
 		Specs: &grpc_application_go.DeploySpecs{Replicas: 1},
+			Configs:              []*grpc_application_go.ConfigFile{
+				&grpc_application_go.ConfigFile{
+					ConfigFileId:         "heartbeat-config",
+					Content:              []byte(HeartBeatConfigContent),
+					MountPath:            "/conf/heartbeat.yml",
+				},
+			},
 		Labels: map[string]string{"app": "heartbeat"},
+		RunArguments: []string{"--path.config=/conf/"},
 	}
 
 	secRuleWP := grpc_application_go.SecurityRule{
