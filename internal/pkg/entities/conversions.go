@@ -211,8 +211,10 @@ func ToPublicAPISecurityRules(source []*grpc_application_go.SecurityRule) []*grp
 			TargetServiceName: sr.TargetServiceName,
 			TargetPort:      sr.TargetPort,
 			AccessName:      sr.Access.String(),
+			AuthServiceGroupName: sr.AuthServiceGroupName,
 			AuthServices:    sr.AuthServices,
-			DeviceGroups:    sr.DeviceGroups,
+			DeviceGroupNames:sr.DeviceGroupNames,
+			DeviceGroupIds:  sr.DeviceGroupIds,
 		}
 		result = append(result, toAdd)
 	}
