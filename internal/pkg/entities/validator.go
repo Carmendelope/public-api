@@ -177,6 +177,13 @@ func ValidAddAppDescriptor(request *grpc_application_go.AddAppDescriptorRequest)
 		}
 	}
 
+	// NP-872. Check the device_ids is empty
+	for _, rule := range request.Rules {
+		if len(rule.DeviceGroupIds) > 0 {
+			return derrors.NewInvalidArgumentError(fmt.Sprintf("rule %s cannot have device_group_ids",rule.Name))
+		}
+	}
+
 	return nil
 }
 
