@@ -88,7 +88,7 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:76563ae9f5160b7053d18fc6d088187a1838117034d1c4debd3f7421e9eab9f2"
+  digest = "1:66bf7af261ca9dc489aed50ee0e1d2dee5266d54e170235a1d7c340f76380dce"
   name = "github.com/nalej/authx"
   packages = [
     "pkg/interceptor",
@@ -96,7 +96,7 @@
     "pkg/token",
   ]
   pruneopts = ""
-  revision = "64436cd2a18af0feb725b027c58c4aa235a0dc51"
+  revision = "85bb230b12e6bd477dddea941b4b3c7bbad6658c"
 
 [[projects]]
   digest = "1:0cc441f3dfe124dd74f44dd7e466dfc17cc7edff468094fbc3847a96b5ebf6f7"
@@ -235,12 +235,12 @@
   version = "v0.0.47"
 
 [[projects]]
-  digest = "1:1e7d571bfac19c7e5987941eeb223793cd2b249949b987fa31d04408707105b2"
+  digest = "1:e179c2d070921679d6497c5df13b3ccb5812a57258b0871efd8cd484f5cdd2a6"
   name = "github.com/nalej/grpc-unified-logging-go"
   packages = ["."]
   pruneopts = ""
-  revision = "c566655bd803e2d57ef351269e82f401ab6537c1"
-  version = "v0.0.1"
+  revision = "60f3e95c13426997010080b7170dfcde1fd6a0b2"
+  version = "v0.0.2"
 
 [[projects]]
   digest = "1:2b6ef08f73e4e40c25b3cbe313d9727cf01210696fe73af5a03231f5a1a4fb21"
@@ -351,7 +351,7 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:4f7cbb08d72e1163302e2d21415200a7bc281653f5f34eda8a15c0da11a337b0"
+  digest = "1:6e31aa1a9642e3f2538b29fab83ff31395d6ae07a6778ebb86626dbf27ed33cf"
   name = "golang.org/x/net"
   packages = [
     "context",
@@ -366,15 +366,15 @@
     "trace",
   ]
   pruneopts = ""
-  revision = "3a22650c66bd7f4fb6d1e8072ffd7b75c8a27898"
+  revision = "fe579d43d83210096a79b46dcca0e3721058393a"
 
 [[projects]]
   branch = "master"
-  digest = "1:fcf1709e13fe39cf6343de351e86a0683cc593fe02f5cdb3c0757084bca2fa7b"
+  digest = "1:d8c7c5e28d31494f02b25867de6827adaa90005f0ff3407f3336751fc0bc7432"
   name = "golang.org/x/sys"
   packages = ["unix"]
   pruneopts = ""
-  revision = "a9d3bda3a223baa6bba6ef412cb273f0fd163c05"
+  revision = "cc5685c2db1239775905f3911f0067c0fa74762f"
 
 [[projects]]
   digest = "1:5acd3512b047305d49e8763eef7ba423901e85d5dd2fd1e71778a0ea8de10bd4"
