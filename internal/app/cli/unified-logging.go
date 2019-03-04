@@ -57,7 +57,7 @@ func parseTime(timeString string) (*timestamp.Timestamp, error) {
 	return timeProto, nil
 }
 
-func (u *UnifiedLogging) Search(organizationId, instanceId, sgInstanceId, msgFilter, from, to string, redirectLog bool) {
+func (u *UnifiedLogging) Search(organizationId, instanceId, sgInstanceId, msgFilter, from, to string, desc bool, redirectLog bool) {
 	// Validate options
 	if organizationId == "" {
 		log.Fatal().Msg("organizationID cannot be empty")
@@ -89,6 +89,11 @@ func (u *UnifiedLogging) Search(organizationId, instanceId, sgInstanceId, msgFil
 	defer conn.Close()
 	defer cancel()
 
+	var order = grpc_unified_logging_go.SortOrder_ASC
+	if desc {
+		order = grpc_unified_logging_go.SortOrder_DESC
+	}
+
 	searchRequest := &grpc_unified_logging_go.SearchRequest{
 		OrganizationId: organizationId,
 		AppInstanceId: instanceId,
@@ -96,6 +101,7 @@ func (u *UnifiedLogging) Search(organizationId, instanceId, sgInstanceId, msgFil
 		MsgQueryFilter: msgFilter,
 		From: fromTime,
 		To: toTime,
+		Order: order,
 	}
 
 	result, err := client.Search(ctx, searchRequest)

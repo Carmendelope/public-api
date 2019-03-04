@@ -235,12 +235,12 @@
   version = "v0.0.48"
 
 [[projects]]
-  digest = "1:1e7d571bfac19c7e5987941eeb223793cd2b249949b987fa31d04408707105b2"
+  digest = "1:e179c2d070921679d6497c5df13b3ccb5812a57258b0871efd8cd484f5cdd2a6"
   name = "github.com/nalej/grpc-unified-logging-go"
   packages = ["."]
   pruneopts = ""
-  revision = "c566655bd803e2d57ef351269e82f401ab6537c1"
-  version = "v0.0.1"
+  revision = "60f3e95c13426997010080b7170dfcde1fd6a0b2"
+  version = "v0.0.2"
 
 [[projects]]
   digest = "1:2b6ef08f73e4e40c25b3cbe313d9727cf01210696fe73af5a03231f5a1a4fb21"

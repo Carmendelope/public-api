@@ -34,6 +34,7 @@ const emptyDeviceGroupId = "device_group_id cannot be empty"
 const emptyDeviceId = "device_id cannot be empty"
 const emptyDeviceGroupApiKey = "device_group_api_key cannot be empty"
 const emptyLabels = "labels cannot be empty"
+const invalidSortOrder = "sort order can only be ascending or descending"
 
 func ValidOrganizationId(organizationID *grpc_organization_go.OrganizationId) derrors.Error {
 	if organizationID.OrganizationId == "" {
@@ -333,6 +334,10 @@ func ValidSearchRequest(request *grpc_unified_logging_go.SearchRequest) derrors.
 	}
 	if request.AppInstanceId == "" {
 		return derrors.NewInvalidArgumentError(emptyInstanceId)
+	}
+	if request.Order != grpc_unified_logging_go.SortOrder_ASC &&
+		request.Order != grpc_unified_logging_go.SortOrder_DESC {
+		return derrors.NewInvalidArgumentError(invalidSortOrder)
 	}
 
 	return nil

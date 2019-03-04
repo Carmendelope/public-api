@@ -238,6 +238,32 @@ var _ = ginkgo.Describe("Unified Logging", func() {
 			}
 		})
 
+		ginkgo.It("should be able to retrieve logs in descending order", func() {
+			tests := make([]utils.TestResult, 0)
+			tests = append(tests, utils.TestResult{Token: token, Success: true, Msg: "Owner"})
+			tests = append(tests, utils.TestResult{Token: devToken, Success: true, Msg: "Developer"})
+			tests = append(tests, utils.TestResult{Token: operToken, Success: false, Msg: "Operator"})
+
+			request := &grpc_unified_logging_go.SearchRequest{
+				OrganizationId: organization,
+				AppInstanceId: appInstance,
+				Order: grpc_unified_logging_go.SortOrder_DESC,
+			}
+			for _, test := range tests {
+				ginkgo.By(test.Msg)
+				ctx, cancel := ithelpers.GetContext(test.Token)
+				defer cancel()
+				result, err := client.Search(ctx, request)
+				if test.Success {
+					gomega.Expect(err).To(gomega.Succeed())
+					gomega.Expect(result.OrganizationId).Should(gomega.Equal(organization))
+					gomega.Expect(result.AppInstanceId).Should(gomega.Equal(appInstance))
+				} else {
+					gomega.Expect(err).NotTo(gomega.Succeed())
+				}
+			}
+		})
+
 		ginkgo.It("should not accept an empty search request", func() {
 			request := &grpc_unified_logging_go.SearchRequest{}
 
