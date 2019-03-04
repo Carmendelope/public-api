@@ -25,7 +25,6 @@ import (
 	"github.com/nalej/public-api/internal/pkg/utils"
 	"github.com/onsi/ginkgo"
 	"github.com/onsi/gomega"
-	"github.com/onsi/gomega/gstruct"
 	"github.com/rs/zerolog/log"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/test/bufconn"
@@ -228,14 +227,11 @@ var _ = ginkgo.Describe("Unified Logging", func() {
 					gomega.Expect(err).To(gomega.Succeed())
 					gomega.Expect(result.OrganizationId).Should(gomega.Equal(organization))
 					gomega.Expect(result.AppInstanceId).Should(gomega.Equal(appInstance))
-					gomega.Expect(*result.GetFrom()).To(gstruct.MatchFields(gstruct.IgnoreExtras, gstruct.Fields{
-						"Seconds": gomega.Equal(int64(0)),
-						"Nanos": gomega.Equal(int32(0)),
-					}))
-					gomega.Expect(*result.GetTo()).To(gstruct.MatchFields(gstruct.IgnoreExtras, gstruct.Fields{
-						"Seconds": gomega.Equal(to.Seconds),
-						"Nanos": gomega.Equal(to.Nanos),
-					}))
+					// We don't check from/to, as we're dealing with empty data in this
+					// test. This means there are no real minimum and maximum timestamps
+					// and from/to are nil.
+					gomega.Expect(result.GetFrom()).Should(gomega.BeNil())
+					gomega.Expect(result.GetTo()).Should(gomega.BeNil())
 				} else {
 					gomega.Expect(err).NotTo(gomega.Succeed())
 				}
