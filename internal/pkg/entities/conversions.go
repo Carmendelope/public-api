@@ -169,42 +169,33 @@ func ToPublicAPIInstanceMetadata (metadata * grpc_application_go.InstanceMetadat
 }
 
 func ToPublicAPIGroupInstances(source []*grpc_application_go.ServiceGroupInstance) []*grpc_public_api_go.ServiceGroupInstance {
-	// TODO: this code removes repeated groups (This code fixs the NP-864-Review complex descriptors deployment)
-	//groupNames := make (map[string]bool, 0)
-
 	result := make([]*grpc_public_api_go.ServiceGroupInstance, 0)
-	for _, sgi := range source { // TODO: uncomment
-	//for i:= len(source)-1; i >=0; i--{ // TODO: remove
-	//	sgi := source[i] // TODO: remove
-	//	_, exists := groupNames[sgi.ServiceGroupId] // TODO: remove
-	//	if !exists { // TODO: remove
-	//		groupNames[sgi.ServiceGroupId] = true
-			serviceInstance := make([]*grpc_public_api_go.ServiceInstance, len(sgi.ServiceInstances))
-			serviceInstance = ToPublicAPIServiceInstances(sgi.ServiceInstances)
-			var spec *grpc_public_api_go.ServiceGroupDeploymentSpecs
-			if sgi.Specs != nil {
-				spec = &grpc_public_api_go.ServiceGroupDeploymentSpecs{
-					NumReplicas:         sgi.Specs.NumReplicas,
-					MultiClusterReplica: sgi.Specs.MultiClusterReplica,
+	for _, sgi := range source {
+		serviceInstance := make([]*grpc_public_api_go.ServiceInstance, len(sgi.ServiceInstances))
+		serviceInstance = ToPublicAPIServiceInstances(sgi.ServiceInstances)
+		var spec *grpc_public_api_go.ServiceGroupDeploymentSpecs
+		if sgi.Specs != nil {
+			spec = &grpc_public_api_go.ServiceGroupDeploymentSpecs{
+				NumReplicas:         sgi.Specs.NumReplicas,
+				MultiClusterReplica: sgi.Specs.MultiClusterReplica,
 				}
-			}
+		}
 
-			toAdd := &grpc_public_api_go.ServiceGroupInstance{
-				OrganizationId:         sgi.OrganizationId,
-				AppDescriptorId:        sgi.AppDescriptorId,
-				AppInstanceId:          sgi.AppInstanceId,
-				ServiceGroupId:         sgi.ServiceGroupId,
-				ServiceGroupInstanceId: sgi.ServiceGroupInstanceId,
-				Name:                   sgi.Name,
-				ServiceInstances:       serviceInstance,
-				PolicyName:             sgi.Policy.String(),
-				StatusName:             sgi.Status.String(),
-				Metadata:               ToPublicAPIInstanceMetadata(sgi.Metadata),
-				Specs:                  spec,
-				Labels:                 sgi.Labels,
-			}
-			result = append(result, toAdd)
-	//	} // TODO: remove
+		toAdd := &grpc_public_api_go.ServiceGroupInstance{
+			OrganizationId:         sgi.OrganizationId,
+			AppDescriptorId:        sgi.AppDescriptorId,
+			AppInstanceId:          sgi.AppInstanceId,
+			ServiceGroupId:         sgi.ServiceGroupId,
+			ServiceGroupInstanceId: sgi.ServiceGroupInstanceId,
+			Name:                   sgi.Name,
+			ServiceInstances:       serviceInstance,
+			PolicyName:             sgi.Policy.String(),
+			StatusName:             sgi.Status.String(),
+			Metadata:               ToPublicAPIInstanceMetadata(sgi.Metadata),
+			Specs:                  spec,
+			Labels:                 sgi.Labels,
+		}
+		result = append(result, toAdd)
 	}
 	return result
 }
