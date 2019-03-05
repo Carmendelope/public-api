@@ -108,11 +108,11 @@ func GetAddDescriptorRequest(organizationID string) *grpc_application_go.AddAppD
 		OrganizationId: organizationID,
 		ServiceGroupId: "Sg_1",
 		ServiceId:      "1",
-		Name:           "Simple MySQL service",
+		Name:           "simple-mysql-service",
 		Type:           grpc_application_go.ServiceType_DOCKER,
 		Image:          "mysql:5.6",
 		Specs:          &grpc_application_go.DeploySpecs{Replicas: 1},
-		Credentials:    &grpc_application_go.ImageCredentials{Username:"user_name", Password:"***", Email:"email@email.es"},
+		Credentials:    &grpc_application_go.ImageCredentials{Username:"user_name", Password:"password", Email:"email@email.es"},
 		Storage:        []*grpc_application_go.Storage{&grpc_application_go.Storage{MountPath: "/tmp"}},
 		ExposedPorts: []*grpc_application_go.Port{&grpc_application_go.Port{
 			Name: "mysqlport", InternalPort: 3306, ExposedPort: 3306,
