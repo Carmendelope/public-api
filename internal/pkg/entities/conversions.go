@@ -9,6 +9,7 @@ import (
 	"github.com/nalej/grpc-device-manager-go"
 	"github.com/nalej/grpc-infrastructure-go"
 	"github.com/nalej/grpc-public-api-go"
+	"strings"
 )
 
 // ToInfraClusterUpdate transforms a public api update request into a infrastructure one.
@@ -92,6 +93,16 @@ func ToPublicAPIStorage(source []*grpc_application_go.Storage) []*grpc_public_ap
 	return result
 }
 
+
+func hideCredentials (credentials * grpc_application_go.ImageCredentials) *grpc_application_go.ImageCredentials {
+	return &grpc_application_go.ImageCredentials{
+		Username: credentials.Username,
+		Password: strings.Repeat("*", len(credentials.Password)),
+		Email: credentials.Email,
+		DockerRepository:credentials.DockerRepository,
+	}
+}
+
 func ToPublicAPIServiceInstances(source []*grpc_application_go.ServiceInstance) []*grpc_public_api_go.ServiceInstance {
 	result := make([]*grpc_public_api_go.ServiceInstance, 0)
 	for _, si := range source {
@@ -111,7 +122,7 @@ func ToPublicAPIServiceInstances(source []*grpc_application_go.ServiceInstance) 
 			Name:                   si.Name,
 			TypeName:               si.Type.String(),
 			Image:                  si.Image,
-			Credentials:            si.Credentials,
+			Credentials:            hideCredentials(si.Credentials),
 			Specs:                  si.Specs,
 			Storage:                ToPublicAPIStorage(si.Storage),
 			ExposedPorts:           ToPublicAPIPorts(si.ExposedPorts),
@@ -159,15 +170,15 @@ func ToPublicAPIInstanceMetadata (metadata * grpc_application_go.InstanceMetadat
 
 func ToPublicAPIGroupInstances(source []*grpc_application_go.ServiceGroupInstance) []*grpc_public_api_go.ServiceGroupInstance {
 	// TODO: this code removes repeated groups (This code fixs the NP-864-Review complex descriptors deployment)
-	groupNames := make (map[string]bool, 0)
+	//groupNames := make (map[string]bool, 0)
 
 	result := make([]*grpc_public_api_go.ServiceGroupInstance, 0)
-	//for _, sgi := range source { // TODO: uncomment
-	for i:= len(source)-1; i >=0; i--{ // TODO: remove
-		sgi := source[i] // TODO: remove
-		_, exists := groupNames[sgi.ServiceGroupId] // TODO: remove
-		if !exists { // TODO: remove
-			groupNames[sgi.ServiceGroupId] = true
+	for _, sgi := range source { // TODO: uncomment
+	//for i:= len(source)-1; i >=0; i--{ // TODO: remove
+	//	sgi := source[i] // TODO: remove
+	//	_, exists := groupNames[sgi.ServiceGroupId] // TODO: remove
+	//	if !exists { // TODO: remove
+	//		groupNames[sgi.ServiceGroupId] = true
 			serviceInstance := make([]*grpc_public_api_go.ServiceInstance, len(sgi.ServiceInstances))
 			serviceInstance = ToPublicAPIServiceInstances(sgi.ServiceInstances)
 			var spec *grpc_public_api_go.ServiceGroupDeploymentSpecs
@@ -193,7 +204,7 @@ func ToPublicAPIGroupInstances(source []*grpc_application_go.ServiceGroupInstanc
 				Labels:                 sgi.Labels,
 			}
 			result = append(result, toAdd)
-		} // TODO: remove
+	//	} // TODO: remove
 	}
 	return result
 }

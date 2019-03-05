@@ -107,12 +107,12 @@
   version = "v2.0.0"
 
 [[projects]]
-  digest = "1:dee26ad9b37506114d20da3305065059a63eea769e9a71b201c633d0492985bd"
+  digest = "1:a3fa47f2819316734d195eafbe48fe76e6e14c770298c6fb7996d286bec57d23"
   name = "github.com/nalej/grpc-application-go"
   packages = ["."]
   pruneopts = ""
-  revision = "4d4666231ad69be0ab555e403df520820bedb758"
-  version = "v0.0.52"
+  revision = "25d8c4825f3cfe78fc5ef911f9371b671bdb7350"
+  version = "v0.0.53"
 
 [[projects]]
   digest = "1:a7eb4f7cd99e73fd69c09cb64789379a3ee4d27c04f6ce2c0fcedafc297b9c29"
@@ -303,8 +303,6 @@
   packages = [
     ".",
     "format",
-    "gstruct",
-    "gstruct/errors",
     "internal/assertion",
     "internal/asyncassertion",
     "internal/oraclematcher",
@@ -370,11 +368,11 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:d39075e87eb635fd96a33a40d3f3281a86858de8420ab599880b9cd4f32cd372"
+  digest = "1:d65b7c485c00221348819d9365b2b6bbb9b9042f5bb7ef04a65ad6d34daa4d3b"
   name = "golang.org/x/sys"
   packages = ["unix"]
   pruneopts = ""
-  revision = "c2f5717e611cf8e89a852a41081355194d80c943"
+  revision = "30e92a19ae4a77dde818b8c3d41d51e4850cba12"
 
 [[projects]]
   digest = "1:5acd3512b047305d49e8763eef7ba423901e85d5dd2fd1e71778a0ea8de10bd4"
@@ -526,7 +524,6 @@
     "github.com/nalej/grpc-utils/pkg/tools",
     "github.com/onsi/ginkgo",
     "github.com/onsi/gomega",
-    "github.com/onsi/gomega/gstruct",
     "github.com/rs/zerolog",
     "github.com/rs/zerolog/log",
     "github.com/spf13/cobra",
