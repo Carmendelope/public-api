@@ -9,7 +9,6 @@ import (
 	"github.com/nalej/grpc-device-manager-go"
 	"github.com/nalej/grpc-infrastructure-go"
 	"github.com/nalej/grpc-public-api-go"
-	"strings"
 )
 
 // ToInfraClusterUpdate transforms a public api update request into a infrastructure one.
@@ -97,7 +96,7 @@ func ToPublicAPIStorage(source []*grpc_application_go.Storage) []*grpc_public_ap
 func hideCredentials (credentials * grpc_application_go.ImageCredentials) *grpc_application_go.ImageCredentials {
 	return &grpc_application_go.ImageCredentials{
 		Username: credentials.Username,
-		Password: strings.Repeat("*", len(credentials.Password)),
+		Password: "redacted",
 		Email: credentials.Email,
 		DockerRepository:credentials.DockerRepository,
 	}
