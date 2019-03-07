@@ -107,12 +107,12 @@
   version = "v2.0.0"
 
 [[projects]]
-  digest = "1:a3fa47f2819316734d195eafbe48fe76e6e14c770298c6fb7996d286bec57d23"
+  digest = "1:78be745c0683ba966e8aea204315337c74c8e719e34952c53c66d5d148306393"
   name = "github.com/nalej/grpc-application-go"
   packages = ["."]
   pruneopts = ""
-  revision = "25d8c4825f3cfe78fc5ef911f9371b671bdb7350"
-  version = "v0.0.53"
+  revision = "7769cdfff318a31f0cfef2c42b41a91960a626d6"
+  version = "v0.0.55"
 
 [[projects]]
   digest = "1:a7eb4f7cd99e73fd69c09cb64789379a3ee4d27c04f6ce2c0fcedafc297b9c29"
@@ -147,12 +147,12 @@
   version = "v0.0.30"
 
 [[projects]]
-  digest = "1:a54a4bb061fd1d11bd13432083767c36bdf5cc70ab98a0b095eafdfc3e5c0b47"
+  digest = "1:fc00ad606e86b3ef82ed233808936d0138a84c4f11d17e55c9ee0e0613343b98"
   name = "github.com/nalej/grpc-conductor-go"
   packages = ["."]
   pruneopts = ""
-  revision = "6e757fc6dd788ad6e55332f8bc1645b2dd415faa"
-  version = "v0.0.85"
+  revision = "8b67c6639581af49477ef01a8a8959a305c72d68"
+  version = "v0.0.86"
 
 [[projects]]
   digest = "1:8f1edf5c58d91034b9d696926aeddada013e74e3c92399f0241aa5f43869b20f"
@@ -368,11 +368,11 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:d65b7c485c00221348819d9365b2b6bbb9b9042f5bb7ef04a65ad6d34daa4d3b"
+  digest = "1:acd61a173af5a8fc666328598f3aed921b0947ff2da2eeb548f7ba77e9a0cbd0"
   name = "golang.org/x/sys"
   packages = ["unix"]
   pruneopts = ""
-  revision = "30e92a19ae4a77dde818b8c3d41d51e4850cba12"
+  revision = "b294cbcfc56d2a65a30c02c78722b5df061e99b8"
 
 [[projects]]
   digest = "1:5acd3512b047305d49e8763eef7ba423901e85d5dd2fd1e71778a0ea8de10bd4"
@@ -411,7 +411,7 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:bedc60c52eb064eca6d7ce3321602522c5f50b6635aa7bc93c5624f1e65f9eda"
+  digest = "1:4ade19a0f34739fa22227cd9d2018e0dd7c119171c93d76434421e54d54792b6"
   name = "google.golang.org/genproto"
   packages = [
     "googleapis/api/annotations",
@@ -419,7 +419,7 @@
     "googleapis/rpc/status",
   ]
   pruneopts = ""
-  revision = "4f5b463f9597cbe0dd13a6a2cd4f85e788d27508"
+  revision = "6e86cb5d2f12401bdd82a5eccbd701b5a697e63e"
 
 [[projects]]
   digest = "1:b6c17b0c657f047118ae59b358950b28515914512cf3de02388cc42e33a92520"
