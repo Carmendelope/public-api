@@ -141,7 +141,6 @@ func ToPublicAPIServiceInstances(source []*grpc_application_go.ServiceInstance) 
 			DeployedOnClusterId:    si.DeployedOnClusterId,
 			RunArguments:           si.RunArguments,
 			Info:                   si.Info,
-			DeploymentSelectors:    si.DeploymentSelectors,
 		}
 		result = append(result, toAdd)
 	}
@@ -184,6 +183,7 @@ func ToPublicAPIGroupInstances(source []*grpc_application_go.ServiceGroupInstanc
 			spec = &grpc_public_api_go.ServiceGroupDeploymentSpecs{
 				NumReplicas:         sgi.Specs.NumReplicas,
 				MultiClusterReplica: sgi.Specs.MultiClusterReplica,
+				DeploymentSelectors: sgi.Specs.DeploymentSelectors,
 				}
 		}
 
