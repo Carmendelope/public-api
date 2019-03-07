@@ -120,7 +120,6 @@ func GetAddDescriptorRequest(organizationID string) *grpc_application_go.AddAppD
 		EnvironmentVariables: map[string]string{"MYSQL_ROOT_PASSWORD": "root"},
 		Configs:              []*grpc_application_go.ConfigFile{&grpc_application_go.ConfigFile{MountPath: "/tmp"}},
 		Labels:               map[string]string{"app": "simple-app", "component": "mysql"},
-		DeploymentSelectors: map[string]string{"clusterSelector":"EDGE"},
 	}
 
 	group1 := &grpc_application_go.ServiceGroup{
