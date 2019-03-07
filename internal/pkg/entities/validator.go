@@ -171,11 +171,7 @@ func ValidAddAppDescriptor(request *grpc_application_go.AddAppDescriptorRequest)
 		if len(g.Services) == 0 {
 			return derrors.NewInvalidArgumentError(fmt.Sprintf("group %s has no services",g.Name))
 		}
-		for _, s := range g.Services {
-			if s.OrganizationId != request.OrganizationId {
-				return derrors.NewInvalidArgumentError("organization_id mismatch")
-			}
-		}
+
 	}
 
 	// NP-872. Check the device_ids is empty
