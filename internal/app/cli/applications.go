@@ -56,13 +56,6 @@ func (a *Applications) createAddDescriptorRequest(organizationID string, descrip
 	}
 
 	addDescriptorRequest.OrganizationId = organizationID
-	for _, g := range addDescriptorRequest.Groups {
-		g.OrganizationId = organizationID
-		for _, s := range g.Services {
-			s.OrganizationId = organizationID
-		}
-	}
-
 
 	return addDescriptorRequest, nil
 }

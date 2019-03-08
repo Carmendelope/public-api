@@ -94,6 +94,7 @@ func ToPublicAPIStorage(source []*grpc_application_go.Storage) []*grpc_public_ap
 
 
 func hideCredentials (credentials * grpc_application_go.ImageCredentials) *grpc_application_go.ImageCredentials {
+
 	return &grpc_application_go.ImageCredentials{
 		Username: credentials.Username,
 		Password: "redacted",
@@ -104,10 +105,16 @@ func hideCredentials (credentials * grpc_application_go.ImageCredentials) *grpc_
 
 func ToPublicAPIServiceInstances(source []*grpc_application_go.ServiceInstance) []*grpc_public_api_go.ServiceInstance {
 	result := make([]*grpc_public_api_go.ServiceInstance, 0)
+
+
 	for _, si := range source {
 		endpoints := make([]string,len(si.Endpoints))
 		for i,e := range si.Endpoints {
 			endpoints[i] = e.Fqdn
+		}
+		credentials := si.Credentials
+		if credentials != nil {
+			credentials = hideCredentials(credentials)
 		}
 
 		toAdd := &grpc_public_api_go.ServiceInstance{
@@ -121,7 +128,7 @@ func ToPublicAPIServiceInstances(source []*grpc_application_go.ServiceInstance) 
 			Name:                   si.Name,
 			TypeName:               si.Type.String(),
 			Image:                  si.Image,
-			Credentials:            hideCredentials(si.Credentials),
+			Credentials:            credentials,
 			Specs:                  si.Specs,
 			Storage:                ToPublicAPIStorage(si.Storage),
 			ExposedPorts:           ToPublicAPIPorts(si.ExposedPorts),
@@ -134,7 +141,6 @@ func ToPublicAPIServiceInstances(source []*grpc_application_go.ServiceInstance) 
 			DeployedOnClusterId:    si.DeployedOnClusterId,
 			RunArguments:           si.RunArguments,
 			Info:                   si.Info,
-			DeploymentSelectors:    si.DeploymentSelectors,
 		}
 		result = append(result, toAdd)
 	}
@@ -177,6 +183,7 @@ func ToPublicAPIGroupInstances(source []*grpc_application_go.ServiceGroupInstanc
 			spec = &grpc_public_api_go.ServiceGroupDeploymentSpecs{
 				NumReplicas:         sgi.Specs.NumReplicas,
 				MultiClusterReplica: sgi.Specs.MultiClusterReplica,
+				DeploymentSelectors: sgi.Specs.DeploymentSelectors,
 				}
 		}
 
