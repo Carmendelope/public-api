@@ -191,9 +191,6 @@ func (a *Applications) getComplexDescriptor(sType grpc_application_go.StorageTyp
 		AuthServices:    []string{"heartbeat"},
 	}
 
-	/*
-	     - grpc_application_go.PortAccess_APP_SERVICES not supported yet
-
 	secRuleMysql := grpc_application_go.SecurityRule{
 		RuleId:          "002",
 		Name:            "allow access to mysql",
@@ -212,7 +209,7 @@ func (a *Applications) getComplexDescriptor(sType grpc_application_go.StorageTyp
 		Access:          grpc_application_go.PortAccess_APP_SERVICES,
 		AuthServices:    []string{"kibana", "heartbeat"},
 	}
-*/
+
 	secRuleK := grpc_application_go.SecurityRule{
 		RuleId:          "003",
 		Name:            "allow access to kibana",
@@ -235,7 +232,7 @@ func (a *Applications) getComplexDescriptor(sType grpc_application_go.StorageTyp
 	return &grpc_application_go.AddAppDescriptorRequest{
 		Name:        "Sample application with 5 elements",
 		Labels:      map[string]string{"app": "simple-app"},
-		Rules:       []*grpc_application_go.SecurityRule{&secRuleWP, &secRuleK},
+		Rules:       []*grpc_application_go.SecurityRule{&secRuleWP, &secRuleK, &secRuleMysql, &secRuleElastic},
 		Groups:      []*grpc_application_go.ServiceGroup{group1},
 	}
 }
