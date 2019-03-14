@@ -66,7 +66,6 @@ func (a *Applications) getBasicDescriptor(sType grpc_application_go.StorageType)
 	secRule := grpc_application_go.SecurityRule{
 		Name:            "allow access to wordpress",
 		Access:          grpc_application_go.PortAccess_PUBLIC,
-		RuleId:          "001",
 		TargetPort:      80,
 		TargetServiceName: "simple-wordpress",
 		TargetServiceGroupName: "application",
@@ -83,7 +82,6 @@ func (a *Applications) getBasicDescriptor(sType grpc_application_go.StorageType)
 func (a *Applications) getComplexDescriptor(sType grpc_application_go.StorageType) *grpc_application_go.AddAppDescriptorRequest {
 
 	service1 := &grpc_application_go.Service{
-		ServiceGroupId: "application",
 		Name:        "simple-mysql",
 		Type:        grpc_application_go.ServiceType_DOCKER,
 		Image:       "mysql:5.6",
@@ -97,7 +95,6 @@ func (a *Applications) getComplexDescriptor(sType grpc_application_go.StorageTyp
 	}
 
 	service2 := &grpc_application_go.Service{
-		ServiceGroupId: "application",
 		Name:        "simple-wordpress",
 		Type:        grpc_application_go.ServiceType_DOCKER,
 		Image:       "wordpress:5.0.0",
@@ -124,8 +121,6 @@ func (a *Applications) getComplexDescriptor(sType grpc_application_go.StorageTyp
 	}
 
 	service3 := &grpc_application_go.Service{
-		ServiceGroupId: "application",
-		ServiceId:   "kibana",
 		Name:        "kibana",
 		Type:        grpc_application_go.ServiceType_DOCKER,
 		Image:       "docker.elastic.co/kibana/kibana:6.4.2",
@@ -144,8 +139,6 @@ func (a *Applications) getComplexDescriptor(sType grpc_application_go.StorageTyp
 	}
 
 	service4 := &grpc_application_go.Service{
-		ServiceGroupId: "application",
-		ServiceId:   "elastic",
 		Name:        "elastic",
 		Type:        grpc_application_go.ServiceType_DOCKER,
 		Image:       "docker.elastic.co/elasticsearch/elasticsearch:6.4.2",
@@ -164,15 +157,12 @@ func (a *Applications) getComplexDescriptor(sType grpc_application_go.StorageTyp
 	}
 
 	service5 := &grpc_application_go.Service{
-		ServiceGroupId: "application",
-		ServiceId:   "heartbeat",
 		Name:        "heartbeat",
 		Type:        grpc_application_go.ServiceType_DOCKER,
 		Image:       "docker.elastic.co/beats/heartbeat:6.4.2",
 		Specs: &grpc_application_go.DeploySpecs{Replicas: 1},
 			Configs:              []*grpc_application_go.ConfigFile{
 				&grpc_application_go.ConfigFile{
-					ConfigFileId:         "heartbeat-config",
 					Content:              []byte(HeartBeatConfigContent),
 					MountPath:            "/conf/heartbeat.yml",
 				},
@@ -184,7 +174,6 @@ func (a *Applications) getComplexDescriptor(sType grpc_application_go.StorageTyp
 	secRuleWP := grpc_application_go.SecurityRule{
 		Name:            "allow access to wordpress",
 		Access:          grpc_application_go.PortAccess_PUBLIC,
-		RuleId:          "001",
 		TargetPort:      80,
 		TargetServiceName: "simple-wordpress",
 		TargetServiceGroupName: "application",
@@ -193,7 +182,6 @@ func (a *Applications) getComplexDescriptor(sType grpc_application_go.StorageTyp
 	secRuleWP2 := grpc_application_go.SecurityRule{
 		Name:            "allow access to wordpress to heartbeat",
 		Access:          grpc_application_go.PortAccess_APP_SERVICES,
-		RuleId:          "001",
 		TargetPort:      80,
 		TargetServiceName: "simple-wordpress",
 		TargetServiceGroupName: "application",
@@ -202,7 +190,6 @@ func (a *Applications) getComplexDescriptor(sType grpc_application_go.StorageTyp
 	}
 
 	secRuleMysql := grpc_application_go.SecurityRule{
-		RuleId:          "002",
 		Name:            "allow access to mysql",
 		TargetPort:      3306,
 		TargetServiceName: "simple-mysql",
@@ -212,7 +199,6 @@ func (a *Applications) getComplexDescriptor(sType grpc_application_go.StorageTyp
 		AuthServices:    []string{"simple-wordpress"},
 	}
 	secRuleElastic := grpc_application_go.SecurityRule{
-		RuleId:          "004",
 		Name:            "allow access to elastic",
 		TargetPort:      9200,
 		TargetServiceName: "elastic",
@@ -223,7 +209,6 @@ func (a *Applications) getComplexDescriptor(sType grpc_application_go.StorageTyp
 	}
 
 	secRuleK := grpc_application_go.SecurityRule{
-		RuleId:          "003",
 		Name:            "allow access to kibana",
 		TargetPort:      5601,
 		TargetServiceName: "kibana",
@@ -306,7 +291,6 @@ func (a *Applications) getMultiReplicaDescriptor(sType grpc_application_go.Stora
 	secRule := grpc_application_go.SecurityRule{
 		Name:            "allow access to wordpress",
 		Access:          grpc_application_go.PortAccess_PUBLIC,
-		RuleId:          "001",
 		TargetPort:      80,
 		TargetServiceName: "simple-wordpress",
 		TargetServiceGroupName: "front",
