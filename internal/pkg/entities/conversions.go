@@ -200,6 +200,7 @@ func ToPublicAPIGroupInstances(source []*grpc_application_go.ServiceGroupInstanc
 			Metadata:               ToPublicAPIInstanceMetadata(sgi.Metadata),
 			Specs:                  spec,
 			Labels:                 sgi.Labels,
+			GlobalFqdn:             sgi.GlobalFqdn,
 		}
 		result = append(result, toAdd)
 	}

@@ -9,6 +9,7 @@ import (
 	"github.com/nalej/derrors"
 	"github.com/nalej/grpc-infrastructure-go"
 	"github.com/nalej/grpc-infrastructure-manager-go"
+	"github.com/nalej/grpc-infrastructure-monitor-go"
 	"github.com/nalej/grpc-organization-go"
 	"github.com/nalej/grpc-public-api-go"
 	"github.com/nalej/grpc-utils/pkg/conversions"
@@ -90,4 +91,9 @@ func (h *Handler) Update(ctx context.Context, updateClusterRequest *grpc_public_
 		return nil, conversions.ToGRPCError(err)
 	}
 	return h.Manager.Update(updateClusterRequest)
+}
+
+
+func (h *Handler) Monitor(context.Context, *grpc_infrastructure_monitor_go.ClusterSummaryRequest) (*grpc_infrastructure_monitor_go.ClusterSummary, error){
+	return nil, derrors.NewUnimplementedError("not implemented yet!")
 }
