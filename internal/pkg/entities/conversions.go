@@ -248,6 +248,7 @@ func ToPublicAPIAppInstance(source *grpc_application_go.AppInstance) *grpc_publi
 		Groups:               ToPublicAPIGroupInstances(source.Groups),
 		StatusName:           source.Status.String(),
 		Metadata:			  metadata,
+		Info: 				  source.Info,
 	}
 }
 
