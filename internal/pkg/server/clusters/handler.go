@@ -94,6 +94,17 @@ func (h *Handler) Update(ctx context.Context, updateClusterRequest *grpc_public_
 }
 
 
-func (h *Handler) Monitor(context.Context, *grpc_infrastructure_monitor_go.ClusterSummaryRequest) (*grpc_infrastructure_monitor_go.ClusterSummary, error){
-	return nil, derrors.NewUnimplementedError("not implemented yet!")
+func (h *Handler) Monitor(ctx context.Context, request *grpc_infrastructure_monitor_go.ClusterSummaryRequest) (*grpc_infrastructure_monitor_go.ClusterSummary, error){
+	rm, err := authhelper.GetRequestMetadata(ctx)
+	if err != nil {
+		return nil, conversions.ToGRPCError(err)
+	}
+	if request.OrganizationId != rm.OrganizationID {
+		return nil, derrors.NewPermissionDeniedError("cannot access requested OrganizationID")
+	}
+	err = entities.ValidMonitorRequest(request)
+	if err != nil {
+		return nil, conversions.ToGRPCError(err)
+	}
+	return h.Manager.Monitor(request)
 }

@@ -10,6 +10,7 @@ import (
 	"github.com/nalej/grpc-device-manager-go"
 	"github.com/nalej/grpc-infrastructure-go"
 	"github.com/nalej/grpc-infrastructure-manager-go"
+	"github.com/nalej/grpc-infrastructure-monitor-go"
 	"github.com/nalej/grpc-organization-go"
 	"github.com/nalej/grpc-public-api-go"
 	"github.com/nalej/grpc-unified-logging-go"
@@ -54,6 +55,7 @@ type Clients struct {
 	appClient   grpc_application_manager_go.ApplicationManagerClient
 	deviceClient grpc_device_manager_go.DevicesClient
 	ulClient    grpc_unified_logging_go.CoordinatorClient
+	imClient    grpc_infrastructure_monitor_go.CoordinatorClient
 }
 
 func (s *Service) GetClients() (*Clients, derrors.Error) {
@@ -81,6 +83,10 @@ func (s *Service) GetClients() (*Clients, derrors.Error) {
 	if err != nil {
 		return nil, derrors.AsError(err, "cannot create connection with unified logging coordinator")
 	}
+	imConn, err := grpc.Dial(s.Configuration.InfrastructureMonitorAddress, grpc.WithInsecure())
+	if err != nil {
+		return nil, derrors.AsError(err, "cannot create connection with infrastructure monitor coordinator")
+	}
 
 	oClient := grpc_organization_go.NewOrganizationsClient(smConn)
 	cClient := grpc_infrastructure_go.NewClustersClient(smConn)
@@ -90,8 +96,9 @@ func (s *Service) GetClients() (*Clients, derrors.Error) {
 	appClient := grpc_application_manager_go.NewApplicationManagerClient(appConn)
 	deviceClient := grpc_device_manager_go.NewDevicesClient(devConn)
 	ulClient := grpc_unified_logging_go.NewCoordinatorClient(ulConn)
+	imClient := grpc_infrastructure_monitor_go.NewCoordinatorClient(imConn)
 
-	return &Clients{oClient, cClient, nClient, infraClient, umClient, appClient, deviceClient, ulClient}, nil
+	return &Clients{oClient, cClient, nClient, infraClient, umClient, appClient, deviceClient, ulClient, imClient}, nil
 }
 
 // Run the service, launch the REST service handler.
@@ -193,7 +200,7 @@ func (s *Service) LaunchGRPC(authConfig *interceptor.AuthorizationConfig) error 
 	orgManager := organizations.NewManager(clients.orgClient)
 	orgHandler := organizations.NewHandler(orgManager)
 
-	clusManager := clusters.NewManager(clients.clusClient, clients.nodeClient, clients.infraClient)
+	clusManager := clusters.NewManager(clients.clusClient, clients.nodeClient, clients.infraClient, clients.imClient)
 	clusHandler := clusters.NewHandler(clusManager)
 
 	nodesManager := nodes.NewManager(clients.nodeClient)

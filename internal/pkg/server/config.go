@@ -25,6 +25,8 @@ type Config struct {
 	DeviceManagerAddress string
 	// UnifiedLoggingAddress with the host:port to connect to the Unified Logging Coordinator component.
 	UnifiedLoggingAddress string
+	// InfrastructureMonitorAddress with the host:port to connect to the Infrastructure Monitor Coordinator component.
+	InfrastructureMonitorAddress string
 	// AuthSecret contains the shared authx secret.
 	AuthSecret string
 	// AuthHeader contains the name of the target header.
@@ -67,6 +69,10 @@ func (conf *Config) Validate() derrors.Error {
 		return derrors.NewInvalidArgumentError("unifiedLoggingAddress must be set")
 	}
 
+	if conf.InfrastructureMonitorAddress == "" {
+		return derrors.NewInvalidArgumentError("infrastructureMonitorAddress must be set")
+	}
+
 	if conf.AuthHeader == "" || conf.AuthSecret == "" {
 		return derrors.NewInvalidArgumentError("Authorization header and secret must be set")
 	}
@@ -92,6 +98,7 @@ func (conf *Config) Print() {
 	log.Info().Str("URL", conf.ApplicationsManagerAddress).Msg("Applications Manager")
 	log.Info().Str("URL", conf.UserManagerAddress).Msg("User Manager")
 	log.Info().Str("URL", conf.UnifiedLoggingAddress).Msg("Unified Logging Coordinator Service")
+	log.Info().Str("URL", conf.InfrastructureMonitorAddress).Msg("Infrastructure Monitor Coordinator Service")
 	log.Info().Str("URL", conf.DeviceManagerAddress).Msg("Device Manager Service")
 	log.Info().Str("header", conf.AuthHeader).Str("secret", strings.Repeat("*", len(conf.AuthSecret))).Msg("Authorization")
 	log.Info().Str("path", conf.AuthConfigPath).Msg("Permissions file")

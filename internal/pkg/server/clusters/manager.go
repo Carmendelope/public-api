@@ -9,6 +9,7 @@ import (
 
 	"github.com/nalej/grpc-infrastructure-go"
 	"github.com/nalej/grpc-infrastructure-manager-go"
+	"github.com/nalej/grpc-infrastructure-monitor-go"
 	"github.com/nalej/grpc-installer-go"
 	"github.com/nalej/grpc-organization-go"
 	"github.com/nalej/grpc-public-api-go"
@@ -20,14 +21,16 @@ type Manager struct {
 	clustClient grpc_infrastructure_go.ClustersClient
 	nodeClient  grpc_infrastructure_go.NodesClient
 	infraClient grpc_infrastructure_manager_go.InfrastructureManagerClient
+	imClient    grpc_infrastructure_monitor_go.CoordinatorClient
 }
 
 // NewManager creates a Manager using a set of clients.
 func NewManager(clustClient grpc_infrastructure_go.ClustersClient,
 	nodeClient grpc_infrastructure_go.NodesClient,
-	infraClient grpc_infrastructure_manager_go.InfrastructureManagerClient) Manager {
+	infraClient grpc_infrastructure_manager_go.InfrastructureManagerClient,
+	imClient grpc_infrastructure_monitor_go.CoordinatorClient) Manager {
 	return Manager{
-		clustClient: clustClient, nodeClient: nodeClient, infraClient: infraClient,
+		clustClient: clustClient, nodeClient: nodeClient, infraClient: infraClient, imClient: imClient,
 	}
 }
 
@@ -119,4 +122,8 @@ func (m *Manager) Update(updateClusterRequest *grpc_public_api_go.UpdateClusterR
 		return nil, err
 	}
 	return result, nil
+}
+
+func (m *Manager) Monitor(request *grpc_infrastructure_monitor_go.ClusterSummaryRequest) (*grpc_infrastructure_monitor_go.ClusterSummary, error) {
+	return m.imClient.GetClusterSummary(context.Background(), request)
 }
