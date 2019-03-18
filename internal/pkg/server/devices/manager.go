@@ -66,3 +66,7 @@ func (m *Manager) UpdateDevice(request *grpc_device_manager_go.UpdateDeviceReque
 	}
 	return entities.ToPublicAPIDevice(device), nil
 }
+
+func (m*Manager) RemoveDevice(deviceID *grpc_device_go.DeviceId) (*grpc_common_go.Success, error){
+	return m.deviceClient.RemoveDevice(context.Background(), deviceID)
+}
