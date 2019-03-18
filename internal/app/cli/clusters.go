@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/nalej/grpc-infrastructure-go"
+	"github.com/nalej/grpc-infrastructure-monitor-go"
 	"github.com/nalej/grpc-installer-go"
 	"github.com/nalej/grpc-organization-go"
 	"github.com/nalej/grpc-public-api-go"
@@ -126,6 +127,30 @@ func (c *Clusters) Info(organizationID string, clusterID string) {
 	}
 	retrieved, err := client.Info(ctx, cID)
 	c.PrintResultOrError(retrieved, err, "cannot obtain cluster information")
+}
+
+func (c *Clusters) Monitor(organizationID string, clusterID string, rangeMinutes int32) {
+	if organizationID == "" {
+		log.Fatal().Msg("organizationID cannot be empty")
+	}
+	if clusterID == "" {
+		log.Fatal().Msg("clusterID cannot be empty")
+	}
+	if rangeMinutes < 0 {
+		log.Fatal().Int32("range", rangeMinutes).Msg("range should be positive")
+	}
+	c.load()
+	ctx, cancel := c.GetContext()
+	client, conn := c.getClient()
+	defer conn.Close()
+	defer cancel()
+	request := &grpc_infrastructure_monitor_go.ClusterSummaryRequest{
+		OrganizationId: organizationID,
+		ClusterId:      clusterID,
+		RangeMinutes:   rangeMinutes,
+	}
+	retrieved, err := client.Monitor(ctx, request)
+	c.PrintResultOrError(retrieved, err, "cannot obtain cluster monitoring information")
 }
 
 func (c *Clusters) List(organizationID string) {
