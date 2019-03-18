@@ -56,3 +56,5 @@ var from string
 var to string
 var redirectLog bool
 var asc, desc bool
+
+var rangeMinutes int32

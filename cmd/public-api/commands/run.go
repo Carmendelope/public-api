@@ -42,5 +42,7 @@ func init() {
 		"Device Manager address (host:port)")
 	runCmd.PersistentFlags().StringVar(&config.UnifiedLoggingAddress, "unifiedLoggingAddress", "localhost:8323",
 		"Unified Logging Coordinator address (host:port)")
+	runCmd.PersistentFlags().StringVar(&config.InfrastructureMonitorAddress, "infrastructureMonitorAddress", "localhost:8423",
+		"Infrastructure Monitor Coordinator address (host:port)")
 	rootCmd.AddCommand(runCmd)
 }

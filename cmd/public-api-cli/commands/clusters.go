@@ -48,6 +48,10 @@ func init() {
 
 	clustersCmd.AddCommand(infoClusterCmd)
 	infoClusterCmd.Flags().StringVar(&clusterID, "clusterID", "", "Cluster identifier")
+
+	clustersCmd.AddCommand(monitorClusterCmd)
+	monitorClusterCmd.Flags().StringVar(&clusterID, "clusterID", "", "Cluster identifier")
+	monitorClusterCmd.Flags().Int32Var(&rangeMinutes, "rangeMinutes", 0, "Return average values over the past <rangeMinutes> minutes")
 }
 
 var installClustersCmd = &cobra.Command{
@@ -103,6 +107,25 @@ var listClustersCmd = &cobra.Command{
 			insecure,
 			options.Resolve("cacert", caCertPath))
 		c.List(options.Resolve("organizationID", organizationID))
+	},
+}
+
+var monitorClusterCmd = &cobra.Command{
+	Use:   "monitor",
+	Short: "Monitor cluster",
+	Long:  `Get summarized monitoring information for a single cluster`,
+	Run: func(cmd *cobra.Command, args []string) {
+		SetupLogging()
+		c := cli.NewClusters(
+			options.Resolve("nalejAddress", nalejAddress),
+			options.ResolveAsInt("port", nalejPort),
+			insecure,
+			options.Resolve("cacert", caCertPath))
+		c.Monitor(
+			options.Resolve("organizationID", organizationID),
+			options.Resolve("clusterID", clusterID),
+			rangeMinutes,
+		)
 	},
 }
 
