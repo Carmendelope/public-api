@@ -171,12 +171,12 @@
   version = "v0.0.32"
 
 [[projects]]
-  digest = "1:92df2be45e341ebe23c6b4137ddd489b7d45be3dfcd64e451e954a5df4e0258c"
+  digest = "1:b68f42ea86248d938bfb432ded5c9c5a7cc65171cad0b008a248b654d7169e10"
   name = "github.com/nalej/grpc-device-manager-go"
   packages = ["."]
   pruneopts = ""
-  revision = "ed10c3e3f5e2611068930c4f1442f37a93efde7f"
-  version = "v0.0.6"
+  revision = "ec85aac8557545905d03d9fa6e29d3e250ef0295"
+  version = "v0.0.7"
 
 [[projects]]
   digest = "1:6973c345abcc2530f5ae4ddaa179521470a37b9cc8a2b7568227190df7f381e2"
@@ -235,12 +235,12 @@
   version = "v0.0.28"
 
 [[projects]]
-  digest = "1:f47fbb077db7c56d9b8f6dabf1d58194e925ad0a9f07b09dd3848527d6be626f"
+  digest = "1:7c3c29bff068a6fda28f6e3a1c399c699deaa8382b07008543ae06088841d797"
   name = "github.com/nalej/grpc-public-api-go"
   packages = ["."]
   pruneopts = ""
-  revision = "93d535b3cb7d6f03e17e7db46537e3ba703f32c1"
-  version = "v0.0.51"
+  revision = "1648d66e13eaa4556893cd1b553d5505a23b3a55"
+  version = "v0.0.52"
 
 [[projects]]
   digest = "1:e179c2d070921679d6497c5df13b3ccb5812a57258b0871efd8cd484f5cdd2a6"

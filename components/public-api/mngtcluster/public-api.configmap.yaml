@@ -45,6 +45,7 @@ data:
        "/public_api.Devices/ListDevices":{"should":["ORG", "DEVMNGR"]},
        "/public_api.Devices/AddLabelToDevice":{"should":["ORG", "DEVMNGR"]},
        "/public_api.Devices/RemoveLabelFromDevice":{"should":["ORG", "DEVMNGR"]},
-       "/public_api.Devices/UpdateDevice":{"should":["ORG", "DEVMNGR"]}
+       "/public_api.Devices/UpdateDevice":{"should":["ORG", "DEVMNGR"]},
+       "/public_api.Devices/RemoveDevice":{"should":["ORG", "DEVMNGR"]}
      }
     }

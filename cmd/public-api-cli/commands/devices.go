@@ -71,6 +71,9 @@ func init() {
 	updateDeviceCmd.Flags().BoolVar(&disabled, "disabled", false, "Whether the device is disabled")
 	devicesCmd.AddCommand(updateDeviceCmd)
 
+	devicesCmd.AddCommand(removeDeviceCmd)
+	removeDeviceCmd.PersistentFlags().StringVar(&deviceID, "deviceId", "", "Device identifier")
+
 }
 
 var addDeviceGroupCmd = &cobra.Command{
@@ -208,5 +211,21 @@ var updateDeviceCmd = &cobra.Command{
 			options.Resolve("cacert", caCertPath))
 		n.UpdateDevice(options.Resolve("organizationID", organizationID),
 			deviceGroupID, deviceID, enabled, disabled)
+	},
+}
+
+var removeDeviceCmd = &cobra.Command{
+	Use:   "remove",
+	Short: "Remove a device",
+	Long:  `Remove a device`,
+	Run: func(cmd *cobra.Command, args []string) {
+		SetupLogging()
+		n := cli.NewDevices(
+			options.Resolve("nalejAddress", nalejAddress),
+			options.ResolveAsInt("port", nalejPort),
+			insecure,
+			options.Resolve("cacert", caCertPath))
+		n.RemoveDevice(options.Resolve("organizationID", organizationID),
+			deviceGroupID, deviceID)
 	},
 }
