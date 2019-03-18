@@ -93,6 +93,7 @@ func (h *Handler) Update(ctx context.Context, updateClusterRequest *grpc_public_
 	return h.Manager.Update(updateClusterRequest)
 }
 
-func (h *Handler) 	Monitor(context.Context, *grpc_infrastructure_monitor_go.ClusterSummaryRequest) (*grpc_infrastructure_monitor_go.ClusterSummary, error){
+
+func (h *Handler) Monitor(context.Context, *grpc_infrastructure_monitor_go.ClusterSummaryRequest) (*grpc_infrastructure_monitor_go.ClusterSummary, error){
 	return nil, derrors.NewUnimplementedError("not implemented yet!")
 }
