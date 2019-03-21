@@ -313,7 +313,9 @@ func GetAllAuthConfig() *interceptor.AuthorizationConfig {
 	permissions["/public_api.Devices/UpdateDevice"] = interceptor.Permission{
 		Should: []string{grpc_authx_go.AccessPrimitive_ORG.String(), grpc_authx_go.AccessPrimitive_DEVMNGR.String()},
 	}
-
+	permissions["/public_api.Devices/RemoveDevice"] = interceptor.Permission{
+		Should: []string{grpc_authx_go.AccessPrimitive_ORG.String(), grpc_authx_go.AccessPrimitive_DEVMNGR.String()},
+	}
 	return &interceptor.AuthorizationConfig{
 		AllowsAll:   false,
 		Permissions: permissions,

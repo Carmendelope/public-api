@@ -88,7 +88,7 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:37f5a5f32713ccfc3548ca4eb16f9bede1a2a8c02a983fa32bc24cf27b6e38f6"
+  digest = "1:8ef625bb8acf8090bc3d4c35bd2ddf1435c84f69d1de2595b18fdd25056b0a32"
   name = "github.com/nalej/authx"
   packages = [
     "pkg/interceptor",
@@ -96,7 +96,7 @@
     "pkg/token",
   ]
   pruneopts = ""
-  revision = "e19b4325088cce3338a1dbbc7ed716655e1ce1b7"
+  revision = "e01eec954070f4a654b1960c47f0c99cf1f89374"
 
 [[projects]]
   digest = "1:0cc441f3dfe124dd74f44dd7e466dfc17cc7edff468094fbc3847a96b5ebf6f7"
@@ -107,20 +107,20 @@
   version = "v2.0.0"
 
 [[projects]]
-  digest = "1:8c1a7d5a21f1e81424d839206b53050da4b9f2083b628aea55ea5e9edbfeacb0"
+  digest = "1:58465c89e95b4d983bd41bee6bbf80902c00f602f7c6a710fd862ee0b68276ad"
   name = "github.com/nalej/grpc-application-go"
   packages = ["."]
   pruneopts = ""
-  revision = "81451d42ba2a7d2ce62538acf5cad6aa347acbb7"
-  version = "v0.0.62"
+  revision = "2a20afb26eeb8e20c912b4affacae4218557a737"
+  version = "v0.0.65"
 
 [[projects]]
-  digest = "1:a7eb4f7cd99e73fd69c09cb64789379a3ee4d27c04f6ce2c0fcedafc297b9c29"
+  digest = "1:c863714aaa3b8809f04e3c7459d77ca7d3a8e222c72f488ecc97bbaf27c3bc08"
   name = "github.com/nalej/grpc-application-manager-go"
   packages = ["."]
   pruneopts = ""
-  revision = "816e9766cef540d1932a1f8a7d18be2c3abee7e6"
-  version = "v0.0.28"
+  revision = "7cfe65f7c97e4344510f304930d0346c61012971"
+  version = "v0.0.29"
 
 [[projects]]
   digest = "1:04ab94c90e7bce3f0ccf049c17c4c784da6819bca629e6ea98dcfe1f9b3a7f7a"
@@ -147,12 +147,12 @@
   version = "v0.0.30"
 
 [[projects]]
-  digest = "1:fc00ad606e86b3ef82ed233808936d0138a84c4f11d17e55c9ee0e0613343b98"
+  digest = "1:086ca56e420640f6b8c6f89bed7caf9520db3827ccd30216a15de73a5d2c7e62"
   name = "github.com/nalej/grpc-conductor-go"
   packages = ["."]
   pruneopts = ""
-  revision = "8b67c6639581af49477ef01a8a8959a305c72d68"
-  version = "v0.0.86"
+  revision = "6bb6df7368e93f111c79dab99811366dd3598354"
+  version = "v0.0.87"
 
 [[projects]]
   digest = "1:8f1edf5c58d91034b9d696926aeddada013e74e3c92399f0241aa5f43869b20f"
@@ -179,12 +179,12 @@
   version = "v0.0.7"
 
 [[projects]]
-  digest = "1:6973c345abcc2530f5ae4ddaa179521470a37b9cc8a2b7568227190df7f381e2"
+  digest = "1:2c023b2b8f8b5894f6fc05a5d966420ad2c8f00b055f6a33d954bea7ab7fc15b"
   name = "github.com/nalej/grpc-infrastructure-go"
   packages = ["."]
   pruneopts = ""
-  revision = "ea9783c67dc5bf7f6429935c0fdc59eee3f361e1"
-  version = "v0.0.32"
+  revision = "1961f25180d5f25bbedad6a832251ebe3b90a212"
+  version = "v0.0.33"
 
 [[projects]]
   digest = "1:6f6a03275fc3a45ec334a01b6211a1cf75464049555579145cb92dff8da343fb"
@@ -357,7 +357,7 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:73e6624a8569db94b0d8f9b34052f73ef9598c380edbce36d89dbbc00941e976"
+  digest = "1:ced597cd18c9d5a5b0b2ec62e8bc74194965d703694d7a5bc2277c0f2b2f4d73"
   name = "golang.org/x/net"
   packages = [
     "context",
@@ -372,15 +372,15 @@
     "trace",
   ]
   pruneopts = ""
-  revision = "9f648a60d9775ef5c977e7669d1673a7a67bef33"
+  revision = "1272bf9dcd53ea65c09668fb4c76e65deb740072"
 
 [[projects]]
   branch = "master"
-  digest = "1:9f5e388a2e01d646e82dc420469e21a6e0e7a526954ef1638009bc87eacf578e"
+  digest = "1:ba9161ae486a23244987306b85436483df7b276c2364d61a033ad3aebeeec8d0"
   name = "golang.org/x/sys"
   packages = ["unix"]
   pruneopts = ""
-  revision = "a2f829d7f35f2ed1c3520c553a6226495455cae0"
+  revision = "f7bb7a8bee54210937e93ec56d007d892c1f0580"
 
 [[projects]]
   digest = "1:5acd3512b047305d49e8763eef7ba423901e85d5dd2fd1e71778a0ea8de10bd4"
@@ -430,7 +430,7 @@
   revision = "5fe7a883aa19554f42890211544aa549836af7b7"
 
 [[projects]]
-  digest = "1:b6c17b0c657f047118ae59b358950b28515914512cf3de02388cc42e33a92520"
+  digest = "1:9e9c6b3804858b1a058ef81027270d307b74f4ddd727d2edff0ca002dd304adb"
   name = "google.golang.org/grpc"
   packages = [
     ".",
@@ -469,8 +469,8 @@
     "test/bufconn",
   ]
   pruneopts = ""
-  revision = "2fdaae294f38ed9a121193c51ec99fecd3b13eb7"
-  version = "v1.19.0"
+  revision = "3507fb8e1a5ad030303c106fef3a47c9fdad16ad"
+  version = "v1.19.1"
 
 [[projects]]
   digest = "1:eb53021a8aa3f599d29c7102e65026242bdedce998a54837dc67f14b6a97c5fd"

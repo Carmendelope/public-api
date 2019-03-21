@@ -5,9 +5,9 @@
 package organizations
 
 import (
-	"context"
 	"github.com/nalej/grpc-organization-go"
 	"github.com/nalej/grpc-public-api-go"
+	"github.com/nalej/public-api/internal/pkg/server/common"
 )
 
 // Manager structure with the required clients for organization operations.
@@ -28,7 +28,9 @@ func (m *Manager) ToOrganizationInfo(organization *grpc_organization_go.Organiza
 }
 
 func (m *Manager) Info(organizationID *grpc_organization_go.OrganizationId) (*grpc_public_api_go.OrganizationInfo, error) {
-	retrieved, err := m.orgClient.GetOrganization(context.Background(), organizationID)
+	ctx, cancel := common.GetContext()
+	defer cancel()
+	retrieved, err := m.orgClient.GetOrganization(ctx, organizationID)
 	if err != nil {
 		return nil, err
 	}

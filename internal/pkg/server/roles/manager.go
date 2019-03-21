@@ -5,10 +5,10 @@
 package roles
 
 import (
-	"context"
 	"github.com/nalej/grpc-authx-go"
 	"github.com/nalej/grpc-organization-go"
 	"github.com/nalej/grpc-user-manager-go"
+	"github.com/nalej/public-api/internal/pkg/server/common"
 )
 
 // Manager structure with the required clients for roles operations.
@@ -22,9 +22,13 @@ func NewManager(client grpc_user_manager_go.UserManagerClient) Manager {
 }
 
 func (m *Manager) List(organizationID *grpc_organization_go.OrganizationId) (*grpc_authx_go.RoleList, error) {
-	return m.client.ListRoles(context.Background(), organizationID)
+	ctx, cancel := common.GetContext()
+	defer cancel()
+	return m.client.ListRoles(ctx, organizationID)
 }
 
 func (m *Manager) AssignRole(request *grpc_user_manager_go.AssignRoleRequest) (*grpc_user_manager_go.User, error) {
-	return m.client.AssignRole(context.Background(), request)
+	ctx, cancel := common.GetContext()
+	defer cancel()
+	return m.client.AssignRole(ctx, request)
 }

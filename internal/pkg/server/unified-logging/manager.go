@@ -5,8 +5,8 @@
 package unified_logging
 
 import (
-	"context"
 	"github.com/nalej/grpc-unified-logging-go"
+	"github.com/nalej/public-api/internal/pkg/server/common"
 )
 
 type Manager struct {
@@ -18,5 +18,7 @@ func NewManager(unifiedLoggingClient grpc_unified_logging_go.CoordinatorClient) 
 }
 
 func (m *Manager) Search(request *grpc_unified_logging_go.SearchRequest) (*grpc_unified_logging_go.LogResponse, error) {
-	return m.unifiedLoggingClient.Search(context.Background(), request)
+	ctx, cancel := common.GetContext()
+	defer cancel()
+	return m.unifiedLoggingClient.Search(ctx, request)
 }

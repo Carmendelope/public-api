@@ -5,10 +5,10 @@
 package nodes
 
 import (
-	"context"
 	"github.com/nalej/grpc-infrastructure-go"
 	"github.com/nalej/grpc-public-api-go"
 	"github.com/nalej/public-api/internal/pkg/entities"
+	"github.com/nalej/public-api/internal/pkg/server/common"
 )
 
 // Manager structure with the required clients for node operations.
@@ -25,7 +25,9 @@ func NewManager(nodeClient grpc_infrastructure_go.NodesClient) Manager {
 
 // List retrieves information about the nodes of a cluster.
 func (m *Manager) List(clusterId *grpc_infrastructure_go.ClusterId) (*grpc_public_api_go.NodeList, error) {
-	nodes, err := m.nodeClient.ListNodes(context.Background(), clusterId)
+	ctx, cancel := common.GetContext()
+	defer cancel()
+	nodes, err := m.nodeClient.ListNodes(ctx, clusterId)
 	if err != nil {
 		return nil, err
 	}
@@ -47,7 +49,9 @@ func (m *Manager) UpdateNode(request *grpc_public_api_go.UpdateNodeRequest) (*gr
 		RemoveLabels:         request.RemoveLabels,
 		Labels:               request.Labels,
 	}
-	updated, err := m.nodeClient.UpdateNode(context.Background(), updateRequest)
+	ctx, cancel := common.GetContext()
+	defer cancel()
+	updated, err := m.nodeClient.UpdateNode(ctx, updateRequest)
 	if err != nil{
 		return nil, err
 	}

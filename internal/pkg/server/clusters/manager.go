@@ -5,7 +5,7 @@
 package clusters
 
 import (
-	"context"
+	"github.com/nalej/public-api/internal/pkg/server/common"
 
 	"github.com/nalej/grpc-infrastructure-go"
 	"github.com/nalej/grpc-infrastructure-manager-go"
@@ -42,7 +42,9 @@ func (m *Manager) clusterNodesStats(organizationID string, clusterID string) (in
 		OrganizationId: organizationID,
 		ClusterId:      clusterID,
 	}
-	clusterNodes, err := m.nodeClient.ListNodes(context.Background(), cID)
+	ctx, cancel := common.GetContext()
+	defer cancel()
+	clusterNodes, err := m.nodeClient.ListNodes(ctx, cID)
 	if err != nil {
 		return 0, 0, err
 	}
@@ -72,7 +74,9 @@ func (m *Manager) Install(request *grpc_public_api_go.InstallRequest) (*grpc_inf
 		TargetPlatform:    grpc_installer_go.Platform(grpc_installer_go.Platform_value[request.TargetPlatform.String()]),
 		StaticIpAddresses: request.StaticIpAddresses,
 	}
-	return m.infraClient.InstallCluster(context.Background(), installRequest)
+	ctx, cancel := common.GetContext()
+	defer cancel()
+	return m.infraClient.InstallCluster(ctx, installRequest)
 }
 
 func (m *Manager) extendInfo(source *grpc_infrastructure_go.Cluster) (*grpc_public_api_go.Cluster, error) {
@@ -84,7 +88,9 @@ func (m *Manager) extendInfo(source *grpc_infrastructure_go.Cluster) (*grpc_publ
 }
 
 func (m *Manager) Info(clusterID *grpc_infrastructure_go.ClusterId) (*grpc_public_api_go.Cluster, error) {
-	retrieved, err := m.clustClient.GetCluster(context.Background(), clusterID)
+	ctx, cancel := common.GetContext()
+	defer cancel()
+	retrieved, err := m.clustClient.GetCluster(ctx, clusterID)
 	if err != nil {
 		return nil, err
 	}
@@ -93,7 +99,9 @@ func (m *Manager) Info(clusterID *grpc_infrastructure_go.ClusterId) (*grpc_publi
 
 // List all the clusters in an organization.
 func (m *Manager) List(organizationID *grpc_organization_go.OrganizationId) (*grpc_public_api_go.ClusterList, error) {
-	list, err := m.clustClient.ListClusters(context.Background(), organizationID)
+	ctx, cancel := common.GetContext()
+	defer cancel()
+	list, err := m.clustClient.ListClusters(ctx, organizationID)
 	if err != nil {
 		return nil, err
 	}
@@ -113,7 +121,9 @@ func (m *Manager) List(organizationID *grpc_organization_go.OrganizationId) (*gr
 // Update the cluster information.
 func (m *Manager) Update(updateClusterRequest *grpc_public_api_go.UpdateClusterRequest) (*grpc_public_api_go.Cluster, error) {
 	toSend := entities.ToInfraClusterUpdate(*updateClusterRequest)
-	updated, err := m.clustClient.UpdateCluster(context.Background(), toSend)
+	ctx, cancel := common.GetContext()
+	defer cancel()
+	updated, err := m.clustClient.UpdateCluster(ctx, toSend)
 	if err != nil {
 		return nil, err
 	}
@@ -125,5 +135,7 @@ func (m *Manager) Update(updateClusterRequest *grpc_public_api_go.UpdateClusterR
 }
 
 func (m *Manager) Monitor(request *grpc_infrastructure_monitor_go.ClusterSummaryRequest) (*grpc_infrastructure_monitor_go.ClusterSummary, error) {
-	return m.imClient.GetClusterSummary(context.Background(), request)
+	ctx, cancel := common.GetContext()
+	defer cancel()
+	return m.imClient.GetClusterSummary(ctx, request)
 }
