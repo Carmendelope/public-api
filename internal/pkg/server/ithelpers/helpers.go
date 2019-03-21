@@ -125,7 +125,7 @@ func GetAddDescriptorRequest(organizationID string) *grpc_application_go.AddAppD
 	group1 := &grpc_application_go.ServiceGroup{
 		Name: "g1",
 		Services: []*grpc_application_go.Service{service},
-		Specs: &grpc_application_go.ServiceGroupDeploymentSpecs{NumReplicas:1,MultiClusterReplica:false},
+		Specs: &grpc_application_go.ServiceGroupDeploymentSpecs{Replicas:1,MultiClusterReplica:false},
 	}
 	secRule := grpc_application_go.SecurityRule{
 		Name:            "allow access to mysql",
