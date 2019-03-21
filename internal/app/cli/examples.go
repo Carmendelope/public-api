@@ -54,7 +54,7 @@ func (a *Applications) getBasicDescriptor(sType grpc_application_go.StorageType)
 	group1 := &grpc_application_go.ServiceGroup{
 		Name: "application",
 		Services: []*grpc_application_go.Service{service1, service2},
-		Specs: &grpc_application_go.ServiceGroupDeploymentSpecs{NumReplicas:1,MultiClusterReplica:false},
+		Specs: &grpc_application_go.ServiceGroupDeploymentSpecs{Replicas:1,MultiClusterReplica:false},
 	}
 
 	// add additional storage for persistence example
@@ -223,7 +223,7 @@ func (a *Applications) getComplexDescriptor(sType grpc_application_go.StorageTyp
 		Services: []*grpc_application_go.Service{
 			service1, service2, service3, service4, service5,
 		},
-		Specs: &grpc_application_go.ServiceGroupDeploymentSpecs{NumReplicas:1,MultiClusterReplica:false},
+		Specs: &grpc_application_go.ServiceGroupDeploymentSpecs{Replicas:1,MultiClusterReplica:false},
 	}
 
 	return &grpc_application_go.AddAppDescriptorRequest{
@@ -253,7 +253,7 @@ func (a *Applications) getMultiReplicaDescriptor(sType grpc_application_go.Stora
 	group1 := &grpc_application_go.ServiceGroup{
 		Name: "database",
 		Services: []*grpc_application_go.Service{service1},
-		Specs: &grpc_application_go.ServiceGroupDeploymentSpecs{NumReplicas:1,MultiClusterReplica:false},
+		Specs: &grpc_application_go.ServiceGroupDeploymentSpecs{Replicas:1,MultiClusterReplica:false},
 	}
 
 	service2 := &grpc_application_go.Service{
@@ -279,7 +279,7 @@ func (a *Applications) getMultiReplicaDescriptor(sType grpc_application_go.Stora
 	group2 := &grpc_application_go.ServiceGroup{
 		Name: "front",
 		Services: []*grpc_application_go.Service{service2},
-		Specs: &grpc_application_go.ServiceGroupDeploymentSpecs{NumReplicas:0,MultiClusterReplica:true},
+		Specs: &grpc_application_go.ServiceGroupDeploymentSpecs{Replicas:0,MultiClusterReplica:true},
 	}
 
 	// add additional storage for persistence example
