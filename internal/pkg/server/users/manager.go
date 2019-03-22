@@ -5,7 +5,6 @@
 package users
 
 import (
-	"context"
 	"github.com/nalej/derrors"
 	"github.com/nalej/grpc-common-go"
 	"github.com/nalej/grpc-organization-go"
@@ -13,6 +12,7 @@ import (
 	"github.com/nalej/grpc-user-go"
 	"github.com/nalej/grpc-user-manager-go"
 	"github.com/nalej/grpc-utils/pkg/conversions"
+	"github.com/nalej/public-api/internal/pkg/server/common"
 )
 
 // Manager structure with the required clients for users operations.
@@ -29,7 +29,9 @@ func (m *Manager) Add(addUserRequest *grpc_public_api_go.AddUserRequest) (*grpc_
 	orgID := &grpc_organization_go.OrganizationId{
 		OrganizationId: addUserRequest.OrganizationId,
 	}
-	role, err := m.umClient.ListRoles(context.Background(), orgID)
+	ctx, cancel := common.GetContext()
+	defer cancel()
+	role, err := m.umClient.ListRoles(ctx, orgID)
 	if err != nil {
 		return nil, err
 	}
@@ -50,8 +52,9 @@ func (m *Manager) Add(addUserRequest *grpc_public_api_go.AddUserRequest) (*grpc_
 		PhotoUrl:       "",
 		RoleId:         roleId,
 	}
-
-	added, err := m.umClient.AddUser(context.Background(), toAdd)
+	ctx2, cancel2 := common.GetContext()
+	defer cancel2()
+	added, err := m.umClient.AddUser(ctx2, toAdd)
 	if err != nil {
 		return nil, err
 	}
@@ -64,7 +67,9 @@ func (m *Manager) Add(addUserRequest *grpc_public_api_go.AddUserRequest) (*grpc_
 }
 
 func (m *Manager) Info(userID *grpc_user_go.UserId) (*grpc_public_api_go.User, error) {
-	retrieved, err := m.umClient.GetUser(context.Background(), userID)
+	ctx, cancel := common.GetContext()
+	defer cancel()
+	retrieved, err := m.umClient.GetUser(ctx, userID)
 	if err != nil {
 		return nil, err
 	}
@@ -78,7 +83,9 @@ func (m *Manager) Info(userID *grpc_user_go.UserId) (*grpc_public_api_go.User, e
 }
 
 func (m *Manager) List(organizationID *grpc_organization_go.OrganizationId) (*grpc_public_api_go.UserList, error) {
-	list, err := m.umClient.ListUsers(context.Background(), organizationID)
+	ctx, cancel := common.GetContext()
+	defer cancel()
+	list, err := m.umClient.ListUsers(ctx, organizationID)
 	if err != nil {
 		return nil, err
 	}
@@ -100,13 +107,19 @@ func (m *Manager) List(organizationID *grpc_organization_go.OrganizationId) (*gr
 }
 
 func (m *Manager) Delete(userID *grpc_user_go.UserId) (*grpc_common_go.Success, error) {
-	return m.umClient.RemoveUser(context.Background(), userID)
+	ctx, cancel := common.GetContext()
+	defer cancel()
+	return m.umClient.RemoveUser(ctx, userID)
 }
 
 func (m *Manager) Update(updateUserRequest *grpc_user_go.UpdateUserRequest) (*grpc_common_go.Success, error) {
-	return m.umClient.Update(context.Background(), updateUserRequest)
+	ctx, cancel := common.GetContext()
+	defer cancel()
+	return m.umClient.Update(ctx, updateUserRequest)
 }
 
 func (m *Manager) ResetPassword(changePasswordRequest *grpc_user_manager_go.ChangePasswordRequest) (*grpc_common_go.Success, error) {
-	return m.umClient.ChangePassword(context.Background(), changePasswordRequest)
+	ctx, cancel := common.GetContext()
+	defer cancel()
+	return m.umClient.ChangePassword(ctx, changePasswordRequest)
 }

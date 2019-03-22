@@ -5,12 +5,12 @@
 package resources
 
 import (
-	"context"
 	"github.com/nalej/derrors"
 	"github.com/nalej/grpc-infrastructure-go"
 	"github.com/nalej/grpc-organization-go"
 	"github.com/nalej/grpc-public-api-go"
 	"github.com/nalej/grpc-utils/pkg/conversions"
+	"github.com/nalej/public-api/internal/pkg/server/common"
 )
 
 // Manager structure with the required clients for resources operations.
@@ -33,7 +33,9 @@ func (m *Manager) getNumNodes(organizationID string, clusterID string) (int, der
 		OrganizationId: organizationID,
 		ClusterId:      clusterID,
 	}
-	clusterNodes, err := m.nodeClient.ListNodes(context.Background(), cID)
+	ctx, cancel := common.GetContext()
+	defer cancel()
+	clusterNodes, err := m.nodeClient.ListNodes(ctx, cID)
 	if err != nil {
 		return 0, conversions.ToDerror(err)
 	}
@@ -43,7 +45,9 @@ func (m *Manager) getNumNodes(organizationID string, clusterID string) (int, der
 func (m *Manager) getSummary(organizationID *grpc_organization_go.OrganizationId) (int, int, derrors.Error) {
 	// Obtain list of clusters
 	totalNodes := 0
-	list, err := m.clustClient.ListClusters(context.Background(), organizationID)
+	ctx, cancel := common.GetContext()
+	defer cancel()
+	list, err := m.clustClient.ListClusters(ctx, organizationID)
 	if err != nil {
 		return 0, 0, conversions.ToDerror(err)
 	}
