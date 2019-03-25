@@ -9,6 +9,8 @@ import (
 	"github.com/nalej/grpc-infrastructure-manager-go"
 	"github.com/nalej/grpc-infrastructure-monitor-go"
 	"github.com/nalej/grpc-public-api-go"
+	"github.com/nalej/grpc-unified-logging-go"
+	"github.com/nalej/grpc-user-manager-go"
 	"github.com/rs/zerolog/log"
 	"os"
 	"strconv"
@@ -35,6 +37,7 @@ func AsTable(result interface{}) * ResultTable {
 	switch result.(type){
 	case *grpc_public_api_go.OrganizationInfo: return FromOrganizationInfo(result.(*grpc_public_api_go.OrganizationInfo))
 	case *grpc_public_api_go.User: return FromUser(result.(*grpc_public_api_go.User))
+	case *grpc_user_manager_go.User: return FromUserManagerUser(result.(*grpc_user_manager_go.User))
 	case *grpc_public_api_go.UserList: return FromUserList(result.(*grpc_public_api_go.UserList))
 	case *grpc_public_api_go.Cluster: return FromCluster(result.(*grpc_public_api_go.Cluster))
 	case *grpc_infrastructure_monitor_go.ClusterSummary: return FromClusterSummary(result.(*grpc_infrastructure_monitor_go.ClusterSummary))
@@ -49,6 +52,11 @@ func AsTable(result interface{}) * ResultTable {
 	case *grpc_device_manager_go.DeviceGroupList: return FromDeviceGroupList(result.(*grpc_device_manager_go.DeviceGroupList))
 	case *grpc_public_api_go.Device: return FromDevice(result.(*grpc_public_api_go.Device))
 	case *grpc_public_api_go.DeviceList: return FromDeviceList(result.(*grpc_public_api_go.DeviceList))
+	case *grpc_unified_logging_go.LogResponse: return FromLogResponse(result.(*grpc_unified_logging_go.LogResponse))
+	case *grpc_public_api_go.Node: return FromNode(result.(*grpc_public_api_go.Node))
+	case *grpc_public_api_go.NodeList: return FromNodeList(result.(*grpc_public_api_go.NodeList))
+	case *grpc_public_api_go.Role: return FromRole(result.(*grpc_public_api_go.Role))
+	case *grpc_public_api_go.RoleList: return FromRoleList(result.(*grpc_public_api_go.RoleList))
 	case *grpc_common_go.Success: return FromSuccess(result.(*grpc_common_go.Success))
 	default: log.Fatal().Str("type", fmt.Sprintf("%T", result)).Msg("unsupported")
 	}
@@ -92,6 +100,13 @@ func FromOrganizationInfo(info *grpc_public_api_go.OrganizationInfo) *ResultTabl
 // ----
 // Users
 // ----
+
+func FromUserManagerUser(user *grpc_user_manager_go.User) *ResultTable {
+	result := make([][]string, 0)
+	result = append(result, []string{"NAME", "ROLE", "EMAIL"})
+	result = append(result, []string{user.Name, user.RoleName, user.Email})
+	return &ResultTable{result}
+}
 
 func FromUser(user *grpc_public_api_go.User) *ResultTable {
 	result := make([][]string, 0)
@@ -283,6 +298,44 @@ func FromDeviceList(result *grpc_public_api_go.DeviceList) *ResultTable{
 
 	for _, d := range result.Devices{
 		r = append(r, []string{d.DeviceId, time.Unix(d.RegisterSince, 0).String(), d.DeviceStatusName, TransformLabels(d.Labels), strconv.FormatBool(d.Enabled)})
+	}
+
+	return &ResultTable{r}
+}
+
+// ----
+// Log
+// ----
+
+func FromLogResponse(result *grpc_unified_logging_go.LogResponse) *ResultTable{
+	r := make([][]string, 0)
+	r = append(r, []string{"TIMESTAMP", "MSG"})
+
+	for _, e := range result.Entries{
+		r = append(r, []string{time.Unix(e.Timestamp.Seconds, int64(e.Timestamp.Nanos)).String(), e.Msg})
+	}
+
+	return &ResultTable{r}
+}
+
+
+// ----
+// Roles
+// ----
+
+func FromRole(result *grpc_public_api_go.Role) *ResultTable{
+	r := make([][]string, 0)
+	r = append(r, []string{"ID", "NAME", "PRIMITIVES"})
+	r = append(r, []string{result.RoleId, result.Name, strings.Join(result.Primitives, ",")})
+	return &ResultTable{r}
+}
+
+func FromRoleList(result *grpc_public_api_go.RoleList) *ResultTable{
+	r := make([][]string, 0)
+	r = append(r, []string{"ID", "NAME", "PRIMITIVES"})
+
+	for _, role := range result.Roles{
+		r = append(r, []string{role.RoleId, role.Name, strings.Join(role.Primitives, ",")})
 	}
 
 	return &ResultTable{r}

@@ -5,6 +5,7 @@
 package commands
 
 import (
+	"fmt"
 	"github.com/nalej/public-api/internal/app/cli"
 	"github.com/spf13/cobra"
 )
@@ -33,7 +34,7 @@ func init() {
 }
 
 var listNodesCmd = &cobra.Command{
-	Use:   "list",
+	Use:   "list [clusterID]",
 	Short: "List nodes",
 	Long:  `List nodes`,
 	Run: func(cmd *cobra.Command, args []string) {
@@ -43,8 +44,15 @@ var listNodesCmd = &cobra.Command{
 			options.ResolveAsInt("port", nalejPort),
 			insecure,
 			options.Resolve("cacert", caCertPath), options.Resolve("output", output))
-		n.List(options.Resolve("organizationID", organizationID),
-			options.Resolve("clusterID", clusterID))
+
+		targetValues, err := ResolveArgument([]string{"clusterID"}, args, []string{clusterID})
+		if err != nil {
+			fmt.Println(err.Error())
+			cmd.Help()
+		}else{
+			n.List(options.Resolve("organizationID", organizationID),
+				options.Resolve("clusterID", targetValues[0]))
+		}
 	},
 }
 
@@ -60,9 +68,10 @@ var nodeLabelsCmd = &cobra.Command{
 }
 
 var addLabelToNodeCmd = &cobra.Command{
-	Use:   "add",
+	Use:   "add [nodeID] [labels]",
 	Short: "Add a set of labels to a node",
 	Long:  `Add a set of labels to a node`,
+	Args: cobra.MaximumNArgs(2),
 	Run: func(cmd *cobra.Command, args []string) {
 		SetupLogging()
 		n := cli.NewNodes(
@@ -70,16 +79,24 @@ var addLabelToNodeCmd = &cobra.Command{
 			options.ResolveAsInt("port", nalejPort),
 			insecure,
 			options.Resolve("cacert", caCertPath), options.Resolve("output", output))
-		n.ModifyNodeLabels(options.Resolve("organizationID", organizationID),
-			nodeID, true, rawLabels)
+
+		targetValues, err := ResolveArgument([]string{"nodeID", "labels"}, args, []string{nodeID, rawLabels})
+		if err != nil {
+			fmt.Println(err.Error())
+			cmd.Help()
+		}else{
+			n.ModifyNodeLabels(options.Resolve("organizationID", organizationID),
+				targetValues[0], true, targetValues[1])
+		}
 	},
 }
 
 var removeLabelFromNodeCmd = &cobra.Command{
-	Use:   "delete",
+	Use:   "delete [nodeID] [labels]",
 	Aliases: []string{"remove", "del"},
 	Short: "Remove a set of labels from a cluster",
 	Long:  `Remove a set of labels from a cluster`,
+	Args: cobra.MaximumNArgs(2),
 	Run: func(cmd *cobra.Command, args []string) {
 		SetupLogging()
 		n := cli.NewNodes(
@@ -87,7 +104,14 @@ var removeLabelFromNodeCmd = &cobra.Command{
 			options.ResolveAsInt("port", nalejPort),
 			insecure,
 			options.Resolve("cacert", caCertPath), options.Resolve("output", output))
-		n.ModifyNodeLabels(options.Resolve("organizationID", organizationID),
-			nodeID, false, rawLabels)
+
+		targetValues, err := ResolveArgument([]string{"nodeID", "labels"}, args, []string{nodeID, rawLabels})
+		if err != nil {
+			fmt.Println(err.Error())
+			cmd.Help()
+		}else{
+			n.ModifyNodeLabels(options.Resolve("organizationID", organizationID),
+				targetValues[0], false, targetValues[1])
+		}
 	},
 }
