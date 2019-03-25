@@ -11,6 +11,7 @@ import (
 	"github.com/nalej/grpc-public-api-go"
 	"github.com/rs/zerolog/log"
 	"google.golang.org/grpc"
+	"strings"
 )
 
 type Devices struct{
@@ -18,9 +19,9 @@ type Devices struct{
 	Credentials
 }
 
-func NewDevices(address string, port int, insecure bool, caCertPath string) *Devices {
+func NewDevices(address string, port int, insecure bool, caCertPath string, output string) *Devices {
 	return &Devices{
-		Connection:  *NewConnection(address, port, insecure, caCertPath),
+		Connection:  *NewConnection(address, port, insecure, caCertPath, output),
 		Credentials: *NewEmptyCredentials(DefaultPath),
 	}
 }
@@ -142,8 +143,8 @@ func (d*Devices) RemoveDeviceGroup(organizationID string, deviceGroupID string) 
 		OrganizationId:       organizationID,
 		DeviceGroupId:        deviceGroupID,
 	}
-	_, err := client.RemoveDeviceGroup(ctx, dgID)
-	d.PrintSuccessOrError(err, "cannot remove device group", "device group has been removed")
+	result, err := client.RemoveDeviceGroup(ctx, dgID)
+	d.PrintResultOrError(result, err, "cannot remove device group")
 }
 
 func (d*Devices) ListDeviceGroups(organizationID string) {
@@ -217,8 +218,8 @@ func (d*Devices) AddLabelToDevice(organizationID string, deviceGroupID string, d
 
 	request := d.getDeviceLabelRequest(organizationID, deviceGroupID, deviceID, rawLabels)
 
-	_, err := client.AddLabelToDevice(ctx, request)
-	d.PrintSuccessOrError(err, "cannot add labels to device", "labels have been added")
+	success, err := client.AddLabelToDevice(ctx, request)
+	d.PrintResultOrError(success, err, "cannot add labels to device")
 
 }
 
@@ -244,8 +245,8 @@ func (d*Devices) RemoveLabelFromDevice(organizationID string, deviceGroupID stri
 
 	request := d.getDeviceLabelRequest(organizationID, deviceGroupID, deviceID, rawLabels)
 
-	_, err := client.RemoveLabelFromDevice(ctx, request)
-	d.PrintSuccessOrError(err, "cannot remove labels from device", "labels have been removed")
+	success, err := client.RemoveLabelFromDevice(ctx, request)
+	d.PrintResultOrError(success, err, "cannot remove labels from device")
 }
 
 func (d*Devices) UpdateDevice(organizationID string, deviceGroupID string, deviceID string, enabled bool, disabled bool) {
@@ -298,11 +299,15 @@ func (d* Devices) RemoveDevice(organizationID string, deviceGroupID string, devi
 	client, conn := d.getClient()
 	defer conn.Close()
 	defer cancel()
-	request := &grpc_device_go.DeviceId{
-		OrganizationId:       organizationID,
-		DeviceGroupId:        deviceGroupID,
-		DeviceId:             deviceID,
+	devices := strings.Split(deviceID, ",")
+	for _, dev := range devices{
+		request := &grpc_device_go.DeviceId{
+			OrganizationId:       organizationID,
+			DeviceGroupId:        deviceGroupID,
+			DeviceId:             dev,
+		}
+		success, err := client.RemoveDevice(ctx, request)
+		d.PrintResultOrError(success, err, "cannot remove device")
 	}
-	_, err := client.RemoveDevice(ctx, request)
-	d.PrintSuccessOrError(err, "cannot remove device", "device has been removed")
+
 }

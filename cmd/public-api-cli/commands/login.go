@@ -8,6 +8,7 @@ import (
 	"github.com/nalej/public-api/internal/app/cli"
 	"github.com/rs/zerolog/log"
 	"github.com/spf13/cobra"
+	"time"
 )
 
 var loginCmd = &cobra.Command{
@@ -26,20 +27,35 @@ var loginCmd = &cobra.Command{
 			targetAddress,
 			loginPort,
 			insecure,
-			options.Resolve("cacert", caCertPath))
+			options.Resolve("cacert", caCertPath), options.Resolve("output", output))
 		creds, err := l.Login(email, password)
 		if err != nil {
-			log.Fatal().Str("trace", err.DebugReport()).Msg("unable to login into the platform")
+			if debugLevel {
+				log.Fatal().Str("trace", err.DebugReport()).Msg("unable to login into the platform")
+			}else{
+				log.Fatal().Str("trace", err.Error()).Msg("unable to login into the platform")
+			}
 		}
-		log.Info().Msg("Successfully logged into the platform")
 		claims, err := l.GetPersonalClaims(creds)
 		if err != nil {
-			log.Fatal().Str("trace", err.DebugReport()).Msg("unable to login into the platform")
+			if debugLevel{
+				log.Fatal().Str("trace", err.DebugReport()).Msg("unable to login into the platform")
+			}else{
+				log.Fatal().Str("trace", err.Error()).Msg("unable to login into the platform")
+			}
 		}
 		opts := cli.NewOptions()
 		opts.Set("organizationID", claims.OrganizationID)
 		opts.Set("email", claims.UserID)
+		expiration := time.Unix(claims.ExpiresAt, 0).String()
+		printLoginResult(claims.UserID, claims.RoleName, claims.OrganizationID, expiration)
 	},
+}
+
+func printLoginResult(email string, role string, organizationID string, expiration string){
+	header := []string{"EMAIL", "ROLE", "ORG_ID", "EXPIRES"}
+	values := [][]string{[]string{email, role, organizationID, expiration}}
+	cli.PrintFromValues(header, values)
 }
 
 func init() {

@@ -42,7 +42,7 @@ var listNodesCmd = &cobra.Command{
 			options.Resolve("nalejAddress", nalejAddress),
 			options.ResolveAsInt("port", nalejPort),
 			insecure,
-			options.Resolve("cacert", caCertPath))
+			options.Resolve("cacert", caCertPath), options.Resolve("output", output))
 		n.List(options.Resolve("organizationID", organizationID),
 			options.Resolve("clusterID", clusterID))
 	},
@@ -69,14 +69,15 @@ var addLabelToNodeCmd = &cobra.Command{
 			options.Resolve("nalejAddress", nalejAddress),
 			options.ResolveAsInt("port", nalejPort),
 			insecure,
-			options.Resolve("cacert", caCertPath))
+			options.Resolve("cacert", caCertPath), options.Resolve("output", output))
 		n.ModifyNodeLabels(options.Resolve("organizationID", organizationID),
 			nodeID, true, rawLabels)
 	},
 }
 
 var removeLabelFromNodeCmd = &cobra.Command{
-	Use:   "remove",
+	Use:   "delete",
+	Aliases: []string{"remove", "del"},
 	Short: "Remove a set of labels from a cluster",
 	Long:  `Remove a set of labels from a cluster`,
 	Run: func(cmd *cobra.Command, args []string) {
@@ -85,7 +86,7 @@ var removeLabelFromNodeCmd = &cobra.Command{
 			options.Resolve("nalejAddress", nalejAddress),
 			options.ResolveAsInt("port", nalejPort),
 			insecure,
-			options.Resolve("cacert", caCertPath))
+			options.Resolve("cacert", caCertPath), options.Resolve("output", output))
 		n.ModifyNodeLabels(options.Resolve("organizationID", organizationID),
 			nodeID, false, rawLabels)
 	},

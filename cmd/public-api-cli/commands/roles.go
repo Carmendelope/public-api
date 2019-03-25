@@ -43,7 +43,7 @@ var listRolesCmd = &cobra.Command{
 			options.Resolve("nalejAddress", nalejAddress),
 			options.ResolveAsInt("port", nalejPort),
 			insecure,
-			options.Resolve("cacert", caCertPath))
+			options.Resolve("cacert", caCertPath), options.Resolve("output", output))
 		r.List(options.Resolve("organizationID", organizationID), internal)
 	},
 }
@@ -58,7 +58,7 @@ var assignRolesCmd = &cobra.Command{
 			options.Resolve("nalejAddress", nalejAddress),
 			options.ResolveAsInt("port", nalejPort),
 			insecure,
-			options.Resolve("cacert", caCertPath))
+			options.Resolve("cacert", caCertPath), options.Resolve("output", output))
 		r.Assign(options.Resolve("organizationID", organizationID), email, roleID)
 	},
 }

@@ -7,7 +7,6 @@ package cli
 import (
 	"github.com/nalej/grpc-organization-go"
 	"github.com/nalej/grpc-public-api-go"
-	"github.com/nalej/grpc-utils/pkg/conversions"
 	"github.com/rs/zerolog/log"
 )
 
@@ -16,9 +15,9 @@ type Organizations struct {
 	Credentials
 }
 
-func NewOrganizations(address string, port int, insecure bool, caCertPath string) *Organizations {
+func NewOrganizations(address string, port int, insecure bool, caCertPath string, output string) *Organizations {
 	return &Organizations{
-		Connection:  *NewConnection(address, port, insecure, caCertPath),
+		Connection:  *NewConnection(address, port, insecure, caCertPath, output),
 		Credentials: *NewEmptyCredentials(DefaultPath),
 	}
 }
@@ -46,9 +45,7 @@ func (o *Organizations) Info(organizationID string) *grpc_public_api_go.Organiza
 		OrganizationId: organizationID,
 	}
 	info, iErr := orgClient.Info(ctx, orgID)
-	if iErr != nil {
-		log.Fatal().Str("trace", conversions.ToDerror(iErr).DebugReport()).Msg("cannot obtain organization info")
-	}
-	o.PrintResult(info)
+
+	o.PrintResultOrError(info, iErr, "cannot obtain organization info")
 	return info
 }

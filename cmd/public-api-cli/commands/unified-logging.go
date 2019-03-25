@@ -60,7 +60,7 @@ var searchCmd = &cobra.Command{
 			options.Resolve("nalejAddress", nalejAddress),
 			options.ResolveAsInt("port", nalejPort),
 			insecure,
-			options.Resolve("cacert", caCertPath))
+			options.Resolve("cacert", caCertPath), options.Resolve("output", output))
 		l.Search(options.Resolve("organizationID", organizationID), instanceID, sgInstanceID, message, from, to, desc, redirectLog)
 	},
 }
