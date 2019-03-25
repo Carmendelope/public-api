@@ -30,6 +30,7 @@ var ipAddressIngress string
 
 var descriptorID string
 var descriptorPath string
+var jsonSchemaPath string
 var description string
 
 var instanceID string

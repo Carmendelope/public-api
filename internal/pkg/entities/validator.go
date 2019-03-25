@@ -5,6 +5,7 @@
 package entities
 
 import (
+	"bytes"
 	"fmt"
 	"github.com/nalej/derrors"
 	"github.com/nalej/grpc-application-go"
@@ -18,6 +19,10 @@ import (
 	"github.com/nalej/grpc-unified-logging-go"
 	"github.com/nalej/grpc-user-go"
 	"github.com/nalej/grpc-user-manager-go"
+	"github.com/rs/zerolog/log"
+	"github.com/santhosh-tekuri/jsonschema"
+	"strings"
+	"sync"
 )
 
 const emptyOrganizationId = "organization_id cannot be empty"
@@ -36,6 +41,50 @@ const emptyDeviceId = "device_id cannot be empty"
 const emptyDeviceGroupApiKey = "device_group_api_key cannot be empty"
 const emptyLabels = "labels cannot be empty"
 const invalidSortOrder = "sort order can only be ascending or descending"
+
+
+// --------- Application descriptor JSON Schema
+type AppJSONSchema struct {
+	// Singleton object used to validate application descriptors
+	appDescriptorSchema *jsonschema.Schema
+	// Singleton value
+	singletonValidator sync.Once
+}
+
+// -------------------------------------------
+
+// Local instance for the application descriptor validator
+var AppDescValidator AppJSONSchema = AppJSONSchema{}
+
+
+// Initialize the local AppDescValidator reading the schema from the filePath. This is a single run operation.
+func InitializeJSON () derrors.Error {
+	var err error
+	AppDescValidator.singletonValidator.Do(func(){
+		log.Debug().Msg("loading application descriptor validator schema...")
+		compiler := jsonschema.NewCompiler()
+		schemaURL := "http://nalej.com/app_descriptor.json"
+		if derr := compiler.AddResource(schemaURL, strings.NewReader(APP_DESC_SCHEMA)); err != nil {
+			log.Error().Err(err).Msg("impossible to add JSON schema definition")
+			err = derr
+			return
+		}
+
+		schema, schemaErr := compiler.Compile(schemaURL)
+		if schemaErr != nil {
+			log.Error().Err(err).Msg("impossible to load json schema for application descriptors")
+			err = schemaErr
+			return
+		}
+		AppDescValidator.appDescriptorSchema = schema
+		log.Debug().Msg("schema validator loaded")
+	})
+	if err != nil {
+		return derrors.NewInvalidArgumentError("impossible to load json schema for application descriptors", err)
+	}
+	return nil
+}
+
 
 func ValidOrganizationId(organizationID *grpc_organization_go.OrganizationId) derrors.Error {
 	if organizationID.OrganizationId == "" {
@@ -70,6 +119,21 @@ func ValidAppInstanceID(appInstanceID *grpc_application_go.AppInstanceId) derror
 	}
 	if appInstanceID.AppInstanceId == "" {
 		return derrors.NewInvalidArgumentError(emptyInstanceId)
+	}
+	return nil
+}
+
+
+// Validate that the JSON descriptor for the application follows the current JSONSchema
+func ValidAppDescriptorFormat(jsonContent []byte) derrors.Error {
+
+	// Initialize JSON in case it is not working
+	InitializeJSON()
+
+	err := AppDescValidator.appDescriptorSchema.Validate(bytes.NewReader(jsonContent))
+
+	if err != nil {
+		return derrors.NewInvalidArgumentError(err.Error())
 	}
 	return nil
 }

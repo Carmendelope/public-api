@@ -96,7 +96,7 @@ var addDescriptorCmd = &cobra.Command{
 			options.ResolveAsInt("port", nalejPort),
 			insecure,
 			options.Resolve("cacert", caCertPath))
-		a.AddDescriptor(options.Resolve("organizationID", organizationID), descriptorPath)
+		a.AddDescriptor(options.Resolve("organizationID", organizationID), descriptorPath, jsonSchemaPath)
 	},
 }
 

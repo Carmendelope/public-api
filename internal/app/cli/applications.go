@@ -8,6 +8,7 @@ import (
 	"github.com/nalej/grpc-application-manager-go"
 	"github.com/nalej/grpc-organization-go"
 	"github.com/nalej/grpc-public-api-go"
+	"github.com/nalej/public-api/internal/pkg/entities"
 	"github.com/rs/zerolog/log"
 	"google.golang.org/grpc"
 	"io/ioutil"
@@ -47,6 +48,11 @@ func (a *Applications) createAddDescriptorRequest(organizationID string, descrip
 	content, err := ioutil.ReadFile(descPath)
 	if err != nil {
 		return nil, derrors.AsError(err, "cannot read descriptor")
+	}
+
+	err = entities.ValidAppDescriptorFormat(content)
+	if err != nil {
+		return nil, derrors.AsError(err, "cannot validate descriptor")
 	}
 
 	addDescriptorRequest := &grpc_application_go.AddAppDescriptorRequest{}
@@ -112,7 +118,7 @@ func (a *Applications) GetStorageType(sType string) grpc_application_go.StorageT
 	return grpc_application_go.StorageType_EPHEMERAL
 }
 
-func (a *Applications) AddDescriptor(organizationID string, descriptorPath string) {
+func (a *Applications) AddDescriptor(organizationID string, descriptorPath string, jsonSchemaPath string) {
 
 	if organizationID == "" {
 		log.Fatal().Msg("organizationID cannot be empty")
