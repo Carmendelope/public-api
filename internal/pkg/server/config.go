@@ -81,6 +81,7 @@ func (conf *Config) Validate() derrors.Error {
 		return derrors.NewInvalidArgumentError("authConfigPath must be set")
 	}
 
+
 	return nil
 }
 
@@ -102,4 +103,5 @@ func (conf *Config) Print() {
 	log.Info().Str("URL", conf.DeviceManagerAddress).Msg("Device Manager Service")
 	log.Info().Str("header", conf.AuthHeader).Str("secret", strings.Repeat("*", len(conf.AuthSecret))).Msg("Authorization")
 	log.Info().Str("path", conf.AuthConfigPath).Msg("Permissions file")
+
 }

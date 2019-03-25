@@ -340,6 +340,20 @@
   version = "v1.13.0"
 
 [[projects]]
+  digest = "1:4b73a0659a08dd32fb042bfee9e62f4481bddf18cfc4dbff7dc68084e6ea4460"
+  name = "github.com/santhosh-tekuri/jsonschema"
+  packages = [
+    ".",
+    "decoders",
+    "formats",
+    "loader",
+    "mediatypes",
+  ]
+  pruneopts = ""
+  revision = "534765aa6277d702a0aaf99c986492dda697d48f"
+  version = "v1.2.4"
+
+[[projects]]
   digest = "1:a1403cc8a94b8d7956ee5e9694badef0e7b051af289caad1cf668331e3ffa4f6"
   name = "github.com/spf13/cobra"
   packages = ["."]
@@ -535,6 +549,7 @@
     "github.com/onsi/gomega",
     "github.com/rs/zerolog",
     "github.com/rs/zerolog/log",
+    "github.com/santhosh-tekuri/jsonschema",
     "github.com/spf13/cobra",
     "google.golang.org/grpc",
     "google.golang.org/grpc/credentials",
