@@ -48,7 +48,7 @@ func (c *Clusters) getClient() (grpc_public_api_go.ClustersClient, *grpc.ClientC
 func (c *Clusters) Install(
 	organizationID string, clusterID string,
 	kubeConfigPath string, ingressHostname string, username string, privateKeyPath string, nodes []string,
-	useCoreDNS bool, targetPlatform grpc_public_api_go.Platform, useStaticIPAddresses bool, ipAddressIngress string) {
+	targetPlatform grpc_public_api_go.Platform, useStaticIPAddresses bool, ipAddressIngress string) {
 
 	if organizationID == "" {
 		log.Fatal().Msg("organizationID cannot be empty")
@@ -67,14 +67,6 @@ func (c *Clusters) Install(
 		InstallBaseSystem: false,
 		TargetPlatform:    targetPlatform,
 		StaticIpAddresses: &staticIPAddresses,
-	}
-
-	if useCoreDNS {
-		installRequest.UseKubeDns = false
-		installRequest.UseCoreDns = true
-	} else {
-		installRequest.UseKubeDns = true
-		installRequest.UseCoreDns = false
 	}
 
 	if username != "" && privateKeyPath != "" && len(nodes) > 0 {
