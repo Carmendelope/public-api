@@ -67,7 +67,6 @@ var installClustersCmd = &cobra.Command{
 			options.Resolve("cacert", caCertPath), options.Resolve("output", output))
 		c.Install(
 			options.Resolve("organizationID", organizationID),
-			options.Resolve("clusterID", clusterID),
 			kubeConfigPath,
 			hostname,
 			username,
