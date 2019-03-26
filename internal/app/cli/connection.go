@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"github.com/nalej/derrors"
 	"github.com/nalej/grpc-utils/pkg/conversions"
+	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
@@ -20,16 +21,21 @@ type Connection struct {
 	Port       int
 	Insecure   bool
 	CACertPath string
+	output string
 }
 
-func NewConnection(address string, port int, insecure bool, caCertPath string) *Connection {
-	return &Connection{address, port, insecure, caCertPath}
+func NewConnection(address string, port int, insecure bool, caCertPath string, output string) *Connection {
+	return &Connection{address, port, insecure, caCertPath, output}
 }
 
 func GetPath(path string) string {
 	if strings.HasPrefix(path, "~") {
 		usr, _ := user.Current()
 		return strings.Replace(path, "~", usr.HomeDir, 1)
+	}
+	if strings.HasPrefix(path, "../"){
+		abs, _ := filepath.Abs("../")
+		return strings.Replace(path, "..", abs, 1)
 	}
 	if strings.HasPrefix(path, "."){
 		abs, _ := filepath.Abs("./")
@@ -85,11 +91,32 @@ func (c *Connection) GetConnection() (*grpc.ClientConn, derrors.Error) {
 
 func (c *Connection) PrintResultOrError(result interface{}, err error, errMsg string) {
 	if err != nil {
-		log.Fatal().Str("trace", conversions.ToDerror(err).DebugReport()).Msg(errMsg)
+		converted := conversions.ToDerror(err)
+		if zerolog.GlobalLevel() == zerolog.DebugLevel{
+			log.Fatal().Str("trace", conversions.ToDerror(err).DebugReport()).Msg(errMsg)
+		}else{
+			log.Fatal().Str("err", converted.Error()).Msg(errMsg)
+		}
 	} else {
-		c.PrintResult(result)
+		if c.asText(){
+			c.PrintResultAsTable(result)
+		}else{
+			c.PrintResult(result)
+		}
 	}
 }
+
+func (c *Connection) ExitOnError(err error, errMsg string) {
+	if err != nil {
+		converted := conversions.ToDerror(err)
+		if zerolog.GlobalLevel() == zerolog.DebugLevel{
+			log.Fatal().Str("trace", conversions.ToDerror(err).DebugReport()).Msg(errMsg)
+		}else{
+			log.Fatal().Str("err", converted.Error()).Msg(errMsg)
+		}
+	}
+}
+
 
 func (c *Connection) PrintSuccessOrError(err error, errMsg string, successMsg string) {
 	if err != nil {
@@ -106,4 +133,13 @@ func (c *Connection) PrintResult(result interface{}) error {
 		fmt.Println(string(res))
 	}
 	return err
+}
+
+func (c * Connection) asText() bool {
+	return strings.ToLower(c.output) == "text"
+}
+
+func (c * Connection) PrintResultAsTable(result interface{}) {
+	table := AsTable(result)
+	table.Print()
 }

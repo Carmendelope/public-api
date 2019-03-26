@@ -3,17 +3,19 @@
  */
 
 // TODO Remove descriptor NP-338
+// TODO Remove Args: cobra.MaximumNArgs(1), when the flags are not longer deprecated
 
 package commands
 
 import (
+	"fmt"
 	"github.com/nalej/public-api/internal/app/cli"
 	"github.com/spf13/cobra"
 )
 
 var appsCmd = &cobra.Command{
 	Use:     "app",
-	Aliases: []string{"applications"},
+	Aliases: []string{"application", "applications"},
 	Short:   "Manage applications",
 	Long:    `Manage applications`,
 	Run: func(cmd *cobra.Command, args []string) {
@@ -29,11 +31,11 @@ func init() {
 	appsCmd.AddCommand(descriptorCmd)
 	// Add descriptor
 	addDescriptorCmd.Flags().StringVar(&descriptorPath, "descriptorPath", "", "Application descriptor path containing a JSON spec")
-	addDescriptorCmd.MarkFlagRequired("descriptorPath")
+	addDescriptorCmd.Flags().MarkDeprecated("descriptorPath", "Use command argument instead")
 	descriptorCmd.AddCommand(addDescriptorCmd)
 	// Get descriptor
 	getDescriptorCmd.Flags().StringVar(&descriptorID, "descriptorID", "", "Application descriptor identifier")
-	getDescriptorCmd.MarkFlagRequired("descriptorID")
+	getDescriptorCmd.Flags().MarkDeprecated("descriptorID", "Use command argument instead")
 	descriptorCmd.AddCommand(getDescriptorCmd)
 	// List descriptors
 	descriptorCmd.AddCommand(listDescriptorsCmd)
@@ -43,16 +45,14 @@ func init() {
 	descriptorCmd.AddCommand(addDescriptorHelpCmd)
 	// Delete descriptor
 	deleteDescriptorCmd.Flags().StringVar(&descriptorID, "descriptorID", "", "Application descriptor identifier")
-	deleteDescriptorCmd.MarkFlagRequired("descriptorID")
+	deleteDescriptorCmd.Flags().MarkDeprecated("descriptorID", "Use command argument instead")
 	descriptorCmd.AddCommand(deleteDescriptorCmd)
 	// Application descriptor labels
 	appDescLabelsCmd.PersistentFlags().StringVar(&descriptorID, "descriptorID", "", "Application descriptor identifier")
 	appDescLabelsCmd.PersistentFlags().StringVar(&rawLabels, "labels", "", "Labels separated by ; as in key1:value;key2:value")
 	descriptorCmd.AddCommand(appDescLabelsCmd)
 	appDescLabelsCmd.AddCommand(addLabelToAppDescriptorCmd)
-	addLabelToAppDescriptorCmd.MarkPersistentFlagRequired("descriptorID")
 	appDescLabelsCmd.AddCommand(removeLabelFromAppDescriptorCmd)
-	removeLabelFromAppDescriptorCmd.MarkPersistentFlagRequired("descriptorID")
 
 	// Instances
 	appsCmd.AddCommand(instanceCmd)
@@ -61,22 +61,22 @@ func init() {
 	// Deploy
 	deployInstanceCmd.Flags().StringVar(&name, "name", "", "Name of the application instance")
 	deployInstanceCmd.Flags().StringVar(&descriptorID, "descriptorID", "", "Application instance identifier")
-	deployInstanceCmd.MarkFlagRequired("name")
-	deployInstanceCmd.MarkFlagRequired("descriptorID")
+	deployInstanceCmd.Flags().MarkDeprecated("name", "Use command argument instead")
+	deployInstanceCmd.Flags().MarkDeprecated("descriptorID", "Use command argument instead")
 	instanceCmd.AddCommand(deployInstanceCmd)
 	// Undeploy
 	undeployInstanceCmd.Flags().StringVar(&instanceID, "instanceID", "", "Application instance identifier")
-	undeployInstanceCmd.MarkFlagRequired("instanceID")
+	undeployInstanceCmd.Flags().MarkDeprecated("instanceID", "Use command argument instead")
 	instanceCmd.AddCommand(undeployInstanceCmd)
 	// Get
 	getInstanceCmd.Flags().StringVar(&instanceID, "instanceID", "", "Application instance identifier")
-	getInstanceCmd.MarkFlagRequired("instanceID")
+	getInstanceCmd.Flags().MarkDeprecated("instanceID", "Use command argument instead")
 	instanceCmd.AddCommand(getInstanceCmd)
 }
 
 var descriptorCmd = &cobra.Command{
 	Use:     "desc",
-	Aliases: []string{"descriptor"},
+	Aliases: []string{"descriptor", "descriptors"},
 	Short:   "Manage applications descriptors",
 	Long:    `Manage applications descriptors`,
 	Run: func(cmd *cobra.Command, args []string) {
@@ -86,17 +86,25 @@ var descriptorCmd = &cobra.Command{
 }
 
 var addDescriptorCmd = &cobra.Command{
-	Use:   "add",
+	Use:   "add [descriptorPath]",
 	Short: "Add a new application descriptor",
 	Long:  `Add a new application descriptor`,
+	Args: cobra.MaximumNArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		SetupLogging()
 		a := cli.NewApplications(
 			options.Resolve("nalejAddress", nalejAddress),
 			options.ResolveAsInt("port", nalejPort),
 			insecure,
-			options.Resolve("cacert", caCertPath))
-		a.AddDescriptor(options.Resolve("organizationID", organizationID), descriptorPath, jsonSchemaPath)
+			options.Resolve("cacert", caCertPath), options.Resolve("output", output))
+		targetDescriptorPath, err := ResolveArgument([]string{"descriptorPath"}, args, []string{descriptorPath})
+		if err != nil {
+			fmt.Println(err.Error())
+			cmd.Help()
+		}else {
+			a.AddDescriptor(options.Resolve("organizationID", organizationID), targetDescriptorPath[0])
+		}
+
 	},
 }
 
@@ -110,7 +118,7 @@ var addDescriptorHelpCmd = &cobra.Command{
 			"",
 			0,
 			insecure,
-			options.Resolve("cacert", caCertPath))
+			options.Resolve("cacert", caCertPath), options.Resolve("output", output))
 		a.ShowDescriptorHelp(exampleName, storageType)
 	},
 }
@@ -125,23 +133,30 @@ var listDescriptorsCmd = &cobra.Command{
 			options.Resolve("nalejAddress", nalejAddress),
 			options.ResolveAsInt("port", nalejPort),
 			insecure,
-			options.Resolve("cacert", caCertPath))
+			options.Resolve("cacert", caCertPath), options.Resolve("output", output))
 		a.ListDescriptors(options.Resolve("organizationID", organizationID))
 	},
 }
 
 var getDescriptorCmd = &cobra.Command{
-	Use:   "get",
+	Use:   "get [descriptorID]",
 	Short: "Get an application descriptor",
 	Long:  `Get an application descriptor`,
+	Args: cobra.MaximumNArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		SetupLogging()
 		a := cli.NewApplications(
 			options.Resolve("nalejAddress", nalejAddress),
 			options.ResolveAsInt("port", nalejPort),
 			insecure,
-			options.Resolve("cacert", caCertPath))
-		a.GetDescriptor(options.Resolve("organizationID", organizationID), descriptorID)
+			options.Resolve("cacert", caCertPath), options.Resolve("output", output))
+		targetValues, err := ResolveArgument([]string{"descriptorID"}, args, []string{descriptorID})
+		if err != nil {
+			fmt.Println(err.Error())
+			cmd.Help()
+		}else{
+			a.GetDescriptor(options.Resolve("organizationID", organizationID), targetValues[0])
+		}
 	},
 }
 
@@ -157,49 +172,75 @@ var appDescLabelsCmd = &cobra.Command{
 }
 
 var addLabelToAppDescriptorCmd = &cobra.Command{
-	Use:   "add",
+	Use:   "add [descriptorID] [labels]",
 	Short: "Add a set of labels to an application descriptor",
 	Long:  `Add a set of labels to an application descriptor`,
+	Args: cobra.MaximumNArgs(2),
 	Run: func(cmd *cobra.Command, args []string) {
 		SetupLogging()
 		a := cli.NewApplications(
 			options.Resolve("nalejAddress", nalejAddress),
 			options.ResolveAsInt("port", nalejPort),
 			insecure,
-			options.Resolve("cacert", caCertPath))
-		a.ModifyAppDescriptorLabels(options.Resolve("organizationID", organizationID),
-			descriptorID, true, rawLabels)
+			options.Resolve("cacert", caCertPath), options.Resolve("output", output))
+
+		targetValues, err := ResolveArgument([]string{"descriptorID", "labels"}, args, []string{descriptorID, rawLabels})
+		if err != nil {
+			fmt.Println(err.Error())
+			cmd.Help()
+		}else{
+			a.ModifyAppDescriptorLabels(options.Resolve("organizationID", organizationID),
+				targetValues[0], true, targetValues[1])
+		}
 	},
 }
 
 var removeLabelFromAppDescriptorCmd = &cobra.Command{
-	Use:   "remove",
+	Use:   "delete [descriptorID] [labels]",
+	Aliases: []string{"remove", "del"},
 	Short: "Remove a set of labels from an application descriptor",
 	Long:  `Remove a set of labels from an application descriptor`,
+	Args: cobra.MaximumNArgs(2),
 	Run: func(cmd *cobra.Command, args []string) {
 		SetupLogging()
 		a := cli.NewApplications(
 			options.Resolve("nalejAddress", nalejAddress),
 			options.ResolveAsInt("port", nalejPort),
 			insecure,
-			options.Resolve("cacert", caCertPath))
-		a.ModifyAppDescriptorLabels(options.Resolve("organizationID", organizationID),
-			descriptorID, false, rawLabels)
+			options.Resolve("cacert", caCertPath), options.Resolve("output", output))
+
+		targetValues, err := ResolveArgument([]string{"descriptorID", "labels"}, args, []string{descriptorID, rawLabels})
+		if err != nil {
+			fmt.Println(err.Error())
+			cmd.Help()
+		}else{
+			a.ModifyAppDescriptorLabels(options.Resolve("organizationID", organizationID),
+				targetValues[0], false, targetValues[1])
+		}
 	},
 }
 
 var deleteDescriptorCmd = &cobra.Command{
-	Use:   "delete",
+	Use:   "delete [descriptorID]",
+	Aliases: []string{"remove", "del"},
 	Short: "Delete an application descriptor",
 	Long:  `Delete an application descriptor`,
+	Args: cobra.MaximumNArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		SetupLogging()
 		a := cli.NewApplications(
 			options.Resolve("nalejAddress", nalejAddress),
 			options.ResolveAsInt("port", nalejPort),
 			insecure,
-			options.Resolve("cacert", caCertPath))
-		a.DeleteDescriptor(options.Resolve("organizationID", organizationID), descriptorID)
+			options.Resolve("cacert", caCertPath), options.Resolve("output", output))
+		targetValues, err := ResolveArgument([]string{"descriptorID"}, args, []string{descriptorID})
+		if err != nil {
+			fmt.Println(err.Error())
+			cmd.Help()
+		}else{
+			a.DeleteDescriptor(options.Resolve("organizationID", organizationID), targetValues[0])
+		}
+
 	},
 }
 
@@ -215,32 +256,48 @@ var instanceCmd = &cobra.Command{
 }
 
 var deployInstanceCmd = &cobra.Command{
-	Use:   "deploy",
+	Use:   "deploy [descriptorID] [name]",
 	Short: "Deploy an application instance",
 	Long:  `Deploy an application instance`,
+	Args: cobra.MaximumNArgs(2),
 	Run: func(cmd *cobra.Command, args []string) {
 		SetupLogging()
 		a := cli.NewApplications(
 			options.Resolve("nalejAddress", nalejAddress),
 			options.ResolveAsInt("port", nalejPort),
 			insecure,
-			options.Resolve("cacert", caCertPath))
-		a.Deploy(options.Resolve("organizationID", organizationID), descriptorID, name, description)
+			options.Resolve("cacert", caCertPath), options.Resolve("output", output))
+
+		targetValues, err := ResolveArgument([]string{"descriptorID", "name"}, args, []string{descriptorID, name})
+		if err != nil {
+			fmt.Println(err.Error())
+			cmd.Help()
+		}else{
+			a.Deploy(options.Resolve("organizationID", organizationID), targetValues[0], targetValues[1])
+		}
+
 	},
 }
 
 var undeployInstanceCmd = &cobra.Command{
-	Use:   "undeploy",
+	Use:   "undeploy [instanceID]",
 	Short: "Undeploy an application instance",
 	Long:  `Undeploy an application instance`,
+	Args: cobra.MaximumNArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		SetupLogging()
 		a := cli.NewApplications(
 			options.Resolve("nalejAddress", nalejAddress),
 			options.ResolveAsInt("port", nalejPort),
 			insecure,
-			options.Resolve("cacert", caCertPath))
-		a.Undeploy(options.Resolve("organizationID", organizationID), instanceID)
+			options.Resolve("cacert", caCertPath), options.Resolve("output", output))
+		targetInstanceID, err := ResolveArgument([]string{"instanceID"}, args, []string{instanceID})
+		if err != nil {
+			fmt.Println(err.Error())
+			cmd.Help()
+		}else{
+			a.Undeploy(options.Resolve("organizationID", organizationID), targetInstanceID[0])
+		}
 	},
 }
 
@@ -254,22 +311,29 @@ var listInstancesCmd = &cobra.Command{
 			options.Resolve("nalejAddress", nalejAddress),
 			options.ResolveAsInt("port", nalejPort),
 			insecure,
-			options.Resolve("cacert", caCertPath))
+			options.Resolve("cacert", caCertPath), options.Resolve("output", output))
 		a.ListInstances(options.Resolve("organizationID", organizationID))
 	},
 }
 
 var getInstanceCmd = &cobra.Command{
-	Use:   "get",
+	Use:   "get [instanceID]",
 	Short: "Get an application instance",
 	Long:  `Get and application instance`,
+	Args: cobra.MaximumNArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		SetupLogging()
 		a := cli.NewApplications(
 			options.Resolve("nalejAddress", nalejAddress),
 			options.ResolveAsInt("port", nalejPort),
 			insecure,
-			options.Resolve("cacert", caCertPath))
-		a.GetInstance(options.Resolve("organizationID", organizationID), instanceID)
+			options.Resolve("cacert", caCertPath), options.Resolve("output", output))
+		targetInstanceID, err := ResolveArgument([]string{"instanceID"}, args, []string{instanceID})
+		if err != nil {
+			fmt.Println(err.Error())
+			cmd.Help()
+		}else{
+			a.GetInstance(options.Resolve("organizationID", organizationID), targetInstanceID[0])
+		}
 	},
 }

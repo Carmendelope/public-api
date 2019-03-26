@@ -69,8 +69,8 @@ var listOptionsCmd = &cobra.Command{
 }
 
 var deleteOptionCmd = &cobra.Command{
-	Use:     "del",
-	Aliases: []string{"deleted"},
+	Use:     "delete",
+	Aliases: []string{"remove", "del"},
 	Short:   "Delete a given key",
 	Long:    `Delete a given key`,
 	Run: func(cmd *cobra.Command, args []string) {

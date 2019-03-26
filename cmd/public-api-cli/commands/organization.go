@@ -35,7 +35,8 @@ var infoCmd = &cobra.Command{
 			options.Resolve("nalejAddress", nalejAddress),
 			options.ResolveAsInt("port", nalejPort),
 			insecure,
-			options.Resolve("cacert", caCertPath))
+			options.Resolve("cacert", caCertPath),
+			options.Resolve("output", output))
 		o.Info(options.Resolve("organizationID", organizationID))
 	},
 }

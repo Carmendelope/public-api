@@ -12,6 +12,7 @@ import (
 	"github.com/rs/zerolog/log"
 	"google.golang.org/grpc"
 	"io/ioutil"
+	"strings"
 )
 
 type Applications struct {
@@ -19,9 +20,9 @@ type Applications struct {
 	Credentials
 }
 
-func NewApplications(address string, port int, insecure bool, caCertPath string) *Applications {
+func NewApplications(address string, port int, insecure bool, caCertPath string, output string) *Applications {
 	return &Applications{
-		Connection:  *NewConnection(address, port, insecure, caCertPath),
+		Connection:  *NewConnection(address, port, insecure, caCertPath, output),
 		Credentials: *NewEmptyCredentials(DefaultPath),
 	}
 }
@@ -118,7 +119,7 @@ func (a *Applications) GetStorageType(sType string) grpc_application_go.StorageT
 	return grpc_application_go.StorageType_EPHEMERAL
 }
 
-func (a *Applications) AddDescriptor(organizationID string, descriptorPath string, jsonSchemaPath string) {
+func (a *Applications) AddDescriptor(organizationID string, descriptorPath string) {
 
 	if organizationID == "" {
 		log.Fatal().Msg("organizationID cannot be empty")
@@ -173,12 +174,15 @@ func (a *Applications) DeleteDescriptor(organizationID string, descriptorID stri
 	defer conn.Close()
 	defer cancel()
 
-	appDescriptorID := &grpc_application_go.AppDescriptorId{
-		OrganizationId:  organizationID,
-		AppDescriptorId: descriptorID,
+	descriptors := strings.Split(descriptorID, ",")
+	for _, toRemove := range descriptors{
+		appDescriptorID := &grpc_application_go.AppDescriptorId{
+			OrganizationId:  organizationID,
+			AppDescriptorId: toRemove,
+		}
+		result, err := client.DeleteAppDescriptor(ctx, appDescriptorID)
+		a.PrintResultOrError(result, err, "cannot delete given descriptor")
 	}
-	_, err := client.DeleteAppDescriptor(ctx, appDescriptorID)
-	a.PrintSuccessOrError(err, "cannot delete given descriptor", "application descriptor removed")
 }
 
 func (a *Applications) ListDescriptors(organizationID string) {
@@ -225,7 +229,7 @@ func (a *Applications) ModifyAppDescriptorLabels(organizationID string, descript
 }
 
 
-func (a *Applications) Deploy(organizationID string, appDescriptorID string, name string, description string) {
+func (a *Applications) Deploy(organizationID string, appDescriptorID string, name string) {
 	if organizationID == "" {
 		log.Fatal().Msg("organizationID cannot be empty")
 	}
@@ -242,7 +246,6 @@ func (a *Applications) Deploy(organizationID string, appDescriptorID string, nam
 		OrganizationId:  organizationID,
 		AppDescriptorId: appDescriptorID,
 		Name:            name,
-		Description:     description,
 	}
 	deployed, err := client.Deploy(ctx, deployRequest)
 	a.PrintResultOrError(deployed, err, "cannot deploy application")
@@ -255,18 +258,21 @@ func (a *Applications) Undeploy(organizationID string, appInstanceID string) {
 	if appInstanceID == "" {
 		log.Fatal().Msg("instanceID cannot be empty")
 	}
-	a.load()
-	ctx, cancel := a.GetContext()
-	client, conn := a.getClient()
-	defer conn.Close()
-	defer cancel()
+	instances := strings.Split(appInstanceID, ",")
+	for _, toUndeploy := range instances{
+		a.load()
+		ctx, cancel := a.GetContext()
+		client, conn := a.getClient()
+		defer conn.Close()
+		defer cancel()
 
-	undeployRequest := &grpc_application_go.AppInstanceId{
-		OrganizationId: organizationID,
-		AppInstanceId:  appInstanceID,
+		undeployRequest := &grpc_application_go.AppInstanceId{
+			OrganizationId: organizationID,
+			AppInstanceId:  toUndeploy,
+		}
+		result, err := client.Undeploy(ctx, undeployRequest)
+		a.PrintResultOrError(result, err, "cannot undeploy application")
 	}
-	_, err := client.Undeploy(ctx, undeployRequest)
-	a.PrintSuccessOrError(err, "cannot undeploy application", "application instance undeployed")
 }
 
 func (a *Applications) ListInstances(organizationID string) {

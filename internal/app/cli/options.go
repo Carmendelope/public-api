@@ -5,7 +5,6 @@
 package cli
 
 import (
-	"fmt"
 	"github.com/rs/zerolog/log"
 	"io/ioutil"
 	"os"
@@ -80,14 +79,17 @@ func (o *Options) Delete(key string) {
 
 // List the available options
 func (o *Options) List() {
+	header := []string{"KEY", "VALUE"}
+	values := make([][]string, 0)
 	targetPath := o.getPath()
 	_ = filepath.Walk(targetPath, func(path string, info os.FileInfo, err error) error {
 		if !info.IsDir() {
 			retrieved := o.Get(filepath.Base(info.Name()))
-			fmt.Printf("Key: %s Value: %s\n", info.Name(), retrieved)
+			values = append(values, []string{info.Name(), retrieved})
 		}
 		return nil
 	})
+	PrintFromValues(header, values)
 }
 
 // Resolve the effective value of a parameter.

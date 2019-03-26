@@ -6,13 +6,13 @@ package commands
 
 import (
 	"encoding/json"
+	"fmt"
+	"github.com/nalej/derrors"
 	"github.com/nalej/public-api/internal/app/cli"
 	"github.com/nalej/public-api/version"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 	"github.com/spf13/cobra"
-
-	"fmt"
 	"os"
 )
 
@@ -25,6 +25,7 @@ var nalejPort int
 
 var insecure bool
 var caCertPath string
+var output string
 
 var options cli.Options
 
@@ -47,6 +48,8 @@ func init() {
 	rootCmd.PersistentFlags().MarkHidden("port")
 	rootCmd.PersistentFlags().BoolVar(&insecure, "insecure", false, "Use a insecure connection to connect to the server")
 	rootCmd.PersistentFlags().StringVar(&caCertPath, "cacert", "", "Path of the CA certificate to validate the server connection")
+	rootCmd.PersistentFlags().StringVar(&output, "output", "", "Output format: JSON (default) or text")
+	rootCmd.PersistentFlags().MarkHidden("output")
 }
 
 func Execute() {
@@ -76,4 +79,38 @@ func PrintResult(result interface{}) error {
 		fmt.Println(string(res))
 	}
 	return err
+}
+
+func ResolveArgument(attributeName [] string, args []string, flagValue []string) ([]string, derrors.Error) {
+	result := make([]string, 0)
+
+	if len(args) < len(attributeName){
+		for index := 0; index < len(attributeName); index ++ {
+			if flagValue[index] == ""{
+				return nil, derrors.NewNotFoundError(fmt.Sprintf("argument %s or flag value --%s not found", attributeName[index], attributeName[index]))
+			}
+		}
+		return flagValue, nil
+	}
+
+	if len(attributeName) != len(flagValue) {
+		return nil, derrors.NewInternalError("length mismatch")
+	}
+
+	for index := 0; index < len(attributeName); index ++ {
+		found := false
+		if flagValue[index] != ""{
+			result = append(result, flagValue[index])
+			found = true
+		}
+		if args[index] != ""{
+			result = append(result, args[index])
+			found = true
+		}
+		if ! found {
+			return nil, derrors.NewNotFoundError(attributeName[index])
+		}
+	}
+
+	return result, nil
 }
