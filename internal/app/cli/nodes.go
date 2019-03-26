@@ -16,9 +16,9 @@ type Nodes struct {
 	Credentials
 }
 
-func NewNodes(address string, port int, insecure bool, caCertPath string, output string) *Nodes {
+func NewNodes(address string, port int, insecure bool, useTLS bool, caCertPath string, output string) *Nodes {
 	return &Nodes{
-		Connection:  *NewConnection(address, port, insecure, caCertPath, output),
+		Connection:  *NewConnection(address, port, insecure, useTLS, caCertPath, output),
 		Credentials: *NewEmptyCredentials(DefaultPath),
 	}
 }

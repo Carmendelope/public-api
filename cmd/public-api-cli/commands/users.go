@@ -58,7 +58,7 @@ var userInfoCmd = &cobra.Command{
 		u := cli.NewUsers(
 			options.Resolve("nalejAddress", nalejAddress),
 			options.ResolveAsInt("port", nalejPort),
-			insecure,
+			insecure, useTLS,
 			options.Resolve("cacert", caCertPath), options.Resolve("output", output))
 		u.Info(options.Resolve("organizationID", organizationID), options.Resolve("email", email))
 	},
@@ -73,7 +73,7 @@ var userListCmd = &cobra.Command{
 		u := cli.NewUsers(
 			options.Resolve("nalejAddress", nalejAddress),
 			options.ResolveAsInt("port", nalejPort),
-			insecure,
+			insecure, useTLS,
 			options.Resolve("cacert", caCertPath), options.Resolve("output", output))
 		u.List(options.Resolve("organizationID", organizationID))
 	},
@@ -89,7 +89,7 @@ var deleteUserCmd = &cobra.Command{
 		u := cli.NewUsers(
 			options.Resolve("nalejAddress", nalejAddress),
 			options.ResolveAsInt("port", nalejPort),
-			insecure,
+			insecure, useTLS,
 			options.Resolve("cacert", caCertPath), options.Resolve("output", output))
 		u.Delete(options.Resolve("organizationID", organizationID), email)
 	},
@@ -105,7 +105,7 @@ var resetPasswordCmd = &cobra.Command{
 		u := cli.NewUsers(
 			options.Resolve("nalejAddress", nalejAddress),
 			options.ResolveAsInt("port", nalejPort),
-			insecure,
+			insecure, useTLS,
 			options.Resolve("cacert", caCertPath), options.Resolve("output", output))
 		u.ChangePassword(options.Resolve("organizationID", organizationID), email, password, newPassword)
 	},
@@ -120,7 +120,7 @@ var updateUserCmd = &cobra.Command{
 		u := cli.NewUsers(
 			options.Resolve("nalejAddress", nalejAddress),
 			options.ResolveAsInt("port", nalejPort),
-			insecure,
+			insecure, useTLS,
 			options.Resolve("cacert", caCertPath), options.Resolve("output", output))
 		u.Update(options.Resolve("organizationID", organizationID), email, name)
 	},
@@ -135,7 +135,7 @@ var addUserCmd = &cobra.Command{
 		u := cli.NewUsers(
 			options.Resolve("nalejAddress", nalejAddress),
 			options.ResolveAsInt("port", nalejPort),
-			insecure,
+			insecure, useTLS,
 			options.Resolve("cacert", caCertPath), options.Resolve("output", output))
 		u.Add(options.Resolve("organizationID", organizationID), email, password, name, roleName)
 	},

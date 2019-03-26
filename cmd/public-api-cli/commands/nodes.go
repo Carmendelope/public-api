@@ -42,7 +42,7 @@ var listNodesCmd = &cobra.Command{
 		n := cli.NewNodes(
 			options.Resolve("nalejAddress", nalejAddress),
 			options.ResolveAsInt("port", nalejPort),
-			insecure,
+			insecure, useTLS,
 			options.Resolve("cacert", caCertPath), options.Resolve("output", output))
 
 		targetValues, err := ResolveArgument([]string{"clusterID"}, args, []string{clusterID})
@@ -77,7 +77,7 @@ var addLabelToNodeCmd = &cobra.Command{
 		n := cli.NewNodes(
 			options.Resolve("nalejAddress", nalejAddress),
 			options.ResolveAsInt("port", nalejPort),
-			insecure,
+			insecure, useTLS,
 			options.Resolve("cacert", caCertPath), options.Resolve("output", output))
 
 		targetValues, err := ResolveArgument([]string{"nodeID", "labels"}, args, []string{nodeID, rawLabels})
@@ -102,7 +102,7 @@ var removeLabelFromNodeCmd = &cobra.Command{
 		n := cli.NewNodes(
 			options.Resolve("nalejAddress", nalejAddress),
 			options.ResolveAsInt("port", nalejPort),
-			insecure,
+			insecure, useTLS,
 			options.Resolve("cacert", caCertPath), options.Resolve("output", output))
 
 		targetValues, err := ResolveArgument([]string{"nodeID", "labels"}, args, []string{nodeID, rawLabels})

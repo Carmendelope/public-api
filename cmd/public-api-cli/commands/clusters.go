@@ -64,7 +64,7 @@ var installClustersCmd = &cobra.Command{
 		c := cli.NewClusters(
 			options.Resolve("nalejAddress", nalejAddress),
 			options.ResolveAsInt("port", nalejPort),
-			insecure,
+			insecure, useTLS,
 			options.Resolve("cacert", caCertPath), options.Resolve("output", output))
 		c.Install(
 			options.Resolve("organizationID", organizationID),
@@ -91,7 +91,7 @@ var infoClusterCmd = &cobra.Command{
 		c := cli.NewClusters(
 			options.Resolve("nalejAddress", nalejAddress),
 			options.ResolveAsInt("port", nalejPort),
-			insecure,
+			insecure, useTLS,
 			options.Resolve("cacert", caCertPath), options.Resolve("output", output))
 
 		targetValues, err := ResolveArgument([]string{"clusterID"}, args, []string{clusterID})
@@ -114,7 +114,7 @@ var listClustersCmd = &cobra.Command{
 		c := cli.NewClusters(
 			options.Resolve("nalejAddress", nalejAddress),
 			options.ResolveAsInt("port", nalejPort),
-			insecure,
+			insecure, useTLS,
 			options.Resolve("cacert", caCertPath), options.Resolve("output", output))
 		c.List(options.Resolve("organizationID", organizationID))
 	},
@@ -130,7 +130,7 @@ var monitorClusterCmd = &cobra.Command{
 		c := cli.NewClusters(
 			options.Resolve("nalejAddress", nalejAddress),
 			options.ResolveAsInt("port", nalejPort),
-			insecure,
+			insecure, useTLS,
 			options.Resolve("cacert", caCertPath), options.Resolve("output", output))
 
 		targetValues, err := ResolveArgument([]string{"clusterID"}, args, []string{clusterID})
@@ -183,7 +183,7 @@ var addLabelToClusterCmd = &cobra.Command{
 		c := cli.NewClusters(
 			options.Resolve("nalejAddress", nalejAddress),
 			options.ResolveAsInt("port", nalejPort),
-			insecure,
+			insecure, useTLS,
 			options.Resolve("cacert", caCertPath), options.Resolve("output", output))
 
 		targetValues, err := ResolveArgument([]string{"clusterID", "labels"}, args, []string{clusterID, rawLabels})
@@ -208,7 +208,7 @@ var removeLabelFromClusterCmd = &cobra.Command{
 		c := cli.NewClusters(
 			options.Resolve("nalejAddress", nalejAddress),
 			options.ResolveAsInt("port", nalejPort),
-			insecure,
+			insecure, useTLS,
 			options.Resolve("cacert", caCertPath), options.Resolve("output", output))
 		targetValues, err := ResolveArgument([]string{"clusterID", "labels"}, args, []string{clusterID, rawLabels})
 		if err != nil {

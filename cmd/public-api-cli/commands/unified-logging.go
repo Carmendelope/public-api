@@ -59,7 +59,7 @@ var searchCmd = &cobra.Command{
 		l := cli.NewUnifiedLogging(
 			options.Resolve("nalejAddress", nalejAddress),
 			options.ResolveAsInt("port", nalejPort),
-			insecure,
+			insecure, useTLS,
 			options.Resolve("cacert", caCertPath), options.Resolve("output", output))
 		l.Search(options.Resolve("organizationID", organizationID), instanceID, sgInstanceID, message, from, to, desc, redirectLog)
 	},

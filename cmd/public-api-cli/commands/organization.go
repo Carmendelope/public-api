@@ -34,7 +34,7 @@ var infoCmd = &cobra.Command{
 		o := cli.NewOrganizations(
 			options.Resolve("nalejAddress", nalejAddress),
 			options.ResolveAsInt("port", nalejPort),
-			insecure,
+			insecure, useTLS,
 			options.Resolve("cacert", caCertPath),
 			options.Resolve("output", output))
 		o.Info(options.Resolve("organizationID", organizationID))
