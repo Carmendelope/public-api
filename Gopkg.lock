@@ -115,12 +115,12 @@
   version = "v0.0.67"
 
 [[projects]]
-  digest = "1:f522638e24667903ccd2565aa4f2fadf15d65436476e0df3a6ff2df464de9e68"
+  digest = "1:c863714aaa3b8809f04e3c7459d77ca7d3a8e222c72f488ecc97bbaf27c3bc08"
   name = "github.com/nalej/grpc-application-manager-go"
   packages = ["."]
   pruneopts = ""
-  revision = "8da5b18e2fe022f1110230265ef0ab89b7ea0ce5"
-  version = "v0.0.30"
+  revision = "7cfe65f7c97e4344510f304930d0346c61012971"
+  version = "v0.0.29"
 
 [[projects]]
   digest = "1:04ab94c90e7bce3f0ccf049c17c4c784da6819bca629e6ea98dcfe1f9b3a7f7a"
@@ -203,12 +203,12 @@
   version = "v0.0.1"
 
 [[projects]]
-  digest = "1:8b0b24d0e568efa15f46a6e4daf58ca7fd1f51f5f35b98c2631afabf427f7a88"
+  digest = "1:41e66068d8d2bc55e106d5d6cdc1a860e163de5214df2055aea6a054e93d3aee"
   name = "github.com/nalej/grpc-installer-go"
   packages = ["."]
   pruneopts = ""
-  revision = "6aaa5e3d673ba03619bdf6f6aa84dd6f5e9e5873"
-  version = "v0.0.32"
+  revision = "6d4610e1d2eed73793abea449170c6932d810bb5"
+  version = "v0.0.33"
 
 [[projects]]
   digest = "1:858ed50179eb722fdf9a577f37186f7a932304d32d2b4a49f8b58c06266a43e1"
@@ -371,7 +371,7 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:2edbdba51caaa974da24fd3d5c4bb79a907bdc90cbe893aff4fb61ff20a3f41a"
+  digest = "1:ca92e2feb3da3eafb66a9a5604e4bec7a1df56fd3715324c7c003e335bddaed5"
   name = "golang.org/x/net"
   packages = [
     "context",
@@ -386,7 +386,7 @@
     "trace",
   ]
   pruneopts = ""
-  revision = "e3b2ff56ed879efa686c9d09ed74f9bfe42f1a1d"
+  revision = "15845e8f865bdabdefb6e7da65b4d9e8de5e94ef"
 
 [[projects]]
   branch = "master"
