@@ -105,3 +105,7 @@
 [[constraint]]
   name = "github.com/araddon/dateparse"
   revision = "21df004e09ca46e07ce99bbba1e8c2422ba4ecf9"
+
+[[constraint]]
+  name = "github.com/santhosh-tekuri/jsonschema"
+  version="=v1.2.4"

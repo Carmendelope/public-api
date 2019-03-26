@@ -104,6 +104,7 @@ var addDescriptorCmd = &cobra.Command{
 		}else {
 			a.AddDescriptor(options.Resolve("organizationID", organizationID), targetDescriptorPath[0])
 		}
+
 	},
 }
 

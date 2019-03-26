@@ -8,6 +8,7 @@ import (
 	"github.com/nalej/grpc-application-manager-go"
 	"github.com/nalej/grpc-organization-go"
 	"github.com/nalej/grpc-public-api-go"
+	"github.com/nalej/public-api/internal/pkg/entities"
 	"github.com/rs/zerolog/log"
 	"google.golang.org/grpc"
 	"io/ioutil"
@@ -48,6 +49,11 @@ func (a *Applications) createAddDescriptorRequest(organizationID string, descrip
 	content, err := ioutil.ReadFile(descPath)
 	if err != nil {
 		return nil, derrors.AsError(err, "cannot read descriptor")
+	}
+
+	err = entities.ValidAppDescriptorFormat(content)
+	if err != nil {
+		return nil, derrors.AsError(err, "cannot validate descriptor")
 	}
 
 	addDescriptorRequest := &grpc_application_go.AddAppDescriptorRequest{}
