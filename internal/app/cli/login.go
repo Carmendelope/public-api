@@ -20,9 +20,9 @@ type Login struct {
 }
 
 // NewLogin creates a new Login structure.
-func NewLogin(address string, port int, insecure bool, caCertPath string, output string) *Login {
+func NewLogin(address string, port int, insecure bool, useTLS bool, caCertPath string, output string) *Login {
 	return &Login{
-		*NewConnection(address, port, insecure, caCertPath, output),
+		*NewConnection(address, port, insecure, useTLS, caCertPath, output),
 	}
 }
 

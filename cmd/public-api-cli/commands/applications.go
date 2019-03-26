@@ -95,7 +95,7 @@ var addDescriptorCmd = &cobra.Command{
 		a := cli.NewApplications(
 			options.Resolve("nalejAddress", nalejAddress),
 			options.ResolveAsInt("port", nalejPort),
-			insecure,
+			insecure, useTLS,
 			options.Resolve("cacert", caCertPath), options.Resolve("output", output))
 		targetDescriptorPath, err := ResolveArgument([]string{"descriptorPath"}, args, []string{descriptorPath})
 		if err != nil {
@@ -117,7 +117,7 @@ var addDescriptorHelpCmd = &cobra.Command{
 		a := cli.NewApplications(
 			"",
 			0,
-			insecure,
+			insecure, useTLS,
 			options.Resolve("cacert", caCertPath), options.Resolve("output", output))
 		a.ShowDescriptorHelp(exampleName, storageType)
 	},
@@ -132,7 +132,7 @@ var listDescriptorsCmd = &cobra.Command{
 		a := cli.NewApplications(
 			options.Resolve("nalejAddress", nalejAddress),
 			options.ResolveAsInt("port", nalejPort),
-			insecure,
+			insecure, useTLS,
 			options.Resolve("cacert", caCertPath), options.Resolve("output", output))
 		a.ListDescriptors(options.Resolve("organizationID", organizationID))
 	},
@@ -148,7 +148,7 @@ var getDescriptorCmd = &cobra.Command{
 		a := cli.NewApplications(
 			options.Resolve("nalejAddress", nalejAddress),
 			options.ResolveAsInt("port", nalejPort),
-			insecure,
+			insecure, useTLS,
 			options.Resolve("cacert", caCertPath), options.Resolve("output", output))
 		targetValues, err := ResolveArgument([]string{"descriptorID"}, args, []string{descriptorID})
 		if err != nil {
@@ -181,7 +181,7 @@ var addLabelToAppDescriptorCmd = &cobra.Command{
 		a := cli.NewApplications(
 			options.Resolve("nalejAddress", nalejAddress),
 			options.ResolveAsInt("port", nalejPort),
-			insecure,
+			insecure, useTLS,
 			options.Resolve("cacert", caCertPath), options.Resolve("output", output))
 
 		targetValues, err := ResolveArgument([]string{"descriptorID", "labels"}, args, []string{descriptorID, rawLabels})
@@ -206,7 +206,7 @@ var removeLabelFromAppDescriptorCmd = &cobra.Command{
 		a := cli.NewApplications(
 			options.Resolve("nalejAddress", nalejAddress),
 			options.ResolveAsInt("port", nalejPort),
-			insecure,
+			insecure, useTLS,
 			options.Resolve("cacert", caCertPath), options.Resolve("output", output))
 
 		targetValues, err := ResolveArgument([]string{"descriptorID", "labels"}, args, []string{descriptorID, rawLabels})
@@ -231,7 +231,7 @@ var deleteDescriptorCmd = &cobra.Command{
 		a := cli.NewApplications(
 			options.Resolve("nalejAddress", nalejAddress),
 			options.ResolveAsInt("port", nalejPort),
-			insecure,
+			insecure, useTLS,
 			options.Resolve("cacert", caCertPath), options.Resolve("output", output))
 		targetValues, err := ResolveArgument([]string{"descriptorID"}, args, []string{descriptorID})
 		if err != nil {
@@ -265,7 +265,7 @@ var deployInstanceCmd = &cobra.Command{
 		a := cli.NewApplications(
 			options.Resolve("nalejAddress", nalejAddress),
 			options.ResolveAsInt("port", nalejPort),
-			insecure,
+			insecure, useTLS,
 			options.Resolve("cacert", caCertPath), options.Resolve("output", output))
 
 		targetValues, err := ResolveArgument([]string{"descriptorID", "name"}, args, []string{descriptorID, name})
@@ -289,7 +289,7 @@ var undeployInstanceCmd = &cobra.Command{
 		a := cli.NewApplications(
 			options.Resolve("nalejAddress", nalejAddress),
 			options.ResolveAsInt("port", nalejPort),
-			insecure,
+			insecure, useTLS,
 			options.Resolve("cacert", caCertPath), options.Resolve("output", output))
 		targetInstanceID, err := ResolveArgument([]string{"instanceID"}, args, []string{instanceID})
 		if err != nil {
@@ -310,7 +310,7 @@ var listInstancesCmd = &cobra.Command{
 		a := cli.NewApplications(
 			options.Resolve("nalejAddress", nalejAddress),
 			options.ResolveAsInt("port", nalejPort),
-			insecure,
+			insecure, useTLS,
 			options.Resolve("cacert", caCertPath), options.Resolve("output", output))
 		a.ListInstances(options.Resolve("organizationID", organizationID))
 	},
@@ -326,7 +326,7 @@ var getInstanceCmd = &cobra.Command{
 		a := cli.NewApplications(
 			options.Resolve("nalejAddress", nalejAddress),
 			options.ResolveAsInt("port", nalejPort),
-			insecure,
+			insecure, useTLS,
 			options.Resolve("cacert", caCertPath), options.Resolve("output", output))
 		targetInstanceID, err := ResolveArgument([]string{"instanceID"}, args, []string{instanceID})
 		if err != nil {

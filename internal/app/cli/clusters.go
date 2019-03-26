@@ -22,9 +22,9 @@ type Clusters struct {
 	Credentials
 }
 
-func NewClusters(address string, port int, insecure bool, caCertPath string, output string) *Clusters {
+func NewClusters(address string, port int, insecure bool, useTLS bool, caCertPath string, output string) *Clusters {
 	return &Clusters{
-		Connection:  *NewConnection(address, port, insecure, caCertPath, output),
+		Connection:  *NewConnection(address, port, insecure, useTLS, caCertPath, output),
 		Credentials: *NewEmptyCredentials(DefaultPath),
 	}
 }

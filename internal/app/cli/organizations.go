@@ -15,9 +15,9 @@ type Organizations struct {
 	Credentials
 }
 
-func NewOrganizations(address string, port int, insecure bool, caCertPath string, output string) *Organizations {
+func NewOrganizations(address string, port int, insecure bool, useTLS bool, caCertPath string, output string) *Organizations {
 	return &Organizations{
-		Connection:  *NewConnection(address, port, insecure, caCertPath, output),
+		Connection:  *NewConnection(address, port, insecure, useTLS, caCertPath, output),
 		Credentials: *NewEmptyCredentials(DefaultPath),
 	}
 }

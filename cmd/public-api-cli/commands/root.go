@@ -24,6 +24,7 @@ var nalejAddress string
 var nalejPort int
 
 var insecure bool
+var useTLS bool
 var caCertPath string
 var output string
 
@@ -46,7 +47,8 @@ func init() {
 	rootCmd.PersistentFlags().StringVar(&nalejAddress, "nalejAddress", "", "Address (host) of the Nalej platform")
 	rootCmd.PersistentFlags().IntVar(&nalejPort, "port", 443, "Port of the Nalej platform Public API")
 	rootCmd.PersistentFlags().MarkHidden("port")
-	rootCmd.PersistentFlags().BoolVar(&insecure, "insecure", false, "Use a insecure connection to connect to the server")
+	rootCmd.PersistentFlags().BoolVar(&insecure, "insecure", false, "Skip CA validation when connecting to a secure TLS server")
+	rootCmd.PersistentFlags().BoolVar(&useTLS, "useTLS", true, "Connect to a TLS server")
 	rootCmd.PersistentFlags().StringVar(&caCertPath, "cacert", "", "Path of the CA certificate to validate the server connection")
 	rootCmd.PersistentFlags().StringVar(&output, "output", "", "Output format: JSON (default) or text")
 	rootCmd.PersistentFlags().MarkHidden("output")

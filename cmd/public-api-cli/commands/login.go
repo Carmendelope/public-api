@@ -26,7 +26,7 @@ var loginCmd = &cobra.Command{
 		l := cli.NewLogin(
 			targetAddress,
 			loginPort,
-			insecure,
+			insecure, useTLS,
 			options.Resolve("cacert", caCertPath), options.Resolve("output", output))
 		creds, err := l.Login(email, password)
 		if err != nil {
