@@ -181,7 +181,7 @@ func ToPublicAPIGroupInstances(source []*grpc_application_go.ServiceGroupInstanc
 		var spec *grpc_public_api_go.ServiceGroupDeploymentSpecs
 		if sgi.Specs != nil {
 			spec = &grpc_public_api_go.ServiceGroupDeploymentSpecs{
-				NumReplicas:         sgi.Specs.Replicas,
+				Replicas:         sgi.Specs.Replicas,
 				MultiClusterReplica: sgi.Specs.MultiClusterReplica,
 				DeploymentSelectors: sgi.Specs.DeploymentSelectors,
 				}
