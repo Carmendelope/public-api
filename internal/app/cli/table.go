@@ -209,7 +209,7 @@ func FromAppInstance(result *grpc_public_api_go.AppInstance) *ResultTable {
 		for _, g := range result.Groups{
 			groupReplicas := "NA"
 			if g.Specs != nil{
-				groupReplicas = strconv.Itoa(int(g.Specs.NumReplicas))
+				groupReplicas = strconv.Itoa(int(g.Specs.Replicas))
 				if g.Specs.MultiClusterReplica{
 					groupReplicas = "MULTI_CLUSTER"
 				}
