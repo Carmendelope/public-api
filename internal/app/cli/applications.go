@@ -12,8 +12,13 @@ import (
 	"github.com/rs/zerolog/log"
 	"google.golang.org/grpc"
 	"io/ioutil"
+	"reflect"
 	"strings"
+	"time"
 )
+
+// WatchSleep with the time to sleep between watch calls.
+const WatchSleep = time.Second * 5
 
 type Applications struct {
 	Connection
@@ -293,7 +298,7 @@ func (a *Applications) ListInstances(organizationID string) {
 	a.PrintResultOrError(list, err, "cannot list application instances")
 }
 
-func (a *Applications) GetInstance(organizationID string, appInstanceID string) {
+func (a *Applications) GetInstance(organizationID string, appInstanceID string, watch bool) {
 
 	if organizationID == "" {
 		log.Fatal().Msg("organizationID cannot be empty")
@@ -311,6 +316,22 @@ func (a *Applications) GetInstance(organizationID string, appInstanceID string) 
 		OrganizationId: organizationID,
 		AppInstanceId:  appInstanceID,
 	}
-	inst, err := client.GetAppInstance(ctx, instID)
-	a.PrintResultOrError(inst, err, "cannot obtain application instance information")
+	previous, err := client.GetAppInstance(ctx, instID)
+	a.PrintResultOrError(previous, err, "cannot obtain application instance information")
+
+	for ; watch; {
+		watchCtx, watchCancel := a.GetContext()
+		inst, err := client.GetAppInstance(watchCtx, instID)
+		if err != nil {
+			a.PrintResultOrError(inst, err, "cannot obtain application instance information")
+		}
+		if !reflect.DeepEqual(previous, inst) {
+			fmt.Println("")
+			a.PrintResultOrError(inst, err, "cannot obtain application instance information")
+		}
+		previous = inst
+		watchCancel()
+		time.Sleep(WatchSleep)
+	}
+
 }

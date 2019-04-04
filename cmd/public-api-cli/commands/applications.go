@@ -71,6 +71,7 @@ func init() {
 	// Get
 	getInstanceCmd.Flags().StringVar(&instanceID, "instanceID", "", "Application instance identifier")
 	getInstanceCmd.Flags().MarkDeprecated("instanceID", "Use command argument instead")
+	getInstanceCmd.Flags().BoolVarP(&watch, "watch", "w", false, "Watch for changes")
 	instanceCmd.AddCommand(getInstanceCmd)
 }
 
@@ -333,7 +334,7 @@ var getInstanceCmd = &cobra.Command{
 			fmt.Println(err.Error())
 			cmd.Help()
 		}else{
-			a.GetInstance(options.Resolve("organizationID", organizationID), targetInstanceID[0])
+			a.GetInstance(options.Resolve("organizationID", organizationID), targetInstanceID[0], watch)
 		}
 	},
 }
