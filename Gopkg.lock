@@ -88,7 +88,7 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:8ef625bb8acf8090bc3d4c35bd2ddf1435c84f69d1de2595b18fdd25056b0a32"
+  digest = "1:f2936cfeee55f30268aff8520992d4817bc32cce0e0e9d2bbf14cd6cc3b706dc"
   name = "github.com/nalej/authx"
   packages = [
     "pkg/interceptor",
@@ -96,7 +96,7 @@
     "pkg/token",
   ]
   pruneopts = ""
-  revision = "e01eec954070f4a654b1960c47f0c99cf1f89374"
+  revision = "74f1974459ec7d8b4be8d87daaf0df3eea7bdbb3"
 
 [[projects]]
   digest = "1:0cc441f3dfe124dd74f44dd7e466dfc17cc7edff468094fbc3847a96b5ebf6f7"
@@ -371,7 +371,7 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:ca92e2feb3da3eafb66a9a5604e4bec7a1df56fd3715324c7c003e335bddaed5"
+  digest = "1:adcb9e84ce154ef1d45851b57c40f8a211db3e36373a65b7c4f10c79b7428718"
   name = "golang.org/x/net"
   packages = [
     "context",
@@ -386,15 +386,15 @@
     "trace",
   ]
   pruneopts = ""
-  revision = "15845e8f865bdabdefb6e7da65b4d9e8de5e94ef"
+  revision = "74de082e2cca95839e88aa0aeee5aadf6ce7710f"
 
 [[projects]]
   branch = "master"
-  digest = "1:919aaa36fe27d6fba3bea8067d0dea806269c45c8e5f329713eef4e2637dc2f4"
+  digest = "1:2c8100dd5d57b0803cebab4de1d55e0438b40afdfad520cbbecba7c8a13aed15"
   name = "golang.org/x/sys"
   packages = ["unix"]
   pruneopts = ""
-  revision = "f49334f85ddcf0f08d7fb6dd7363e9e6d6b777eb"
+  revision = "baf5eb976a8cd65845293cd814ea151018552292"
 
 [[projects]]
   digest = "1:5acd3512b047305d49e8763eef7ba423901e85d5dd2fd1e71778a0ea8de10bd4"
@@ -433,7 +433,7 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:388835fd2da2db630c360c9d2b17bc4de248fcb5ea3e2961d654dbb6fc26acc2"
+  digest = "1:8cdef6da940ed0c6146559d452b3665683f56d276ed0b0455c461411e9476b81"
   name = "google.golang.org/genproto"
   packages = [
     "googleapis/api/annotations",
@@ -441,7 +441,7 @@
     "googleapis/rpc/status",
   ]
   pruneopts = ""
-  revision = "e79c0c59cdb5e117ef82a6f885294df3d74065d5"
+  revision = "f467c93bbac2133ff463e1f93d18d8f9f3f04451"
 
 [[projects]]
   digest = "1:9e9c6b3804858b1a058ef81027270d307b74f4ddd727d2edff0ca002dd304adb"
