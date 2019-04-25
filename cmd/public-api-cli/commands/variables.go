@@ -29,6 +29,7 @@ var ipAddressIngress string
 
 var descriptorID string
 var descriptorPath string
+var params string
 var jsonSchemaPath string
 var description string
 

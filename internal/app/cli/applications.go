@@ -233,14 +233,40 @@ func (a *Applications) ModifyAppDescriptorLabels(organizationID string, descript
 	a.PrintResultOrError(updated, err, "cannot update application descriptor labels")
 }
 
+// getParams convert param (param1=value1;...;paramN=valueN) to InstanceParameterList
+func (a *Applications) getParams (params string) *grpc_application_go.InstanceParameterList {
 
-func (a *Applications) Deploy(organizationID string, appDescriptorID string, name string) {
+	instParams := make ([]*grpc_application_go.InstanceParameter, 0)
+
+	if params != "" {
+		paramList := strings.Split(params, ";")
+		for _, paramStr := range paramList {
+			param := strings.Split(paramStr, "=")
+			if len(param) != 2 {
+				log.Fatal().Msg("param format error (param1=value1;...;paramN=valueN)")
+			}
+			instParams = append(instParams, &grpc_application_manager_go.InstanceParameter{
+				ParameterName: param[0],
+				Value:         param[1],
+			})
+		}
+	}
+
+	return &grpc_application_go.InstanceParameterList{
+		Parameters:instParams,
+	}
+}
+
+func (a *Applications) Deploy(organizationID string, appDescriptorID string, name string, params string) {
 	if organizationID == "" {
 		log.Fatal().Msg("organizationID cannot be empty")
 	}
 	if appDescriptorID == "" {
 		log.Fatal().Msg("descriptorID cannot be empty")
 	}
+	paramList := a.getParams(params)
+	fmt.Println("-->")
+	fmt.Println(len(paramList.Parameters))
 	a.load()
 	ctx, cancel := a.GetContext()
 	client, conn := a.getClient()
@@ -251,6 +277,7 @@ func (a *Applications) Deploy(organizationID string, appDescriptorID string, nam
 		OrganizationId:  organizationID,
 		AppDescriptorId: appDescriptorID,
 		Name:            name,
+		Parameters:		 paramList,
 	}
 	deployed, err := client.Deploy(ctx, deployRequest)
 	a.PrintResultOrError(deployed, err, "cannot deploy application")

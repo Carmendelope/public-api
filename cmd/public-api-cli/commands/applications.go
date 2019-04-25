@@ -61,6 +61,7 @@ func init() {
 	// Deploy
 	deployInstanceCmd.Flags().StringVar(&name, "name", "", "Name of the application instance")
 	deployInstanceCmd.Flags().StringVar(&descriptorID, "descriptorID", "", "Application instance identifier")
+	deployInstanceCmd.Flags().StringVar(&params, "params", "", "Param values to deploy (param1=value1;...paramN=valueN)")
 	deployInstanceCmd.Flags().MarkDeprecated("name", "Use command argument instead")
 	deployInstanceCmd.Flags().MarkDeprecated("descriptorID", "Use command argument instead")
 	instanceCmd.AddCommand(deployInstanceCmd)
@@ -274,7 +275,7 @@ var deployInstanceCmd = &cobra.Command{
 			fmt.Println(err.Error())
 			cmd.Help()
 		}else{
-			a.Deploy(options.Resolve("organizationID", organizationID), targetValues[0], targetValues[1])
+			a.Deploy(options.Resolve("organizationID", organizationID), targetValues[0], targetValues[1], params)
 		}
 
 	},
