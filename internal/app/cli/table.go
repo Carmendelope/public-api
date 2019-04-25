@@ -45,9 +45,11 @@ func AsTable(result interface{}) * ResultTable {
 	case *grpc_infrastructure_manager_go.InstallResponse: return FromInstallResponse(result.(*grpc_infrastructure_manager_go.InstallResponse))
 	case *grpc_public_api_go.AppInstanceList: return FromAppInstanceList(result.(*grpc_public_api_go.AppInstanceList))
 	case *grpc_public_api_go.AppInstance: return FromAppInstance(result.(*grpc_public_api_go.AppInstance))
+	case *grpc_application_go.InstanceParameterList: return FromInstanceParameterList(result.(*grpc_application_go.InstanceParameterList))
 	case *grpc_application_manager_go.DeploymentResponse: return FromDeploymentResponse(result.(*grpc_application_manager_go.DeploymentResponse))
 	case *grpc_application_go.AppDescriptorList: return FromAppDescriptorList(result.(*grpc_application_go.AppDescriptorList))
 	case *grpc_application_go.AppDescriptor: return FromAppDescriptor(result.(*grpc_application_go.AppDescriptor))
+	case *grpc_public_api_go.AppParameterList: return FromAppParameterList(result.(*grpc_public_api_go.AppParameterList))
 	case *grpc_device_manager_go.DeviceGroup: return FromDeviceGroup(result.(*grpc_device_manager_go.DeviceGroup))
 	case *grpc_device_manager_go.DeviceGroupList: return FromDeviceGroupList(result.(*grpc_device_manager_go.DeviceGroupList))
 	case *grpc_public_api_go.Device: return FromDevice(result.(*grpc_public_api_go.Device))
@@ -80,14 +82,6 @@ func PrintFromValues(header []string, values [][]string) {
 		fmt.Fprintln(w, toPrint)
 	}
 	w.Flush()
-}
-
-func TransformDescriptorParameters(parameters []*grpc_application_go.AppParameter ) string {
-	r := make([]string, 0)
-	for _, v := range parameters{
-		r = append(r, fmt.Sprintf("%s", v.Name))
-	}
-	return strings.Join(r, ",")
 }
 
 func TransformLabels(labels map[string]string) string {
@@ -198,6 +192,25 @@ func FromNodeList(result *grpc_public_api_go.NodeList) *ResultTable {
 // ----
 // Applications
 // ----
+
+func FromAppParameterList (result *grpc_public_api_go.AppParameterList) *ResultTable {
+	r := make([][]string, 0)
+	r = append(r, []string{"PARAM NAME", "DESCRIPTION", "PATH", "TYPE", "DEFAULT_VALUE", "B/A"})
+	for _, p := range result.Parameters{
+		r = append(r, []string{p.Name,p.Description, p.Path, p.Type, p.DefaultValue, p.Category})
+	}
+	return &ResultTable{r}
+}
+
+func FromInstanceParameterList (result *grpc_application_go.InstanceParameterList) *ResultTable {
+	r := make([][]string, 0)
+	r = append(r, []string{"PARAM NAME", "VALUE"})
+	for _, p := range result.Parameters{
+		r = append(r, []string{p.ParameterName, p.Value})
+	}
+	return &ResultTable{r}
+}
+
 func FromAppInstanceList(result *grpc_public_api_go.AppInstanceList) *ResultTable {
 	r := make([][]string, 0)
 	r = append(r, []string{"NAME", "ID", "LABELS", "STATUS"})

@@ -190,6 +190,29 @@ func (a *Applications) DeleteDescriptor(organizationID string, descriptorID stri
 	}
 }
 
+func (a *Applications) GetDescriptorParameters(organizationID string, descriptorID string) {
+	if organizationID == "" {
+		log.Fatal().Msg("organizationID cannot be empty")
+	}
+	if descriptorID == "" {
+		log.Fatal().Msg("descriptorID cannot be empty")
+	}
+
+	a.load()
+
+	ctx, cancel := a.GetContext()
+	client, conn := a.getClient()
+	defer conn.Close()
+	defer cancel()
+
+	appDescriptorID := &grpc_application_go.AppDescriptorId{
+		OrganizationId:  organizationID,
+		AppDescriptorId: descriptorID,
+	}
+	descriptor, err := client.ListDescriptorAppParameters(ctx, appDescriptorID)
+	a.PrintResultOrError(descriptor, err, "cannot obtain descriptor parameters")
+}
+
 func (a *Applications) ListDescriptors(organizationID string) {
 	if organizationID == "" {
 		log.Fatal().Msg("organizationID cannot be empty")
@@ -265,8 +288,6 @@ func (a *Applications) Deploy(organizationID string, appDescriptorID string, nam
 		log.Fatal().Msg("descriptorID cannot be empty")
 	}
 	paramList := a.getParams(params)
-	fmt.Println("-->")
-	fmt.Println(len(paramList.Parameters))
 	a.load()
 	ctx, cancel := a.GetContext()
 	client, conn := a.getClient()
@@ -361,4 +382,28 @@ func (a *Applications) GetInstance(organizationID string, appInstanceID string, 
 		time.Sleep(WatchSleep)
 	}
 
+}
+
+
+func (a *Applications) GetInstanceParameters(organizationID string, appInstanceID string) {
+	if organizationID == "" {
+		log.Fatal().Msg("organizationID cannot be empty")
+	}
+	if appInstanceID == "" {
+		log.Fatal().Msg("instanceID cannot be empty")
+	}
+
+	a.load()
+
+	ctx, cancel := a.GetContext()
+	client, conn := a.getClient()
+	defer conn.Close()
+	defer cancel()
+
+	appDescriptorID := &grpc_application_go.AppInstanceId{
+		OrganizationId:  organizationID,
+		AppInstanceId: appInstanceID,
+	}
+	descriptor, err := client.ListInstanceParameters(ctx, appDescriptorID)
+	a.PrintResultOrError(descriptor, err, "cannot obtain instance parameters")
 }

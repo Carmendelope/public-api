@@ -174,6 +174,36 @@ func (h *Handler) GetAppInstance(ctx context.Context, appInstanceID *grpc_applic
 	return h.Manager.GetAppInstance(appInstanceID)
 }
 
+// ListDescriptorAppParameters retrieves a list of parameters of an application
 func (h *Handler) ListDescriptorAppParameters (ctx context.Context, appDescriptorID *grpc_application_go.AppDescriptorId) (*grpc_public_api_go.AppParameterList, error) {
-	return nil, nil
+	rm, err := authhelper.GetRequestMetadata(ctx)
+	if err != nil {
+		return nil, conversions.ToGRPCError(err)
+	}
+	if appDescriptorID.OrganizationId != rm.OrganizationID {
+		return nil, derrors.NewPermissionDeniedError("cannot access requested OrganizationID")
+	}
+	err = entities.ValidAppDescriptorID(appDescriptorID)
+	if err != nil {
+		return nil, conversions.ToGRPCError(err)
+	}
+
+	return h.Manager.ListDescriptorAppParameters(appDescriptorID)
+}
+
+// ListInstanceParameters retrieves a list of instance parameters
+func (h *Handler) ListInstanceParameters(ctx context.Context, appInstanceID *grpc_application_go.AppInstanceId) (*grpc_application_go.InstanceParameterList, error) {
+	rm, err := authhelper.GetRequestMetadata(ctx)
+	if err != nil {
+		return nil, conversions.ToGRPCError(err)
+	}
+	if appInstanceID.OrganizationId != rm.OrganizationID {
+		return nil, derrors.NewPermissionDeniedError("cannot access requested OrganizationID")
+	}
+	err = entities.ValidAppInstanceID(appInstanceID)
+	if err != nil {
+		return nil, conversions.ToGRPCError(err)
+	}
+
+	return h.Manager.ListInstanceParameters(appInstanceID)
 }

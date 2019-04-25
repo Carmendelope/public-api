@@ -8,7 +8,6 @@ import (
 	"github.com/nalej/grpc-public-api-go"
 	"github.com/nalej/public-api/internal/pkg/entities"
 	"github.com/nalej/public-api/internal/pkg/server/common"
-	"github.com/rs/zerolog/log"
 )
 
 type Manager struct {
@@ -23,11 +22,7 @@ func NewManager(appClient grpc_application_manager_go.ApplicationManagerClient) 
 func (m *Manager) AddAppDescriptor(addRequest *grpc_application_go.AddAppDescriptorRequest) (*grpc_application_go.AppDescriptor, error) {
 	ctx, cancel := common.GetContext()
 	defer cancel()
-	if len(addRequest.Parameters)  > 0 {
-		log.Debug().Msg("Tenemos parametros")
-	}else{
-		log.Debug().Msg("No tenemos parametros")
-	}
+
 	return m.appClient.AddAppDescriptor(ctx, addRequest)
 }
 
@@ -99,4 +94,30 @@ func (m *Manager) GetAppInstance(appInstanceID *grpc_application_go.AppInstanceI
 		return nil, err
 	}
 	return entities.ToPublicAPIAppInstance(inst), nil
+}
+
+
+// ListInstanceParameters retrieves a list of instance parameters
+func (m *Manager) ListInstanceParameters(appInstanceID *grpc_application_go.AppInstanceId) (*grpc_application_go.InstanceParameterList, error)  {
+	ctx, cancel := common.GetContext()
+	defer cancel()
+	return m.appClient.ListInstanceParameters(ctx, appInstanceID)
+}
+
+// ListDescriptorAppParameters retrieves a list of parameters of an application
+func (m *Manager) ListDescriptorAppParameters (appDescriptorID *grpc_application_go.AppDescriptorId) (*grpc_public_api_go.AppParameterList, error) {
+	ctx, cancel := common.GetContext()
+	defer cancel()
+	params, err := m.appClient.ListDescriptorAppParameters(ctx, appDescriptorID)
+	if err != nil {
+		return nil, err
+	}
+
+	result := make([]*grpc_public_api_go.AppParameter, 0)
+	for _, p := range params.Parameters {
+		result = append(result, entities.ToPublicAPIAppParam(p))
+	}
+	return &grpc_public_api_go.AppParameterList{
+		Parameters: result,
+	}, nil
 }
