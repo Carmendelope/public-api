@@ -82,6 +82,14 @@ func PrintFromValues(header []string, values [][]string) {
 	w.Flush()
 }
 
+func TransformDescriptorParameters(parameters []*grpc_application_go.AppParameter ) string {
+	r := make([]string, 0)
+	for _, v := range parameters{
+		r = append(r, fmt.Sprintf("%s", v.Name))
+	}
+	return strings.Join(r, ",")
+}
+
 func TransformLabels(labels map[string]string) string {
 	r := make([]string, 0)
 	for k, v := range labels{
@@ -251,6 +259,15 @@ func FromAppDescriptor(result *grpc_application_go.AppDescriptor) *ResultTable {
 	r = append(r, []string{"DESCRIPTOR", "ID", "LABELS"})
 	r = append(r, []string{result.Name, result.AppDescriptorId, TransformLabels(result.Labels)})
 	r = append(r, []string{"", "", ""})
+
+	if len(result.Parameters) > 0 {
+		r = append(r, []string{"PARAM NAME", "DESCRIPTION", "DEFAULT VALUE"})
+		for _, p := range result.Parameters {
+			r = append(r, []string{p.Name, p.Description, p.DefaultValue})
+		}
+		r = append(r, []string{"", "", ""})
+	}
+
 
 	r = append(r, []string{"NAME", "IMAGE", "LABELS"})
 		for _, g := range result.Groups{
