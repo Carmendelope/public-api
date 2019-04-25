@@ -3,8 +3,8 @@ package cli
 import (
 	"fmt"
 	"github.com/nalej/grpc-application-go"
+	"github.com/nalej/grpc-application-manager-go"
 	"github.com/nalej/grpc-common-go"
-	"github.com/nalej/grpc-conductor-go"
 	"github.com/nalej/grpc-device-manager-go"
 	"github.com/nalej/grpc-infrastructure-manager-go"
 	"github.com/nalej/grpc-infrastructure-monitor-go"
@@ -45,7 +45,7 @@ func AsTable(result interface{}) * ResultTable {
 	case *grpc_infrastructure_manager_go.InstallResponse: return FromInstallResponse(result.(*grpc_infrastructure_manager_go.InstallResponse))
 	case *grpc_public_api_go.AppInstanceList: return FromAppInstanceList(result.(*grpc_public_api_go.AppInstanceList))
 	case *grpc_public_api_go.AppInstance: return FromAppInstance(result.(*grpc_public_api_go.AppInstance))
-	case *grpc_conductor_go.DeploymentResponse: return FromDeploymentResponse(result.(*grpc_conductor_go.DeploymentResponse))
+	case *grpc_application_manager_go.DeploymentResponse: return FromDeploymentResponse(result.(*grpc_application_manager_go.DeploymentResponse))
 	case *grpc_application_go.AppDescriptorList: return FromAppDescriptorList(result.(*grpc_application_go.AppDescriptorList))
 	case *grpc_application_go.AppDescriptor: return FromAppDescriptor(result.(*grpc_application_go.AppDescriptor))
 	case *grpc_device_manager_go.DeviceGroup: return FromDeviceGroup(result.(*grpc_device_manager_go.DeviceGroup))
@@ -224,7 +224,7 @@ func FromAppInstance(result *grpc_public_api_go.AppInstance) *ResultTable {
 	return &ResultTable{r}
 }
 
-func FromDeploymentResponse(result *grpc_conductor_go.DeploymentResponse) *ResultTable {
+func FromDeploymentResponse(result *grpc_application_manager_go.DeploymentResponse) *ResultTable {
 	r := make([][]string, 0)
 	r = append(r, []string{"REQUEST", "ID", "STATUS"})
 	r = append(r, []string{result.RequestId, result.AppInstanceId, result.Status.String()})

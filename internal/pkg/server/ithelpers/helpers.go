@@ -158,7 +158,6 @@ func GenerateDeploy(organizationID string, appDescriptorID string) *grpc_applica
 		OrganizationId:  organizationID,
 		AppDescriptorId: appDescriptorID,
 		Name:            GenerateUUID(),
-		Description:     "deploy-test",
 	}
 }
 

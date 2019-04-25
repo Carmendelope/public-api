@@ -209,7 +209,6 @@ var _ = ginkgo.Describe("Applications", func() {
 				OrganizationId:  targetDescriptor.OrganizationId,
 				AppDescriptorId: targetDescriptor.AppDescriptorId,
 				Name:            "deploy-test",
-				Description:     "deploy-test",
 			}
 			for _, test := range tests {
 				ctx, cancel := ithelpers.GetContext(test.Token)
@@ -243,7 +242,6 @@ var _ = ginkgo.Describe("Applications", func() {
 				OrganizationId:  targetDescriptor.OrganizationId,
 				AppDescriptorId: targetDescriptor.AppDescriptorId,
 				Name:            "deploy-test",
-				Description:     "deploy-test",
 			}
 			ctx, cancel := ithelpers.GetContext(token)
 			defer cancel()
@@ -281,7 +279,6 @@ var _ = ginkgo.Describe("Applications", func() {
 				OrganizationId:  targetDescriptor.OrganizationId,
 				AppDescriptorId: targetDescriptor.AppDescriptorId,
 				Name:            "deploy-test",
-				Description:     "deploy-test",
 			}
 			ctx, cancel := ithelpers.GetContext(token)
 			defer cancel()

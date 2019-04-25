@@ -4,11 +4,11 @@ import (
 	"github.com/nalej/grpc-application-go"
 	"github.com/nalej/grpc-application-manager-go"
 	"github.com/nalej/grpc-common-go"
-	"github.com/nalej/grpc-conductor-go"
 	"github.com/nalej/grpc-organization-go"
 	"github.com/nalej/grpc-public-api-go"
 	"github.com/nalej/public-api/internal/pkg/entities"
 	"github.com/nalej/public-api/internal/pkg/server/common"
+	"github.com/rs/zerolog/log"
 )
 
 type Manager struct {
@@ -23,6 +23,11 @@ func NewManager(appClient grpc_application_manager_go.ApplicationManagerClient) 
 func (m *Manager) AddAppDescriptor(addRequest *grpc_application_go.AddAppDescriptorRequest) (*grpc_application_go.AppDescriptor, error) {
 	ctx, cancel := common.GetContext()
 	defer cancel()
+	if len(addRequest.Parameters)  > 0 {
+		log.Debug().Msg("Tenemos parametros")
+	}else{
+		log.Debug().Msg("No tenemos parametros")
+	}
 	return m.appClient.AddAppDescriptor(ctx, addRequest)
 }
 
@@ -55,7 +60,7 @@ func (m *Manager) DeleteAppDescriptor(appDescriptorID *grpc_application_go.AppDe
 }
 
 // Deploy an application descriptor.
-func (m *Manager) Deploy(deployRequest *grpc_application_manager_go.DeployRequest) (*grpc_conductor_go.DeploymentResponse, error) {
+func (m *Manager) Deploy(deployRequest *grpc_application_manager_go.DeployRequest) (*grpc_application_manager_go.DeploymentResponse, error) {
 	ctx, cancel := common.GetContext()
 	defer cancel()
 	return m.appClient.Deploy(ctx, deployRequest)
