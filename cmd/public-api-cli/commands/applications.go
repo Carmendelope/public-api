@@ -53,6 +53,9 @@ func init() {
 	descriptorCmd.AddCommand(appDescLabelsCmd)
 	appDescLabelsCmd.AddCommand(addLabelToAppDescriptorCmd)
 	appDescLabelsCmd.AddCommand(removeLabelFromAppDescriptorCmd)
+	// List descriptor Parameters
+	descriptorCmd.AddCommand(getDescriptorParamsCmd)
+
 
 	// Instances
 	appsCmd.AddCommand(instanceCmd)
@@ -61,6 +64,7 @@ func init() {
 	// Deploy
 	deployInstanceCmd.Flags().StringVar(&name, "name", "", "Name of the application instance")
 	deployInstanceCmd.Flags().StringVar(&descriptorID, "descriptorID", "", "Application instance identifier")
+	deployInstanceCmd.Flags().StringVar(&params, "params", "", "Param values to deploy (param1=value1;...paramN=valueN)")
 	deployInstanceCmd.Flags().MarkDeprecated("name", "Use command argument instead")
 	deployInstanceCmd.Flags().MarkDeprecated("descriptorID", "Use command argument instead")
 	instanceCmd.AddCommand(deployInstanceCmd)
@@ -73,6 +77,8 @@ func init() {
 	getInstanceCmd.Flags().MarkDeprecated("instanceID", "Use command argument instead")
 	getInstanceCmd.Flags().BoolVarP(&watch, "watch", "w", false, "Watch for changes")
 	instanceCmd.AddCommand(getInstanceCmd)
+	// List instance params
+	instanceCmd.AddCommand(getInstanceParamsCmd)
 }
 
 var descriptorCmd = &cobra.Command{
@@ -245,6 +251,28 @@ var deleteDescriptorCmd = &cobra.Command{
 	},
 }
 
+var getDescriptorParamsCmd = &cobra.Command{
+	Use:   "params [descriptorID]",
+	Short: "list parameters of a descriptor",
+	Long:  "list parameters of a descriptor",
+	Args: cobra.MaximumNArgs(1),
+	Run: func(cmd *cobra.Command, args []string) {
+		SetupLogging()
+		a := cli.NewApplications(
+			options.Resolve("nalejAddress", nalejAddress),
+			options.ResolveAsInt("port", nalejPort),
+			insecure, useTLS,
+			options.Resolve("cacert", caCertPath), options.Resolve("output", output))
+		targetDescriptorID, err := ResolveArgument([]string{"descriptorID"}, args, []string{descriptorID})
+		if err != nil {
+			fmt.Println(err.Error())
+			cmd.Help()
+		}else{
+			a.GetDescriptorParameters(options.Resolve("organizationID", organizationID),targetDescriptorID[0])
+		}
+	},
+}
+
 var instanceCmd = &cobra.Command{
 	Use:     "inst",
 	Aliases: []string{"instance"},
@@ -274,7 +302,7 @@ var deployInstanceCmd = &cobra.Command{
 			fmt.Println(err.Error())
 			cmd.Help()
 		}else{
-			a.Deploy(options.Resolve("organizationID", organizationID), targetValues[0], targetValues[1])
+			a.Deploy(options.Resolve("organizationID", organizationID), targetValues[0], targetValues[1], params)
 		}
 
 	},
@@ -335,6 +363,28 @@ var getInstanceCmd = &cobra.Command{
 			cmd.Help()
 		}else{
 			a.GetInstance(options.Resolve("organizationID", organizationID), targetInstanceID[0], watch)
+		}
+	},
+}
+
+var getInstanceParamsCmd = &cobra.Command{
+	Use:   "params [instanceID]",
+	Short: "list parameters of an instance",
+	Long:  "list parameters of an instance",
+	Args: cobra.MaximumNArgs(1),
+	Run: func(cmd *cobra.Command, args []string) {
+		SetupLogging()
+		a := cli.NewApplications(
+			options.Resolve("nalejAddress", nalejAddress),
+			options.ResolveAsInt("port", nalejPort),
+			insecure, useTLS,
+			options.Resolve("cacert", caCertPath), options.Resolve("output", output))
+		targetInstanceID, err := ResolveArgument([]string{"instanceID"}, args, []string{instanceID})
+		if err != nil {
+			fmt.Println(err.Error())
+			cmd.Help()
+		}else{
+			a.GetInstanceParameters(options.Resolve("organizationID", organizationID),targetInstanceID[0])
 		}
 	},
 }

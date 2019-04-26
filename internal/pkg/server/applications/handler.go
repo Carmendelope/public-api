@@ -11,7 +11,6 @@ import (
 	"github.com/nalej/grpc-application-go"
 	"github.com/nalej/grpc-application-manager-go"
 	"github.com/nalej/grpc-common-go"
-	"github.com/nalej/grpc-conductor-go"
 	"github.com/nalej/grpc-organization-go"
 	"github.com/nalej/grpc-public-api-go"
 	"github.com/nalej/grpc-utils/pkg/conversions"
@@ -112,7 +111,7 @@ func (h *Handler) DeleteAppDescriptor(ctx context.Context, appDescriptorID *grpc
 }
 
 // Deploy an application descriptor.
-func (h *Handler) Deploy(ctx context.Context, deployRequest *grpc_application_manager_go.DeployRequest) (*grpc_conductor_go.DeploymentResponse, error) {
+func (h *Handler) Deploy(ctx context.Context, deployRequest *grpc_application_manager_go.DeployRequest) (*grpc_application_manager_go.DeploymentResponse, error) {
 	rm, err := authhelper.GetRequestMetadata(ctx)
 	if err != nil {
 		return nil, conversions.ToGRPCError(err)
@@ -173,4 +172,38 @@ func (h *Handler) GetAppInstance(ctx context.Context, appInstanceID *grpc_applic
 		return nil, conversions.ToGRPCError(err)
 	}
 	return h.Manager.GetAppInstance(appInstanceID)
+}
+
+// ListDescriptorAppParameters retrieves a list of parameters of an application
+func (h *Handler) ListDescriptorAppParameters (ctx context.Context, appDescriptorID *grpc_application_go.AppDescriptorId) (*grpc_public_api_go.AppParameterList, error) {
+	rm, err := authhelper.GetRequestMetadata(ctx)
+	if err != nil {
+		return nil, conversions.ToGRPCError(err)
+	}
+	if appDescriptorID.OrganizationId != rm.OrganizationID {
+		return nil, derrors.NewPermissionDeniedError("cannot access requested OrganizationID")
+	}
+	err = entities.ValidAppDescriptorID(appDescriptorID)
+	if err != nil {
+		return nil, conversions.ToGRPCError(err)
+	}
+
+	return h.Manager.ListDescriptorAppParameters(appDescriptorID)
+}
+
+// ListInstanceParameters retrieves a list of instance parameters
+func (h *Handler) ListInstanceParameters(ctx context.Context, appInstanceID *grpc_application_go.AppInstanceId) (*grpc_application_go.InstanceParameterList, error) {
+	rm, err := authhelper.GetRequestMetadata(ctx)
+	if err != nil {
+		return nil, conversions.ToGRPCError(err)
+	}
+	if appInstanceID.OrganizationId != rm.OrganizationID {
+		return nil, derrors.NewPermissionDeniedError("cannot access requested OrganizationID")
+	}
+	err = entities.ValidAppInstanceID(appInstanceID)
+	if err != nil {
+		return nil, conversions.ToGRPCError(err)
+	}
+
+	return h.Manager.ListInstanceParameters(appInstanceID)
 }

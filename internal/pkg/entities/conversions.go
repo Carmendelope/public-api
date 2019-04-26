@@ -277,3 +277,15 @@ func ToPublicAPIDeviceList(list * grpc_device_manager_go.DeviceList) * grpc_publ
 
 
 }
+
+func ToPublicAPIAppParam (param *grpc_application_go.AppParameter) * grpc_public_api_go.AppParameter {
+	return &grpc_public_api_go.AppParameter{
+		Name: 			param.Name,
+		Description:	param.Description,
+		Path: 			param.Path,
+		Type: 			param.Type.String(),
+		DefaultValue: 	param.DefaultValue,
+		EnumValues: 	param.EnumValues,
+		Category:    	param.Category.String(),
+	}
+}

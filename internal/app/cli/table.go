@@ -3,8 +3,8 @@ package cli
 import (
 	"fmt"
 	"github.com/nalej/grpc-application-go"
+	"github.com/nalej/grpc-application-manager-go"
 	"github.com/nalej/grpc-common-go"
-	"github.com/nalej/grpc-conductor-go"
 	"github.com/nalej/grpc-device-manager-go"
 	"github.com/nalej/grpc-infrastructure-manager-go"
 	"github.com/nalej/grpc-infrastructure-monitor-go"
@@ -45,9 +45,11 @@ func AsTable(result interface{}) * ResultTable {
 	case *grpc_infrastructure_manager_go.InstallResponse: return FromInstallResponse(result.(*grpc_infrastructure_manager_go.InstallResponse))
 	case *grpc_public_api_go.AppInstanceList: return FromAppInstanceList(result.(*grpc_public_api_go.AppInstanceList))
 	case *grpc_public_api_go.AppInstance: return FromAppInstance(result.(*grpc_public_api_go.AppInstance))
-	case *grpc_conductor_go.DeploymentResponse: return FromDeploymentResponse(result.(*grpc_conductor_go.DeploymentResponse))
+	case *grpc_application_go.InstanceParameterList: return FromInstanceParameterList(result.(*grpc_application_go.InstanceParameterList))
+	case *grpc_application_manager_go.DeploymentResponse: return FromDeploymentResponse(result.(*grpc_application_manager_go.DeploymentResponse))
 	case *grpc_application_go.AppDescriptorList: return FromAppDescriptorList(result.(*grpc_application_go.AppDescriptorList))
 	case *grpc_application_go.AppDescriptor: return FromAppDescriptor(result.(*grpc_application_go.AppDescriptor))
+	case *grpc_public_api_go.AppParameterList: return FromAppParameterList(result.(*grpc_public_api_go.AppParameterList))
 	case *grpc_device_manager_go.DeviceGroup: return FromDeviceGroup(result.(*grpc_device_manager_go.DeviceGroup))
 	case *grpc_device_manager_go.DeviceGroupList: return FromDeviceGroupList(result.(*grpc_device_manager_go.DeviceGroupList))
 	case *grpc_public_api_go.Device: return FromDevice(result.(*grpc_public_api_go.Device))
@@ -190,6 +192,25 @@ func FromNodeList(result *grpc_public_api_go.NodeList) *ResultTable {
 // ----
 // Applications
 // ----
+
+func FromAppParameterList (result *grpc_public_api_go.AppParameterList) *ResultTable {
+	r := make([][]string, 0)
+	r = append(r, []string{"PARAM NAME", "DESCRIPTION", "PATH", "TYPE", "DEFAULT_VALUE", "B/A"})
+	for _, p := range result.Parameters{
+		r = append(r, []string{p.Name,p.Description, p.Path, p.Type, p.DefaultValue, p.Category})
+	}
+	return &ResultTable{r}
+}
+
+func FromInstanceParameterList (result *grpc_application_go.InstanceParameterList) *ResultTable {
+	r := make([][]string, 0)
+	r = append(r, []string{"PARAM NAME", "VALUE"})
+	for _, p := range result.Parameters{
+		r = append(r, []string{p.ParameterName, p.Value})
+	}
+	return &ResultTable{r}
+}
+
 func FromAppInstanceList(result *grpc_public_api_go.AppInstanceList) *ResultTable {
 	r := make([][]string, 0)
 	r = append(r, []string{"NAME", "ID", "LABELS", "STATUS"})
@@ -224,7 +245,7 @@ func FromAppInstance(result *grpc_public_api_go.AppInstance) *ResultTable {
 	return &ResultTable{r}
 }
 
-func FromDeploymentResponse(result *grpc_conductor_go.DeploymentResponse) *ResultTable {
+func FromDeploymentResponse(result *grpc_application_manager_go.DeploymentResponse) *ResultTable {
 	r := make([][]string, 0)
 	r = append(r, []string{"REQUEST", "ID", "STATUS"})
 	r = append(r, []string{result.RequestId, result.AppInstanceId, result.Status.String()})
@@ -251,6 +272,15 @@ func FromAppDescriptor(result *grpc_application_go.AppDescriptor) *ResultTable {
 	r = append(r, []string{"DESCRIPTOR", "ID", "LABELS"})
 	r = append(r, []string{result.Name, result.AppDescriptorId, TransformLabels(result.Labels)})
 	r = append(r, []string{"", "", ""})
+
+	if len(result.Parameters) > 0 {
+		r = append(r, []string{"PARAM NAME", "DESCRIPTION", "DEFAULT VALUE"})
+		for _, p := range result.Parameters {
+			r = append(r, []string{p.Name, p.Description, p.DefaultValue})
+		}
+		r = append(r, []string{"", "", ""})
+	}
+
 
 	r = append(r, []string{"NAME", "IMAGE", "LABELS"})
 		for _, g := range result.Groups{
