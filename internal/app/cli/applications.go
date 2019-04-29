@@ -256,13 +256,13 @@ func (a *Applications) ModifyAppDescriptorLabels(organizationID string, descript
 	a.PrintResultOrError(updated, err, "cannot update application descriptor labels")
 }
 
-// getParams convert param (param1=value1;...;paramN=valueN) to InstanceParameterList
+// getParams convert param (param1=value1,...,paramN=valueN) to InstanceParameterList
 func (a *Applications) getParams (params string) *grpc_application_go.InstanceParameterList {
 
 	instParams := make ([]*grpc_application_go.InstanceParameter, 0)
 
 	if params != "" {
-		paramList := strings.Split(params, ";")
+		paramList := strings.Split(params, ",")
 		for _, paramStr := range paramList {
 			param := strings.Split(paramStr, "=")
 			if len(param) != 2 {
