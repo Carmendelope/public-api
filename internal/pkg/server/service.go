@@ -11,11 +11,11 @@ import (
 	"github.com/nalej/grpc-infrastructure-go"
 	"github.com/nalej/grpc-infrastructure-manager-go"
 	"github.com/nalej/grpc-infrastructure-monitor-go"
+	"github.com/nalej/grpc-inventory-manager-go"
 	"github.com/nalej/grpc-organization-go"
 	"github.com/nalej/grpc-public-api-go"
 	"github.com/nalej/grpc-unified-logging-go"
 	"github.com/nalej/grpc-user-manager-go"
-	"github.com/nalej/grpc-utils/pkg/tools"
 	"github.com/nalej/public-api/internal/pkg/server/applications"
 	"github.com/nalej/public-api/internal/pkg/server/clusters"
 	"github.com/nalej/public-api/internal/pkg/server/devices"
@@ -35,14 +35,12 @@ import (
 
 type Service struct {
 	Configuration Config
-	Server        *tools.GenericGRPCServer
 }
 
 // NewService creates a new system model service.
 func NewService(conf Config) *Service {
 	return &Service{
 		conf,
-		tools.NewGenericGRPCServer(uint32(conf.Port)),
 	}
 }
 
@@ -56,6 +54,7 @@ type Clients struct {
 	deviceClient grpc_device_manager_go.DevicesClient
 	ulClient    grpc_unified_logging_go.CoordinatorClient
 	imClient    grpc_infrastructure_monitor_go.CoordinatorClient
+	eicClient grpc_inventory_manager_go.EICClient
 }
 
 func (s *Service) GetClients() (*Clients, derrors.Error) {
@@ -84,6 +83,10 @@ func (s *Service) GetClients() (*Clients, derrors.Error) {
 		return nil, derrors.AsError(err, "cannot create connection with unified logging coordinator")
 	}
 	imConn, err := grpc.Dial(s.Configuration.InfrastructureMonitorAddress, grpc.WithInsecure())
+	if err != nil {
+		return nil, derrors.AsError(err, "cannot create connection with infrastructure monitor coordinator")
+	}
+	invManagerConn, err := grpc.Dial(s.Configuration.InventoryManagerAddress, grpc.WithInsecure())
 	if err != nil {
 		return nil, derrors.AsError(err, "cannot create connection with infrastructure monitor coordinator")
 	}
@@ -236,8 +239,11 @@ func (s *Service) LaunchGRPC(authConfig *interceptor.AuthorizationConfig) error 
 	grpc_public_api_go.RegisterDevicesServer(grpcServer, devHandler)
 	grpc_public_api_go.RegisterUnifiedLoggingServer(grpcServer, ulHandler)
 
-	// Register reflection service on gRPC server.
-	reflection.Register(grpcServer)
+	if s.Configuration.Debug{
+		log.Info().Msg("Enabling gRPC server reflection")
+		// Register reflection service on gRPC server.
+		reflection.Register(grpcServer)
+	}
 	log.Info().Int("port", s.Configuration.Port).Msg("Launching gRPC server")
 	if err := grpcServer.Serve(lis); err != nil {
 		log.Fatal().Errs("failed to serve: %v", []error{err})

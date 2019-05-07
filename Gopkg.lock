@@ -211,6 +211,22 @@
   version = "v0.0.33"
 
 [[projects]]
+  digest = "1:09fb41dc9fd129e4021f026f8be8aa8d36e2b9a55cf2c66d5289fe8d726845aa"
+  name = "github.com/nalej/grpc-inventory-go"
+  packages = ["."]
+  pruneopts = ""
+  revision = "b3f09bbfc45a996be12f67d8cb5c0820d94c7e3a"
+  version = "v0.0.4"
+
+[[projects]]
+  digest = "1:4df7812b3e684f3ddaa3c829611f4ad64a40c867fecfe08791a4acd8bcbe18bf"
+  name = "github.com/nalej/grpc-inventory-manager-go"
+  packages = ["."]
+  pruneopts = ""
+  revision = "c7e08087ed8b249965674ca8872643a5d85035a1"
+  version = "v0.0.9"
+
+[[projects]]
   digest = "1:01e194c59e474b1f240f44b629f044abbc194e4aed769a52f0644efa2251fcb3"
   name = "github.com/nalej/grpc-login-api-go"
   packages = ["."]
@@ -235,12 +251,12 @@
   version = "v0.0.29"
 
 [[projects]]
-  digest = "1:38921736a6e9128b40e3d90e0412a9c40138c11a7b2e64a78011d25842f004b0"
+  digest = "1:f00bb184d5582535d99e88fb759658f62d81af22e46735a78c92a0c7f4edcbe8"
   name = "github.com/nalej/grpc-public-api-go"
   packages = ["."]
   pruneopts = ""
-  revision = "cf215119c8c83b622df0a0635874eb0f882ce1c0"
-  version = "v0.0.57"
+  revision = "da5e0a1438b46b4ce2d9a39afdb04ef21033b994"
+  version = "v0.0.58"
 
 [[projects]]
   digest = "1:be9b75e8734511623a81a66b4e5d578ebd3b71562429950ea3784e6200d018e8"
@@ -272,7 +288,6 @@
   packages = [
     "pkg/conversions",
     "pkg/test",
-    "pkg/tools",
   ]
   pruneopts = ""
   revision = "926e5152669ee71c0e6904055ebe6cfb5492b599"
@@ -538,6 +553,8 @@
     "github.com/nalej/grpc-infrastructure-manager-go",
     "github.com/nalej/grpc-infrastructure-monitor-go",
     "github.com/nalej/grpc-installer-go",
+    "github.com/nalej/grpc-inventory-go",
+    "github.com/nalej/grpc-inventory-manager-go",
     "github.com/nalej/grpc-login-api-go",
     "github.com/nalej/grpc-organization-go",
     "github.com/nalej/grpc-public-api-go",
@@ -546,13 +563,13 @@
     "github.com/nalej/grpc-user-manager-go",
     "github.com/nalej/grpc-utils/pkg/conversions",
     "github.com/nalej/grpc-utils/pkg/test",
-    "github.com/nalej/grpc-utils/pkg/tools",
     "github.com/onsi/ginkgo",
     "github.com/onsi/gomega",
     "github.com/rs/zerolog",
     "github.com/rs/zerolog/log",
     "github.com/santhosh-tekuri/jsonschema",
     "github.com/spf13/cobra",
+    "golang.org/x/net/context",
     "google.golang.org/grpc",
     "google.golang.org/grpc/credentials",
     "google.golang.org/grpc/metadata",
