@@ -31,5 +31,7 @@ func (m *Manager) CreateEICToken(organizationID *grpc_organization_go.Organizati
 }
 
 func (m *Manager) UnlinkEIC(edgeControllerID *grpc_inventory_go.EdgeControllerId) (*grpc_common_go.Success, error) {
-	panic("implement me")
+	ctx, cancel := common.GetContext()
+	defer cancel()
+	return m.eicClient.UnlinkEIC(ctx, edgeControllerID)
 }

@@ -7,6 +7,7 @@ package cli
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/nalej/grpc-inventory-go"
 	"github.com/nalej/grpc-inventory-manager-go"
 	"github.com/nalej/grpc-organization-go"
 	"github.com/nalej/grpc-public-api-go"
@@ -89,4 +90,28 @@ func (ec * EdgeController) writeJoinToken(token * grpc_inventory_manager_go.EICJ
 	}
 	fmt.Printf("\nToken file: %s\n", outputFilePath)
 	// TODO Add information about how to copy that in the EIC as embedded documentation.
+}
+
+func (ec * EdgeController) Unlink(organizationID string, edgeControllerID string) {
+
+	if organizationID == "" {
+		log.Fatal().Msg("organizationID cannot be empty")
+	}
+	if edgeControllerID == "" {
+		log.Fatal().Msg("edgeControllerID cannot be empty")
+	}
+
+	ec.load()
+	ctx, cancel := ec.GetContext()
+	client, conn := ec.getClient()
+	defer conn.Close()
+	defer cancel()
+
+	edgeID := &grpc_inventory_go.EdgeControllerId{
+		OrganizationId:       organizationID,
+		EdgeControllerId:     edgeControllerID,
+	}
+	success, err := client.UnlinkEIC(ctx, edgeID)
+	ec.PrintResultOrError(success, err, "cannot unlink edge controller")
+
 }
