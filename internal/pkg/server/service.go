@@ -19,6 +19,7 @@ import (
 	"github.com/nalej/public-api/internal/pkg/server/applications"
 	"github.com/nalej/public-api/internal/pkg/server/clusters"
 	"github.com/nalej/public-api/internal/pkg/server/devices"
+	"github.com/nalej/public-api/internal/pkg/server/ec"
 	"github.com/nalej/public-api/internal/pkg/server/nodes"
 	"github.com/nalej/public-api/internal/pkg/server/organizations"
 	"github.com/nalej/public-api/internal/pkg/server/resources"
@@ -100,8 +101,9 @@ func (s *Service) GetClients() (*Clients, derrors.Error) {
 	deviceClient := grpc_device_manager_go.NewDevicesClient(devConn)
 	ulClient := grpc_unified_logging_go.NewCoordinatorClient(ulConn)
 	imClient := grpc_infrastructure_monitor_go.NewCoordinatorClient(imConn)
+	eicClient := grpc_inventory_manager_go.NewEICClient(invManagerConn)
 
-	return &Clients{oClient, cClient, nClient, infraClient, umClient, appClient, deviceClient, ulClient, imClient}, nil
+	return &Clients{oClient, cClient, nClient, infraClient, umClient, appClient, deviceClient, ulClient, imClient, eicClient}, nil
 }
 
 // Run the service, launch the REST service handler.
@@ -179,6 +181,9 @@ func (s *Service) LaunchHTTP() error {
 	if err := grpc_public_api_go.RegisterUnifiedLoggingHandlerFromEndpoint(context.Background(), mux, clientAddr, opts); err != nil {
 		log.Fatal().Err(err).Msg("failed to start unified logging handler")
 	}
+	if err := grpc_public_api_go.RegisterEdgeControllersHandlerFromEndpoint(context.Background(), mux, clientAddr, opts); err != nil {
+		log.Fatal().Err(err).Msg("failed to start edge controller handler")
+	}
 
 	server := &http.Server{
 		Addr:    addr,
@@ -227,6 +232,9 @@ func (s *Service) LaunchGRPC(authConfig *interceptor.AuthorizationConfig) error 
 	ulManager := unified_logging.NewManager(clients.ulClient)
 	ulHandler := unified_logging.NewHandler(ulManager)
 
+	ecManager := ec.NewManager(clients.eicClient)
+	ecHandler := ec.NewHandler(ecManager)
+
 	grpcServer := grpc.NewServer(interceptor.WithServerAuthxInterceptor(
 		interceptor.NewConfig(authConfig, s.Configuration.AuthSecret, s.Configuration.AuthHeader)))
 	grpc_public_api_go.RegisterOrganizationsServer(grpcServer, orgHandler)
@@ -238,6 +246,7 @@ func (s *Service) LaunchGRPC(authConfig *interceptor.AuthorizationConfig) error 
 	grpc_public_api_go.RegisterApplicationsServer(grpcServer, appHandler)
 	grpc_public_api_go.RegisterDevicesServer(grpcServer, devHandler)
 	grpc_public_api_go.RegisterUnifiedLoggingServer(grpcServer, ulHandler)
+	grpc_public_api_go.RegisterEdgeControllersServer(grpcServer, ecHandler)
 
 	if s.Configuration.Debug{
 		log.Info().Msg("Enabling gRPC server reflection")

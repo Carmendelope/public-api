@@ -9,6 +9,7 @@ import (
 	"github.com/nalej/grpc-inventory-go"
 	"github.com/nalej/grpc-inventory-manager-go"
 	"github.com/nalej/grpc-organization-go"
+	"github.com/nalej/public-api/internal/pkg/server/common"
 )
 
 // Manager structure with the required clients for node operations.
@@ -23,9 +24,10 @@ func NewManager(eicClient grpc_inventory_manager_go.EICClient) Manager {
 	}
 }
 
-
 func (m *Manager) CreateEICToken(organizationID *grpc_organization_go.OrganizationId) (*grpc_inventory_manager_go.EICJoinToken, error) {
-	panic("implement me")
+	ctx, cancel := common.GetContext()
+	defer cancel()
+	return m.eicClient.CreateEICToken(ctx, organizationID)
 }
 
 func (m *Manager) UnlinkEIC(edgeControllerID *grpc_inventory_go.EdgeControllerId) (*grpc_common_go.Success, error) {

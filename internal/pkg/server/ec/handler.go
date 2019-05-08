@@ -5,10 +5,14 @@
 package ec
 
 import (
+	"github.com/nalej/derrors"
 	"github.com/nalej/grpc-common-go"
 	"github.com/nalej/grpc-inventory-go"
 	"github.com/nalej/grpc-inventory-manager-go"
 	"github.com/nalej/grpc-organization-go"
+	"github.com/nalej/grpc-utils/pkg/conversions"
+	"github.com/nalej/public-api/internal/pkg/authhelper"
+	"github.com/nalej/public-api/internal/pkg/entities"
 	"golang.org/x/net/context"
 )
 
@@ -22,11 +26,22 @@ func NewHandler(manager Manager) *Handler {
 	return &Handler{manager}
 }
 
-func (*Handler) CreateEICToken(context.Context, *grpc_organization_go.OrganizationId) (*grpc_inventory_manager_go.EICJoinToken, error) {
-	panic("implement me")
+func (h*Handler) CreateEICToken(ctx context.Context, organizationID *grpc_organization_go.OrganizationId) (*grpc_inventory_manager_go.EICJoinToken, error) {
+	rm, err := authhelper.GetRequestMetadata(ctx)
+	if err != nil {
+		return nil, conversions.ToGRPCError(err)
+	}
+	if organizationID.OrganizationId != rm.OrganizationID {
+		return nil, derrors.NewPermissionDeniedError("cannot access requested OrganizationID")
+	}
+	err = entities.ValidOrganizationId(organizationID)
+	if err != nil {
+		return nil, conversions.ToGRPCError(err)
+	}
+	return h.Manager.CreateEICToken(organizationID)
 }
 
-func (*Handler) UnlinkEIC(context.Context, *grpc_inventory_go.EdgeControllerId) (*grpc_common_go.Success, error) {
+func (h*Handler) UnlinkEIC(context.Context, *grpc_inventory_go.EdgeControllerId) (*grpc_common_go.Success, error) {
 	panic("implement me")
 }
 
