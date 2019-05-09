@@ -209,3 +209,43 @@ func (c *Clusters) Update(organizationID string, clusterID string, newName strin
 	success, err := client.Update(ctx, updateRequest)
 	c.PrintResultOrError(success, err, "cannot update cluster information")
 }
+
+func (c *Clusters) CordonCluster(organizationID string, clusterID string) {
+	if organizationID == "" {
+		log.Fatal().Msg("organization ID cannot be empty")
+	}
+	if clusterID == "" {
+		log.Fatal().Msg("cluster ID cannot be empty")
+	}
+	c.load()
+	ctx, cancel := c.GetContext()
+	client, conn := c.getClient()
+	defer conn.Close()
+	defer cancel()
+	clusterIDReq := &grpc_infrastructure_go.ClusterId{
+		ClusterId: clusterID,
+		OrganizationId: organizationID,
+	}
+	success, err := client.Cordon(ctx, clusterIDReq)
+	c.PrintResultOrError(success, err, "cannot cordon cluster")
+}
+
+func (c *Clusters) UncordonCluster(organizationID string, clusterID string) {
+	if organizationID == "" {
+		log.Fatal().Msg("organization ID cannot be empty")
+	}
+	if clusterID == "" {
+		log.Fatal().Msg("cluster ID cannot be empty")
+	}
+	c.load()
+	ctx, cancel := c.GetContext()
+	client, conn := c.getClient()
+	defer conn.Close()
+	defer cancel()
+	clusterIDReq := &grpc_infrastructure_go.ClusterId{
+		ClusterId: clusterID,
+		OrganizationId: organizationID,
+	}
+	success, err := client.Uncordon(ctx, clusterIDReq)
+	c.PrintResultOrError(success, err, "cannot uncordon cluster")
+}
