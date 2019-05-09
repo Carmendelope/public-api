@@ -51,6 +51,11 @@ func init() {
 	clustersCmd.AddCommand(monitorClusterCmd)
 	monitorClusterCmd.Flags().StringVar(&clusterID, "clusterID", "", "Cluster identifier")
 	monitorClusterCmd.Flags().Int32Var(&rangeMinutes, "rangeMinutes", 0, "Return average values over the past <rangeMinutes> minutes")
+
+	clustersCmd.AddCommand(cordonClusterCmd)
+
+	clustersCmd.AddCommand(uncordonClusterCmd)
+
 }
 
 var installClustersCmd = &cobra.Command{
@@ -214,5 +219,37 @@ var removeLabelFromClusterCmd = &cobra.Command{
 			c.ModifyClusterLabels(options.Resolve("organizationID", organizationID),
 				targetValues[0], false, targetValues[1])
 		}
+	},
+}
+
+var cordonClusterCmd = &cobra.Command{
+	Use: "cordon [clusterId]",
+	Short: "cordon a cluster ignoring new application deployments",
+	Long: `cordon a cluster ignoring new application deployments`,
+	Args: cobra.MinimumNArgs(1),
+	Run: func(cmd *cobra.Command, args []string) {
+		SetupLogging()
+		c := cli.NewClusters(
+			options.Resolve("nalejAddress", nalejAddress),
+			options.ResolveAsInt("port", nalejPort),
+			insecure, useTLS,
+			options.Resolve("cacert", caCertPath), options.Resolve("output", output))
+		c.CordonCluster(options.Resolve("organizationID", organizationID),args[0])
+	},
+}
+
+var uncordonClusterCmd = &cobra.Command{
+	Use: "uncordon [clusterId]",
+	Short: "uncordon a cluster making possible new application deployments",
+	Long: `uncordon a cluster making possible new application deployments`,
+	Args: cobra.MinimumNArgs(1),
+	Run: func(cmd *cobra.Command, args []string) {
+		SetupLogging()
+		c := cli.NewClusters(
+			options.Resolve("nalejAddress", nalejAddress),
+			options.ResolveAsInt("port", nalejPort),
+			insecure, useTLS,
+			options.Resolve("cacert", caCertPath), options.Resolve("output", output))
+		c.UncordonCluster(options.Resolve("organizationID", organizationID),args[0])
 	},
 }

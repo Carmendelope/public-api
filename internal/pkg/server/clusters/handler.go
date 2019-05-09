@@ -7,6 +7,7 @@ package clusters
 import (
 	"context"
 	"github.com/nalej/derrors"
+	"github.com/nalej/grpc-common-go"
 	"github.com/nalej/grpc-infrastructure-go"
 	"github.com/nalej/grpc-infrastructure-manager-go"
 	"github.com/nalej/grpc-infrastructure-monitor-go"
@@ -107,4 +108,20 @@ func (h *Handler) Monitor(ctx context.Context, request *grpc_infrastructure_moni
 		return nil, conversions.ToGRPCError(err)
 	}
 	return h.Manager.Monitor(request)
+}
+
+func (h *Handler) Cordon(ctx context.Context, clusterID *grpc_infrastructure_go.ClusterId) (*grpc_common_go.Success, error) {
+	err := entities.ValidClusterId(clusterID)
+	if err != nil {
+		return nil, conversions.ToGRPCError(err)
+	}
+	return h.Manager.Cordon(clusterID)
+}
+
+func (h *Handler) Uncordon(ctx context.Context, clusterID *grpc_infrastructure_go.ClusterId) (*grpc_common_go.Success, error) {
+	err := entities.ValidClusterId(clusterID)
+	if err != nil {
+		return nil, conversions.ToGRPCError(err)
+	}
+	return h.Manager.Uncordon(clusterID)
 }

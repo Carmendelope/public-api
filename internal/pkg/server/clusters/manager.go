@@ -5,6 +5,7 @@
 package clusters
 
 import (
+	"github.com/nalej/grpc-common-go"
 	"github.com/nalej/public-api/internal/pkg/server/common"
 
 	"github.com/nalej/grpc-infrastructure-go"
@@ -136,4 +137,17 @@ func (m *Manager) Monitor(request *grpc_infrastructure_monitor_go.ClusterSummary
 	ctx, cancel := common.GetContext()
 	defer cancel()
 	return m.imClient.GetClusterSummary(ctx, request)
+}
+
+func (m *Manager) Cordon(clusterID *grpc_infrastructure_go.ClusterId) (*grpc_common_go.Success, error) {
+	ctx, cancel := common.GetContext()
+	defer cancel()
+	return m.clustClient.CordonCluster(ctx, clusterID)
+}
+
+
+func (m *Manager) Uncordon(clusterID *grpc_infrastructure_go.ClusterId) (*grpc_common_go.Success, error) {
+	ctx, cancel := common.GetContext()
+	defer cancel()
+	return m.clustClient.UncordonCluster(ctx, clusterID)
 }
