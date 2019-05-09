@@ -49,6 +49,9 @@ data:
        "/public_api.Devices/AddLabelToDevice":{"should":["ORG", "DEVMNGR"]},
        "/public_api.Devices/RemoveLabelFromDevice":{"should":["ORG", "DEVMNGR"]},
        "/public_api.Devices/UpdateDevice":{"should":["ORG", "DEVMNGR"]},
-       "/public_api.Devices/RemoveDevice":{"should":["ORG", "DEVMNGR"]}
+       "/public_api.Devices/RemoveDevice":{"should":["ORG", "DEVMNGR"]},
+       "/public_api.EdgeControllers/CreateEICToken":{"should":["ORG", "RESOURCES"]},
+       "/public_api.EdgeControllers/UnlinkEIC":{"should":["ORG", "RESOURCES"]}
+
      }
     }
