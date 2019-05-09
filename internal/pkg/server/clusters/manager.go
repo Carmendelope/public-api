@@ -23,6 +23,7 @@ type Manager struct {
 	nodeClient  grpc_infrastructure_go.NodesClient
 	infraClient grpc_infrastructure_manager_go.InfrastructureManagerClient
 	imClient    grpc_infrastructure_monitor_go.CoordinatorClient
+
 }
 
 // NewManager creates a Manager using a set of clients.
@@ -150,4 +151,11 @@ func (m *Manager) Uncordon(clusterID *grpc_infrastructure_go.ClusterId) (*grpc_c
 	ctx, cancel := common.GetContext()
 	defer cancel()
 	return m.clustClient.UncordonCluster(ctx, clusterID)
+}
+
+func (m *Manager) DrainCluster(clusterID *grpc_infrastructure_go.ClusterId) (*grpc_common_go.Success, error) {
+	ctx, cancel := common.GetContext()
+	defer cancel()
+	return m.infraClient.DrainCluster(ctx, clusterID)
+
 }

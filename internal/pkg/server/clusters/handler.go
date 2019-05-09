@@ -125,3 +125,11 @@ func (h *Handler) Uncordon(ctx context.Context, clusterID *grpc_infrastructure_g
 	}
 	return h.Manager.Uncordon(clusterID)
 }
+
+func (h *Handler) Drain(ctx context.Context, clusterID *grpc_infrastructure_go.ClusterId) (*grpc_common_go.Success, error) {
+	err := entities.ValidClusterId(clusterID)
+	if err != nil {
+		return nil, conversions.ToGRPCError(err)
+	}
+	return h.Manager.DrainCluster(clusterID)
+}
