@@ -65,7 +65,7 @@ func (ec * EdgeController) CreateJoinToken(organizationID string, outputPath str
 	}
 	token, err := client.CreateEICToken(ctx, orgID)
 	ec.PrintResultOrError(token, err, "cannot create join token")
-	if err != nil{
+	if err == nil{
 		ec.writeJoinToken(token, outputPath)
 	}
 }
