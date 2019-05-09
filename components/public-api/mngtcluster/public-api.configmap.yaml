@@ -18,6 +18,7 @@ data:
        "/public_api.Clusters/Update":{"should":["ORG", "RESOURCES"]},
        "/public_api.Clusters/Cordon":{"should":["ORG", "RESOURCES"]},
        "/public_api.Clusters/Uncordon":{"should":["ORG", "RESOURCES"]},
+       "/public_api.Clusters/Drain":{"should":["ORG", "RESOURCES"]},
        "/public_api.Nodes/List":{"should":["ORG", "RESOURCES"]},
        "/public_api.Nodes/UpdateNode":{"should":["ORG", "RESOURCES"]},
        "/public_api.Organizations/Info":{"should":["ORG", "RESOURCES", "APPS"]},

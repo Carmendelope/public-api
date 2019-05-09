@@ -56,6 +56,8 @@ func init() {
 
 	clustersCmd.AddCommand(uncordonClusterCmd)
 
+	clustersCmd.AddCommand(drainClusterCmd)
+
 }
 
 var installClustersCmd = &cobra.Command{
@@ -253,3 +255,20 @@ var uncordonClusterCmd = &cobra.Command{
 		c.UncordonCluster(options.Resolve("organizationID", organizationID),args[0])
 	},
 }
+
+var drainClusterCmd = &cobra.Command{
+	Use: "drain [clusterId]",
+	Short: "drain a cluster",
+	Long: `drain a cordoned cluster and force current applications to be re-scheduled`,
+	Args: cobra.MinimumNArgs(1),
+	Run: func(cmd *cobra.Command, args []string) {
+		SetupLogging()
+		c := cli.NewClusters(
+			options.Resolve("nalejAddress", nalejAddress),
+			options.ResolveAsInt("port", nalejPort),
+			insecure, useTLS,
+			options.Resolve("cacert", caCertPath), options.Resolve("output", output))
+		c.DrainCluster(options.Resolve("organizationID", organizationID),args[0])
+	},
+}
+
