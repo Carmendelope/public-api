@@ -249,3 +249,24 @@ func (c *Clusters) UncordonCluster(organizationID string, clusterID string) {
 	success, err := client.Uncordon(ctx, clusterIDReq)
 	c.PrintResultOrError(success, err, "cannot uncordon cluster")
 }
+
+func (c *Clusters) DrainCluster(organizationID string, clusterID string) {
+	if organizationID == "" {
+		log.Fatal().Msg("organization ID cannot be empty")
+	}
+	if clusterID == "" {
+		log.Fatal().Msg("cluster ID cannot be empty")
+	}
+	c.load()
+	ctx, cancel := c.GetContext()
+	client, conn := c.getClient()
+	defer conn.Close()
+	defer cancel()
+	clusterIDReq := &grpc_infrastructure_go.ClusterId{
+		ClusterId: clusterID,
+		OrganizationId: organizationID,
+	}
+	success, err := client.Drain(ctx, clusterIDReq)
+	c.PrintResultOrError(success, err, "cannot drain cluster")
+}
+

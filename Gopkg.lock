@@ -251,12 +251,12 @@
   version = "v0.0.29"
 
 [[projects]]
-  digest = "1:b22661cf1706aa26f6ec66c2e62f8a2df7728e88c5444f5a488e8f0f7265be55"
+  digest = "1:f7813699c834b168ed7e45a059aa087fa1521cc47eb9ecc447e6b78889552a27"
   name = "github.com/nalej/grpc-public-api-go"
   packages = ["."]
   pruneopts = ""
-  revision = "636bb901ee811a5d46ba06deb0d8492bb02fc885"
-  version = "v0.0.60"
+  revision = "846ad26b15590d909715aeaf3b55bd8e359d6cb4"
+  version = "v0.0.61"
 
 [[projects]]
   digest = "1:be9b75e8734511623a81a66b4e5d578ebd3b71562429950ea3784e6200d018e8"
@@ -386,7 +386,7 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:4f349a7da3e52df38345913607fb3daac185365588a633088107146283b48b46"
+  digest = "1:ccd51599eb31c3ee139de1b1fca3f5d3ddaa5ab37f3a1704a2a8426c0abd1e5b"
   name = "golang.org/x/net"
   packages = [
     "context",
@@ -401,7 +401,7 @@
     "trace",
   ]
   pruneopts = ""
-  revision = "f4e77d36d62c17c2336347bb2670ddbd02d092b7"
+  revision = "a4d6f7feada510cc50e69a37b484cb0fdc6b7876"
 
 [[projects]]
   branch = "master"
