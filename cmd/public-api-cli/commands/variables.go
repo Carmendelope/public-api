@@ -61,3 +61,6 @@ var asc, desc bool
 var rangeMinutes int32
 
 var watch bool
+
+var outputPath string
+var edgeControllerID string

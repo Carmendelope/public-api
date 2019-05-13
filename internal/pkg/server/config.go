@@ -9,6 +9,8 @@ import (
 )
 
 type Config struct {
+	// Debug level is active.
+	Debug bool
 	// Port where the gRPC API service will listen requests.
 	Port int
 	// HTTPPort where the HTTP gRPC gateway will be listening.
@@ -27,6 +29,8 @@ type Config struct {
 	UnifiedLoggingAddress string
 	// InfrastructureMonitorAddress with the host:port to connect to the Infrastructure Monitor Coordinator component.
 	InfrastructureMonitorAddress string
+	// InventoryManagerAddress with the host:port to connect to the Inventory Manager component.
+	InventoryManagerAddress string
 	// AuthSecret contains the shared authx secret.
 	AuthSecret string
 	// AuthHeader contains the name of the target header.
@@ -73,6 +77,10 @@ func (conf *Config) Validate() derrors.Error {
 		return derrors.NewInvalidArgumentError("infrastructureMonitorAddress must be set")
 	}
 
+	if conf.InventoryManagerAddress == "" {
+		return derrors.NewInvalidArgumentError("inventoryManagerAddress must be set")
+	}
+
 	if conf.AuthHeader == "" || conf.AuthSecret == "" {
 		return derrors.NewInvalidArgumentError("Authorization header and secret must be set")
 	}
@@ -101,6 +109,7 @@ func (conf *Config) Print() {
 	log.Info().Str("URL", conf.UnifiedLoggingAddress).Msg("Unified Logging Coordinator Service")
 	log.Info().Str("URL", conf.InfrastructureMonitorAddress).Msg("Infrastructure Monitor Coordinator Service")
 	log.Info().Str("URL", conf.DeviceManagerAddress).Msg("Device Manager Service")
+	log.Info().Str("URL", conf.InventoryManagerAddress).Msg("Inventory Manager Service")
 	log.Info().Str("header", conf.AuthHeader).Str("secret", strings.Repeat("*", len(conf.AuthSecret))).Msg("Authorization")
 	log.Info().Str("path", conf.AuthConfigPath).Msg("Permissions file")
 

@@ -44,6 +44,8 @@ func init() {
 		"Unified Logging Coordinator address (host:port)")
 	runCmd.PersistentFlags().StringVar(&config.InfrastructureMonitorAddress, "infrastructureMonitorAddress", "localhost:8423",
 		"Infrastructure Monitor Coordinator address (host:port)")
+	runCmd.PersistentFlags().StringVar(&config.InventoryManagerAddress, "inventoryManagerAddress", "localhost:5510",
+		"Inventory Manager address (host:port)")
 
 	rootCmd.AddCommand(runCmd)
 }

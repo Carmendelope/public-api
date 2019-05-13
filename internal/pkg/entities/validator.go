@@ -14,6 +14,7 @@ import (
 	"github.com/nalej/grpc-device-manager-go"
 	"github.com/nalej/grpc-infrastructure-go"
 	"github.com/nalej/grpc-infrastructure-monitor-go"
+	"github.com/nalej/grpc-inventory-go"
 	"github.com/nalej/grpc-organization-go"
 	"github.com/nalej/grpc-public-api-go"
 	"github.com/nalej/grpc-unified-logging-go"
@@ -41,6 +42,7 @@ const emptyDeviceId = "device_id cannot be empty"
 const emptyDeviceGroupApiKey = "device_group_api_key cannot be empty"
 const emptyLabels = "labels cannot be empty"
 const invalidSortOrder = "sort order can only be ascending or descending"
+const emptyEdgeControllerId = "edge_controller_id cannot be empty"
 
 
 // --------- Application descriptor JSON Schema
@@ -412,5 +414,15 @@ func ValidMonitorRequest(request *grpc_infrastructure_monitor_go.ClusterSummaryR
 		return derrors.NewInvalidArgumentError(emptyInstanceId)
 	}
 
+	return nil
+}
+
+func ValidEdgeControllerID(edgeControllerID * grpc_inventory_go.EdgeControllerId) derrors.Error{
+	if edgeControllerID.OrganizationId == "" {
+		return derrors.NewInvalidArgumentError(emptyOrganizationId)
+	}
+	if edgeControllerID.EdgeControllerId == "" {
+		return derrors.NewInvalidArgumentError(emptyEdgeControllerId)
+	}
 	return nil
 }

@@ -288,7 +288,6 @@
   packages = [
     "pkg/conversions",
     "pkg/test",
-    "pkg/tools",
   ]
   pruneopts = ""
   revision = "926e5152669ee71c0e6904055ebe6cfb5492b599"
@@ -387,7 +386,7 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:4f349a7da3e52df38345913607fb3daac185365588a633088107146283b48b46"
+  digest = "1:ccd51599eb31c3ee139de1b1fca3f5d3ddaa5ab37f3a1704a2a8426c0abd1e5b"
   name = "golang.org/x/net"
   packages = [
     "context",
@@ -402,15 +401,15 @@
     "trace",
   ]
   pruneopts = ""
-  revision = "f4e77d36d62c17c2336347bb2670ddbd02d092b7"
+  revision = "a4d6f7feada510cc50e69a37b484cb0fdc6b7876"
 
 [[projects]]
   branch = "master"
-  digest = "1:d8dd58f3046f91d025e601bfd3ebecf3b70f13905106c996791b1ec1abf28428"
+  digest = "1:8f9263a1e1d886efe08142f5e47c16520d614e3640f10f4e09f98949742d5818"
   name = "golang.org/x/sys"
   packages = ["unix"]
   pruneopts = ""
-  revision = "2d0786266e9cd132da844109aa05016f11f3df28"
+  revision = "a5b02f93d862f065920dd6a40dddc66b60d0dec4"
 
 [[projects]]
   digest = "1:740b51a55815493a8d0f2b1e0d0ae48fe48953bf7eaf3fcc4198823bf67768c0"
@@ -554,6 +553,8 @@
     "github.com/nalej/grpc-infrastructure-manager-go",
     "github.com/nalej/grpc-infrastructure-monitor-go",
     "github.com/nalej/grpc-installer-go",
+    "github.com/nalej/grpc-inventory-go",
+    "github.com/nalej/grpc-inventory-manager-go",
     "github.com/nalej/grpc-login-api-go",
     "github.com/nalej/grpc-organization-go",
     "github.com/nalej/grpc-public-api-go",
@@ -562,13 +563,13 @@
     "github.com/nalej/grpc-user-manager-go",
     "github.com/nalej/grpc-utils/pkg/conversions",
     "github.com/nalej/grpc-utils/pkg/test",
-    "github.com/nalej/grpc-utils/pkg/tools",
     "github.com/onsi/ginkgo",
     "github.com/onsi/gomega",
     "github.com/rs/zerolog",
     "github.com/rs/zerolog/log",
     "github.com/santhosh-tekuri/jsonschema",
     "github.com/spf13/cobra",
+    "golang.org/x/net/context",
     "google.golang.org/grpc",
     "google.golang.org/grpc/credentials",
     "google.golang.org/grpc/metadata",

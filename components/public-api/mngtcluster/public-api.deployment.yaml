@@ -52,6 +52,7 @@ spec:
         - "--deviceManagerAddress=device-manager.__NPH_NAMESPACE:6010"
         - "--unifiedLoggingAddress=unified-logging-coord.__NPH_NAMESPACE:8323"
         - "--infrastructureMonitorAddress=infrastructure-monitor-coord.__NPH_NAMESPACE:8423"
+        - "--inventoryManagerAddress=inventory-manager.__NPH_NAMESPACE:5510"
         - "--authHeader=authorization"
         - "--authSecret=$(AUTH_SECRET)"
         - "--authConfigPath=/nalej/config/authx-config.json"

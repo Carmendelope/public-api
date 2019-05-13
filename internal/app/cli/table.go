@@ -8,6 +8,7 @@ import (
 	"github.com/nalej/grpc-device-manager-go"
 	"github.com/nalej/grpc-infrastructure-manager-go"
 	"github.com/nalej/grpc-infrastructure-monitor-go"
+	"github.com/nalej/grpc-inventory-manager-go"
 	"github.com/nalej/grpc-public-api-go"
 	"github.com/nalej/grpc-unified-logging-go"
 	"github.com/nalej/grpc-user-manager-go"
@@ -59,6 +60,7 @@ func AsTable(result interface{}) * ResultTable {
 	case *grpc_public_api_go.NodeList: return FromNodeList(result.(*grpc_public_api_go.NodeList))
 	case *grpc_public_api_go.Role: return FromRole(result.(*grpc_public_api_go.Role))
 	case *grpc_public_api_go.RoleList: return FromRoleList(result.(*grpc_public_api_go.RoleList))
+	case * grpc_inventory_manager_go.EICJoinToken: return FromEICJoinToken(result.(* grpc_inventory_manager_go.EICJoinToken))
 	case *grpc_common_go.Success: return FromSuccess(result.(*grpc_common_go.Success))
 	default: log.Fatal().Str("type", fmt.Sprintf("%T", result)).Msg("unsupported")
 	}
@@ -371,6 +373,16 @@ func FromRoleList(result *grpc_public_api_go.RoleList) *ResultTable{
 	return &ResultTable{r}
 }
 
+// ----
+// EdgeController
+// ----
+
+func FromEICJoinToken(result *grpc_inventory_manager_go.EICJoinToken) * ResultTable{
+	r := make([][]string, 0)
+	r = append(r, []string{"TOKEN", "EXPIRES"})
+	r = append(r, []string{result.Token, time.Unix(result.ExpiresOn, 0).String()})
+	return &ResultTable{r}
+}
 
 // ----
 // Common
