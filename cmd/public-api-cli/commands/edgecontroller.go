@@ -30,7 +30,7 @@ func init() {
 }
 
 var createJoinTokenECCmd = &cobra.Command{
-	Use:   "create-join-token",
+	Use:   "create-join-token to attach new edge controllers to the platform",
 	Short: "Create a join token",
 	Long:  `Create a join token for being able to attach new edge controllers to the platform`,
 	Run: func(cmd *cobra.Command, args []string) {
