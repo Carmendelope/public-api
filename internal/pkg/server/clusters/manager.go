@@ -6,8 +6,6 @@ package clusters
 
 import (
 	"github.com/nalej/grpc-common-go"
-	"github.com/nalej/public-api/internal/pkg/server/common"
-
 	"github.com/nalej/grpc-infrastructure-go"
 	"github.com/nalej/grpc-infrastructure-manager-go"
 	"github.com/nalej/grpc-infrastructure-monitor-go"
@@ -15,6 +13,8 @@ import (
 	"github.com/nalej/grpc-organization-go"
 	"github.com/nalej/grpc-public-api-go"
 	"github.com/nalej/public-api/internal/pkg/entities"
+	"github.com/nalej/public-api/internal/pkg/server/common"
+	"github.com/rs/zerolog/log"
 )
 
 // Manager structure with the required clients for cluster operations.
@@ -90,7 +90,7 @@ func (m *Manager) extendInfo(source *grpc_infrastructure_go.Cluster) (*grpc_publ
 func (m *Manager) Info(clusterID *grpc_infrastructure_go.ClusterId) (*grpc_public_api_go.Cluster, error) {
 	ctx, cancel := common.GetContext()
 	defer cancel()
-	retrieved, err := m.clustClient.GetCluster(ctx, clusterID)
+	retrieved, err := m.infraClient.GetCluster(ctx, clusterID)
 	if err != nil {
 		return nil, err
 	}
@@ -101,7 +101,7 @@ func (m *Manager) Info(clusterID *grpc_infrastructure_go.ClusterId) (*grpc_publi
 func (m *Manager) List(organizationID *grpc_organization_go.OrganizationId) (*grpc_public_api_go.ClusterList, error) {
 	ctx, cancel := common.GetContext()
 	defer cancel()
-	list, err := m.clustClient.ListClusters(ctx, organizationID)
+	list, err := m.infraClient.ListClusters(ctx, organizationID)
 	if err != nil {
 		return nil, err
 	}
@@ -120,10 +120,11 @@ func (m *Manager) List(organizationID *grpc_organization_go.OrganizationId) (*gr
 
 // Update the cluster information.
 func (m *Manager) Update(updateClusterRequest *grpc_public_api_go.UpdateClusterRequest) (*grpc_public_api_go.Cluster, error) {
+	log.Debug().Interface("request", updateClusterRequest).Msg("update cluster request")
 	toSend := entities.ToInfraClusterUpdate(*updateClusterRequest)
 	ctx, cancel := common.GetContext()
 	defer cancel()
-	updated, err := m.clustClient.UpdateCluster(ctx, toSend)
+	updated, err := m.infraClient.UpdateCluster(ctx,toSend)
 	if err != nil {
 		return nil, err
 	}
@@ -143,14 +144,14 @@ func (m *Manager) Monitor(request *grpc_infrastructure_monitor_go.ClusterSummary
 func (m *Manager) Cordon(clusterID *grpc_infrastructure_go.ClusterId) (*grpc_common_go.Success, error) {
 	ctx, cancel := common.GetContext()
 	defer cancel()
-	return m.clustClient.CordonCluster(ctx, clusterID)
+	return m.infraClient.CordonCluster(ctx, clusterID)
 }
 
 
 func (m *Manager) Uncordon(clusterID *grpc_infrastructure_go.ClusterId) (*grpc_common_go.Success, error) {
 	ctx, cancel := common.GetContext()
 	defer cancel()
-	return m.clustClient.UncordonCluster(ctx, clusterID)
+	return m.infraClient.UncordonCluster(ctx, clusterID)
 }
 
 func (m *Manager) DrainCluster(clusterID *grpc_infrastructure_go.ClusterId) (*grpc_common_go.Success, error) {
