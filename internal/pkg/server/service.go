@@ -16,6 +16,7 @@ import (
 	"github.com/nalej/grpc-public-api-go"
 	"github.com/nalej/grpc-unified-logging-go"
 	"github.com/nalej/grpc-user-manager-go"
+	"github.com/nalej/public-api/internal/pkg/server/agent"
 	"github.com/nalej/public-api/internal/pkg/server/applications"
 	"github.com/nalej/public-api/internal/pkg/server/clusters"
 	"github.com/nalej/public-api/internal/pkg/server/devices"
@@ -249,6 +250,9 @@ func (s *Service) LaunchGRPC(authConfig *interceptor.AuthorizationConfig) error 
 	invManager := inventory.NewManager(clients.invClient)
 	invHandler := inventory.NewHandler(invManager)
 
+	agentManager := agent.NewManager(clients.agentClient)
+	agentHandler := agent.NewHandler(agentManager)
+
 	grpcServer := grpc.NewServer(interceptor.WithServerAuthxInterceptor(
 		interceptor.NewConfig(authConfig, s.Configuration.AuthSecret, s.Configuration.AuthHeader)))
 	grpc_public_api_go.RegisterOrganizationsServer(grpcServer, orgHandler)
@@ -262,6 +266,7 @@ func (s *Service) LaunchGRPC(authConfig *interceptor.AuthorizationConfig) error 
 	grpc_public_api_go.RegisterUnifiedLoggingServer(grpcServer, ulHandler)
 	grpc_public_api_go.RegisterEdgeControllersServer(grpcServer, ecHandler)
 	grpc_public_api_go.RegisterInventoryServer(grpcServer, invHandler)
+	grpc_public_api_go.RegisterAgentServer(grpcServer, agentHandler)
 
 	if s.Configuration.Debug{
 		log.Info().Msg("Enabling gRPC server reflection")
