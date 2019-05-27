@@ -58,6 +58,7 @@ type Clients struct {
 	imClient    grpc_infrastructure_monitor_go.CoordinatorClient
 	eicClient grpc_inventory_manager_go.EICClient
 	invClient grpc_inventory_manager_go.InventoryClient
+	agentClient grpc_inventory_manager_go.AgentClient
 }
 
 func (s *Service) GetClients() (*Clients, derrors.Error) {
@@ -105,8 +106,9 @@ func (s *Service) GetClients() (*Clients, derrors.Error) {
 	imClient := grpc_infrastructure_monitor_go.NewCoordinatorClient(imConn)
 	eicClient := grpc_inventory_manager_go.NewEICClient(invManagerConn)
 	invClient := grpc_inventory_manager_go.NewInventoryClient(invManagerConn)
+	agentClient := grpc_inventory_manager_go.NewAgentClient(invManagerConn)
 
-	return &Clients{oClient, cClient, nClient, infraClient, umClient, appClient, deviceClient, ulClient, imClient, eicClient, invClient}, nil
+	return &Clients{oClient, cClient, nClient, infraClient, umClient, appClient, deviceClient, ulClient, imClient, eicClient, invClient, agentClient}, nil
 }
 
 // Run the service, launch the REST service handler.
@@ -189,6 +191,9 @@ func (s *Service) LaunchHTTP() error {
 	}
 	if err := grpc_public_api_go.RegisterInventoryHandlerFromEndpoint(context.Background(), mux, clientAddr, opts); err != nil {
 		log.Fatal().Err(err).Msg("failed to start inventory handler")
+	}
+	if err := grpc_public_api_go.RegisterAgentHandlerFromEndpoint(context.Background(), mux, clientAddr, opts); err != nil {
+		log.Fatal().Err(err).Msg("failed to start agent handler")
 	}
 
 	server := &http.Server{
