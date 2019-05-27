@@ -61,6 +61,7 @@ func AsTable(result interface{}) * ResultTable {
 	case *grpc_public_api_go.Role: return FromRole(result.(*grpc_public_api_go.Role))
 	case *grpc_public_api_go.RoleList: return FromRoleList(result.(*grpc_public_api_go.RoleList))
 	case * grpc_inventory_manager_go.EICJoinToken: return FromEICJoinToken(result.(* grpc_inventory_manager_go.EICJoinToken))
+	case * grpc_public_api_go.InventoryList: return FromInventoryList(result.(* grpc_public_api_go.InventoryList))
 	case *grpc_common_go.Success: return FromSuccess(result.(*grpc_common_go.Success))
 	default: log.Fatal().Str("type", fmt.Sprintf("%T", result)).Msg("unsupported")
 	}
@@ -381,6 +382,25 @@ func FromEICJoinToken(result *grpc_inventory_manager_go.EICJoinToken) * ResultTa
 	r := make([][]string, 0)
 	r = append(r, []string{"TOKEN", "EXPIRES"})
 	r = append(r, []string{result.Token, time.Unix(result.ExpiresOn, 0).String()})
+	return &ResultTable{r}
+}
+
+// ----
+// Inventory
+// ----
+
+func FromInventoryList(result * grpc_public_api_go.InventoryList) * ResultTable{
+	r := make([][]string, 0)
+	r = append(r, []string{"TYPE", "ID", "LABELS", "STATUS"})
+	for _, device := range result.Devices{
+		r = append(r, []string{"DEVICE", device.DeviceId, TransformLabels(device.Labels), device.DeviceStatusName})
+	}
+	for _, ec := range result.Controllers{
+		r = append(r, []string{"EC", ec.EdgeControllerId, TransformLabels(ec.Labels), ec.StatusName})
+	}
+	for _, asset := range result.Assets{
+		r = append(r, []string{"ASSET", asset.AssetId, TransformLabels(asset.Labels), asset.StatusName})
+	}
 	return &ResultTable{r}
 }
 

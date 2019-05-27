@@ -8,6 +8,7 @@ import (
 	"github.com/nalej/grpc-application-go"
 	"github.com/nalej/grpc-device-manager-go"
 	"github.com/nalej/grpc-infrastructure-go"
+	"github.com/nalej/grpc-inventory-go"
 	"github.com/nalej/grpc-public-api-go"
 )
 
@@ -275,8 +276,15 @@ func ToPublicAPIDeviceList(list * grpc_device_manager_go.DeviceList) * grpc_publ
 	return & grpc_public_api_go.DeviceList {
 		Devices: result,
 	}
+}
 
-
+func ToPublicAPIDeviceArray(devices [] * grpc_device_manager_go.Device) [] * grpc_public_api_go.Device  {
+	result := make([]*grpc_public_api_go.Device, 0)
+	for _, device := range devices {
+		toAdd := ToPublicAPIDevice(device)
+		result = append(result, toAdd)
+	}
+	return result
 }
 
 func ToPublicAPIAppParam (param *grpc_application_go.AppParameter) * grpc_public_api_go.AppParameter {
@@ -289,4 +297,62 @@ func ToPublicAPIAppParam (param *grpc_application_go.AppParameter) * grpc_public
 		EnumValues: 	param.EnumValues,
 		Category:    	param.Category.String(),
 	}
+}
+
+func ToPublicAPIAssetOS(os * grpc_inventory_go.OperatingSystemInfo) * grpc_public_api_go.OperatingSystemInfo{
+	return &grpc_public_api_go.OperatingSystemInfo{
+		Name:                 os.Name,
+		Version:              os.Version,
+		Class:                os.Class,
+		ClassName:            os.Class.String(),
+		Architecture:         os.Architecture,
+	}
+}
+
+func ToPublicAPIAsset(asset *grpc_inventory_go.Asset) * grpc_public_api_go.Asset{
+	return &grpc_public_api_go.Asset{
+		OrganizationId:       asset.OrganizationId,
+		AssetId:              asset.AssetId,
+		AgentId:              asset.AgentId,
+		Created:             asset.Created,
+		Labels:               asset.Labels,
+		Os:                   ToPublicAPIAssetOS(asset.Os),
+		Hardware:             asset.Hardware,
+		Storage:              asset.Storage,
+		EicNetIp:             asset.EicNetIp,
+		StatusName:           "NA",
+	}
+}
+
+func ToPublicAPIAssetArray(assets [] * grpc_inventory_go.Asset) [] * grpc_public_api_go.Asset  {
+	result := make([]*grpc_public_api_go.Asset, 0)
+	for _, asset := range assets {
+		if asset.Show{
+			toAdd := ToPublicAPIAsset(asset)
+			result = append(result, toAdd)
+		}
+	}
+	return result
+}
+
+func ToPublicAPIController(controller *grpc_inventory_go.EdgeController) *grpc_public_api_go.EdgeController{
+	return &grpc_public_api_go.EdgeController{
+		OrganizationId:       controller.OrganizationId,
+		EdgeControllerId:     controller.EdgeControllerId,
+		Created:              controller.Created,
+		Name:                 controller.Name,
+		Labels:               controller.Labels,
+		StatusName:           "NA",
+	}
+}
+
+func ToPublicAPIControllerArray(controllers []*grpc_inventory_go.EdgeController) [] *grpc_public_api_go.EdgeController{
+	result := make([]*grpc_public_api_go.EdgeController, 0)
+	for _, controller := range controllers {
+		if controller.Show{
+			toAdd := ToPublicAPIController(controller)
+			result = append(result, toAdd)
+		}
+	}
+	return result
 }
