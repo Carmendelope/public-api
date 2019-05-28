@@ -93,7 +93,7 @@ func (s *Service) GetClients() (*Clients, derrors.Error) {
 	}
 	invManagerConn, err := grpc.Dial(s.Configuration.InventoryManagerAddress, grpc.WithInsecure())
 	if err != nil {
-		return nil, derrors.AsError(err, "cannot create connection with infrastructure monitor coordinator")
+		return nil, derrors.AsError(err, "cannot create connection with inventory manager coordinator")
 	}
 
 	oClient := grpc_organization_go.NewOrganizationsClient(smConn)
