@@ -54,6 +54,9 @@ func (a *Agent) CreateAgentJoinToken(organizationID string, edgeControllerID str
 	if organizationID == "" {
 		log.Fatal().Msg("organizationID cannot be empty")
 	}
+	if edgeControllerID == "" {
+		log.Fatal().Msg("edgeControllerID cannot be empty")
+	}
 
 	a.load()
 	ctx, cancel := a.GetContext()
