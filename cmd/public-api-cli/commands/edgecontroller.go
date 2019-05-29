@@ -48,7 +48,7 @@ var unlinkECCmd = &cobra.Command{
 	Use:   "unlink [edgeControllerID]",
 	Short: "Unlink an EIC",
 	Long:  `Unlink an EIC from the platform`,
-	Args: cobra.MinimumNArgs(1),
+	Args: cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		SetupLogging()
 		ec := cli.NewEdgeController(
