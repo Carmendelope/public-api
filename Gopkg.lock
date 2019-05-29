@@ -123,12 +123,12 @@
   version = "v0.0.35"
 
 [[projects]]
-  digest = "1:258fb1c4fd8b5aee399640f104508f09149f1fd596358835373114abf8df0101"
+  digest = "1:15537b88eb2389471ee6518ca1850c79783829a0189dd297bb54fe4f67821905"
   name = "github.com/nalej/grpc-authx-go"
   packages = ["."]
   pruneopts = ""
-  revision = "dd2f2d39efd942053c6af01fa69ed01bb00c2900"
-  version = "v0.0.47"
+  revision = "c22d2e52e3a56547194a83901fdb7bb2acd08ea1"
+  version = "v0.0.48"
 
 [[projects]]
   digest = "1:47045d48f2caa09be25193c3b35f17d572043eff2cf4e98a5482d572657b9a8f"
@@ -219,12 +219,12 @@
   version = "v0.0.4"
 
 [[projects]]
-  digest = "1:274a516bde940ead394a1470503759a3e333ad080d6ab6dd33e116b8b74bafd6"
+  digest = "1:ec0e621ef55ce24afbebeba6db6bd89c994c2c3042cafe4a84bfa1d332b3bb49"
   name = "github.com/nalej/grpc-inventory-manager-go"
   packages = ["."]
   pruneopts = ""
-  revision = "97433eedcd75f4799fc06a52682f221730d341df"
-  version = "v0.0.14"
+  revision = "391548f0b3765c077b9ff1eda6b511fc12a597ff"
+  version = "v0.0.17"
 
 [[projects]]
   digest = "1:01e194c59e474b1f240f44b629f044abbc194e4aed769a52f0644efa2251fcb3"
@@ -405,11 +405,11 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:075560f12f65f4dd9499fa6ce385a0ffe61039294c3f2e3fa29389fde41721cb"
+  digest = "1:e58995028b90bb1d69bf0968e3f8c2543d5a9db78d1206c2b3d2571a0b8b4a88"
   name = "golang.org/x/sys"
   packages = ["unix"]
   pruneopts = ""
-  revision = "791d8a0f4d093bd8fe272dea2cd28991154796fb"
+  revision = "9cd6430ef91e39e1a0ec0470cf1321a33ef1b887"
 
 [[projects]]
   digest = "1:740b51a55815493a8d0f2b1e0d0ae48fe48953bf7eaf3fcc4198823bf67768c0"
