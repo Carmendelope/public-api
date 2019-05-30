@@ -5,13 +5,10 @@
 package cli
 
 import (
-	"fmt"
 	"github.com/nalej/grpc-organization-go"
 	"github.com/nalej/grpc-public-api-go"
 	"github.com/rs/zerolog/log"
 	"google.golang.org/grpc"
-	"reflect"
-	"time"
 )
 
 type Inventory struct{
