@@ -54,8 +54,8 @@ func (i * Inventory) List(organizationID string) {
 		OrganizationId: organizationID,
 	}
 
-	list, err := client.List(ctx, orgID)
-	i.PrintResultOrError(list, err, "cannot retrieve asset list")
+	inventory, err := client.List(ctx, orgID)
+	i.PrintResultOrError(inventory, err, "cannot retrieve inventory list")
 
 }
 

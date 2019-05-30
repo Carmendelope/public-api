@@ -9,6 +9,7 @@ import (
 	"github.com/nalej/grpc-device-manager-go"
 	"github.com/nalej/grpc-infrastructure-go"
 	"github.com/nalej/grpc-inventory-go"
+	"github.com/nalej/grpc-inventory-manager-go"
 	"github.com/nalej/grpc-public-api-go"
 )
 
@@ -309,22 +310,26 @@ func ToPublicAPIAssetOS(os * grpc_inventory_go.OperatingSystemInfo) * grpc_publi
 	}
 }
 
-func ToPublicAPIAsset(asset *grpc_inventory_go.Asset) * grpc_public_api_go.Asset{
+func ToPublicAPIAsset(asset *grpc_inventory_manager_go.Asset) * grpc_public_api_go.Asset{
 	return &grpc_public_api_go.Asset{
 		OrganizationId:       asset.OrganizationId,
+		EdgeControllerId:     asset.EdgeControllerId,
 		AssetId:              asset.AssetId,
 		AgentId:              asset.AgentId,
-		Created:             asset.Created,
+		Created:              asset.Created,
 		Labels:               asset.Labels,
 		Os:                   ToPublicAPIAssetOS(asset.Os),
 		Hardware:             asset.Hardware,
 		Storage:              asset.Storage,
 		EicNetIp:             asset.EicNetIp,
-		StatusName:           "NA",
+		LastOpSummary:        asset.LastOpSummary,
+		LastAliveTimestamp:   asset.LastAliveTimestamp,
+		Status:               asset.Status,
+		StatusName:           asset.Status.String(),
 	}
 }
 
-func ToPublicAPIAssetArray(assets [] * grpc_inventory_go.Asset) [] * grpc_public_api_go.Asset  {
+func ToPublicAPIAssetArray(assets [] * grpc_inventory_manager_go.Asset) [] * grpc_public_api_go.Asset  {
 	result := make([]*grpc_public_api_go.Asset, 0)
 	for _, asset := range assets {
 		if asset.Show{
@@ -335,18 +340,20 @@ func ToPublicAPIAssetArray(assets [] * grpc_inventory_go.Asset) [] * grpc_public
 	return result
 }
 
-func ToPublicAPIController(controller *grpc_inventory_go.EdgeController) *grpc_public_api_go.EdgeController{
+func ToPublicAPIController(controller *grpc_inventory_manager_go.EdgeController) *grpc_public_api_go.EdgeController{
 	return &grpc_public_api_go.EdgeController{
 		OrganizationId:       controller.OrganizationId,
 		EdgeControllerId:     controller.EdgeControllerId,
 		Created:              controller.Created,
 		Name:                 controller.Name,
 		Labels:               controller.Labels,
-		StatusName:           "NA",
+		LastAliveTimestamp:   controller.LastAliveTimestamp,
+		Status:               controller.Status,
+		StatusName:           controller.Status.String(),
 	}
 }
 
-func ToPublicAPIControllerArray(controllers []*grpc_inventory_go.EdgeController) [] *grpc_public_api_go.EdgeController{
+func ToPublicAPIControllerArray(controllers []*grpc_inventory_manager_go.EdgeController) [] *grpc_public_api_go.EdgeController{
 	result := make([]*grpc_public_api_go.EdgeController, 0)
 	for _, controller := range controllers {
 		if controller.Show{
