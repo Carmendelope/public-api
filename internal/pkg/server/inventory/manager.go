@@ -5,6 +5,7 @@
 package inventory
 
 import (
+	"github.com/nalej/grpc-inventory-go"
 	"github.com/nalej/grpc-inventory-manager-go"
 	"github.com/nalej/grpc-organization-go"
 	"github.com/nalej/grpc-public-api-go"
@@ -41,4 +42,27 @@ func (m * Manager) List(orgID *grpc_organization_go.OrganizationId) (*grpc_publi
 		Assets:               assets,
 		Controllers:          controllers,
 	}, nil
+}
+
+func (m * Manager) GetControllerExtendedInfo(edgeControllerID *grpc_inventory_go.EdgeControllerId) (*grpc_public_api_go.EdgeControllerExtendedInfo, error) {
+	ctx, cancel := common.GetContext()
+	defer cancel()
+	info, err := m.invManagerClient.GetControllerExtendedInfo(ctx, edgeControllerID)
+	if err != nil{
+		return nil, err
+	}
+	return &grpc_public_api_go.EdgeControllerExtendedInfo{
+		Controller:           entities.ToPublicAPIController(info.Controller),
+		ManagedAssets:        entities.ToPublicAPIAssetArray(info.ManagedAssets),
+	}, nil
+}
+
+func (m * Manager) GetAssetInfo(assetID *grpc_inventory_go.AssetId) (*grpc_public_api_go.Asset, error) {
+	ctx, cancel := common.GetContext()
+	defer cancel()
+	info, err := m.invManagerClient.GetAssetInfo(ctx, assetID)
+	if err != nil{
+		return nil, err
+	}
+	return entities.ToPublicAPIAsset(info), nil
 }

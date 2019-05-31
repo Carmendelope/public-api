@@ -23,6 +23,11 @@ var inventoryCmd = &cobra.Command{
 func init() {
 	rootCmd.AddCommand(inventoryCmd)
 	inventoryCmd.AddCommand(inventoryListCmd)
+	inventoryCmd.AddCommand(invControllerCommand)
+	inventoryCmd.AddCommand(invAssetCommand)
+
+	invControllerCommand.AddCommand(invControllerExtInfoCmd)
+	invAssetCommand.AddCommand(invAssetInfoCmd)
 }
 
 var inventoryListCmd = &cobra.Command{
@@ -37,5 +42,58 @@ var inventoryListCmd = &cobra.Command{
 			insecure, useTLS,
 			options.Resolve("cacert", caCertPath), options.Resolve("output", output))
 		ec.List(options.Resolve("organizationID", organizationID))
+	},
+}
+
+var invControllerCommand = &cobra.Command{
+	Use:     "controller",
+	Aliases: []string{"ec"},
+	Short:   "Controller commands",
+	Long:    `Controller commands`,
+	Run: func(cmd *cobra.Command, args []string) {
+		SetupLogging()
+		cmd.Help()
+	},
+}
+
+var invAssetCommand = &cobra.Command{
+	Use:   "asset",
+	Short: "Asset commands",
+	Long:  `Asset commands`,
+	Run: func(cmd *cobra.Command, args []string) {
+		SetupLogging()
+		cmd.Help()
+	},
+}
+
+var invControllerExtInfoCmd = &cobra.Command{
+	Use:   "info [edgeControllerID]",
+	Short: "Get extended information on an edge controller",
+	Long:  `Get extended information on an edge controller`,
+	Args: cobra.ExactArgs(1),
+	Run: func(cmd *cobra.Command, args []string) {
+		SetupLogging()
+		ec := cli.NewInventory(
+			options.Resolve("nalejAddress", nalejAddress),
+			options.ResolveAsInt("port", nalejPort),
+			insecure, useTLS,
+			options.Resolve("cacert", caCertPath), options.Resolve("output", output))
+		ec.GetControllerExtendedInfo(options.Resolve("organizationID", organizationID), args[0])
+	},
+}
+
+var invAssetInfoCmd = &cobra.Command{
+	Use:   "get [assetID]",
+	Short: "Get extended information on an asset",
+	Long:  `Get extended information on an asset`,
+	Args: cobra.ExactArgs(1),
+	Run: func(cmd *cobra.Command, args []string) {
+		SetupLogging()
+		ec := cli.NewInventory(
+			options.Resolve("nalejAddress", nalejAddress),
+			options.ResolveAsInt("port", nalejPort),
+			insecure, useTLS,
+			options.Resolve("cacert", caCertPath), options.Resolve("output", output))
+		ec.GetAssetInfo(options.Resolve("organizationID", organizationID), args[0])
 	},
 }

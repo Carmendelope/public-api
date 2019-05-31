@@ -43,6 +43,7 @@ const emptyDeviceGroupApiKey = "device_group_api_key cannot be empty"
 const emptyLabels = "labels cannot be empty"
 const invalidSortOrder = "sort order can only be ascending or descending"
 const emptyEdgeControllerId = "edge_controller_id cannot be empty"
+const emptyAssetId = "asset_id cannot be empty"
 
 
 // --------- Application descriptor JSON Schema
@@ -423,6 +424,15 @@ func ValidEdgeControllerID(edgeControllerID * grpc_inventory_go.EdgeControllerId
 	}
 	if edgeControllerID.EdgeControllerId == "" {
 		return derrors.NewInvalidArgumentError(emptyEdgeControllerId)
+	}
+	return nil
+}
+func ValidAssetID(assetID *grpc_inventory_go.AssetId) derrors.Error{
+	if assetID.OrganizationId == "" {
+		return derrors.NewInvalidArgumentError(emptyOrganizationId)
+	}
+	if assetID.AssetId == "" {
+		return derrors.NewInvalidArgumentError(emptyAssetId)
 	}
 	return nil
 }

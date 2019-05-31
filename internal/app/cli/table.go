@@ -26,52 +26,83 @@ const Padding = 3
 
 const AppInstanceHeader = ""
 
-var Headers = map[string]string{
-
-}
+var Headers = map[string]string{}
 
 type ResultTable struct {
 	data [][]string
 }
 
-func AsTable(result interface{}) * ResultTable {
-	switch result.(type){
-	case *grpc_public_api_go.OrganizationInfo: return FromOrganizationInfo(result.(*grpc_public_api_go.OrganizationInfo))
-	case *grpc_public_api_go.User: return FromUser(result.(*grpc_public_api_go.User))
-	case *grpc_user_manager_go.User: return FromUserManagerUser(result.(*grpc_user_manager_go.User))
-	case *grpc_public_api_go.UserList: return FromUserList(result.(*grpc_public_api_go.UserList))
-	case *grpc_public_api_go.Cluster: return FromCluster(result.(*grpc_public_api_go.Cluster))
-	case *grpc_infrastructure_monitor_go.ClusterSummary: return FromClusterSummary(result.(*grpc_infrastructure_monitor_go.ClusterSummary))
-	case *grpc_public_api_go.ClusterList: return FromClusterList(result.(*grpc_public_api_go.ClusterList))
-	case *grpc_infrastructure_manager_go.InstallResponse: return FromInstallResponse(result.(*grpc_infrastructure_manager_go.InstallResponse))
-	case *grpc_public_api_go.AppInstanceList: return FromAppInstanceList(result.(*grpc_public_api_go.AppInstanceList))
-	case *grpc_public_api_go.AppInstance: return FromAppInstance(result.(*grpc_public_api_go.AppInstance))
-	case *grpc_application_go.InstanceParameterList: return FromInstanceParameterList(result.(*grpc_application_go.InstanceParameterList))
-	case *grpc_application_manager_go.DeploymentResponse: return FromDeploymentResponse(result.(*grpc_application_manager_go.DeploymentResponse))
-	case *grpc_application_go.AppDescriptorList: return FromAppDescriptorList(result.(*grpc_application_go.AppDescriptorList))
-	case *grpc_application_go.AppDescriptor: return FromAppDescriptor(result.(*grpc_application_go.AppDescriptor))
-	case *grpc_public_api_go.AppParameterList: return FromAppParameterList(result.(*grpc_public_api_go.AppParameterList))
-	case *grpc_device_manager_go.DeviceGroup: return FromDeviceGroup(result.(*grpc_device_manager_go.DeviceGroup))
-	case *grpc_device_manager_go.DeviceGroupList: return FromDeviceGroupList(result.(*grpc_device_manager_go.DeviceGroupList))
-	case *grpc_public_api_go.Device: return FromDevice(result.(*grpc_public_api_go.Device))
-	case *grpc_public_api_go.DeviceList: return FromDeviceList(result.(*grpc_public_api_go.DeviceList))
-	case *grpc_unified_logging_go.LogResponse: return FromLogResponse(result.(*grpc_unified_logging_go.LogResponse))
-	case *grpc_public_api_go.Node: return FromNode(result.(*grpc_public_api_go.Node))
-	case *grpc_public_api_go.NodeList: return FromNodeList(result.(*grpc_public_api_go.NodeList))
-	case *grpc_public_api_go.Role: return FromRole(result.(*grpc_public_api_go.Role))
-	case *grpc_public_api_go.RoleList: return FromRoleList(result.(*grpc_public_api_go.RoleList))
-	case *grpc_inventory_manager_go.EICJoinToken: return FromEICJoinToken(result.(* grpc_inventory_manager_go.EICJoinToken))
-	case *grpc_public_api_go.InventoryList: return FromInventoryList(result.(* grpc_public_api_go.InventoryList))
-	case *grpc_inventory_manager_go.AgentJoinToken: return FromAgentJoinToken(result.(*grpc_inventory_manager_go.AgentJoinToken))
-	case *grpc_common_go.Success: return FromSuccess(result.(*grpc_common_go.Success))
-	default: log.Fatal().Str("type", fmt.Sprintf("%T", result)).Msg("unsupported")
+func AsTable(result interface{}) *ResultTable {
+	switch result.(type) {
+	case *grpc_public_api_go.OrganizationInfo:
+		return FromOrganizationInfo(result.(*grpc_public_api_go.OrganizationInfo))
+	case *grpc_public_api_go.User:
+		return FromUser(result.(*grpc_public_api_go.User))
+	case *grpc_user_manager_go.User:
+		return FromUserManagerUser(result.(*grpc_user_manager_go.User))
+	case *grpc_public_api_go.UserList:
+		return FromUserList(result.(*grpc_public_api_go.UserList))
+	case *grpc_public_api_go.Cluster:
+		return FromCluster(result.(*grpc_public_api_go.Cluster))
+	case *grpc_infrastructure_monitor_go.ClusterSummary:
+		return FromClusterSummary(result.(*grpc_infrastructure_monitor_go.ClusterSummary))
+	case *grpc_public_api_go.ClusterList:
+		return FromClusterList(result.(*grpc_public_api_go.ClusterList))
+	case *grpc_infrastructure_manager_go.InstallResponse:
+		return FromInstallResponse(result.(*grpc_infrastructure_manager_go.InstallResponse))
+	case *grpc_public_api_go.AppInstanceList:
+		return FromAppInstanceList(result.(*grpc_public_api_go.AppInstanceList))
+	case *grpc_public_api_go.AppInstance:
+		return FromAppInstance(result.(*grpc_public_api_go.AppInstance))
+	case *grpc_application_go.InstanceParameterList:
+		return FromInstanceParameterList(result.(*grpc_application_go.InstanceParameterList))
+	case *grpc_application_manager_go.DeploymentResponse:
+		return FromDeploymentResponse(result.(*grpc_application_manager_go.DeploymentResponse))
+	case *grpc_application_go.AppDescriptorList:
+		return FromAppDescriptorList(result.(*grpc_application_go.AppDescriptorList))
+	case *grpc_application_go.AppDescriptor:
+		return FromAppDescriptor(result.(*grpc_application_go.AppDescriptor))
+	case *grpc_public_api_go.AppParameterList:
+		return FromAppParameterList(result.(*grpc_public_api_go.AppParameterList))
+	case *grpc_device_manager_go.DeviceGroup:
+		return FromDeviceGroup(result.(*grpc_device_manager_go.DeviceGroup))
+	case *grpc_device_manager_go.DeviceGroupList:
+		return FromDeviceGroupList(result.(*grpc_device_manager_go.DeviceGroupList))
+	case *grpc_public_api_go.Device:
+		return FromDevice(result.(*grpc_public_api_go.Device))
+	case *grpc_public_api_go.DeviceList:
+		return FromDeviceList(result.(*grpc_public_api_go.DeviceList))
+	case *grpc_unified_logging_go.LogResponse:
+		return FromLogResponse(result.(*grpc_unified_logging_go.LogResponse))
+	case *grpc_public_api_go.Node:
+		return FromNode(result.(*grpc_public_api_go.Node))
+	case *grpc_public_api_go.NodeList:
+		return FromNodeList(result.(*grpc_public_api_go.NodeList))
+	case *grpc_public_api_go.Role:
+		return FromRole(result.(*grpc_public_api_go.Role))
+	case *grpc_public_api_go.RoleList:
+		return FromRoleList(result.(*grpc_public_api_go.RoleList))
+	case *grpc_inventory_manager_go.EICJoinToken:
+		return FromEICJoinToken(result.(*grpc_inventory_manager_go.EICJoinToken))
+	case *grpc_public_api_go.InventoryList:
+		return FromInventoryList(result.(*grpc_public_api_go.InventoryList))
+	case *grpc_inventory_manager_go.AgentJoinToken:
+		return FromAgentJoinToken(result.(*grpc_inventory_manager_go.AgentJoinToken))
+	case *grpc_public_api_go.EdgeControllerExtendedInfo:
+		return FromEdgeControllerExtendedInfo(result.(*grpc_public_api_go.EdgeControllerExtendedInfo))
+	case *grpc_public_api_go.Asset:
+		return FromAsset(result.(*grpc_public_api_go.Asset))
+	case *grpc_common_go.Success:
+		return FromSuccess(result.(*grpc_common_go.Success))
+	default:
+		log.Fatal().Str("type", fmt.Sprintf("%T", result)).Msg("unsupported")
 	}
 	return nil
 }
 
-func (t * ResultTable) Print() {
+func (t *ResultTable) Print() {
 	w := tabwriter.NewWriter(os.Stdout, MinWidth, TabWidth, Padding, ' ', 0)
-	for _, d := range t.data{
+	for _, d := range t.data {
 		toPrint := strings.Join(d, "\t")
 		fmt.Fprintln(w, toPrint)
 	}
@@ -80,8 +111,8 @@ func (t * ResultTable) Print() {
 
 func PrintFromValues(header []string, values [][]string) {
 	w := tabwriter.NewWriter(os.Stdout, MinWidth, TabWidth, Padding, ' ', 0)
-	fmt.Fprintln(w,strings.Join(header, "\t"))
-	for _, d := range values{
+	fmt.Fprintln(w, strings.Join(header, "\t"))
+	for _, d := range values {
 		toPrint := strings.Join(d, "\t")
 		fmt.Fprintln(w, toPrint)
 	}
@@ -90,7 +121,7 @@ func PrintFromValues(header []string, values [][]string) {
 
 func TransformLabels(labels map[string]string) string {
 	r := make([]string, 0)
-	for k, v := range labels{
+	for k, v := range labels {
 		r = append(r, fmt.Sprintf("%s:%s", k, v))
 	}
 	return strings.Join(r, ",")
@@ -124,7 +155,7 @@ func FromUser(user *grpc_public_api_go.User) *ResultTable {
 func FromUserList(user *grpc_public_api_go.UserList) *ResultTable {
 	result := make([][]string, 0)
 	result = append(result, []string{"NAME", "ROLE", "EMAIL"})
-	for _, u := range user.Users{
+	for _, u := range user.Users {
 		result = append(result, []string{u.Name, u.RoleName, u.Email})
 	}
 	return &ResultTable{result}
@@ -144,7 +175,7 @@ func FromCluster(result *grpc_public_api_go.Cluster) *ResultTable {
 func FromClusterList(result *grpc_public_api_go.ClusterList) *ResultTable {
 	r := make([][]string, 0)
 	r = append(r, []string{"NAME", "ID", "NODES", "LABELS", "STATUS"})
-	for _, c := range result.Clusters{
+	for _, c := range result.Clusters {
 		r = append(r, []string{c.Name, c.ClusterId, fmt.Sprintf("%d", c.TotalNodes), TransformLabels(c.Labels), c.StatusName})
 	}
 	return &ResultTable{r}
@@ -164,7 +195,6 @@ func FromClusterSummary(result *grpc_infrastructure_monitor_go.ClusterSummary) *
 	r = append(r, []string{cpu, mem, storage})
 	return &ResultTable{r}
 }
-
 
 func FromInstallResponse(result *grpc_infrastructure_manager_go.InstallResponse) *ResultTable {
 	r := make([][]string, 0)
@@ -187,7 +217,7 @@ func FromNode(result *grpc_public_api_go.Node) *ResultTable {
 func FromNodeList(result *grpc_public_api_go.NodeList) *ResultTable {
 	r := make([][]string, 0)
 	r = append(r, []string{"ID", "IP", "STATE", "LABELS", "STATUS"})
-	for _, n := range result.Nodes{
+	for _, n := range result.Nodes {
 		r = append(r, []string{n.NodeId, n.Ip, n.StateName, TransformLabels(n.Labels), n.StatusName})
 	}
 	return &ResultTable{r}
@@ -197,19 +227,19 @@ func FromNodeList(result *grpc_public_api_go.NodeList) *ResultTable {
 // Applications
 // ----
 
-func FromAppParameterList (result *grpc_public_api_go.AppParameterList) *ResultTable {
+func FromAppParameterList(result *grpc_public_api_go.AppParameterList) *ResultTable {
 	r := make([][]string, 0)
 	r = append(r, []string{"PARAM NAME", "DESCRIPTION", "PATH", "TYPE", "DEFAULT_VALUE", "B/A"})
-	for _, p := range result.Parameters{
-		r = append(r, []string{p.Name,p.Description, p.Path, p.Type, p.DefaultValue, p.Category})
+	for _, p := range result.Parameters {
+		r = append(r, []string{p.Name, p.Description, p.Path, p.Type, p.DefaultValue, p.Category})
 	}
 	return &ResultTable{r}
 }
 
-func FromInstanceParameterList (result *grpc_application_go.InstanceParameterList) *ResultTable {
+func FromInstanceParameterList(result *grpc_application_go.InstanceParameterList) *ResultTable {
 	r := make([][]string, 0)
 	r = append(r, []string{"PARAM NAME", "VALUE"})
-	for _, p := range result.Parameters{
+	for _, p := range result.Parameters {
 		r = append(r, []string{p.ParameterName, p.Value})
 	}
 	return &ResultTable{r}
@@ -218,7 +248,7 @@ func FromInstanceParameterList (result *grpc_application_go.InstanceParameterLis
 func FromAppInstanceList(result *grpc_public_api_go.AppInstanceList) *ResultTable {
 	r := make([][]string, 0)
 	r = append(r, []string{"NAME", "ID", "LABELS", "STATUS"})
-	for _, i := range result.Instances{
+	for _, i := range result.Instances {
 		r = append(r, []string{i.Name, i.AppInstanceId, TransformLabels(i.Labels), i.StatusName})
 	}
 	return &ResultTable{r}
@@ -229,19 +259,19 @@ func FromAppInstance(result *grpc_public_api_go.AppInstance) *ResultTable {
 	if result.StatusName == grpc_application_go.ApplicationStatus_DEPLOYMENT_ERROR.String() {
 		r = append(r, []string{"STATUS", "INFO"})
 		r = append(r, []string{result.StatusName, result.Info})
-	}else{
+	} else {
 		r = append(r, []string{"NAME", "REPLICAS", "STATUS", "ENDPOINTS"})
-		for _, g := range result.Groups{
+		for _, g := range result.Groups {
 			groupReplicas := "NA"
-			if g.Specs != nil{
+			if g.Specs != nil {
 				groupReplicas = strconv.Itoa(int(g.Specs.Replicas))
-				if g.Specs.MultiClusterReplica{
+				if g.Specs.MultiClusterReplica {
 					groupReplicas = "MULTI_CLUSTER"
 				}
 			}
 
-			r= append(r, []string{fmt.Sprintf("[Group] %s",g.Name),groupReplicas, g.StatusName, strings.Join(g.GlobalFqdn, ", ")})
-			for _, s:= range g.ServiceInstances{
+			r = append(r, []string{fmt.Sprintf("[Group] %s", g.Name), groupReplicas, g.StatusName, strings.Join(g.GlobalFqdn, ", ")})
+			for _, s := range g.ServiceInstances {
 				r = append(r, []string{s.Name, strconv.Itoa(int(s.Specs.Replicas)), s.StatusName, strings.Join(s.Endpoints, ", ")})
 			}
 		}
@@ -256,13 +286,12 @@ func FromDeploymentResponse(result *grpc_application_manager_go.DeploymentRespon
 	return &ResultTable{r}
 }
 
-
 func FromAppDescriptorList(result *grpc_application_go.AppDescriptorList) *ResultTable {
 	r := make([][]string, 0)
 	r = append(r, []string{"NAME", "ID", "LABELS", "SERVICES"})
-	for _, d := range result.Descriptors{
+	for _, d := range result.Descriptors {
 		numServices := 0
-		for _, g := range d.Groups{
+		for _, g := range d.Groups {
 			numServices = numServices + len(g.Services)
 		}
 		r = append(r, []string{d.Name, d.AppDescriptorId, TransformLabels(d.Labels), strconv.Itoa(numServices)})
@@ -285,14 +314,13 @@ func FromAppDescriptor(result *grpc_application_go.AppDescriptor) *ResultTable {
 		r = append(r, []string{"", "", ""})
 	}
 
-
 	r = append(r, []string{"NAME", "IMAGE", "LABELS"})
-		for _, g := range result.Groups{
-			r= append(r, []string{fmt.Sprintf("[Group] %s",g.Name), "===", TransformLabels(g.Labels)})
-			for _, s:= range g.Services{
-				r = append(r, []string{s.Name, s.Image, TransformLabels(s.Labels)})
-			}
+	for _, g := range result.Groups {
+		r = append(r, []string{fmt.Sprintf("[Group] %s", g.Name), "===", TransformLabels(g.Labels)})
+		for _, s := range g.Services {
+			r = append(r, []string{s.Name, s.Image, TransformLabels(s.Labels)})
 		}
+	}
 
 	return &ResultTable{r}
 }
@@ -301,36 +329,36 @@ func FromAppDescriptor(result *grpc_application_go.AppDescriptor) *ResultTable {
 // Devices
 // ----
 
-func FromDeviceGroup(result *grpc_device_manager_go.DeviceGroup) *ResultTable{
+func FromDeviceGroup(result *grpc_device_manager_go.DeviceGroup) *ResultTable {
 	r := make([][]string, 0)
 	r = append(r, []string{"ID", "NAME", "API_KEY", "ENABLED", "DEV_ENABLED"})
 	r = append(r, []string{result.DeviceGroupId, result.Name, result.DeviceGroupApiKey, strconv.FormatBool(result.Enabled), strconv.FormatBool(result.DefaultDeviceConnectivity)})
 	return &ResultTable{r}
 }
 
-func FromDeviceGroupList(result *grpc_device_manager_go.DeviceGroupList) *ResultTable{
+func FromDeviceGroupList(result *grpc_device_manager_go.DeviceGroupList) *ResultTable {
 	r := make([][]string, 0)
 	r = append(r, []string{"ID", "NAME", "API_KEY", "ENABLED", "DEV_ENABLED"})
 
-	for _, dg := range result.Groups{
+	for _, dg := range result.Groups {
 		r = append(r, []string{dg.DeviceGroupId, dg.Name, dg.DeviceGroupApiKey, strconv.FormatBool(dg.Enabled), strconv.FormatBool(dg.DefaultDeviceConnectivity)})
 	}
 
 	return &ResultTable{r}
 }
 
-func FromDevice(result *grpc_public_api_go.Device) *ResultTable{
+func FromDevice(result *grpc_public_api_go.Device) *ResultTable {
 	r := make([][]string, 0)
 	r = append(r, []string{"ID", "DATE", "STATUS", "LABELS", "ENABLED"})
 	r = append(r, []string{result.DeviceId, time.Unix(result.RegisterSince, 0).String(), result.DeviceStatusName, TransformLabels(result.Labels), strconv.FormatBool(result.Enabled)})
 	return &ResultTable{r}
 }
 
-func FromDeviceList(result *grpc_public_api_go.DeviceList) *ResultTable{
+func FromDeviceList(result *grpc_public_api_go.DeviceList) *ResultTable {
 	r := make([][]string, 0)
 	r = append(r, []string{"ID", "DATE", "STATUS", "LABELS", "ENABLED"})
 
-	for _, d := range result.Devices{
+	for _, d := range result.Devices {
 		r = append(r, []string{d.DeviceId, time.Unix(d.RegisterSince, 0).String(), d.DeviceStatusName, TransformLabels(d.Labels), strconv.FormatBool(d.Enabled)})
 	}
 
@@ -341,34 +369,33 @@ func FromDeviceList(result *grpc_public_api_go.DeviceList) *ResultTable{
 // Log
 // ----
 
-func FromLogResponse(result *grpc_unified_logging_go.LogResponse) *ResultTable{
+func FromLogResponse(result *grpc_unified_logging_go.LogResponse) *ResultTable {
 	r := make([][]string, 0)
 	r = append(r, []string{"TIMESTAMP", "MSG"})
 
-	for _, e := range result.Entries{
+	for _, e := range result.Entries {
 		r = append(r, []string{time.Unix(e.Timestamp.Seconds, int64(e.Timestamp.Nanos)).String(), e.Msg})
 	}
 
 	return &ResultTable{r}
 }
 
-
 // ----
 // Roles
 // ----
 
-func FromRole(result *grpc_public_api_go.Role) *ResultTable{
+func FromRole(result *grpc_public_api_go.Role) *ResultTable {
 	r := make([][]string, 0)
 	r = append(r, []string{"ID", "NAME", "PRIMITIVES"})
 	r = append(r, []string{result.RoleId, result.Name, strings.Join(result.Primitives, ",")})
 	return &ResultTable{r}
 }
 
-func FromRoleList(result *grpc_public_api_go.RoleList) *ResultTable{
+func FromRoleList(result *grpc_public_api_go.RoleList) *ResultTable {
 	r := make([][]string, 0)
 	r = append(r, []string{"ID", "NAME", "PRIMITIVES"})
 
-	for _, role := range result.Roles{
+	for _, role := range result.Roles {
 		r = append(r, []string{role.RoleId, role.Name, strings.Join(role.Primitives, ",")})
 	}
 
@@ -379,7 +406,7 @@ func FromRoleList(result *grpc_public_api_go.RoleList) *ResultTable{
 // EdgeController
 // ----
 
-func FromEICJoinToken(result *grpc_inventory_manager_go.EICJoinToken) * ResultTable{
+func FromEICJoinToken(result *grpc_inventory_manager_go.EICJoinToken) *ResultTable {
 	r := make([][]string, 0)
 	r = append(r, []string{"TOKEN", "EXPIRES"})
 	r = append(r, []string{result.Token, time.Unix(result.ExpiresOn, 0).String()})
@@ -389,7 +416,7 @@ func FromEICJoinToken(result *grpc_inventory_manager_go.EICJoinToken) * ResultTa
 // ----
 // Agent
 // -----
-func FromAgentJoinToken (result *grpc_inventory_manager_go.AgentJoinToken) * ResultTable {
+func FromAgentJoinToken(result *grpc_inventory_manager_go.AgentJoinToken) *ResultTable {
 	r := make([][]string, 0)
 	r = append(r, []string{"TOKEN", "EXPIRES"})
 	r = append(r, []string{result.Token, time.Unix(result.ExpiresOn, 0).String()})
@@ -400,17 +427,84 @@ func FromAgentJoinToken (result *grpc_inventory_manager_go.AgentJoinToken) * Res
 // Inventory
 // ----
 
-func FromInventoryList(result * grpc_public_api_go.InventoryList) * ResultTable{
+func FromInventoryList(result *grpc_public_api_go.InventoryList) *ResultTable {
 	r := make([][]string, 0)
 	r = append(r, []string{"TYPE", "ID", "LABELS", "STATUS"})
-	for _, device := range result.Devices{
+	for _, device := range result.Devices {
 		r = append(r, []string{"DEVICE", device.DeviceId, TransformLabels(device.Labels), device.DeviceStatusName})
 	}
-	for _, ec := range result.Controllers{
+	for _, ec := range result.Controllers {
 		r = append(r, []string{"EC", ec.EdgeControllerId, TransformLabels(ec.Labels), ec.StatusName})
 	}
-	for _, asset := range result.Assets{
+	for _, asset := range result.Assets {
 		r = append(r, []string{"ASSET", asset.AssetId, TransformLabels(asset.Labels), asset.StatusName})
+	}
+	return &ResultTable{r}
+}
+
+func FromAsset(result *grpc_public_api_go.Asset) *ResultTable {
+	r := make([][]string, 0)
+	r = append(r, []string{"ID", "CONTROLLER", "AGENT"})
+	r = append(r, []string{result.AssetId, result.EdgeControllerId, result.AgentId})
+	r = append(r, []string{""})
+	r = append(r, []string{"IP", "SEEN", "STATUS"})
+	r = append(r, []string{result.EicNetIp, time.Unix(result.LastAliveTimestamp, 0).String(), result.StatusName})
+	r = append(r, []string{""})
+	r = append(r, []string{"OS", "CPUS", "RAM", "STORAGE"})
+	os := "NA"
+	if result.Os != nil && len(result.Os.Name) > 0 {
+		os = result.Os.Name
+	}
+	cpus := "NA"
+	ram := "NA"
+	if result.Hardware != nil {
+		count := 0
+		for _, cpu := range result.Hardware.Cpus {
+			count = count + int(cpu.NumCores)
+		}
+		cpus = fmt.Sprintf("%d", count)
+		ram = fmt.Sprintf("%d", result.Hardware.InstalledRam)
+	}
+	storage := "NA"
+	if result.Storage != nil && len(result.Storage) > 0 {
+		var total int64 = 0
+		for _, storage := range result.Storage {
+			total = total + storage.TotalCapacity
+		}
+		storage = fmt.Sprintf("%d", total)
+	}
+	r = append(r, []string{os, cpus, ram, storage})
+
+	if result.LastOpSummary != nil {
+		r = append(r, []string{"LAST OP"})
+		r = append(r, []string{"OP_ID", "TIMESTAMP", "STATUS", "INFO"})
+		r = append(r, []string{result.LastOpSummary.OperationId, time.Unix(result.LastOpSummary.Timestamp, 0).String(), result.LastOpSummary.Status.String(), result.LastOpSummary.Info})
+	}
+
+	return &ResultTable{r}
+}
+
+func FromEdgeControllerExtendedInfo(result *grpc_public_api_go.EdgeControllerExtendedInfo) *ResultTable {
+	r := make([][]string, 0)
+
+	if result.Controller != nil {
+		r = append(r, []string{"NAME", "LABELS", "STATUS", "SEEN"})
+		seen := "never"
+		if result.Controller.LastAliveTimestamp != 0{
+			seen = time.Unix(result.Controller.LastAliveTimestamp, 0).String()
+		}
+		r = append(r, []string{result.Controller.Name, TransformLabels(result.Controller.Labels), result.Controller.StatusName, seen})
+	}
+	if len(result.ManagedAssets) > 0 {
+		r = append(r, []string{""})
+		r = append(r, []string{"ASSET_ID", "IP", "STATUS", "SEEN"})
+		for _, a := range result.ManagedAssets {
+			seen := "never"
+			if a.LastAliveTimestamp != 0{
+				seen = time.Unix(a.LastAliveTimestamp, 0).String()
+			}
+			r = append(r, []string{a.AssetId, a.EicNetIp, a.StatusName, seen})
+		}
 	}
 	return &ResultTable{r}
 }
