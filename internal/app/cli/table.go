@@ -488,12 +488,12 @@ func FromEdgeControllerExtendedInfo(result *grpc_public_api_go.EdgeControllerExt
 	r := make([][]string, 0)
 
 	if result.Controller != nil {
-		r = append(r, []string{"NAME", "LABELS", "STATUS", "SEEN"})
+		r = append(r, []string{"NAME", "LABELS", "STATUS", "SEEN", "LOCATION"})
 		seen := "never"
 		if result.Controller.LastAliveTimestamp != 0{
 			seen = time.Unix(result.Controller.LastAliveTimestamp, 0).String()
 		}
-		r = append(r, []string{result.Controller.Name, TransformLabels(result.Controller.Labels), result.Controller.StatusName, seen})
+		r = append(r, []string{result.Controller.Name, TransformLabels(result.Controller.Labels), result.Controller.StatusName, seen, result.Controller.Location})
 	}
 	if len(result.ManagedAssets) > 0 {
 		r = append(r, []string{""})
