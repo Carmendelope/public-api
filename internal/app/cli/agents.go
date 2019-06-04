@@ -75,6 +75,36 @@ func (a *Agent) CreateAgentJoinToken(organizationID string, edgeControllerID str
 	}
 }
 
+// ActivateAgentMonitoring send a message to activate or deactivate the monitoring of an agent
+func (a *Agent) ActivateAgentMonitoring(organizationID string, edgeControllerID string, assetID string, activate bool) {
+	if organizationID == "" {
+		log.Fatal().Msg("organizationID cannot be empty")
+	}
+	if edgeControllerID == "" {
+		log.Fatal().Msg("edgeControllerID cannot be empty")
+	}
+	if assetID == "" {
+		log.Fatal().Msg("assetID cannot be empty")
+	}
+
+	a.load()
+	ctx, cancel := a.GetContext()
+	client, conn := a.getClient()
+	defer conn.Close()
+	defer cancel()
+
+	request := &grpc_public_api_go.AssetMonitoringRequest{
+		OrganizationId: organizationID,
+		EdgeControllerId: edgeControllerID,
+		AssetId: assetID,
+		Activate: activate,
+	}
+
+	token, err := client.ActivateMonitoring(ctx, request)
+	a.PrintResultOrError(token, err, "cannot Activate Monitoring")
+
+}
+
 // writeJoinToken writes the EIC join token to a file so that it can be exported to the EIC.
 func (a *Agent) writeAgentJoinToken(token *grpc_inventory_manager_go.AgentJoinToken, outputPath string){
 	if outputPath == "" {
