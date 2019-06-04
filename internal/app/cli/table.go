@@ -25,6 +25,7 @@ const TabWidth = 2
 const Padding = 3
 
 const AppInstanceHeader = ""
+const DefaultLocation = "undefined"
 
 var Headers = map[string]string{}
 
@@ -429,12 +430,19 @@ func FromAgentJoinToken(result *grpc_inventory_manager_go.AgentJoinToken) *Resul
 
 func FromInventoryList(result *grpc_public_api_go.InventoryList) *ResultTable {
 	r := make([][]string, 0)
+	var location string
+
 	r = append(r, []string{"TYPE", "ID", "LOCATION", "LABELS", "STATUS"})
 	for _, device := range result.Devices {
 		r = append(r, []string{"DEVICE", device.DeviceId, "", TransformLabels(device.Labels), device.DeviceStatusName})
 	}
 	for _, ec := range result.Controllers {
-		r = append(r, []string{"EC", ec.EdgeControllerId, ec.Location, TransformLabels(ec.Labels), ec.StatusName})
+		if ec.Location == "" {
+			location = DefaultLocation
+		}else{
+			location = ec.Location
+		}
+		r = append(r, []string{"EC", ec.EdgeControllerId, location, TransformLabels(ec.Labels), ec.StatusName})
 	}
 	for _, asset := range result.Assets {
 		r = append(r, []string{"ASSET", asset.AssetId, "", TransformLabels(asset.Labels), asset.StatusName})
@@ -487,13 +495,20 @@ func FromAsset(result *grpc_public_api_go.Asset) *ResultTable {
 func FromEdgeControllerExtendedInfo(result *grpc_public_api_go.EdgeControllerExtendedInfo) *ResultTable {
 	r := make([][]string, 0)
 
+	var location string
+
 	if result.Controller != nil {
 		r = append(r, []string{"NAME", "LABELS","LOCATION",  "STATUS", "SEEN"})
 		seen := "never"
 		if result.Controller.LastAliveTimestamp != 0{
 			seen = time.Unix(result.Controller.LastAliveTimestamp, 0).String()
 		}
-		r = append(r, []string{result.Controller.Name, TransformLabels(result.Controller.Labels),result.Controller.Location, result.Controller.StatusName, seen})
+		if result.Controller.Location != "" {
+			location = result.Controller.Location
+		}else{
+			location = DefaultLocation
+		}
+		r = append(r, []string{result.Controller.Name, TransformLabels(result.Controller.Labels),location, result.Controller.StatusName, seen})
 	}
 	if len(result.ManagedAssets) > 0 {
 		r = append(r, []string{""})
