@@ -9,6 +9,7 @@ import (
 	"github.com/nalej/derrors"
 	"github.com/nalej/grpc-inventory-go"
 	"github.com/nalej/grpc-inventory-manager-go"
+	"github.com/nalej/grpc-public-api-go"
 	"github.com/nalej/grpc-utils/pkg/conversions"
 	"github.com/nalej/public-api/internal/pkg/authhelper"
 	"github.com/nalej/public-api/internal/pkg/entities"
@@ -38,4 +39,19 @@ func (h *Handler) CreateAgentJoinToken(ctx context.Context, edgeController *grpc
 		return nil, conversions.ToGRPCError(err)
 	}
 	return h.Manager.CreateAgentJoinToken(edgeController)
+}
+
+func (h *Handler) ActivateMonitoring(ctx context.Context, assetRequest *grpc_public_api_go.AssetMonitoringRequest) (*grpc_inventory_manager_go.AgentOpResponse, error) {
+	rm, err := authhelper.GetRequestMetadata(ctx)
+	if err != nil {
+		return nil, conversions.ToGRPCError(err)
+	}
+	if assetRequest.OrganizationId != rm.OrganizationID {
+		return nil, derrors.NewPermissionDeniedError("cannot access requested OrganizationID")
+	}
+	err = entities.ValidAssetMonitoringRequest(assetRequest)
+	if err != nil {
+		return nil, conversions.ToGRPCError(err)
+	}
+	return h.Manager.ActivateMonitoring(assetRequest)
 }

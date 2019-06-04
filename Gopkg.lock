@@ -107,12 +107,12 @@
   version = "v2.0.0"
 
 [[projects]]
-  digest = "1:b63b5df4e64b3e0c86514f920cd8fc0c998c56200eb3c96999cdb3c4b18f3a74"
+  digest = "1:cebdbc8a34ba6700723a70ad63f88106327a9ab8d0ca1bec09d40bb082c77b72"
   name = "github.com/nalej/grpc-application-go"
   packages = ["."]
   pruneopts = ""
-  revision = "e4e7fe13bccf4a4be1b9e69ca9b872a89f603529"
-  version = "v0.0.81"
+  revision = "9ee29ce7e7d5062d781b828894c9a4dcef308c38"
+  version = "v0.0.82"
 
 [[projects]]
   digest = "1:c3635c1d028156d5fc4d2417fd13285df14f03d49bc5b82a8104d2895ba749db"
@@ -251,12 +251,12 @@
   version = "v0.0.29"
 
 [[projects]]
-  digest = "1:d3e20711ecf574562f40e3c785f142eb69f4cd29f67d9af2c8812104de5ea59e"
+  digest = "1:66d7a81ca9f54304e56429e659f2724a7dae311d50241c500c9e68425f38ee33"
   name = "github.com/nalej/grpc-public-api-go"
   packages = ["."]
   pruneopts = ""
-  revision = "efdf45ab0d7f0af47c715097ce41e6025408b256"
-  version = "v0.0.73"
+  revision = "7c3cb5f99845636b29ae48620854788ae6fdca6d"
+  version = "v0.0.74"
 
 [[projects]]
   digest = "1:be9b75e8734511623a81a66b4e5d578ebd3b71562429950ea3784e6200d018e8"
@@ -367,6 +367,14 @@
   pruneopts = ""
   revision = "534765aa6277d702a0aaf99c986492dda697d48f"
   version = "v1.2.4"
+
+[[projects]]
+  digest = "1:7f569d906bdd20d906b606415b7d794f798f91a62fcfb6a4daa6d50690fb7a3f"
+  name = "github.com/satori/go.uuid"
+  packages = ["."]
+  pruneopts = ""
+  revision = "f58768cc1a7a7e77a3bd49e98cdd21419399b6a3"
+  version = "v1.2.0"
 
 [[projects]]
   digest = "1:78715f4ed019d19795e67eed1dc63f525461d925616b1ed02b72582c01362440"
@@ -568,6 +576,7 @@
     "github.com/rs/zerolog",
     "github.com/rs/zerolog/log",
     "github.com/santhosh-tekuri/jsonschema",
+    "github.com/satori/go.uuid",
     "github.com/spf13/cobra",
     "golang.org/x/net/context",
     "google.golang.org/grpc",
