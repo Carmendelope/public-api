@@ -64,3 +64,6 @@ var watch bool
 
 var outputPath string
 var edgeControllerID string
+var assetID string
+var activate bool
+
