@@ -54,7 +54,6 @@ func (m *Manager) ActivateMonitoring(assetRequest *grpc_public_api_go.AssetMonit
 		OperationId: uuid.NewV4().String(),
 		Operation: MonitoringOP,
 		Plugin: pluging,
-		//Params  map[string]string,
 	})
 
 }
