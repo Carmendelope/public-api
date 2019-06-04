@@ -429,15 +429,16 @@ func FromAgentJoinToken(result *grpc_inventory_manager_go.AgentJoinToken) *Resul
 
 func FromInventoryList(result *grpc_public_api_go.InventoryList) *ResultTable {
 	r := make([][]string, 0)
-	r = append(r, []string{"TYPE", "ID", "LABELS", "STATUS"})
+
+	r = append(r, []string{"TYPE", "ID", "LOCATION", "LABELS", "STATUS"})
 	for _, device := range result.Devices {
-		r = append(r, []string{"DEVICE", device.DeviceId, TransformLabels(device.Labels), device.DeviceStatusName})
+		r = append(r, []string{"DEVICE", device.DeviceId, "", TransformLabels(device.Labels), device.DeviceStatusName})
 	}
 	for _, ec := range result.Controllers {
-		r = append(r, []string{"EC", ec.EdgeControllerId, TransformLabels(ec.Labels), ec.StatusName})
+		r = append(r, []string{"EC", ec.EdgeControllerId, ec.Location, TransformLabels(ec.Labels), ec.StatusName})
 	}
 	for _, asset := range result.Assets {
-		r = append(r, []string{"ASSET", asset.AssetId, TransformLabels(asset.Labels), asset.StatusName})
+		r = append(r, []string{"ASSET", asset.AssetId, "", TransformLabels(asset.Labels), asset.StatusName})
 	}
 	return &ResultTable{r}
 }
@@ -486,14 +487,14 @@ func FromAsset(result *grpc_public_api_go.Asset) *ResultTable {
 
 func FromEdgeControllerExtendedInfo(result *grpc_public_api_go.EdgeControllerExtendedInfo) *ResultTable {
 	r := make([][]string, 0)
-
+	
 	if result.Controller != nil {
-		r = append(r, []string{"NAME", "LABELS", "STATUS", "SEEN"})
+		r = append(r, []string{"NAME", "LABELS","LOCATION",  "STATUS", "SEEN"})
 		seen := "never"
 		if result.Controller.LastAliveTimestamp != 0{
 			seen = time.Unix(result.Controller.LastAliveTimestamp, 0).String()
 		}
-		r = append(r, []string{result.Controller.Name, TransformLabels(result.Controller.Labels), result.Controller.StatusName, seen})
+		r = append(r, []string{result.Controller.Name, TransformLabels(result.Controller.Labels),result.Controller.Location, result.Controller.StatusName, seen})
 	}
 	if len(result.ManagedAssets) > 0 {
 		r = append(r, []string{""})

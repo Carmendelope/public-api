@@ -44,11 +44,11 @@
 
 [[constraint]]
     name="github.com/nalej/grpc-inventory-manager-go"
-    version="=v0.0.28"
+    version="=v0.0.29"
 
 [[constraint]]
     name="github.com/nalej/grpc-inventory-go"
-    version="=v0.0.13"
+    version="=v0.0.14"
 
 [[constraint]]
     name="github.com/nalej/grpc-application-go"
@@ -56,7 +56,7 @@
 
 [[constraint]]
     name="github.com/nalej/grpc-authx-go"
-    version="=v0.0.49"
+    version="=v0.0.50"
 
 [[constraint]]
     name="github.com/nalej/authx"
@@ -76,7 +76,7 @@
 
 [[constraint]]
     name="github.com/nalej/grpc-public-api-go"
-    version="=v0.0.72"
+    version="=v0.0.73"
 
 [[constraint]]
     name="github.com/nalej/grpc-login-api-go"

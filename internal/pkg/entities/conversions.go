@@ -350,6 +350,7 @@ func ToPublicAPIController(controller *grpc_inventory_manager_go.EdgeController)
 		LastAliveTimestamp:   controller.LastAliveTimestamp,
 		Status:               controller.Status,
 		StatusName:           controller.Status.String(),
+		Location:             controller.Location,
 	}
 }
 
