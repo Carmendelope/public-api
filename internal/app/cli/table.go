@@ -92,6 +92,8 @@ func AsTable(result interface{}) *ResultTable {
 		return FromEdgeControllerExtendedInfo(result.(*grpc_public_api_go.EdgeControllerExtendedInfo))
 	case *grpc_public_api_go.Asset:
 		return FromAsset(result.(*grpc_public_api_go.Asset))
+	case *grpc_public_api_go.AgentOpResponse:
+		return FromAgentOpResponse(result.(*grpc_public_api_go.AgentOpResponse))
 	case *grpc_common_go.Success:
 		return FromSuccess(result.(*grpc_common_go.Success))
 	default:
@@ -488,6 +490,13 @@ func FromAsset(result *grpc_public_api_go.Asset) *ResultTable {
 		r = append(r, []string{result.LastOpSummary.OperationId, time.Unix(result.LastOpSummary.Timestamp, 0).String(), result.LastOpSummary.Status.String(), result.LastOpSummary.Info})
 	}
 
+	return &ResultTable{r}
+}
+
+func FromAgentOpResponse(result *grpc_public_api_go.AgentOpResponse) *ResultTable {
+	r := make([][]string, 0)
+	r = append(r, []string{"OPERATION_ID", "TIMESTAMP", "STATUS", "INFO"})
+	r = append(r, []string{result.OperationId, time.Unix(result.Timestamp, 0).String(), result.Status, result.Info})
 	return &ResultTable{r}
 }
 

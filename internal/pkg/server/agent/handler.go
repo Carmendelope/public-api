@@ -41,7 +41,7 @@ func (h *Handler) CreateAgentJoinToken(ctx context.Context, edgeController *grpc
 	return h.Manager.CreateAgentJoinToken(edgeController)
 }
 
-func (h *Handler) ActivateMonitoring(ctx context.Context, assetRequest *grpc_public_api_go.AssetMonitoringRequest) (*grpc_inventory_manager_go.AgentOpResponse, error) {
+func (h *Handler) ActivateMonitoring(ctx context.Context, assetRequest *grpc_public_api_go.AssetMonitoringRequest) (*grpc_public_api_go.AgentOpResponse, error) {
 	rm, err := authhelper.GetRequestMetadata(ctx)
 	if err != nil {
 		return nil, conversions.ToGRPCError(err)
