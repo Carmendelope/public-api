@@ -435,7 +435,13 @@ func FromInventoryList(result *grpc_public_api_go.InventoryList) *ResultTable {
 		r = append(r, []string{"DEVICE", device.DeviceId, "", TransformLabels(device.Labels), device.DeviceStatusName})
 	}
 	for _, ec := range result.Controllers {
-		r = append(r, []string{"EC", ec.EdgeControllerId, ec.Location, TransformLabels(ec.Labels), ec.StatusName})
+
+		geolocation := ""
+		if ec.Location != nil {
+			geolocation = ec.Location.Geolocation
+		}
+
+		r = append(r, []string{"EC", ec.EdgeControllerId, geolocation, TransformLabels(ec.Labels), ec.StatusName})
 	}
 	for _, asset := range result.Assets {
 		r = append(r, []string{"ASSET", asset.AssetId, "", TransformLabels(asset.Labels), asset.StatusName})
@@ -487,6 +493,10 @@ func FromAsset(result *grpc_public_api_go.Asset) *ResultTable {
 
 func FromEdgeControllerExtendedInfo(result *grpc_public_api_go.EdgeControllerExtendedInfo) *ResultTable {
 	r := make([][]string, 0)
+	geolocation := ""
+	if result.Controller != nil {
+		geolocation = result.Controller.Location.Geolocation
+	}
 	
 	if result.Controller != nil {
 		r = append(r, []string{"NAME", "LABELS","LOCATION",  "STATUS", "SEEN"})
@@ -494,7 +504,7 @@ func FromEdgeControllerExtendedInfo(result *grpc_public_api_go.EdgeControllerExt
 		if result.Controller.LastAliveTimestamp != 0{
 			seen = time.Unix(result.Controller.LastAliveTimestamp, 0).String()
 		}
-		r = append(r, []string{result.Controller.Name, TransformLabels(result.Controller.Labels),result.Controller.Location, result.Controller.StatusName, seen})
+		r = append(r, []string{result.Controller.Name, TransformLabels(result.Controller.Labels),geolocation, result.Controller.StatusName, seen})
 	}
 	if len(result.ManagedAssets) > 0 {
 		r = append(r, []string{""})

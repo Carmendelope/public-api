@@ -15,6 +15,7 @@ import (
 	"github.com/nalej/grpc-infrastructure-go"
 	"github.com/nalej/grpc-infrastructure-monitor-go"
 	"github.com/nalej/grpc-inventory-go"
+	"github.com/nalej/grpc-inventory-manager-go"
 	"github.com/nalej/grpc-organization-go"
 	"github.com/nalej/grpc-public-api-go"
 	"github.com/nalej/grpc-unified-logging-go"
@@ -446,5 +447,16 @@ func ValidAssetMonitoringRequest (request *grpc_public_api_go.AssetMonitoringReq
 	if request.AssetId == "" {
 		return derrors.NewInvalidArgumentError(emptyAssetId)
 	}
+	return nil
+}
+
+func ValidUpdateGeolocationRequest (request *grpc_inventory_manager_go.UpdateGeolocationRequest) derrors.Error {
+	if request.OrganizationId == "" {
+		return derrors.NewInvalidArgumentError(emptyOrganizationId)
+	}
+	if request.EdgeControllerId == "" {
+		return derrors.NewInvalidArgumentError(emptyEdgeControllerId)
+	}
+
 	return nil
 }

@@ -56,4 +56,21 @@ func (h*Handler) UnlinkEIC(ctx context.Context, edgeControllerID *grpc_inventory
 	return h.Manager.UnlinkEIC(edgeControllerID)
 }
 
+func (h *Handler) UpdateGeolocation(ctx context.Context, updateRequest *grpc_inventory_manager_go.UpdateGeolocationRequest) (*grpc_inventory_go.EdgeController, error){
+
+	rm, err := authhelper.GetRequestMetadata(ctx)
+	if err != nil {
+		return nil, conversions.ToGRPCError(err)
+	}
+	if updateRequest.OrganizationId != rm.OrganizationID {
+		return nil, derrors.NewPermissionDeniedError("cannot access requested OrganizationID")
+	}
+	err = entities.ValidUpdateGeolocationRequest(updateRequest)
+	if err != nil {
+		return nil, conversions.ToGRPCError(err)
+	}
+	return h.Manager.UpdateGeolocation(updateRequest)
+
+}
+
 

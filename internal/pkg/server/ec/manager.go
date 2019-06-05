@@ -35,3 +35,9 @@ func (m *Manager) UnlinkEIC(edgeControllerID *grpc_inventory_go.EdgeControllerId
 	defer cancel()
 	return m.eicClient.UnlinkEIC(ctx, edgeControllerID)
 }
+
+func (m *Manager) UpdateGeolocation(updateRequest *grpc_inventory_manager_go.UpdateGeolocationRequest) (*grpc_inventory_go.EdgeController, error){
+	ctx, cancel := common.GetContext()
+	defer cancel()
+	return m.eicClient.UpdateECGeolocation(ctx, updateRequest)
+}
