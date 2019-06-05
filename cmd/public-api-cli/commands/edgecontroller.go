@@ -26,7 +26,13 @@ func init() {
 	edgeControllerCmd.AddCommand(createJoinTokenECCmd)
 	createJoinTokenECCmd.Flags().StringVar(&outputPath, "outputPath", "", "Path to store the resulting token")
 
+	// Unlink
 	edgeControllerCmd.AddCommand(unlinkECCmd)
+
+	// Geolocation Update
+	updateGeoCmd.Flags().StringVar(&geolocation, "geolocation", "", "Edge Controller geolocation")
+	edgeControllerCmd.AddCommand(updateGeoCmd)
+
 }
 
 var createJoinTokenECCmd = &cobra.Command{
@@ -60,5 +66,24 @@ var unlinkECCmd = &cobra.Command{
 			edgeControllerID = args[0]
 		}
 		ec.Unlink(options.Resolve("organizationID", organizationID), edgeControllerID)
+	},
+}
+
+var updateGeoCmd = &cobra.Command{
+	Use:   "location-update [edgeControllerID]",
+	Short: "update edge-controller location",
+	Long:  `update edge-controller location`,
+	Args: cobra.ExactArgs(1),
+	Run: func(cmd *cobra.Command, args []string) {
+		SetupLogging()
+		ec := cli.NewEdgeController(
+			options.Resolve("nalejAddress", nalejAddress),
+			options.ResolveAsInt("port", nalejPort),
+			insecure, useTLS,
+			options.Resolve("cacert", caCertPath), options.Resolve("output", output))
+		if len(args) > 0{
+			edgeControllerID = args[0]
+		}
+		ec.UpdateGeolocation(options.Resolve("organizationID", organizationID), edgeControllerID, geolocation )
 	},
 }

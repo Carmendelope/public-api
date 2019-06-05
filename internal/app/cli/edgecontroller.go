@@ -7,6 +7,7 @@ package cli
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/nalej/grpc-common-go"
 	"github.com/nalej/grpc-inventory-go"
 	"github.com/nalej/grpc-inventory-manager-go"
 	"github.com/nalej/grpc-organization-go"
@@ -114,4 +115,27 @@ func (ec * EdgeController) Unlink(organizationID string, edgeControllerID string
 	success, err := client.UnlinkEIC(ctx, edgeID)
 	ec.PrintResultOrError(success, err, "cannot unlink edge controller")
 
+}
+
+func (ec *EdgeController) UpdateGeolocation (organizationID string, edgeControllerID string, geolocation string) {
+	if organizationID == "" {
+		log.Fatal().Msg("organizationID cannot be empty")
+	}
+	if edgeControllerID == "" {
+		log.Fatal().Msg("edgeControllerID cannot be empty")
+	}
+	ec.load()
+	ctx, cancel := ec.GetContext()
+	client, conn := ec.getClient()
+	defer conn.Close()
+	defer cancel()
+
+	updateRequest := &grpc_inventory_manager_go.UpdateGeolocationRequest{
+		OrganizationId: organizationID,
+		EdgeControllerId: edgeControllerID,
+		Geolocation: geolocation,
+	}
+
+	_, err := client.UpdateGeolocation(ctx, updateRequest)
+	ec.PrintResultOrError(&grpc_common_go.Success{}, err, "cannot update geolocation")
 }
