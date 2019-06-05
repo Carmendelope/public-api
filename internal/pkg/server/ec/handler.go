@@ -56,4 +56,8 @@ func (h*Handler) UnlinkEIC(ctx context.Context, edgeControllerID *grpc_inventory
 	return h.Manager.UnlinkEIC(edgeControllerID)
 }
 
+func (h *Handler) UpdateGeolocation(ctx context.Context, in *grpc_inventory_manager_go.UpdateGeolocationRequest) (*grpc_inventory_go.EdgeController, error){
+	return nil, conversions.ToGRPCError(derrors.NewUnimplementedError("not implemented yet"))
+}
+
 
