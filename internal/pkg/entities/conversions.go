@@ -364,3 +364,19 @@ func ToPublicAPIControllerArray(controllers []*grpc_inventory_manager_go.EdgeCon
 	}
 	return result
 }
+
+func ToPublicAPIAgentOpRequest(response *grpc_inventory_manager_go.AgentOpResponse) *grpc_public_api_go.AgentOpResponse {
+	if response == nil {
+		return nil
+	}
+
+	return &grpc_public_api_go.AgentOpResponse{
+		OrganizationId: response.OperationId,
+		EdgeControllerId: response.EdgeControllerId,
+		AssetId: response.AssetId,
+		OperationId:response.OperationId,
+		Timestamp: response.Timestamp,
+		Status: response.Status.String(),
+		Info: response.Info,
+	}
+}
