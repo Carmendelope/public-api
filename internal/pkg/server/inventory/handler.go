@@ -69,3 +69,7 @@ func (h *Handler) GetAssetInfo(ctx context.Context, assetID *grpc_inventory_go.A
 	}
 	return h.Manager.GetAssetInfo(assetID)
 }
+
+func (h *Handler) 	UpdateAsset(ctx context.Context, in *grpc_inventory_go.UpdateAssetRequest) (*grpc_inventory_go.Asset, error){
+	return nil, conversions.ToGRPCError(derrors.NewUnimplementedError("not implemented yet"))
+}
