@@ -125,3 +125,27 @@ func (a *Agent) writeAgentJoinToken(token *grpc_inventory_manager_go.AgentJoinTo
 	}
 	fmt.Printf("\nAgent Token file: %s\n", outputFilePath)
 }
+
+func (a *Agent) UninstallAgent(organizationID string, assetID string) {
+	if organizationID == "" {
+		log.Fatal().Msg("organizationID cannot be empty")
+	}
+
+	if assetID == "" {
+		log.Fatal().Msg("assetID cannot be empty")
+	}
+
+	a.load()
+	ctx, cancel := a.GetContext()
+	client, conn := a.getClient()
+	defer conn.Close()
+	defer cancel()
+
+	request := &grpc_inventory_go.AssetId{
+		OrganizationId: organizationID,
+		AssetId: assetID,
+	}
+
+	token, err := client.UninstallAgent(ctx, request)
+	a.PrintResultOrError(token, err, "cannot uninstall agent")
+}

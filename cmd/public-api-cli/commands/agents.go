@@ -31,6 +31,9 @@ func init() {
 	activateAgentMontoringCmd.Flags().BoolVar(&activate, "activate", true, "Activate/Deactivate monitoring")
 	agentCmd.AddCommand(activateAgentMontoringCmd)
 
+	// UninstallAgentCmd
+	agentCmd.AddCommand(uninstallAgentCmd)
+
 }
 
 var createAgentJoinTokenCmd = &cobra.Command{
@@ -72,5 +75,21 @@ var activateAgentMontoringCmd = &cobra.Command{
 			agent.ActivateAgentMonitoring(options.Resolve("organizationID", organizationID),
 				targetValues[0], targetValues[1], activate)
 		}
+	},
+}
+
+var uninstallAgentCmd = &cobra.Command{
+	Use:   "uninstall [assetID]",
+	Short: "Uninstall agent",
+	Long:  `Uninstall agent from edge-controller`,
+	Args: cobra.ExactArgs(1),
+	Run: func(cmd *cobra.Command, args []string) {
+		SetupLogging()
+		agent := cli.NewAgent(
+		options.Resolve("nalejAddress", nalejAddress),
+		options.ResolveAsInt("port", nalejPort),
+		insecure, useTLS,
+		options.Resolve("cacert", caCertPath), options.Resolve("output", output))
+		agent.UninstallAgent(options.Resolve("organizationID", organizationID),args[0])
 	},
 }

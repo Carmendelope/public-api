@@ -5,6 +5,7 @@
 package agent
 
 import (
+	"github.com/nalej/grpc-common-go"
 	"github.com/nalej/grpc-inventory-go"
 	"github.com/nalej/grpc-inventory-manager-go"
 	"github.com/nalej/grpc-public-api-go"
@@ -62,4 +63,11 @@ func (m *Manager) ActivateMonitoring(assetRequest *grpc_public_api_go.AssetMonit
 
 	return entities.ToPublicAPIAgentOpRequest(reponse), nil
 
+}
+
+func (m *Manager)UninstallAgent(assetId *grpc_inventory_go.AssetId) (*grpc_common_go.Success, error) {
+	ctx, cancel := common.GetContext()
+	defer cancel()
+
+	return m.agentClient.UninstallAgent(ctx, assetId)
 }
