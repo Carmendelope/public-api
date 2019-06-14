@@ -171,12 +171,12 @@
   version = "v0.0.35"
 
 [[projects]]
-  digest = "1:c791d2da114389967d62c35fc298182fba94a24021c7a0df40b1f91e576b55d4"
+  digest = "1:a9a684146ed9e13d06e6119a658021e807b7113f2f09e345ebd3c3b173899af1"
   name = "github.com/nalej/grpc-device-manager-go"
   packages = ["."]
   pruneopts = ""
-  revision = "f38aaa199f155566b27d097c6410d62b9a9d1d4a"
-  version = "v0.0.9"
+  revision = "3ef3775609a712e197ee86ed1fbb9361e2e368e9"
+  version = "v0.0.12"
 
 [[projects]]
   digest = "1:45793a945f1c3fadb8ac997ce0056a790fe626c221792f849ca71b86aa1a96f2"
@@ -211,20 +211,20 @@
   version = "v0.0.33"
 
 [[projects]]
-  digest = "1:25a92d36bf8aed1e09f992e81f11c7dec7b64932b16736dcde6a584707bf6ad2"
+  digest = "1:61d2269fd39abae3e1cf948646d17d958cf50a15a102b00ce8ba3aecd8c6dc1b"
   name = "github.com/nalej/grpc-inventory-go"
   packages = ["."]
   pruneopts = ""
-  revision = "b5d5fb2cfc5489586b269ef8a360eea563d3ab7e"
-  version = "v0.0.18"
+  revision = "8adea884d8bb238f76c6248a73d3c84829bd9784"
+  version = "v0.0.21"
 
 [[projects]]
-  digest = "1:587ea644b81bcb8df2acb8e28f807a7d1a98655b0e11e8d556283a0fb6e4ecbd"
+  digest = "1:34eaf97c612fce6b5fe431995b4e1f952fc13eea651b38711d7aa5e1cb5204b4"
   name = "github.com/nalej/grpc-inventory-manager-go"
   packages = ["."]
   pruneopts = ""
-  revision = "bdb67e2a7bdc952a868de3b88ab8a0cd389f0b09"
-  version = "v0.0.33"
+  revision = "b62fa2888b60bf351223f6a025bec7d6df4e4064"
+  version = "v0.0.37"
 
 [[projects]]
   digest = "1:01e194c59e474b1f240f44b629f044abbc194e4aed769a52f0644efa2251fcb3"
@@ -251,12 +251,12 @@
   version = "v0.0.29"
 
 [[projects]]
-  digest = "1:3d2c26783f64bdc3354c2cca7dc0a80967b7b582830b2d27285dbb31f2f3fc19"
+  digest = "1:c9f9104fb046aecb6001fd0869871841b62ce5f07ff4fa3403b7a3d6c83548de"
   name = "github.com/nalej/grpc-public-api-go"
   packages = ["."]
   pruneopts = ""
-  revision = "ccaa17cbc240152b9f2f71f0f8666c4b14b24c91"
-  version = "v0.0.80"
+  revision = "2e80534d546194aec1a14b923af1cd8a082eaf49"
+  version = "v0.0.81"
 
 [[projects]]
   digest = "1:be9b75e8734511623a81a66b4e5d578ebd3b71562429950ea3784e6200d018e8"
