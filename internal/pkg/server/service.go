@@ -22,6 +22,7 @@ import (
 	"github.com/nalej/public-api/internal/pkg/server/devices"
 	"github.com/nalej/public-api/internal/pkg/server/ec"
 	"github.com/nalej/public-api/internal/pkg/server/inventory"
+	"github.com/nalej/public-api/internal/pkg/server/monitoring"
 	"github.com/nalej/public-api/internal/pkg/server/nodes"
 	"github.com/nalej/public-api/internal/pkg/server/organizations"
 	"github.com/nalej/public-api/internal/pkg/server/resources"
@@ -59,6 +60,7 @@ type Clients struct {
 	imClient    grpc_infrastructure_monitor_go.CoordinatorClient
 	eicClient grpc_inventory_manager_go.EICClient
 	invClient grpc_inventory_manager_go.InventoryClient
+	invmClient grpc_inventory_manager_go.InventoryMonitoringClient
 	agentClient grpc_inventory_manager_go.AgentClient
 }
 
@@ -107,9 +109,10 @@ func (s *Service) GetClients() (*Clients, derrors.Error) {
 	imClient := grpc_infrastructure_monitor_go.NewCoordinatorClient(imConn)
 	eicClient := grpc_inventory_manager_go.NewEICClient(invManagerConn)
 	invClient := grpc_inventory_manager_go.NewInventoryClient(invManagerConn)
+	invmClient := grpc_inventory_manager_go.NewInventoryMonitoringClient(invManagerConn)
 	agentClient := grpc_inventory_manager_go.NewAgentClient(invManagerConn)
 
-	return &Clients{oClient, cClient, nClient, infraClient, umClient, appClient, deviceClient, ulClient, imClient, eicClient, invClient, agentClient}, nil
+	return &Clients{oClient, cClient, nClient, infraClient, umClient, appClient, deviceClient, ulClient, imClient, eicClient, invClient, invmClient, agentClient}, nil
 }
 
 // Run the service, launch the REST service handler.
@@ -193,6 +196,9 @@ func (s *Service) LaunchHTTP() error {
 	if err := grpc_public_api_go.RegisterInventoryHandlerFromEndpoint(context.Background(), mux, clientAddr, opts); err != nil {
 		log.Fatal().Err(err).Msg("failed to start inventory handler")
 	}
+	if err := grpc_public_api_go.RegisterInventoryMonitoringHandlerFromEndpoint(context.Background(), mux, clientAddr, opts); err != nil {
+		log.Fatal().Err(err).Msg("failed to start inventory monitoring handler")
+	}
 	if err := grpc_public_api_go.RegisterAgentHandlerFromEndpoint(context.Background(), mux, clientAddr, opts); err != nil {
 		log.Fatal().Err(err).Msg("failed to start agent handler")
 	}
@@ -250,6 +256,9 @@ func (s *Service) LaunchGRPC(authConfig *interceptor.AuthorizationConfig) error 
 	invManager := inventory.NewManager(clients.invClient)
 	invHandler := inventory.NewHandler(invManager)
 
+	invmManager := monitoring.NewManager(clients.invmClient)
+	invmHandler := monitoring.NewHandler(invmManager)
+
 	agentManager := agent.NewManager(clients.agentClient)
 	agentHandler := agent.NewHandler(agentManager)
 
@@ -266,6 +275,7 @@ func (s *Service) LaunchGRPC(authConfig *interceptor.AuthorizationConfig) error 
 	grpc_public_api_go.RegisterUnifiedLoggingServer(grpcServer, ulHandler)
 	grpc_public_api_go.RegisterEdgeControllersServer(grpcServer, ecHandler)
 	grpc_public_api_go.RegisterInventoryServer(grpcServer, invHandler)
+	grpc_public_api_go.RegisterInventoryMonitoringServer(grpcServer, invmHandler)
 	grpc_public_api_go.RegisterAgentServer(grpcServer, agentHandler)
 
 	if s.Configuration.Debug{
