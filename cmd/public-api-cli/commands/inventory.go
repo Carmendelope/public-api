@@ -20,14 +20,45 @@ var inventoryCmd = &cobra.Command{
 	},
 }
 
+var (
+	queryAssetSelector = &cli.AssetSelector{}
+	queryTimeRange = &cli.TimeRange{}
+	queryMetrics = []string{}
+	queryAggr = ""
+	listAssetSelector = &cli.AssetSelector{}
+)
+
+func addAssetSelector(cmd *cobra.Command, selector *cli.AssetSelector) {
+	cmd.Flags().StringVar(&selector.EdgeControllerId, "edgeControllerId", "", "Select assets for this Edge Controller")
+	cmd.Flags().StringSliceVar(&selector.AssetIds, "assetId", []string{}, "Select one or multiple assets")
+	cmd.Flags().StringSliceVar(&selector.GroupIds, "groupId", []string{}, "Select assets in one or multiple groups")
+	cmd.Flags().StringToStringVar(&selector.Labels, "label", map[string]string{}, "Select assets with the intersection of a set of labels")
+}
+
+func addTimeRange(cmd *cobra.Command, timeRange *cli.TimeRange) {
+	cmd.Flags().StringVar(&timeRange.Timestamp, "timestamp", "", "Timestamp for point query")
+	cmd.Flags().StringVar(&timeRange.Start, "start", "", "Start time for range query")
+	cmd.Flags().StringVar(&timeRange.End, "end", "", "End time for range query")
+	cmd.Flags().DurationVar(&timeRange.Resolution, "resolution", 0, "Range interval resolution - 0 to aggregate to single value")
+}
+
 func init() {
 	rootCmd.AddCommand(inventoryCmd)
 	inventoryCmd.AddCommand(inventoryListCmd)
 	inventoryCmd.AddCommand(invControllerCommand)
 	inventoryCmd.AddCommand(invAssetCommand)
+	inventoryCmd.AddCommand(invMonitoringCmd)
 
 	invControllerCommand.AddCommand(invControllerExtInfoCmd)
 	invAssetCommand.AddCommand(invAssetInfoCmd)
+	invMonitoringCmd.AddCommand(invMonitoringListCmd)
+
+	addAssetSelector(invMonitoringCmd, queryAssetSelector)
+	addAssetSelector(invMonitoringListCmd, listAssetSelector)
+	addTimeRange(invMonitoringCmd, queryTimeRange)
+
+	invMonitoringCmd.Flags().StringSliceVar(&queryMetrics, "metric", []string{}, "Metrics to query; all if empty")
+	invMonitoringCmd.Flags().StringVar(&queryAggr, "aggregation", "NONE", "Aggregation type")
 }
 
 var inventoryListCmd = &cobra.Command{
@@ -95,5 +126,37 @@ var invAssetInfoCmd = &cobra.Command{
 			insecure, useTLS,
 			options.Resolve("cacert", caCertPath), options.Resolve("output", output))
 		ec.GetAssetInfo(options.Resolve("organizationID", organizationID), args[0])
+	},
+}
+
+var invMonitoringCmd = &cobra.Command{
+	Use:   "monitor",
+	Short: "Asset metrics retrieval",
+	Long:  `Metrics for an asset or aggregated metrics for a group of assets`,
+	Run: func(cmd *cobra.Command, args []string) {
+		SetupLogging()
+		inv := cli.NewInventoryMonitoring(
+			options.Resolve("nalejAddress", nalejAddress),
+			options.ResolveAsInt("port", nalejPort),
+			insecure, useTLS,
+			options.Resolve("cacert", caCertPath), options.Resolve("output", output))
+		queryAssetSelector.OrganizationId = options.Resolve("organizationID", organizationID)
+		inv.QueryMetrics(queryAssetSelector, queryMetrics, queryTimeRange, queryAggr)
+	},
+}
+
+var invMonitoringListCmd = &cobra.Command{
+	Use:   "list",
+	Short: "List available metrics for assets",
+	Long:  `List available metrics for assets`,
+	Run: func(cmd *cobra.Command, args []string) {
+		SetupLogging()
+		inv := cli.NewInventoryMonitoring(
+			options.Resolve("nalejAddress", nalejAddress),
+			options.ResolveAsInt("port", nalejPort),
+			insecure, useTLS,
+			options.Resolve("cacert", caCertPath), options.Resolve("output", output))
+		listAssetSelector.OrganizationId = options.Resolve("organizationID", organizationID)
+		inv.ListMetrics(listAssetSelector)
 	},
 }
