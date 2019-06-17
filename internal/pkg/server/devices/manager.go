@@ -57,6 +57,7 @@ func (m *Manager) ListDevices(request *grpc_device_go.DeviceGroupId) (*grpc_publ
 	if err != nil {
 		return nil, err
 	}
+
 	return entities.ToPublicAPIDeviceList(list), nil
 
 }
