@@ -434,7 +434,7 @@ func FromInventoryList(result *grpc_public_api_go.InventoryList) *ResultTable {
 
 	r = append(r, []string{"TYPE", "ID", "LOCATION", "LABELS", "STATUS"})
 	for _, device := range result.Devices {
-		r = append(r, []string{"DEVICE", device.DeviceId, "", TransformLabels(device.Labels), device.DeviceStatusName})
+		r = append(r, []string{"DEVICE", device.AssetDeviceId, "", TransformLabels(device.Labels), device.DeviceStatusName})
 	}
 	for _, ec := range result.Controllers {
 

@@ -268,6 +268,19 @@ func ToPublicAPIDevice(device * grpc_device_manager_go.Device) * grpc_public_api
 	}
 }
 
+func InventoryDeviceToPublicAPIDevice(device * grpc_inventory_manager_go.Device) * grpc_public_api_go.Device  {
+	return &grpc_public_api_go.Device{
+		OrganizationId: device.OrganizationId,
+		DeviceGroupId: device.DeviceGroupId,
+		DeviceId: device.DeviceId,
+		AssetDeviceId: device.AssetDeviceId,
+		RegisterSince: device.RegisterSince,
+		Labels: device.Labels,
+		Enabled: device.Enabled,
+		DeviceStatusName: device.DeviceStatus.String(),
+	}
+}
+
 func ToPublicAPIDeviceList(list * grpc_device_manager_go.DeviceList) * grpc_public_api_go.DeviceList  {
 	result := make([]*grpc_public_api_go.Device, 0)
 	for _, device := range list.Devices {
@@ -279,10 +292,10 @@ func ToPublicAPIDeviceList(list * grpc_device_manager_go.DeviceList) * grpc_publ
 	}
 }
 
-func ToPublicAPIDeviceArray(devices [] * grpc_device_manager_go.Device) [] * grpc_public_api_go.Device  {
+func ToPublicAPIDeviceArray(devices [] * grpc_inventory_manager_go.Device) [] * grpc_public_api_go.Device  {
 	result := make([]*grpc_public_api_go.Device, 0)
 	for _, device := range devices {
-		toAdd := ToPublicAPIDevice(device)
+		toAdd := InventoryDeviceToPublicAPIDevice(device)
 		result = append(result, toAdd)
 	}
 	return result
