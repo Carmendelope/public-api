@@ -45,6 +45,8 @@ const emptyLabels = "labels cannot be empty"
 const invalidSortOrder = "sort order can only be ascending or descending"
 const emptyEdgeControllerId = "edge_controller_id cannot be empty"
 const emptyAssetId = "asset_id cannot be empty"
+const emptyAssetDeviceId = "asset_device_id cannot be empty"
+const emptyGeolocation = "geolocation cannot be empty"
 
 
 // --------- Application descriptor JSON Schema
@@ -458,5 +460,18 @@ func ValidUpdateGeolocationRequest (request *grpc_inventory_manager_go.UpdateGeo
 		return derrors.NewInvalidArgumentError(emptyEdgeControllerId)
 	}
 
+	return nil
+}
+
+func ValidUpdateDeviceLocationRequest (request *grpc_inventory_manager_go.UpdateDeviceLocationRequest) derrors.Error {
+	if request.OrganizationId == "" {
+		return derrors.NewInvalidArgumentError(emptyOrganizationId)
+	}
+	if request.AssetDeviceId == "" {
+		return derrors.NewInvalidArgumentError(emptyAssetDeviceId)
+	}
+	if request.Location.Geolocation == "" {
+		return derrors.NewInvalidArgumentError(emptyGeolocation)
+	}
 	return nil
 }

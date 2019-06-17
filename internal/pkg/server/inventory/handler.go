@@ -7,7 +7,9 @@ package inventory
 import (
 	"context"
 	"github.com/nalej/derrors"
+	grpc_device_manager_go "github.com/nalej/grpc-device-manager-go"
 	"github.com/nalej/grpc-inventory-go"
+	grpc_inventory_manager_go "github.com/nalej/grpc-inventory-manager-go"
 	"github.com/nalej/grpc-organization-go"
 	"github.com/nalej/grpc-public-api-go"
 	"github.com/nalej/grpc-utils/pkg/conversions"
@@ -72,4 +74,22 @@ func (h *Handler) GetAssetInfo(ctx context.Context, assetID *grpc_inventory_go.A
 
 func (h *Handler) 	UpdateAsset(ctx context.Context, in *grpc_inventory_go.UpdateAssetRequest) (*grpc_inventory_go.Asset, error){
 	return nil, conversions.ToGRPCError(derrors.NewUnimplementedError("not implemented yet"))
+}
+
+func (h*Handler) UpdateDeviceLocation (ctx context.Context, request *grpc_inventory_manager_go.UpdateDeviceLocationRequest) (*grpc_device_manager_go.Device, error){
+	rm, err := authhelper.GetRequestMetadata(ctx)
+	if err != nil {
+		return nil, conversions.ToGRPCError(err)
+	}
+	if request.OrganizationId != rm.OrganizationID {
+		return nil, derrors.NewPermissionDeniedError("cannot access requested OrganizationID")
+	}
+
+	// Validation
+	vErr := entities.ValidUpdateDeviceLocationRequest (request)
+
+	if vErr != nil {
+		return nil, conversions.ToGRPCError(vErr)
+	}
+	return h.Manager.UpdateDeviceLocation(request)
 }
