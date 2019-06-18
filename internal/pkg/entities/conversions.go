@@ -256,6 +256,17 @@ func ToPublicAPIAppInstance(source *grpc_application_go.AppInstance) *grpc_publi
 	}
 }
 
+func ToPublicAPIAssetInfo (assetInfo *grpc_inventory_go.AssetInfo) *grpc_public_api_go.AssetInfo {
+	if assetInfo == nil {
+		return nil
+	}
+	return &grpc_public_api_go.AssetInfo{
+		Hardware: 	assetInfo.Hardware,
+		Storage: 	assetInfo.Storage,
+		Os:			ToPublicAPIAssetOS(assetInfo.Os),
+	}
+}
+
 func ToPublicAPIDevice(device * grpc_device_manager_go.Device) * grpc_public_api_go.Device  {
 	return &grpc_public_api_go.Device{
 		OrganizationId: device.OrganizationId,
@@ -265,6 +276,7 @@ func ToPublicAPIDevice(device * grpc_device_manager_go.Device) * grpc_public_api
 		Labels: device.Labels,
 		Enabled: device.Enabled,
 		DeviceStatusName: device.DeviceStatus.String(),
+		AssetInfo: ToPublicAPIAssetInfo(device.AssetInfo),
 	}
 }
 
@@ -278,6 +290,7 @@ func InventoryDeviceToPublicAPIDevice(device * grpc_inventory_manager_go.Device)
 		Labels: device.Labels,
 		Enabled: device.Enabled,
 		DeviceStatusName: device.DeviceStatus.String(),
+		AssetInfo: ToPublicAPIAssetInfo(device.AssetInfo),
 	}
 }
 
@@ -302,6 +315,9 @@ func ToPublicAPIDeviceArray(devices [] * grpc_inventory_manager_go.Device) [] * 
 }
 
 func ToPublicAPIAppParam (param *grpc_application_go.AppParameter) * grpc_public_api_go.AppParameter {
+	if param == nil {
+		return nil
+	}
 	return &grpc_public_api_go.AppParameter{
 		Name: 			param.Name,
 		Description:	param.Description,
@@ -314,6 +330,9 @@ func ToPublicAPIAppParam (param *grpc_application_go.AppParameter) * grpc_public
 }
 
 func ToPublicAPIAssetOS(os * grpc_inventory_go.OperatingSystemInfo) * grpc_public_api_go.OperatingSystemInfo{
+	if os == nil {
+		return nil
+	}
 	return &grpc_public_api_go.OperatingSystemInfo{
 		Name:                 os.Name,
 		Version:              os.Version,
@@ -324,6 +343,9 @@ func ToPublicAPIAssetOS(os * grpc_inventory_go.OperatingSystemInfo) * grpc_publi
 }
 
 func ToPublicAPIAsset(asset *grpc_inventory_manager_go.Asset) * grpc_public_api_go.Asset{
+	if asset == nil {
+		return nil
+	}
 	return &grpc_public_api_go.Asset{
 		OrganizationId:       asset.OrganizationId,
 		EdgeControllerId:     asset.EdgeControllerId,
