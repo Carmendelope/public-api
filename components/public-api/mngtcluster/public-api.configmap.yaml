@@ -59,6 +59,7 @@ data:
        "/public_api.Inventory/List":{"should":["ORG", "RESOURCES"]},
        "/public_api.Inventory/GetControllerExtendedInfo":{"should":["ORG", "RESOURCES"]},
        "/public_api.Inventory/GetAssetInfo":{"should":["ORG", "RESOURCES"]},
+       "/public_api.Inventory/GetDeviceInfo":{"should":["ORG", "RESOURCES"]},
        "/public_api.InventoryMonitoring/ListMetrics":{"should":["ORG", "RESOURCES"]},
        "/public_api.InventoryMonitoring/QueryMetrics":{"should":["ORG", "RESOURCES"]},
        "/public_api.InventoryMonitoring/ConfigureMetrics":{"should":["ORG", "RESOURCES"]},

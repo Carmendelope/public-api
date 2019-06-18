@@ -45,6 +45,7 @@ const emptyLabels = "labels cannot be empty"
 const invalidSortOrder = "sort order can only be ascending or descending"
 const emptyEdgeControllerId = "edge_controller_id cannot be empty"
 const emptyAssetId = "asset_id cannot be empty"
+const emptyAssetDeviceId = "asset_device_id cannot be empty"
 
 
 // --------- Application descriptor JSON Schema
@@ -508,4 +509,15 @@ func ValidQueryMetricsRequest(request *grpc_inventory_manager_go.QueryMetricsReq
 	}
 
 	return nil
+}
+
+func ValidDeviceId (request  *grpc_inventory_manager_go.DeviceId) derrors.Error {
+	if request.OrganizationId == "" {
+		return derrors.NewInvalidArgumentError(emptyOrganizationId)
+	}
+	if request.AssetDeviceId == "" {
+		return derrors.NewInvalidArgumentError(emptyAssetDeviceId)
+	}
+	return nil
+
 }
