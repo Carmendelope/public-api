@@ -7,7 +7,6 @@ package inventory
 import (
 	"context"
 	"github.com/nalej/derrors"
-	"github.com/nalej/grpc-device-manager-go"
 	"github.com/nalej/grpc-inventory-go"
 	"github.com/nalej/grpc-inventory-manager-go"
 	"github.com/nalej/grpc-organization-go"
@@ -92,7 +91,7 @@ func (h *Handler) 	UpdateAsset(ctx context.Context, in *grpc_inventory_go.Update
 	return nil, conversions.ToGRPCError(derrors.NewUnimplementedError("not implemented yet"))
 }
 
-func (h*Handler) UpdateDeviceLocation (ctx context.Context, request *grpc_inventory_manager_go.UpdateDeviceLocationRequest) (*grpc_device_manager_go.Device, error){
+func (h*Handler) UpdateDeviceLocation (ctx context.Context, request *grpc_inventory_manager_go.UpdateDeviceLocationRequest) (*grpc_public_api_go.Device, error){
 	rm, err := authhelper.GetRequestMetadata(ctx)
 	if err != nil {
 		return nil, conversions.ToGRPCError(err)

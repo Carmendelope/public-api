@@ -120,3 +120,30 @@ func (i *Inventory) GetDeviceInfo(organizationID string, deviceID string) {
 	info, err := client.GetDeviceInfo(ctx, id)
 	i.PrintResultOrError(info, err, "cannot get device information")
 }
+
+func (i * Inventory) UpdateDeviceLocation (organizationID string, assetDeviceID string, location string) {
+	if organizationID == "" {
+		log.Fatal().Msg("organizationID cannot be empty")
+	}
+	if assetDeviceID == "" {
+		log.Fatal().Msg("deviceID cannot be empty")
+	}
+	if location == "" {
+		log.Fatal().Msg("location cannot be empty")
+	}
+	i.load()
+	ctx, cancel := i.GetContext()
+	client, conn := i.getClient()
+	defer conn.Close()
+	defer cancel()
+	request := &grpc_inventory_manager_go.UpdateDeviceLocationRequest{
+		OrganizationId:	organizationID,
+		AssetDeviceId:	assetDeviceID,
+		UpdateLocation: true,
+		Location: &grpc_inventory_go.InventoryLocation{
+			Geolocation: location,
+		},
+	}
+	info, err := client.UpdateDeviceLocation(ctx, request)
+	i.PrintResultOrError(info, err, "cannot update device location")
+}

@@ -5,22 +5,17 @@
 package inventory
 
 import (
-	"errors"
-	"github.com/nalej/grpc-device-go"
-	"github.com/nalej/grpc-device-manager-go"
 	"github.com/nalej/grpc-inventory-go"
 	"github.com/nalej/grpc-inventory-manager-go"
 	"github.com/nalej/grpc-organization-go"
 	"github.com/nalej/grpc-public-api-go"
 	"github.com/nalej/public-api/internal/pkg/entities"
 	"github.com/nalej/public-api/internal/pkg/server/common"
-	"strings"
 )
 
 // Manager structure with the required clients for node operations.
 type Manager struct {
 	invManagerClient grpc_inventory_manager_go.InventoryClient
-	devManagerClient grpc_device_manager_go.DevicesClient
 }
 
 // NewManager creates a Manager using a set of clients.
@@ -72,26 +67,15 @@ func (m * Manager) GetAssetInfo(assetID *grpc_inventory_go.AssetId) (*grpc_publi
 	return entities.ToPublicAPIAsset(info), nil
 }
 
-func (m*Manager) UpdateDeviceLocation (udlr *grpc_inventory_manager_go.UpdateDeviceLocationRequest) (*grpc_device_manager_go.Device, error) {
+func (m*Manager) UpdateDeviceLocation (udlr *grpc_inventory_manager_go.UpdateDeviceLocationRequest) (*grpc_public_api_go.Device, error) {
 	ctx, cancel := common.GetContext()
 	defer cancel()
 
-	deviceInfo := strings.Split(udlr.AssetDeviceId, "#")
-	if len(deviceInfo) != 2 {
-		return nil, errors.New("incorrect device info")
-	}
-	deviceGroupId := deviceInfo[0]
-	deviceId := deviceInfo[1]
-
-	device, err := m.devManagerClient.GetDevice(ctx, &grpc_device_go.DeviceId{
-		OrganizationId: udlr.OrganizationId,
-		DeviceGroupId: deviceGroupId,
-		DeviceId: deviceId,
-	})
+	deviceUpdate, err := m.invManagerClient.UpdateDevice(ctx, udlr)
 	if err != nil{
 		return nil, err
 	}
-	return device, nil
+	return entities.InventoryDeviceToPublicAPIDevice(deviceUpdate), nil
 }
 
 func (m *Manager) GetDeviceInfo( deviceID *grpc_inventory_manager_go.DeviceId) (*grpc_public_api_go.Device, error) {

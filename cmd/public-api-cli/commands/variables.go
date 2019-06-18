@@ -67,4 +67,5 @@ var edgeControllerID string
 var assetID string
 var activate bool
 var geolocation string
+var deviceLocation string
 
