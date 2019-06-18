@@ -350,9 +350,39 @@ func FromDeviceGroupList(result *grpc_device_manager_go.DeviceGroupList) *Result
 }
 
 func FromDevice(result *grpc_public_api_go.Device) *ResultTable {
+	id := result.AssetDeviceId
+	if id == "" {
+		id = result.DeviceId
+	}
 	r := make([][]string, 0)
 	r = append(r, []string{"ID", "DATE", "STATUS", "LABELS", "ENABLED"})
-	r = append(r, []string{result.DeviceId, time.Unix(result.RegisterSince, 0).String(), result.DeviceStatusName, TransformLabels(result.Labels), strconv.FormatBool(result.Enabled)})
+	r = append(r, []string{id, time.Unix(result.RegisterSince, 0).String(), result.DeviceStatusName, TransformLabels(result.Labels), strconv.FormatBool(result.Enabled)})
+	r = append(r, []string{""})
+	r = append(r, []string{"OS", "CPUS", "RAM", "STORAGE"})
+	os := "NA"
+	if result.AssetInfo.Os != nil && len(result.AssetInfo.Os.Name) > 0 {
+		os = result.AssetInfo.Os.Name
+	}
+	cpus := "NA"
+	ram := "NA"
+	if result.AssetInfo.Hardware != nil {
+		count := 0
+		for _, cpu := range result.AssetInfo.Hardware.Cpus {
+			count = count + int(cpu.NumCores)
+		}
+		cpus = fmt.Sprintf("%d", count)
+		ram = fmt.Sprintf("%d", result.AssetInfo.Hardware.InstalledRam)
+	}
+	storage := "NA"
+	if result.AssetInfo.Storage != nil && len(result.AssetInfo.Storage) > 0 {
+		var total int64 = 0
+		for _, storage := range result.AssetInfo.Storage {
+			total = total + storage.TotalCapacity
+		}
+		storage = fmt.Sprintf("%d", total)
+	}
+	r = append(r, []string{os, cpus, ram, storage})
+
 	return &ResultTable{r}
 }
 

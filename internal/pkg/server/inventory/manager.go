@@ -6,8 +6,8 @@ package inventory
 
 import (
 	"errors"
-	grpc_device_go "github.com/nalej/grpc-device-go"
-	grpc_device_manager_go "github.com/nalej/grpc-device-manager-go"
+	"github.com/nalej/grpc-device-go"
+	"github.com/nalej/grpc-device-manager-go"
 	"github.com/nalej/grpc-inventory-go"
 	"github.com/nalej/grpc-inventory-manager-go"
 	"github.com/nalej/grpc-organization-go"
@@ -92,4 +92,14 @@ func (m*Manager) UpdateDeviceLocation (udlr *grpc_inventory_manager_go.UpdateDev
 		return nil, err
 	}
 	return device, nil
+}
+
+func (m *Manager) GetDeviceInfo( deviceID *grpc_inventory_manager_go.DeviceId) (*grpc_public_api_go.Device, error) {
+	ctx, cancel := common.GetContext()
+	defer cancel()
+	info, err := m.invManagerClient.GetDeviceInfo(ctx, deviceID)
+	if err != nil{
+		return nil, err
+	}
+	return entities.InventoryDeviceToPublicAPIDevice(info), nil
 }

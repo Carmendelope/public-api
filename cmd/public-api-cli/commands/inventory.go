@@ -25,9 +25,11 @@ func init() {
 	inventoryCmd.AddCommand(inventoryListCmd)
 	inventoryCmd.AddCommand(invControllerCommand)
 	inventoryCmd.AddCommand(invAssetCommand)
+	inventoryCmd.AddCommand(invDeviceCommand)
 
 	invControllerCommand.AddCommand(invControllerExtInfoCmd)
 	invAssetCommand.AddCommand(invAssetInfoCmd)
+	invDeviceCommand.AddCommand(invDeviceInfoCmd)
 }
 
 var inventoryListCmd = &cobra.Command{
@@ -66,6 +68,17 @@ var invAssetCommand = &cobra.Command{
 	},
 }
 
+var invDeviceCommand = &cobra.Command{
+	Use:     "device",
+	Aliases: []string{"dev"},
+	Short:   "Device commands",
+	Long:    `Device commands`,
+	Run: func(cmd *cobra.Command, args []string) {
+		SetupLogging()
+		cmd.Help()
+	},
+}
+
 var invControllerExtInfoCmd = &cobra.Command{
 	Use:   "info [edgeControllerID]",
 	Short: "Get extended information on an edge controller",
@@ -83,7 +96,7 @@ var invControllerExtInfoCmd = &cobra.Command{
 }
 
 var invAssetInfoCmd = &cobra.Command{
-	Use:   "get [assetID]",
+	Use:   "info [assetID]",
 	Short: "Get extended information on an asset",
 	Long:  `Get extended information on an asset`,
 	Args: cobra.ExactArgs(1),
@@ -95,5 +108,21 @@ var invAssetInfoCmd = &cobra.Command{
 			insecure, useTLS,
 			options.Resolve("cacert", caCertPath), options.Resolve("output", output))
 		ec.GetAssetInfo(options.Resolve("organizationID", organizationID), args[0])
+	},
+}
+
+var invDeviceInfoCmd = &cobra.Command{
+	Use:   "info [deviceID]",
+	Short: "Get extended information of a device",
+	Long:  `Get extended information of a device`,
+	Args: cobra.ExactArgs(1),
+	Run: func(cmd *cobra.Command, args []string) {
+		SetupLogging()
+		ec := cli.NewInventory(
+			options.Resolve("nalejAddress", nalejAddress),
+			options.ResolveAsInt("port", nalejPort),
+			insecure, useTLS,
+			options.Resolve("cacert", caCertPath), options.Resolve("output", output))
+		ec.GetDeviceInfo(options.Resolve("organizationID", organizationID), args[0])
 	},
 }

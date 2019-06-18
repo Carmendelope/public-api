@@ -48,7 +48,6 @@ const emptyAssetId = "asset_id cannot be empty"
 const emptyAssetDeviceId = "asset_device_id cannot be empty"
 const emptyGeolocation = "geolocation cannot be empty"
 
-
 // --------- Application descriptor JSON Schema
 type AppJSONSchema struct {
 	// Singleton object used to validate application descriptors
@@ -470,8 +469,18 @@ func ValidUpdateDeviceLocationRequest (request *grpc_inventory_manager_go.Update
 	if request.AssetDeviceId == "" {
 		return derrors.NewInvalidArgumentError(emptyAssetDeviceId)
 	}
-	if request.Location.Geolocation == "" {
+	if request.Location != nil && request.Location.Geolocation == "" {
 		return derrors.NewInvalidArgumentError(emptyGeolocation)
+	}
+	return nil
+}
+
+func ValidDeviceId (request  *grpc_inventory_manager_go.DeviceId) derrors.Error {
+	if request.OrganizationId == "" {
+		return derrors.NewInvalidArgumentError(emptyOrganizationId)
+	}
+	if request.AssetDeviceId == "" {
+		return derrors.NewInvalidArgumentError(emptyAssetDeviceId)
 	}
 	return nil
 }
