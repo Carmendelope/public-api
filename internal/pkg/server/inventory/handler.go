@@ -87,8 +87,21 @@ func (h *Handler) GetDeviceInfo(ctx context.Context, deviceID *grpc_inventory_ma
 }
 
 
-func (h *Handler) 	UpdateAsset(ctx context.Context, in *grpc_inventory_go.UpdateAssetRequest) (*grpc_inventory_go.Asset, error){
-	return nil, conversions.ToGRPCError(derrors.NewUnimplementedError("not implemented yet"))
+func (h *Handler) UpdateAsset(ctx context.Context, updateRequest *grpc_inventory_go.UpdateAssetRequest) (*grpc_inventory_go.Asset, error) {
+
+	rm, err := authhelper.GetRequestMetadata(ctx)
+	if err != nil {
+		return nil, conversions.ToGRPCError(err)
+	}
+	if updateRequest.OrganizationId != rm.OrganizationID {
+		return nil, derrors.NewPermissionDeniedError("cannot access requested OrganizationID")
+	}
+	err = entities.ValidUpdateAssetRequest(updateRequest)
+	if err != nil {
+		return nil, conversions.ToGRPCError(err)
+	}
+	return h.Manager.UpdateAsset(updateRequest)
+
 }
 
 func (h*Handler) UpdateDeviceLocation (ctx context.Context, request *grpc_inventory_manager_go.UpdateDeviceLocationRequest) (*grpc_public_api_go.Device, error){

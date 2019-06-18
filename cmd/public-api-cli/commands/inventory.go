@@ -84,7 +84,7 @@ var invControllerExtInfoCmd = &cobra.Command{
 	Use:   "info [edgeControllerID]",
 	Short: "Get extended information on an edge controller",
 	Long:  `Get extended information on an edge controller`,
-	Args: cobra.ExactArgs(1),
+	Args:  cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		SetupLogging()
 		ec := cli.NewInventory(
@@ -100,7 +100,7 @@ var invAssetInfoCmd = &cobra.Command{
 	Use:   "info [assetID]",
 	Short: "Get extended information on an asset",
 	Long:  `Get extended information on an asset`,
-	Args: cobra.ExactArgs(1),
+	Args:  cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		SetupLogging()
 		ec := cli.NewInventory(
@@ -116,7 +116,7 @@ var invDeviceInfoCmd = &cobra.Command{
 	Use:   "info [deviceID]",
 	Short: "Get extended information of a device",
 	Long:  `Get extended information of a device`,
-	Args: cobra.ExactArgs(1),
+	Args:  cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		SetupLogging()
 		ec := cli.NewInventory(
@@ -128,11 +128,30 @@ var invDeviceInfoCmd = &cobra.Command{
 	},
 }
 
+var invAssetUpdateLocationCmd = &cobra.Command{
+	Use:   "location-update [assetID]",
+	Short: "Update asset location",
+	Long:  `Update asset location`,
+	Args:  cobra.ExactArgs(1),
+	Run: func(cmd *cobra.Command, args []string) {
+		SetupLogging()
+		a := cli.NewAsset(
+			options.Resolve("nalejAddress", nalejAddress),
+			options.ResolveAsInt("port", nalejPort),
+			insecure, useTLS,
+			options.Resolve("cacert", caCertPath), options.Resolve("output", output))
+		if len(args) > 0 {
+			assetID = args[0]
+		}
+		a.UpdateLocation(options.Resolve("organizationID", organizationID), assetID, assetLocation)
+	},
+}
+
 var invDeviceUpdateLocationCmd = &cobra.Command{
 	Use:   "location-update [assetDeviceID] ",
 	Short: "update the location of a device",
 	Long:  `Update the location of a device`,
-	Args: cobra.ExactArgs(1),
+	Args:  cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		SetupLogging()
 		device := cli.NewInventory(

@@ -484,3 +484,14 @@ func ValidDeviceId (request  *grpc_inventory_manager_go.DeviceId) derrors.Error 
 	}
 	return nil
 }
+
+func ValidUpdateAssetRequest (request *grpc_inventory_go.UpdateAssetRequest) derrors.Error {
+	if request.OrganizationId == "" {
+		return derrors.NewInvalidArgumentError(emptyOrganizationId)
+	}
+	if request.AssetId == "" {
+		return derrors.NewInvalidArgumentError(emptyAssetId)
+	}
+
+	return nil
+}
