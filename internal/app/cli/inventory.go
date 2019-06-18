@@ -6,6 +6,7 @@ package cli
 
 import (
 	"github.com/nalej/grpc-inventory-go"
+	"github.com/nalej/grpc-inventory-manager-go"
 	"github.com/nalej/grpc-organization-go"
 	"github.com/nalej/grpc-public-api-go"
 	"github.com/rs/zerolog/log"
@@ -100,3 +101,22 @@ func (i *Inventory) GetAssetInfo(organizationID string, assetID string) {
 	i.PrintResultOrError(info, err, "cannot asset information")
 }
 
+func (i *Inventory) GetDeviceInfo(organizationID string, deviceID string) {
+	if organizationID == "" {
+		log.Fatal().Msg("organizationID cannot be empty")
+	}
+	if deviceID == "" {
+		log.Fatal().Msg("deviceID cannot be empty")
+	}
+	i.load()
+	ctx, cancel := i.GetContext()
+	client, conn := i.getClient()
+	defer conn.Close()
+	defer cancel()
+	id := &grpc_inventory_manager_go.DeviceId{
+		OrganizationId:	organizationID,
+		AssetDeviceId:	deviceID,
+	}
+	info, err := client.GetDeviceInfo(ctx, id)
+	i.PrintResultOrError(info, err, "cannot get device information")
+}

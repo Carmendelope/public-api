@@ -66,3 +66,13 @@ func (m * Manager) GetAssetInfo(assetID *grpc_inventory_go.AssetId) (*grpc_publi
 	}
 	return entities.ToPublicAPIAsset(info), nil
 }
+
+func (m *Manager) GetDeviceInfo( deviceID *grpc_inventory_manager_go.DeviceId) (*grpc_public_api_go.Device, error) {
+	ctx, cancel := common.GetContext()
+	defer cancel()
+	info, err := m.invManagerClient.GetDeviceInfo(ctx, deviceID)
+	if err != nil{
+		return nil, err
+	}
+	return entities.InventoryDeviceToPublicAPIDevice(info), nil
+}
