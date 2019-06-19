@@ -28,8 +28,13 @@ func init() {
 	inventoryCmd.AddCommand(invDeviceCommand)
 
 	invControllerCommand.AddCommand(invControllerExtInfoCmd)
+
 	invAssetCommand.AddCommand(invAssetInfoCmd)
+	invAssetUpdateLocationCmd.Flags().StringVar(&assetLocation, "location", "", "Asset location")
+	invAssetCommand.AddCommand(invAssetUpdateLocationCmd)
+
 	invDeviceCommand.AddCommand(invDeviceInfoCmd)
+	invDeviceUpdateLocationCmd.Flags().StringVar(&deviceLocation, "location", "", "Device location")
 	invDeviceCommand.AddCommand(invDeviceUpdateLocationCmd)
 }
 
@@ -106,25 +111,11 @@ var invAssetInfoCmd = &cobra.Command{
 		ec := cli.NewInventory(
 			options.Resolve("nalejAddress", nalejAddress),
 			options.ResolveAsInt("port", nalejPort),
-			insecure, useTLS,
-			options.Resolve("cacert", caCertPath), options.Resolve("output", output))
+			insecure,
+			useTLS,
+			options.Resolve("cacert", caCertPath),
+			options.Resolve("output", output))
 		ec.GetAssetInfo(options.Resolve("organizationID", organizationID), args[0])
-	},
-}
-
-var invDeviceInfoCmd = &cobra.Command{
-	Use:   "info [deviceID]",
-	Short: "Get extended information of a device",
-	Long:  `Get extended information of a device`,
-	Args:  cobra.ExactArgs(1),
-	Run: func(cmd *cobra.Command, args []string) {
-		SetupLogging()
-		ec := cli.NewInventory(
-			options.Resolve("nalejAddress", nalejAddress),
-			options.ResolveAsInt("port", nalejPort),
-			insecure, useTLS,
-			options.Resolve("cacert", caCertPath), options.Resolve("output", output))
-		ec.GetDeviceInfo(options.Resolve("organizationID", organizationID), args[0])
 	},
 }
 
@@ -138,8 +129,10 @@ var invAssetUpdateLocationCmd = &cobra.Command{
 		a := cli.NewAsset(
 			options.Resolve("nalejAddress", nalejAddress),
 			options.ResolveAsInt("port", nalejPort),
-			insecure, useTLS,
-			options.Resolve("cacert", caCertPath), options.Resolve("output", output))
+			insecure,
+			useTLS,
+			options.Resolve("cacert", caCertPath),
+			options.Resolve("output", output))
 		if len(args) > 0 {
 			assetID = args[0]
 		}
@@ -147,8 +140,26 @@ var invAssetUpdateLocationCmd = &cobra.Command{
 	},
 }
 
+var invDeviceInfoCmd = &cobra.Command{
+	Use:   "info [deviceID]",
+	Short: "Get extended information of a device",
+	Long:  `Get extended information of a device`,
+	Args:  cobra.ExactArgs(1),
+	Run: func(cmd *cobra.Command, args []string) {
+		SetupLogging()
+		ec := cli.NewInventory(
+			options.Resolve("nalejAddress", nalejAddress),
+			options.ResolveAsInt("port", nalejPort),
+			insecure,
+			useTLS,
+			options.Resolve("cacert", caCertPath),
+			options.Resolve("output", output))
+		ec.GetDeviceInfo(options.Resolve("organizationID", organizationID), args[0])
+	},
+}
+
 var invDeviceUpdateLocationCmd = &cobra.Command{
-	Use:   "location-update [assetDeviceID] ",
+	Use:   "location-update [assetDeviceID]",
 	Short: "update the location of a device",
 	Long:  `Update the location of a device`,
 	Args:  cobra.ExactArgs(1),
@@ -157,8 +168,13 @@ var invDeviceUpdateLocationCmd = &cobra.Command{
 		device := cli.NewInventory(
 			options.Resolve("nalejAddress", nalejAddress),
 			options.ResolveAsInt("port", nalejPort),
-			insecure, useTLS,
-			options.Resolve("cacert", caCertPath), options.Resolve("output", output))
-		device.UpdateDeviceLocation(options.Resolve("organizationID", organizationID), args[0], deviceLocation)
+			insecure,
+			useTLS,
+			options.Resolve("cacert", caCertPath),
+			options.Resolve("output", output))
+		if len(args) > 0 {
+			assetDeviceId = args[0]
+		}
+		device.UpdateDeviceLocation(options.Resolve("organizationID", organizationID), assetDeviceId, deviceLocation)
 	},
 }
