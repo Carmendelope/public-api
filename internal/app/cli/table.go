@@ -464,22 +464,33 @@ func FromInventoryList(result *grpc_public_api_go.InventoryList) *ResultTable {
 
 	r = append(r, []string{"TYPE", "ID", "LOCATION", "LABELS", "STATUS"})
 	for _, device := range result.Devices {
-		r = append(r, []string{"DEVICE", device.AssetDeviceId, "", TransformLabels(device.Labels), device.DeviceStatusName})
+		log.Debug().Interface(">>>>>", device).Msg("incoming device")
+		geolocation := ""
+		if device.Location != nil {
+			geolocation = device.Location.Geolocation
+		}
+		r = append(r, []string{"DEVICE", device.AssetDeviceId, geolocation, TransformLabels(device.Labels), device.DeviceStatusName})
 	}
 	for _, ec := range result.Controllers {
-
 		geolocation := ""
 		if ec.Location != nil {
 			geolocation = ec.Location.Geolocation
 		}
-
 		r = append(r, []string{"EC", ec.EdgeControllerId, geolocation, TransformLabels(ec.Labels), ec.StatusName})
 	}
 	for _, asset := range result.Assets {
-		r = append(r, []string{"ASSET", asset.AssetId, "", TransformLabels(asset.Labels), asset.StatusName})
+		geolocation := ""
+		if asset.Location != nil {
+			geolocation = asset.Location.Geolocation
+		}
+		r = append(r, []string{"ASSET", asset.AssetId, geolocation, TransformLabels(asset.Labels), asset.StatusName})
 	}
 	return &ResultTable{r}
 }
+
+// ----
+// Assets
+// ----
 
 func FromAsset(result *grpc_public_api_go.Asset) *ResultTable {
 	r := make([][]string, 0)

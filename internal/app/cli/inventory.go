@@ -136,6 +136,7 @@ func (i * Inventory) UpdateDeviceLocation (organizationID string, assetDeviceID 
 	client, conn := i.getClient()
 	defer conn.Close()
 	defer cancel()
+
 	request := &grpc_inventory_manager_go.UpdateDeviceLocationRequest{
 		OrganizationId:	organizationID,
 		AssetDeviceId:	assetDeviceID,
@@ -144,6 +145,7 @@ func (i * Inventory) UpdateDeviceLocation (organizationID string, assetDeviceID 
 			Geolocation: location,
 		},
 	}
+
 	info, err := client.UpdateDeviceLocation(ctx, request)
 	i.PrintResultOrError(info, err, "cannot update device location")
 }
