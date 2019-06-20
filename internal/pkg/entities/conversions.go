@@ -269,28 +269,30 @@ func ToPublicAPIAssetInfo (assetInfo *grpc_inventory_go.AssetInfo) *grpc_public_
 
 func ToPublicAPIDevice(device * grpc_device_manager_go.Device) * grpc_public_api_go.Device  {
 	return &grpc_public_api_go.Device{
-		OrganizationId: device.OrganizationId,
-		DeviceGroupId: device.DeviceGroupId,
-		DeviceId: device.DeviceId,
-		RegisterSince: device.RegisterSince,
-		Labels: device.Labels,
-		Enabled: device.Enabled,
-		DeviceStatusName: device.DeviceStatus.String(),
-		AssetInfo: ToPublicAPIAssetInfo(device.AssetInfo),
+		OrganizationId:       device.OrganizationId,
+		DeviceGroupId:        device.DeviceGroupId,
+		DeviceId:             device.DeviceId,
+		RegisterSince:        device.RegisterSince,
+		Labels:               device.Labels,
+		Enabled:              device.Enabled,
+		DeviceStatusName:     device.DeviceStatus.String(),
+		Location:             device.Location,
+		AssetInfo:            ToPublicAPIAssetInfo(device.AssetInfo),
 	}
 }
 
 func InventoryDeviceToPublicAPIDevice(device * grpc_inventory_manager_go.Device) * grpc_public_api_go.Device  {
 	return &grpc_public_api_go.Device{
-		OrganizationId: device.OrganizationId,
-		DeviceGroupId: device.DeviceGroupId,
-		DeviceId: device.DeviceId,
-		AssetDeviceId: device.AssetDeviceId,
-		RegisterSince: device.RegisterSince,
-		Labels: device.Labels,
-		Enabled: device.Enabled,
-		DeviceStatusName: device.DeviceStatus.String(),
-		AssetInfo: ToPublicAPIAssetInfo(device.AssetInfo),
+		OrganizationId:       device.OrganizationId,
+		DeviceGroupId:        device.DeviceGroupId,
+		DeviceId:             device.DeviceId,
+		AssetDeviceId:        device.AssetDeviceId,
+		RegisterSince:        device.RegisterSince,
+		Labels:               device.Labels,
+		Enabled:              device.Enabled,
+		DeviceStatusName:     device.DeviceStatus.String(),
+		Location:             device.Location,
+		AssetInfo:            ToPublicAPIAssetInfo(device.AssetInfo),
 	}
 }
 
@@ -361,6 +363,7 @@ func ToPublicAPIAsset(asset *grpc_inventory_manager_go.Asset) * grpc_public_api_
 		LastAliveTimestamp:   asset.LastAliveTimestamp,
 		Status:               asset.Status,
 		StatusName:           asset.Status.String(),
+		Location:             asset.Location,
 	}
 }
 

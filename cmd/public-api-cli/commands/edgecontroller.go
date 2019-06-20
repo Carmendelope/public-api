@@ -84,6 +84,6 @@ var updateGeoCmd = &cobra.Command{
 		if len(args) > 0{
 			edgeControllerID = args[0]
 		}
-		ec.UpdateGeolocation(options.Resolve("organizationID", organizationID), edgeControllerID, geolocation )
+		ec.UpdateGeolocation(options.Resolve("organizationID", organizationID), edgeControllerID, geolocation)
 	},
 }

@@ -46,7 +46,7 @@ const invalidSortOrder = "sort order can only be ascending or descending"
 const emptyEdgeControllerId = "edge_controller_id cannot be empty"
 const emptyAssetId = "asset_id cannot be empty"
 const emptyAssetDeviceId = "asset_device_id cannot be empty"
-
+const emptyGeolocation = "geolocation cannot be empty"
 
 // --------- Application descriptor JSON Schema
 type AppJSONSchema struct {
@@ -429,6 +429,7 @@ func ValidEdgeControllerID(edgeControllerID * grpc_inventory_go.EdgeControllerId
 	}
 	return nil
 }
+
 func ValidAssetID(assetID *grpc_inventory_go.AssetId) derrors.Error{
 	if assetID.OrganizationId == "" {
 		return derrors.NewInvalidArgumentError(emptyOrganizationId)
@@ -438,6 +439,7 @@ func ValidAssetID(assetID *grpc_inventory_go.AssetId) derrors.Error{
 	}
 	return nil
 }
+
 func ValidAssetMonitoringRequest (request *grpc_public_api_go.AssetMonitoringRequest) derrors.Error {
 	if request.OrganizationId == "" {
 		return derrors.NewInvalidArgumentError(emptyOrganizationId)
@@ -459,6 +461,20 @@ func ValidUpdateGeolocationRequest (request *grpc_inventory_manager_go.UpdateGeo
 		return derrors.NewInvalidArgumentError(emptyEdgeControllerId)
 	}
 
+	return nil
+}
+
+
+func ValidUpdateDeviceLocationRequest (request *grpc_inventory_manager_go.UpdateDeviceLocationRequest) derrors.Error {
+	if request.OrganizationId == "" {
+		return derrors.NewInvalidArgumentError(emptyOrganizationId)
+	}
+	if request.AssetDeviceId == "" {
+		return derrors.NewInvalidArgumentError(emptyAssetDeviceId)
+	}
+	if request.Location != nil && request.Location.Geolocation == "" {
+		return derrors.NewInvalidArgumentError(emptyGeolocation)
+	}
 	return nil
 }
 
@@ -519,5 +535,16 @@ func ValidDeviceId (request  *grpc_inventory_manager_go.DeviceId) derrors.Error 
 		return derrors.NewInvalidArgumentError(emptyAssetDeviceId)
 	}
 	return nil
-
 }
+
+func ValidUpdateAssetRequest (request *grpc_inventory_go.UpdateAssetRequest) derrors.Error {
+	if request.OrganizationId == "" {
+		return derrors.NewInvalidArgumentError(emptyOrganizationId)
+	}
+	if request.AssetId == "" {
+		return derrors.NewInvalidArgumentError(emptyAssetId)
+	}
+
+	return nil
+}
+

@@ -67,6 +67,23 @@ func (m * Manager) GetAssetInfo(assetID *grpc_inventory_go.AssetId) (*grpc_publi
 	return entities.ToPublicAPIAsset(info), nil
 }
 
+func (m *Manager) UpdateAsset (updateRequest *grpc_inventory_go.UpdateAssetRequest) (*grpc_inventory_go.Asset, error){
+	ctx, cancel := common.GetContext()
+	defer cancel()
+	return m.invManagerClient.UpdateAsset(ctx, updateRequest)
+}
+
+func (m*Manager) UpdateDeviceLocation (udlr *grpc_inventory_manager_go.UpdateDeviceLocationRequest) (*grpc_public_api_go.Device, error) {
+	ctx, cancel := common.GetContext()
+	defer cancel()
+
+	deviceUpdate, err := m.invManagerClient.UpdateDevice(ctx, udlr)
+	if err != nil{
+		return nil, err
+	}
+	return entities.InventoryDeviceToPublicAPIDevice(deviceUpdate), nil
+}
+
 func (m *Manager) GetDeviceInfo( deviceID *grpc_inventory_manager_go.DeviceId) (*grpc_public_api_go.Device, error) {
 	ctx, cancel := common.GetContext()
 	defer cancel()

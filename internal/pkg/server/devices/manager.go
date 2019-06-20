@@ -89,3 +89,4 @@ func (m*Manager) RemoveDevice(deviceID *grpc_device_go.DeviceId) (*grpc_common_g
 	defer cancel()
 	return m.deviceClient.RemoveDevice(ctx, deviceID)
 }
+

@@ -358,14 +358,21 @@ func FromDevice(result *grpc_public_api_go.Device) *ResultTable {
 	r = append(r, []string{"ID", "DATE", "STATUS", "LABELS", "ENABLED"})
 	r = append(r, []string{id, time.Unix(result.RegisterSince, 0).String(), result.DeviceStatusName, TransformLabels(result.Labels), strconv.FormatBool(result.Enabled)})
 	r = append(r, []string{""})
+	r = append(r, []string{"GEOLOCATION"})
+	location := "NA"
+	if result.Location != nil{
+		location = result.Location.Geolocation
+	}
+	r = append(r, []string{location})
+	r = append(r, []string{""})
 	r = append(r, []string{"OS", "CPUS", "RAM", "STORAGE"})
 	os := "NA"
-	if result.AssetInfo.Os != nil && len(result.AssetInfo.Os.Name) > 0 {
+	if result.AssetInfo != nil && result.AssetInfo.Os != nil && len(result.AssetInfo.Os.Name) > 0 {
 		os = result.AssetInfo.Os.Name
 	}
 	cpus := "NA"
 	ram := "NA"
-	if result.AssetInfo.Hardware != nil {
+	if result.AssetInfo != nil && result.AssetInfo.Hardware != nil {
 		count := 0
 		for _, cpu := range result.AssetInfo.Hardware.Cpus {
 			count = count + int(cpu.NumCores)
@@ -374,7 +381,7 @@ func FromDevice(result *grpc_public_api_go.Device) *ResultTable {
 		ram = fmt.Sprintf("%d", result.AssetInfo.Hardware.InstalledRam)
 	}
 	storage := "NA"
-	if result.AssetInfo.Storage != nil && len(result.AssetInfo.Storage) > 0 {
+	if result.AssetInfo != nil && result.AssetInfo.Storage != nil && len(result.AssetInfo.Storage) > 0 {
 		var total int64 = 0
 		for _, storage := range result.AssetInfo.Storage {
 			total = total + storage.TotalCapacity
@@ -464,22 +471,33 @@ func FromInventoryList(result *grpc_public_api_go.InventoryList) *ResultTable {
 
 	r = append(r, []string{"TYPE", "ID", "LOCATION", "LABELS", "STATUS"})
 	for _, device := range result.Devices {
-		r = append(r, []string{"DEVICE", device.AssetDeviceId, "", TransformLabels(device.Labels), device.DeviceStatusName})
+		log.Debug().Interface(">>>>>", device).Msg("incoming device")
+		geolocation := "NA"
+		if device.Location != nil {
+			geolocation = device.Location.Geolocation
+		}
+		r = append(r, []string{"DEVICE", device.AssetDeviceId, geolocation, TransformLabels(device.Labels), device.DeviceStatusName})
 	}
 	for _, ec := range result.Controllers {
-
-		geolocation := ""
+		geolocation := "NA"
 		if ec.Location != nil {
 			geolocation = ec.Location.Geolocation
 		}
-
 		r = append(r, []string{"EC", ec.EdgeControllerId, geolocation, TransformLabels(ec.Labels), ec.StatusName})
 	}
 	for _, asset := range result.Assets {
-		r = append(r, []string{"ASSET", asset.AssetId, "", TransformLabels(asset.Labels), asset.StatusName})
+		geolocation := "NA"
+		if asset.Location != nil {
+			geolocation = asset.Location.Geolocation
+		}
+		r = append(r, []string{"ASSET", asset.AssetId, geolocation, TransformLabels(asset.Labels), asset.StatusName})
 	}
 	return &ResultTable{r}
 }
+
+// ----
+// Assets
+// ----
 
 func FromAsset(result *grpc_public_api_go.Asset) *ResultTable {
 	r := make([][]string, 0)
@@ -488,6 +506,13 @@ func FromAsset(result *grpc_public_api_go.Asset) *ResultTable {
 	r = append(r, []string{""})
 	r = append(r, []string{"IP", "SEEN", "STATUS"})
 	r = append(r, []string{result.EicNetIp, time.Unix(result.LastAliveTimestamp, 0).String(), result.StatusName})
+	r = append(r, []string{""})
+	r = append(r, []string{"GEOLOCATION"})
+	location := "NA"
+	if result.Location != nil{
+		location = result.Location.Geolocation
+	}
+	r = append(r, []string{location})
 	r = append(r, []string{""})
 	r = append(r, []string{"OS", "CPUS", "RAM", "STORAGE"})
 	os := "NA"
