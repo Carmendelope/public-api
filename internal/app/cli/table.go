@@ -358,6 +358,13 @@ func FromDevice(result *grpc_public_api_go.Device) *ResultTable {
 	r = append(r, []string{"ID", "DATE", "STATUS", "LABELS", "ENABLED"})
 	r = append(r, []string{id, time.Unix(result.RegisterSince, 0).String(), result.DeviceStatusName, TransformLabels(result.Labels), strconv.FormatBool(result.Enabled)})
 	r = append(r, []string{""})
+	r = append(r, []string{"GEOLOCATION"})
+	location := "NA"
+	if result.Location != nil{
+		location = result.Location.Geolocation
+	}
+	r = append(r, []string{location})
+	r = append(r, []string{""})
 	r = append(r, []string{"OS", "CPUS", "RAM", "STORAGE"})
 	os := "NA"
 	if result.AssetInfo != nil && result.AssetInfo.Os != nil && len(result.AssetInfo.Os.Name) > 0 {
@@ -499,6 +506,13 @@ func FromAsset(result *grpc_public_api_go.Asset) *ResultTable {
 	r = append(r, []string{""})
 	r = append(r, []string{"IP", "SEEN", "STATUS"})
 	r = append(r, []string{result.EicNetIp, time.Unix(result.LastAliveTimestamp, 0).String(), result.StatusName})
+	r = append(r, []string{""})
+	r = append(r, []string{"GEOLOCATION"})
+	location := "NA"
+	if result.Location != nil{
+		location = result.Location.Geolocation
+	}
+	r = append(r, []string{location})
 	r = append(r, []string{""})
 	r = append(r, []string{"OS", "CPUS", "RAM", "STORAGE"})
 	os := "NA"

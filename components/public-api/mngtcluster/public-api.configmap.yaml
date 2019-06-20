@@ -62,6 +62,9 @@ data:
        "/public_api.Inventory/UpdateAsset":{"should":["ORG", "RESOURCES"]},
        "/public_api.Inventory/GetDeviceInfo":{"should":["ORG", "RESOURCES"]},
        "/public_api.Inventory/UpdateDeviceLocation":{"should":["ORG", "RESOURCES"]},
+       "/public_api.InventoryMonitoring/ListMetrics":{"should":["ORG", "RESOURCES"]},
+       "/public_api.InventoryMonitoring/QueryMetrics":{"should":["ORG", "RESOURCES"]},
+       "/public_api.InventoryMonitoring/ConfigureMetrics":{"should":["ORG", "RESOURCES"]},
        "/public_api.Agent/CreateAgentJoinToken":{"should":["ORG", "RESOURCES"]},
        "/public_api.Agent/ActivateMonitoring":{"should":["ORG", "RESOURCES"]},
        "/public_api.Agent/UninstallAgent":{"should":["ORG", "RESOURCES"]}
