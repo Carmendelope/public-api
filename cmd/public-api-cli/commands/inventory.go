@@ -28,13 +28,12 @@ func init() {
 	inventoryCmd.AddCommand(invDeviceCommand)
 
 	invControllerCommand.AddCommand(invControllerExtInfoCmd)
+	invControllerCommand.AddCommand(invEdgeControllerUpdateLocationCmd)
 
 	invAssetCommand.AddCommand(invAssetInfoCmd)
-	invAssetUpdateLocationCmd.Flags().StringVar(&assetLocation, "location", "", "Asset location")
 	invAssetCommand.AddCommand(invAssetUpdateLocationCmd)
 
 	invDeviceCommand.AddCommand(invDeviceInfoCmd)
-	invDeviceUpdateLocationCmd.Flags().StringVar(&deviceLocation, "location", "", "Device location")
 	invDeviceCommand.AddCommand(invDeviceUpdateLocationCmd)
 }
 
@@ -120,10 +119,10 @@ var invAssetInfoCmd = &cobra.Command{
 }
 
 var invAssetUpdateLocationCmd = &cobra.Command{
-	Use:   "location-update [assetID]",
+	Use:   "location-update [assetID] [location]",
 	Short: "Update asset location",
 	Long:  `Update asset location`,
-	Args:  cobra.ExactArgs(1),
+	Args:  cobra.ExactArgs(2),
 	Run: func(cmd *cobra.Command, args []string) {
 		SetupLogging()
 		a := cli.NewAsset(
@@ -133,10 +132,10 @@ var invAssetUpdateLocationCmd = &cobra.Command{
 			useTLS,
 			options.Resolve("cacert", caCertPath),
 			options.Resolve("output", output))
-		if len(args) > 0 {
+
 			assetID = args[0]
-		}
-		a.UpdateLocation(options.Resolve("organizationID", organizationID), assetID, assetLocation)
+			newLocation := args[1]
+		a.UpdateLocation(options.Resolve("organizationID", organizationID), assetID, newLocation)
 	},
 }
 
@@ -159,10 +158,10 @@ var invDeviceInfoCmd = &cobra.Command{
 }
 
 var invDeviceUpdateLocationCmd = &cobra.Command{
-	Use:   "location-update [assetDeviceID]",
+	Use:   "location-update [assetDeviceID] [location]",
 	Short: "update the location of a device",
 	Long:  `Update the location of a device`,
-	Args:  cobra.ExactArgs(1),
+	Args:  cobra.ExactArgs(2),
 	Run: func(cmd *cobra.Command, args []string) {
 		SetupLogging()
 		device := cli.NewInventory(
@@ -172,9 +171,29 @@ var invDeviceUpdateLocationCmd = &cobra.Command{
 			useTLS,
 			options.Resolve("cacert", caCertPath),
 			options.Resolve("output", output))
-		if len(args) > 0 {
+
 			assetDeviceId = args[0]
-		}
-		device.UpdateDeviceLocation(options.Resolve("organizationID", organizationID), assetDeviceId, deviceLocation)
+			newLocation := args[1]
+		device.UpdateDeviceLocation(options.Resolve("organizationID", organizationID), assetDeviceId, newLocation)
+	},
+}
+
+var invEdgeControllerUpdateLocationCmd = &cobra.Command{
+	Use:   "location-update [edgecControllerID] [location]",
+	Short: "update the location of a device",
+	Long:  `Update the location of a device`,
+	Args:  cobra.ExactArgs(2),
+	Run: func(cmd *cobra.Command, args []string) {
+		SetupLogging()
+		ec := cli.NewEdgeController(
+			options.Resolve("nalejAddress", nalejAddress),
+			options.ResolveAsInt("port", nalejPort),
+			insecure, useTLS,
+			options.Resolve("cacert", caCertPath), options.Resolve("output", output))
+
+			edgeControllerID = args[0]
+			newLocation := args[1]
+
+		ec.UpdateGeolocation(options.Resolve("organizationID", organizationID), edgeControllerID, newLocation)
 	},
 }
