@@ -9,6 +9,7 @@ package commands
 var loginPort int
 var email string
 var password string
+var publicKeyPath string
 
 var newPassword string
 
@@ -71,3 +72,4 @@ var assetLocation string
 var assetDeviceId string
 var deviceLocation string
 
+var agentTypeRaw string

@@ -21,6 +21,7 @@ type Handler struct {
 	Manager Manager
 }
 
+
 // NewHandler creates a new Handler with a linked manager.
 func NewHandler(manager Manager) *Handler {
 	return &Handler{manager}
@@ -54,6 +55,22 @@ func (h*Handler) UnlinkEIC(ctx context.Context, edgeControllerID *grpc_inventory
 		return nil, conversions.ToGRPCError(err)
 	}
 	return h.Manager.UnlinkEIC(edgeControllerID)
+}
+
+
+func (h *Handler) InstallAgent(ctx context.Context, request *grpc_inventory_manager_go.InstallAgentRequest) (*grpc_inventory_manager_go.InstallAgentResponse, error) {
+	rm, err := authhelper.GetRequestMetadata(ctx)
+	if err != nil {
+		return nil, conversions.ToGRPCError(err)
+	}
+	if request.OrganizationId != rm.OrganizationID {
+		return nil, derrors.NewPermissionDeniedError("cannot access requested OrganizationID")
+	}
+	err = entities.ValidInstallAgentRequest(request)
+	if err != nil {
+		return nil, conversions.ToGRPCError(err)
+	}
+	return h.Manager.InstallAgent(request)
 }
 
 func (h *Handler) UpdateGeolocation(ctx context.Context, updateRequest *grpc_inventory_manager_go.UpdateGeolocationRequest) (*grpc_inventory_go.EdgeController, error){

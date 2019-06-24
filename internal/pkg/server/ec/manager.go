@@ -15,12 +15,14 @@ import (
 // Manager structure with the required clients for node operations.
 type Manager struct {
 	eicClient grpc_inventory_manager_go.EICClient
+	agentClient grpc_inventory_manager_go.AgentClient
 }
 
 // NewManager creates a Manager using a set of clients.
-func NewManager(eicClient grpc_inventory_manager_go.EICClient) Manager {
+func NewManager(eicClient grpc_inventory_manager_go.EICClient, agentClient grpc_inventory_manager_go.AgentClient) Manager {
 	return Manager{
 		eicClient: eicClient,
+		agentClient:agentClient,
 	}
 }
 
@@ -34,6 +36,12 @@ func (m *Manager) UnlinkEIC(edgeControllerID *grpc_inventory_go.EdgeControllerId
 	ctx, cancel := common.GetContext()
 	defer cancel()
 	return m.eicClient.UnlinkEIC(ctx, edgeControllerID)
+}
+
+func (m*Manager) InstallAgent(request *grpc_inventory_manager_go.InstallAgentRequest) (*grpc_inventory_manager_go.InstallAgentResponse, error) {
+	ctx, cancel := common.GetContext()
+	defer cancel()
+	return m.agentClient.InstallAgent(ctx, request)
 }
 
 func (m *Manager) UpdateGeolocation(updateRequest *grpc_inventory_manager_go.UpdateGeolocationRequest) (*grpc_inventory_go.EdgeController, error){

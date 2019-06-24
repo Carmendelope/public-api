@@ -117,6 +117,71 @@ func (ec * EdgeController) Unlink(organizationID string, edgeControllerID string
 
 }
 
+func (ec *EdgeController) getInstallCredentials(username string, password string, publicKeyPath string) *grpc_inventory_manager_go.SSHCredentials{
+
+	credentials := &grpc_inventory_manager_go.SSHCredentials{
+		Username:             username,
+	}
+
+	if publicKeyPath != ""{
+
+		path := GetPath(publicKeyPath)
+		log.Debug().Str("publicKeyPath", path).Msg("loading public key from file")
+		publicKey, err := ioutil.ReadFile(path)
+		if err != nil{
+			log.Fatal().Str("publicKeyPath", path).Msg("cannot load public key file")
+		}
+
+		credentials.Credentials = &grpc_inventory_manager_go.SSHCredentials_ClientCertificate{
+			ClientCertificate: string(publicKey),
+		}
+	}else{
+		credentials.Credentials = &grpc_inventory_manager_go.SSHCredentials_Password{
+			Password: password,
+		}
+	}
+
+	return credentials
+}
+
+func (ec *EdgeController) InstallAgent(organizationID string, edgeControllerID string, agentType grpc_inventory_manager_go.AgentType, targetHost string, username string, password string, publicKeyPath string){
+
+	if organizationID == "" {
+		log.Fatal().Msg("organizationID cannot be empty")
+	}
+	if edgeControllerID == "" {
+		log.Fatal().Msg("edgeControllerID cannot be empty")
+	}
+	if targetHost == ""{
+		log.Fatal().Msg("targetHost cannot be empty")
+	}
+	if username == ""{
+		log.Fatal().Msg("username cannot be empty")
+	}
+	if password == "" && publicKeyPath == "" {
+		log.Fatal().Msg("either password or public key must be specified")
+	}
+
+	credentials := ec.getInstallCredentials(username, password, publicKeyPath)
+	installRequest := &grpc_inventory_manager_go.InstallAgentRequest{
+		OrganizationId:       organizationID,
+		EdgeControllerId:     edgeControllerID,
+		AgentType:            agentType,
+		Credentials:          credentials,
+		TargetHost:           targetHost,
+	}
+
+	ec.load()
+	ctx, cancel := ec.GetContext()
+	client, conn := ec.getClient()
+	defer conn.Close()
+	defer cancel()
+
+	result, err := client.InstallAgent(ctx, installRequest)
+	ec.PrintResultOrError(result, err, "cannot trigger the install of an agent")
+
+}
+
 func (ec *EdgeController) UpdateGeolocation (organizationID string, edgeControllerID string, geolocation string) {
 	if organizationID == "" {
 		log.Fatal().Msg("organizationID cannot be empty")

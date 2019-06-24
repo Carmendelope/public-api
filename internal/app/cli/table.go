@@ -94,6 +94,8 @@ func AsTable(result interface{}) *ResultTable {
 		return FromAsset(result.(*grpc_public_api_go.Asset))
 	case *grpc_public_api_go.AgentOpResponse:
 		return FromAgentOpResponse(result.(*grpc_public_api_go.AgentOpResponse))
+	case *grpc_inventory_manager_go.InstallAgentResponse:
+		return FromInstallAgentResponse(result.(*grpc_inventory_manager_go.InstallAgentResponse))
 	case *grpc_common_go.Success:
 		return FromSuccess(result.(*grpc_common_go.Success))
 	default:
@@ -455,6 +457,14 @@ func FromEICJoinToken(result *grpc_inventory_manager_go.EICJoinToken) *ResultTab
 // ----
 // Agent
 // -----
+
+func FromInstallAgentResponse(result *grpc_inventory_manager_go.InstallAgentResponse) *ResultTable{
+	r := make([][]string, 0)
+	r = append(r, []string{"OPERATION"})
+	r = append(r, []string{result.OperationId})
+	return &ResultTable{r}
+}
+
 func FromAgentJoinToken(result *grpc_inventory_manager_go.AgentJoinToken) *ResultTable {
 	r := make([][]string, 0)
 	r = append(r, []string{"TOKEN", "EXPIRES"})
@@ -471,7 +481,6 @@ func FromInventoryList(result *grpc_public_api_go.InventoryList) *ResultTable {
 
 	r = append(r, []string{"TYPE", "ID", "LOCATION", "LABELS", "STATUS"})
 	for _, device := range result.Devices {
-		log.Debug().Interface(">>>>>", device).Msg("incoming device")
 		geolocation := "NA"
 		if device.Location != nil {
 			geolocation = device.Location.Geolocation
@@ -569,7 +578,15 @@ func FromEdgeControllerExtendedInfo(result *grpc_public_api_go.EdgeControllerExt
 			seen = time.Unix(result.Controller.LastAliveTimestamp, 0).String()
 		}
 		r = append(r, []string{result.Controller.Name, TransformLabels(result.Controller.Labels),geolocation, result.Controller.StatusName, seen})
+		r = append(r, []string{""})
+		if result.Controller.LastOpResult != nil{
+			r = append(r, []string{"LAST OP"})
+			r = append(r, []string{"OP_ID", "TIMESTAMP", "STATUS", "INFO"})
+			r = append(r, []string{result.Controller.LastOpResult.OperationId, time.Unix(result.Controller.LastOpResult.Timestamp, 0).String(), result.Controller.LastOpResult.Status.String(), result.Controller.LastOpResult.Info})
+			r = append(r, []string{""})
+		}
 	}
+
 	if len(result.ManagedAssets) > 0 {
 		r = append(r, []string{""})
 		r = append(r, []string{"ASSET_ID", "IP", "STATUS", "SEEN"})
