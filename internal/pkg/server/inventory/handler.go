@@ -121,3 +121,18 @@ func (h*Handler) UpdateDeviceLocation (ctx context.Context, request *grpc_invent
 	}
 	return h.Manager.UpdateDeviceLocation(request)
 }
+
+func (h*Handler) UpdateEdgeController (ctx context.Context, request *grpc_inventory_go.UpdateEdgeControllerRequest) (*grpc_inventory_go.EdgeController, error){
+	rm, err := authhelper.GetRequestMetadata(ctx)
+	if err != nil {
+		return nil, conversions.ToGRPCError(err)
+	}
+	if request.OrganizationId != rm.OrganizationID {
+		return nil, derrors.NewPermissionDeniedError("cannot access requested OrganizationID")
+	}
+	err = entities.ValidUpdateEdgeControllerRequest(request)
+	if err != nil {
+		return nil, conversions.ToGRPCError(err)
+	}
+	return h.Manager.UpdateEdgeController(request)
+}

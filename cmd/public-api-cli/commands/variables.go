@@ -71,3 +71,7 @@ var assetLocation string
 var assetDeviceId string
 var deviceLocation string
 
+var addLabel bool
+var removeLabel bool
+var labels map[string]string
+

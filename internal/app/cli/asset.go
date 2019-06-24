@@ -68,3 +68,32 @@ func (a *Asset) UpdateLocation (organizationID string, assetID string, location 
 	_, err := client.UpdateAsset (ctx, updateRequest)
 	a.PrintResultOrError(&grpc_common_go.Success{}, err, "cannot update location")
 }
+
+func (a *Asset) Update (organizationID string, assetID string, addLabel bool, removeLabel bool, labels map[string]string) {
+	if organizationID == "" {
+		log.Fatal().Msg("organizationID cannot be empty")
+	}
+	if assetID == "" {
+		log.Fatal().Msg("assetID cannot be empty")
+	}
+	if addLabel == removeLabel {
+		log.Fatal().Msg("cannot add and remove labels in the same operation")
+	}
+
+	a.load()
+	ctx, cancel := a.GetContext()
+	client, conn := a.getClient()
+	defer conn.Close()
+	defer cancel()
+
+	updateRequest := &grpc_inventory_go.UpdateAssetRequest{
+		OrganizationId:       organizationID,
+		AssetId:              assetID,
+		AddLabels:            addLabel,
+		RemoveLabels:         removeLabel,
+		Labels:               labels,
+	}
+
+	_, err := client.UpdateAsset (ctx, updateRequest)
+	a.PrintResultOrError(&grpc_common_go.Success{}, err, "cannot update asset")
+}

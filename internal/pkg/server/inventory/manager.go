@@ -16,12 +16,14 @@ import (
 // Manager structure with the required clients for node operations.
 type Manager struct {
 	invManagerClient grpc_inventory_manager_go.InventoryClient
+	ecClient grpc_inventory_manager_go.EICClient
 }
 
 // NewManager creates a Manager using a set of clients.
-func NewManager(invManagerClient grpc_inventory_manager_go.InventoryClient) Manager {
+func NewManager(invManagerClient grpc_inventory_manager_go.InventoryClient, ecClient grpc_inventory_manager_go.EICClient) Manager {
 	return Manager{
 		invManagerClient: invManagerClient,
+		ecClient: ecClient,
 	}
 }
 
@@ -92,4 +94,10 @@ func (m *Manager) GetDeviceInfo( deviceID *grpc_inventory_manager_go.DeviceId) (
 		return nil, err
 	}
 	return entities.InventoryDeviceToPublicAPIDevice(info), nil
+}
+
+func (m *Manager) UpdateEdgeController (updateRequest *grpc_inventory_go.UpdateEdgeControllerRequest) (*grpc_inventory_go.EdgeController, error){
+	ctx, cancel := common.GetContext()
+	defer cancel()
+	return m.ecClient.UpdateEC(ctx, updateRequest)
 }

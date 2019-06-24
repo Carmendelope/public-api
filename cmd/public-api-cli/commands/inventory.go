@@ -52,9 +52,17 @@ func init() {
 
 	invControllerCommand.AddCommand(invControllerExtInfoCmd)
 	invControllerCommand.AddCommand(invEdgeControllerUpdateLocationCmd)
+	invEdgeControllerUpdateCmd.Flags().Bool("addLabel", addLabel,"Add label to edge controller")
+	invEdgeControllerUpdateCmd.Flags().Bool("removeLabel", removeLabel,"Remove label from edge controller")
+	invEdgeControllerUpdateCmd.Flags().StringToString("labels",labels,"Label/s to be added/removed")
+	invControllerCommand.AddCommand(invEdgeControllerUpdateCmd)
 
 	invAssetCommand.AddCommand(invAssetInfoCmd)
 	invAssetCommand.AddCommand(invAssetUpdateLocationCmd)
+	invAssetUpdateCmd.Flags().Bool("addLabel", addLabel,"Add label to asset")
+	invAssetUpdateCmd.Flags().Bool("removeLabel", removeLabel,"Remove label from asset")
+	invAssetUpdateCmd.Flags().StringToString("labels",labels,"Label/s to be added/removed")
+	invAssetCommand.AddCommand(invAssetUpdateCmd)
 
 	invDeviceCommand.AddCommand(invDeviceInfoCmd)
 	invDeviceCommand.AddCommand(invDeviceUpdateLocationCmd)
@@ -172,6 +180,26 @@ var invAssetUpdateLocationCmd = &cobra.Command{
 	},
 }
 
+var invAssetUpdateCmd = &cobra.Command{
+	Use:   "location-update [assetID]",
+	Short: "Update asset",
+	Long:  `Update asset`,
+	Args:  cobra.ExactArgs(1),
+	Run: func(cmd *cobra.Command, args []string) {
+		SetupLogging()
+		a := cli.NewAsset(
+			options.Resolve("nalejAddress", nalejAddress),
+			options.ResolveAsInt("port", nalejPort),
+			insecure,
+			useTLS,
+			options.Resolve("cacert", caCertPath),
+			options.Resolve("output", output))
+
+		assetID = args[0]
+		a.Update(options.Resolve("organizationID", organizationID), assetID, addLabel, removeLabel, labels)
+	},
+}
+
 var invDeviceInfoCmd = &cobra.Command{
 	Use:   "info [deviceID]",
 	Short: "Get extended information of a device",
@@ -212,7 +240,7 @@ var invDeviceUpdateLocationCmd = &cobra.Command{
 }
 
 var invEdgeControllerUpdateLocationCmd = &cobra.Command{
-	Use:   "location-update [edgecControllerID] [location]",
+	Use:   "location-update [edgeControllerID] [location]",
 	Short: "update the location of a device",
 	Long:  `Update the location of a device`,
 	Args:  cobra.ExactArgs(2),
@@ -263,3 +291,21 @@ var invMonitoringListCmd = &cobra.Command{
 	},
 }
 
+var invEdgeControllerUpdateCmd = &cobra.Command{
+	Use: "update [edgeControllerID]",
+	Short: "update an EC",
+	Long: `Update and Edge Controller`,
+	Args: cobra.ExactArgs(1),
+	Run: func (cmd *cobra.Command, args []string) {
+		SetupLogging()
+		ec := cli.NewEdgeController(
+			options.Resolve("nalejAddress", nalejAddress),
+			options.ResolveAsInt("port", nalejPort),
+			insecure, useTLS,
+			options.Resolve("cacert", caCertPath), options.Resolve("output", output))
+
+		edgeControllerID = args[0]
+
+		ec.Update(options.Resolve("organizationID", organizationID), edgeControllerID, addLabel, removeLabel, labels)
+	},
+}
