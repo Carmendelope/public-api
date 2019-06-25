@@ -47,8 +47,17 @@ func (ec*EdgeController) getClient() (grpc_public_api_go.EdgeControllersClient, 
 	return client, conn
 }
 
+func (ec*EdgeController) getInventoryClient () (grpc_public_api_go.InventoryClient, *grpc.ClientConn) {
+	conn, err := ec.GetConnection()
+	if err != nil {
+		log.Fatal().Str("trace", err.DebugReport()).Msg("cannot create the connection with the Nalej platform")
+	}
+	client := grpc_public_api_go.NewInventoryClient(conn)
+	return client, conn
+}
+
 // CreateJoinToken request the creation of an EIC join token. The result will be written into outputPath if set. If
-// not the current workding directory will be used.
+// not the current working directory will be used.
 func (ec * EdgeController) CreateJoinToken(organizationID string, outputPath string) {
 
 	if organizationID == "" {
@@ -138,4 +147,95 @@ func (ec *EdgeController) UpdateGeolocation (organizationID string, edgeControll
 
 	_, err := client.UpdateGeolocation(ctx, updateRequest)
 	ec.PrintResultOrError(&grpc_common_go.Success{}, err, "cannot update geolocation")
+}
+
+
+func (ec *EdgeController) Update (organizationID string, edgeControllerID string, addLabel bool, removeLabel bool, labels map[string]string) {
+	if organizationID == "" {
+		log.Fatal().Msg("organizationID cannot be empty")
+	}
+	if edgeControllerID == "" {
+		log.Fatal().Msg("edgeControllerID cannot be empty")
+	}
+	if addLabel == removeLabel {
+		log.Fatal().Msg("cannot add and remove labels in the same operation")
+	}
+
+	ec.load()
+	ctx, cancel := ec.GetContext()
+	client, conn := ec.getInventoryClient()
+	defer conn.Close()
+	defer cancel()
+
+	updateRequest := &grpc_inventory_go.UpdateEdgeControllerRequest{
+		OrganizationId:       organizationID,
+		EdgeControllerId:     edgeControllerID,
+		AddLabels:            addLabel,
+		RemoveLabels:         removeLabel,
+		Labels:               labels,
+	}
+
+	_, err := client.UpdateEdgeController(ctx, updateRequest)
+	ec.PrintResultOrError(&grpc_common_go.Success{}, err, "cannot update ec")
+}
+
+func (ec*EdgeController) getECLabelRequest(organizationID string, edgeControllerID string, rawLabels string, addLabels bool) *grpc_inventory_go.UpdateEdgeControllerRequest{
+	labels := GetLabels(rawLabels)
+	return &grpc_inventory_go.UpdateEdgeControllerRequest{
+		OrganizationId:       organizationID,
+		EdgeControllerId:     edgeControllerID,
+		AddLabels:            addLabels,
+		RemoveLabels:         !addLabels,
+		Labels:               labels,
+		UpdateLastAlive:      false,
+		UpdateGeolocation:    false,
+		UpdateLastOpSummary:  false,
+	}
+}
+
+func (ec*EdgeController) AddLabelToEC(organizationID string, edgeControllerID string, rawLabels string) {
+	if organizationID == "" {
+		log.Fatal().Msg("organizationID cannot be empty")
+	}
+	if edgeControllerID == "" {
+		log.Fatal().Msg("edgeControllerID cannot be empty")
+	}
+	if rawLabels == "" {
+		log.Fatal().Msg("labels cannot be empty")
+	}
+
+	ec.load()
+	ctx, cancel := ec.GetContext()
+	client, conn := ec.getInventoryClient()
+	defer conn.Close()
+	defer cancel()
+
+	request := ec.getECLabelRequest(organizationID, edgeControllerID, rawLabels, true)
+
+	success, err := client.UpdateEdgeController(ctx, request)
+	ec.PrintResultOrError(success, err, "cannot add labels to EC")
+
+}
+
+func (ec*EdgeController) RemoveLabelFromEC(organizationID string, edgeControllerID string, rawLabels string) {
+	if organizationID == "" {
+		log.Fatal().Msg("organizationID cannot be empty")
+	}
+	if edgeControllerID == "" {
+		log.Fatal().Msg("edgeControllerID cannot be empty")
+	}
+	if rawLabels == "" {
+		log.Fatal().Msg("labels cannot be empty")
+	}
+
+	ec.load()
+	ctx, cancel := ec.GetContext()
+	client, conn := ec.getInventoryClient()
+	defer conn.Close()
+	defer cancel()
+
+	request := ec.getECLabelRequest(organizationID, edgeControllerID, rawLabels, false)
+
+	success, err := client.UpdateEdgeController(ctx, request)
+	ec.PrintResultOrError(success, err, "cannot remove labels from EC")
 }

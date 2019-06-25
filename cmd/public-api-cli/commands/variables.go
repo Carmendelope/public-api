@@ -30,8 +30,6 @@ var ipAddressIngress string
 var descriptorID string
 var descriptorPath string
 var params string
-var jsonSchemaPath string
-var description string
 
 var instanceID string
 var sgInstanceID string
@@ -67,7 +65,5 @@ var edgeControllerID string
 var assetID string
 var activate bool
 var geolocation string
-var assetLocation string
 var assetDeviceId string
-var deviceLocation string
 

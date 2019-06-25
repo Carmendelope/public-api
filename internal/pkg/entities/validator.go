@@ -548,3 +548,13 @@ func ValidUpdateAssetRequest (request *grpc_inventory_go.UpdateAssetRequest) der
 	return nil
 }
 
+func ValidUpdateEdgeControllerRequest (request *grpc_inventory_go.UpdateEdgeControllerRequest) derrors.Error {
+	if request.OrganizationId == "" {
+		return derrors.NewInvalidArgumentError(emptyOrganizationId)
+	}
+	if request.EdgeControllerId == "" {
+		return derrors.NewInvalidArgumentError(emptyEdgeControllerId)
+	}
+
+	return nil
+}
