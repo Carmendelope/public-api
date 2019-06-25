@@ -5,7 +5,6 @@
 package commands
 
 import (
-	"fmt"
 	"github.com/nalej/public-api/internal/app/cli"
 	"github.com/spf13/cobra"
 	"strings"
@@ -54,24 +53,18 @@ func init() {
 
 	invControllerCommand.AddCommand(invControllerExtInfoCmd)
 	invControllerCommand.AddCommand(invEdgeControllerUpdateLocationCmd)
-	edgeControllerLabelsCmd.Flags().StringVar(&edgeControllerID, "edgeControllerId", "", "EC identifier")
-	edgeControllerLabelsCmd.Flags().StringVar(&rawLabels, "labels", "", "Labels separated by ; as in key1:value;key2:value")
 	invControllerCommand.AddCommand(edgeControllerLabelsCmd)
 	edgeControllerLabelsCmd.AddCommand(addLabelToECCmd)
 	edgeControllerLabelsCmd.AddCommand(removeLabelFromECCmd)
 
 	invAssetCommand.AddCommand(invAssetInfoCmd)
 	invAssetCommand.AddCommand(invAssetUpdateLocationCmd)
-	assetLabelsCmd.Flags().StringVar(&assetID, "assetId", "", "Asset identifier")
-	assetLabelsCmd.Flags().StringVar(&rawLabels, "labels", "", "Labels separated by ; as in key1:value;key2:value")
 	invAssetCommand.AddCommand(assetLabelsCmd)
 	assetLabelsCmd.AddCommand(addLabelToAssetCmd)
 	assetLabelsCmd.AddCommand(removeLabelFromAssetCmd)
 
 	invDeviceCommand.AddCommand(invDeviceInfoCmd)
 	invDeviceCommand.AddCommand(invDeviceUpdateLocationCmd)
-	invDeviceLabelsCmd.Flags().StringVar(&assetDeviceId, "assetDeviceId", "", "Device identifier")
-	invDeviceLabelsCmd.Flags().StringVar(&rawLabels, "labels", "", "Labels separated by ; as in key1:value;key2:value")
 	invDeviceCommand.AddCommand(invDeviceLabelsCmd)
 	invDeviceLabelsCmd.AddCommand(addLabelToInvDeviceCmd)
 	invDeviceLabelsCmd.AddCommand(removeLabelFromInvDeviceCmd)
@@ -326,14 +319,7 @@ var addLabelToAssetCmd = &cobra.Command{
 			insecure, useTLS,
 			options.Resolve("cacert", caCertPath), options.Resolve("output", output))
 
-		targetValues, err := ResolveArgument([]string{"assetID", "labels"}, args, []string{assetID, rawLabels})
-		if err != nil {
-			fmt.Println(err.Error())
-			cmd.Help()
-		}else{
-			n.AddLabelToAsset(options.Resolve("organizationID", organizationID),
-				targetValues[0], targetValues[1])
-		}
+		n.AddLabelToAsset(options.Resolve("organizationID", organizationID), args[0], args[1])
 	},
 }
 
@@ -351,14 +337,7 @@ var removeLabelFromAssetCmd = &cobra.Command{
 			insecure, useTLS,
 			options.Resolve("cacert", caCertPath), options.Resolve("output", output))
 
-		targetValues, err := ResolveArgument([]string{"assetID", "labels"}, args, []string{assetID, rawLabels})
-		if err != nil {
-			fmt.Println(err.Error())
-			cmd.Help()
-		}else{
-			n.RemoveLabelFromAsset(options.Resolve("organizationID", organizationID),
-				targetValues[0], targetValues[1])
-		}
+		n.RemoveLabelFromAsset(options.Resolve("organizationID", organizationID), args[0], args[1])
 	},
 }
 
@@ -375,14 +354,7 @@ var addLabelToECCmd = &cobra.Command{
 			insecure, useTLS,
 			options.Resolve("cacert", caCertPath), options.Resolve("output", output))
 
-		targetValues, err := ResolveArgument([]string{"edgeControllerID", "labels"}, args, []string{edgeControllerID, rawLabels})
-		if err != nil {
-			fmt.Println(err.Error())
-			cmd.Help()
-		}else{
-			n.AddLabelToEC(options.Resolve("organizationID", organizationID),
-				targetValues[0], targetValues[1])
-		}
+		n.AddLabelToEC(options.Resolve("organizationID", organizationID), args[0], args[1])
 	},
 }
 
@@ -400,14 +372,7 @@ var removeLabelFromECCmd = &cobra.Command{
 			insecure, useTLS,
 			options.Resolve("cacert", caCertPath), options.Resolve("output", output))
 
-		targetValues, err := ResolveArgument([]string{"edgeControllerID", "labels"}, args, []string{edgeControllerID, rawLabels})
-		if err != nil {
-			fmt.Println(err.Error())
-			cmd.Help()
-		}else{
-			n.RemoveLabelFromEC(options.Resolve("organizationID", organizationID),
-				targetValues[0], targetValues[1])
-		}
+		n.RemoveLabelFromEC(options.Resolve("organizationID", organizationID),	args[0], args[1])
 	},
 }
 
@@ -424,19 +389,11 @@ var addLabelToInvDeviceCmd = &cobra.Command{
 			insecure, useTLS,
 			options.Resolve("cacert", caCertPath), options.Resolve("output", output))
 
-		targetValues, err := ResolveArgument([]string{"assetDeviceId", "labels"}, args, []string{assetDeviceId, rawLabels})
-
-		device := strings.Split(targetValues[0],"#")
+		device := strings.Split(args[0],"#")
 		deviceGroupID := device[0]
 		deviceID := device[1]
 
-		if err != nil {
-			fmt.Println(err.Error())
-			cmd.Help()
-		}else{
-			n.AddLabelToDevice(options.Resolve("organizationID", organizationID),
-				deviceGroupID, deviceID, targetValues[1])
-		}
+		n.AddLabelToDevice(options.Resolve("organizationID", organizationID), deviceGroupID, deviceID, args[1])
 	},
 }
 
@@ -454,18 +411,10 @@ var removeLabelFromInvDeviceCmd = &cobra.Command{
 			insecure, useTLS,
 			options.Resolve("cacert", caCertPath), options.Resolve("output", output))
 
-		targetValues, err := ResolveArgument([]string{"assetDeviceId", "labels"}, args, []string{assetDeviceId, rawLabels})
-
-		device := strings.Split(targetValues[0],"#")
+		device := strings.Split(args[0],"#")
 		deviceGroupID := device[0]
 		deviceID := device[1]
 
-		if err != nil {
-			fmt.Println(err.Error())
-			cmd.Help()
-		}else{
-			n.RemoveLabelFromDevice(options.Resolve("organizationID", organizationID),
-				deviceGroupID, deviceID, targetValues[1])
-		}
+		n.RemoveLabelFromDevice(options.Resolve("organizationID", organizationID),	deviceGroupID, deviceID, args[1])
 	},
 }

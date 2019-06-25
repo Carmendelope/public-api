@@ -157,9 +157,10 @@ func (ec *EdgeController) Update (organizationID string, edgeControllerID string
 	if edgeControllerID == "" {
 		log.Fatal().Msg("edgeControllerID cannot be empty")
 	}
-	//if addLabel == removeLabel {
-	//	log.Fatal().Msg("cannot add and remove labels in the same operation")
-	//}
+	if addLabel == removeLabel {
+		log.Fatal().Msg("cannot add and remove labels in the same operation")
+	}
+
 	ec.load()
 	ctx, cancel := ec.GetContext()
 	client, conn := ec.getInventoryClient()

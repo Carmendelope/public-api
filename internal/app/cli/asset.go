@@ -76,9 +76,9 @@ func (a *Asset) Update (organizationID string, assetID string, addLabel bool, re
 	if assetID == "" {
 		log.Fatal().Msg("assetID cannot be empty")
 	}
-	//if addLabel == removeLabel {
-	//	log.Fatal().Msg("cannot add and remove labels in the same operation")
-	//}
+	if addLabel == removeLabel {
+		log.Fatal().Msg("cannot add and remove labels in the same operation")
+	}
 
 	a.load()
 	ctx, cancel := a.GetContext()
