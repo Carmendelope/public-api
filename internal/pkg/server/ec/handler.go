@@ -21,6 +21,10 @@ type Handler struct {
 	Manager Manager
 }
 
+func (h *Handler) InstallAgent(context.Context, *grpc_inventory_manager_go.InstallAgentRequest) (*grpc_inventory_manager_go.InstallAgentResponse, error) {
+	panic("implement me")
+}
+
 // NewHandler creates a new Handler with a linked manager.
 func NewHandler(manager Manager) *Handler {
 	return &Handler{manager}
