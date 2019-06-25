@@ -76,9 +76,9 @@ func (a *Asset) Update (organizationID string, assetID string, addLabel bool, re
 	if assetID == "" {
 		log.Fatal().Msg("assetID cannot be empty")
 	}
-	if addLabel == removeLabel {
-		log.Fatal().Msg("cannot add and remove labels in the same operation")
-	}
+	//if addLabel == removeLabel {
+	//	log.Fatal().Msg("cannot add and remove labels in the same operation")
+	//}
 
 	a.load()
 	ctx, cancel := a.GetContext()
@@ -96,4 +96,66 @@ func (a *Asset) Update (organizationID string, assetID string, addLabel bool, re
 
 	_, err := client.UpdateAsset (ctx, updateRequest)
 	a.PrintResultOrError(&grpc_common_go.Success{}, err, "cannot update asset")
+}
+
+func (a*Asset) getAssetLabelRequest(organizationID string, assetID string, rawLabels string, addLabels bool) *grpc_inventory_go.UpdateAssetRequest{
+	labels := GetLabels(rawLabels)
+	return &grpc_inventory_go.UpdateAssetRequest{
+		OrganizationId:       organizationID,
+		AssetId:              assetID,
+		AddLabels:            addLabels,
+		RemoveLabels:         !addLabels,
+		Labels:               labels,
+		UpdateLastOpSummary:  false,
+		UpdateLastAlive:      false,
+		UpdateIp:             false,
+		UpdateLocation:       false,
+	}
+}
+
+func (a*Asset) AddLabelToAsset(organizationID string, assetID string, rawLabels string) {
+	if organizationID == "" {
+		log.Fatal().Msg("organizationID cannot be empty")
+	}
+	if assetID == "" {
+		log.Fatal().Msg("assetID cannot be empty")
+	}
+	if rawLabels == "" {
+		log.Fatal().Msg("labels cannot be empty")
+	}
+
+	a.load()
+	ctx, cancel := a.GetContext()
+	client, conn := a.getClient()
+	defer conn.Close()
+	defer cancel()
+
+	request := a.getAssetLabelRequest(organizationID, assetID, rawLabels, true)
+
+	success, err := client.UpdateAsset(ctx, request)
+	a.PrintResultOrError(success, err, "cannot add labels to asset")
+
+}
+
+func (a*Asset) RemoveLabelFromAsset(organizationID string, assetID string, rawLabels string) {
+	if organizationID == "" {
+		log.Fatal().Msg("organizationID cannot be empty")
+	}
+	if assetID == "" {
+		log.Fatal().Msg("assetID cannot be empty")
+	}
+	if rawLabels == "" {
+		log.Fatal().Msg("labels cannot be empty")
+	}
+
+	a.load()
+	ctx, cancel := a.GetContext()
+	client, conn := a.getClient()
+	defer conn.Close()
+	defer cancel()
+
+	request := a.getAssetLabelRequest(organizationID, assetID, rawLabels, false)
+
+	success, err := client.UpdateAsset(ctx, request)
+	a.PrintResultOrError(success, err, "cannot remove labels from asset")
 }
