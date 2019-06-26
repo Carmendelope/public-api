@@ -95,6 +95,8 @@ func AsTable(result interface{}) *ResultTable {
 		return FromAsset(result.(*grpc_public_api_go.Asset))
 	case *grpc_public_api_go.AgentOpResponse:
 		return FromAgentOpResponse(result.(*grpc_public_api_go.AgentOpResponse))
+	case *grpc_inventory_manager_go.InstallAgentResponse:
+		return FromInstallAgentResponse(result.(*grpc_inventory_manager_go.InstallAgentResponse))
 	case *grpc_common_go.Success:
 		return FromSuccess(result.(*grpc_common_go.Success))
 	case *grpc_inventory_go.Asset:
@@ -514,6 +516,13 @@ func FromEdgeControllerExtendedInfo(result *grpc_public_api_go.EdgeControllerExt
 // Agent
 // -----
 
+func FromInstallAgentResponse(result *grpc_inventory_manager_go.InstallAgentResponse) *ResultTable{
+	r := make([][]string, 0)
+	r = append(r, []string{"OPERATION"})
+	r = append(r, []string{result.OperationId})
+	return &ResultTable{r}
+}
+
 func FromAgentJoinToken(result *grpc_inventory_manager_go.AgentJoinToken) *ResultTable {
 	r := make([][]string, 0)
 	r = append(r, []string{"TOKEN", "EXPIRES"})
@@ -530,7 +539,6 @@ func FromInventoryList(result *grpc_public_api_go.InventoryList) *ResultTable {
 
 	r = append(r, []string{"TYPE", "ID", "LOCATION", "LABELS", "STATUS"})
 	for _, device := range result.Devices {
-		log.Debug().Interface(">>>>>", device).Msg("incoming device")
 		geolocation := "NA"
 		if device.Location != nil {
 			geolocation = device.Location.Geolocation
