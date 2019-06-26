@@ -101,3 +101,10 @@ func (m *Manager) UpdateEdgeController (updateRequest *grpc_inventory_go.UpdateE
 	defer cancel()
 	return m.ecClient.UpdateEC(ctx, updateRequest)
 }
+
+func (m *Manager) Summary (orgId *grpc_organization_go.OrganizationId) (*grpc_inventory_manager_go.InventorySummary, error) {
+	ctx, cancel := common.GetContext()
+	defer cancel()
+
+	return m.invManagerClient.Summary(ctx,orgId)
+}

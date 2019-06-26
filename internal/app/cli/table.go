@@ -103,6 +103,8 @@ func AsTable(result interface{}) *ResultTable {
 		return  FromIAsset(result.(*grpc_inventory_go.Asset))
 	case *grpc_inventory_go.EdgeController:
 		return FromIEdgeController(result.(*grpc_inventory_go.EdgeController))
+	case *grpc_inventory_manager_go.InventorySummary:
+		return FromInventorySummary(result.(*grpc_inventory_manager_go.InventorySummary))
 	default:
 		log.Fatal().Str("type", fmt.Sprintf("%T", result)).Msg("unsupported")
 	}
@@ -614,6 +616,14 @@ func FromInventoryList(result *grpc_public_api_go.InventoryList) *ResultTable {
 		}
 		r = append(r, []string{"ASSET", asset.AssetId, geolocation, TransformLabels(asset.Labels), asset.StatusName})
 	}
+	return &ResultTable{r}
+}
+
+func FromInventorySummary (result *grpc_inventory_manager_go.InventorySummary) *ResultTable {
+	r := make([][]string, 0)
+	r = append(r, []string{"CPUs", "STORAGE (GB)", "RAM (GB)"})
+	r = append(r, []string{strconv.FormatInt(result.TotalNumCpu, 10), strconv.FormatInt(result.TotalStorage, 10), strconv.FormatInt(result.TotalRam, 10)})
+
 	return &ResultTable{r}
 }
 
