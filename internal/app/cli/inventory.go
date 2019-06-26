@@ -61,6 +61,26 @@ func (i *Inventory) List(organizationID string) {
 
 }
 
+func (i *Inventory) Summary (organizationID string) {
+	if organizationID == "" {
+		log.Fatal().Msg("organizationID cannot be empty")
+	}
+
+	i.load()
+	ctx, cancel := i.GetContext()
+	client, conn := i.getClient()
+	defer conn.Close()
+	defer cancel()
+
+	orgID := &grpc_organization_go.OrganizationId{
+		OrganizationId: organizationID,
+	}
+
+	inventory, err := client.Summary(ctx, orgID)
+	i.PrintResultOrError(inventory, err, "cannot retrieve inventory summary")
+
+}
+
 func (i *Inventory) GetControllerExtendedInfo(organizationID string, edgeControllerID string) {
 	if organizationID == "" {
 		log.Fatal().Msg("organizationID cannot be empty")

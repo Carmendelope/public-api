@@ -46,6 +46,7 @@ func addTimeRange(cmd *cobra.Command, timeRange *cli.TimeRange) {
 func init() {
 	rootCmd.AddCommand(inventoryCmd)
 	inventoryCmd.AddCommand(inventoryListCmd)
+	inventoryCmd.AddCommand(inventorySummaryCmd)
 	inventoryCmd.AddCommand(invControllerCommand)
 	inventoryCmd.AddCommand(invAssetCommand)
 	inventoryCmd.AddCommand(invDeviceCommand)
@@ -416,5 +417,20 @@ var removeLabelFromInvDeviceCmd = &cobra.Command{
 		deviceID := device[1]
 
 		n.RemoveLabelFromDevice(options.Resolve("organizationID", organizationID),	deviceGroupID, deviceID, args[1])
+	},
+}
+
+var inventorySummaryCmd = &cobra.Command{
+	Use:   "summary",
+	Short: "Provides a summary of the inventory elements",
+	Long:  `Provides a summary of the inventory elements`,
+	Run: func(cmd *cobra.Command, args []string) {
+		SetupLogging()
+		inv := cli.NewInventory(
+			options.Resolve("nalejAddress", nalejAddress),
+			options.ResolveAsInt("port", nalejPort),
+			insecure, useTLS,
+			options.Resolve("cacert", caCertPath), options.Resolve("output", output))
+		inv.Summary(options.Resolve("organizationID", organizationID))
 	},
 }
