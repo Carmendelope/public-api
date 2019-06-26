@@ -250,10 +250,10 @@ func (s *Service) LaunchGRPC(authConfig *interceptor.AuthorizationConfig) error 
 	ulManager := unified_logging.NewManager(clients.ulClient)
 	ulHandler := unified_logging.NewHandler(ulManager)
 
-	ecManager := ec.NewManager(clients.eicClient)
+	ecManager := ec.NewManager(clients.eicClient, clients.agentClient)
 	ecHandler := ec.NewHandler(ecManager)
 
-	invManager := inventory.NewManager(clients.invClient)
+	invManager := inventory.NewManager(clients.invClient, clients.eicClient)
 	invHandler := inventory.NewHandler(invManager)
 
 	invmManager := monitoring.NewManager(clients.invmClient)

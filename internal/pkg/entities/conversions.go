@@ -389,6 +389,7 @@ func ToPublicAPIController(controller *grpc_inventory_manager_go.EdgeController)
 		Status:               controller.Status,
 		StatusName:           controller.Status.String(),
 		Location:             controller.Location,
+		AssetInfo:            ToPublicAPIAssetInfo(controller.AssetInfo),
 	}
 }
 

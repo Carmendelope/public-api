@@ -8,6 +8,7 @@ import (
 	"github.com/nalej/grpc-device-manager-go"
 	"github.com/nalej/grpc-infrastructure-manager-go"
 	"github.com/nalej/grpc-infrastructure-monitor-go"
+	grpc_inventory_go "github.com/nalej/grpc-inventory-go"
 	"github.com/nalej/grpc-inventory-manager-go"
 	"github.com/nalej/grpc-public-api-go"
 	"github.com/nalej/grpc-unified-logging-go"
@@ -94,8 +95,16 @@ func AsTable(result interface{}) *ResultTable {
 		return FromAsset(result.(*grpc_public_api_go.Asset))
 	case *grpc_public_api_go.AgentOpResponse:
 		return FromAgentOpResponse(result.(*grpc_public_api_go.AgentOpResponse))
+	case *grpc_inventory_manager_go.InstallAgentResponse:
+		return FromInstallAgentResponse(result.(*grpc_inventory_manager_go.InstallAgentResponse))
 	case *grpc_common_go.Success:
 		return FromSuccess(result.(*grpc_common_go.Success))
+	case *grpc_inventory_go.Asset:
+		return  FromIAsset(result.(*grpc_inventory_go.Asset))
+	case *grpc_inventory_go.EdgeController:
+		return FromIEdgeController(result.(*grpc_inventory_go.EdgeController))
+	case *grpc_inventory_manager_go.InventorySummary:
+		return FromInventorySummary(result.(*grpc_inventory_manager_go.InventorySummary))
 	default:
 		log.Fatal().Str("type", fmt.Sprintf("%T", result)).Msg("unsupported")
 	}
@@ -452,9 +461,125 @@ func FromEICJoinToken(result *grpc_inventory_manager_go.EICJoinToken) *ResultTab
 	return &ResultTable{r}
 }
 
+func FromIEdgeController (result *grpc_inventory_go.EdgeController) *ResultTable {
+	r := make([][]string, 0)
+	name := "NA"
+	if result.Name != "" {
+		name = result.Name
+	}
+	r = append(r, []string{"NAME", "ID", "CREATED"})
+	r = append(r, []string{name, result.EdgeControllerId, time.Unix(result.Created, 0).String()})
+	r = append(r, []string{""})
+	r = append(r, []string{"NAME", "GEOLOCATION", "LABELS"})
+
+	location := "NA"
+	if result.Location != nil {
+		location = result.Location.Geolocation
+	}
+	labels := "NA"
+	if result.Labels != nil {
+		labels = TransformLabels(result.Labels)
+	}
+	r = append(r, []string{name, location, labels})
+
+	// Asset Info
+	r = append(r, []string{""})
+	r = append(r, []string{"OS", "CPUS", "RAM", "STORAGE"})
+	os := "NA"
+	if result.AssetInfo != nil && result.AssetInfo.Os != nil && len(result.AssetInfo.Os.Name) > 0 {
+		os = result.AssetInfo.Os.Name
+	}
+	cpus := "NA"
+	ram := "NA"
+	if result.AssetInfo != nil && result.AssetInfo.Hardware != nil {
+		count := 0
+		for _, cpu := range result.AssetInfo.Hardware.Cpus {
+			count = count + int(cpu.NumCores)
+		}
+		cpus = fmt.Sprintf("%d", count)
+		ram = fmt.Sprintf("%d", result.AssetInfo.Hardware.InstalledRam)
+	}
+	storage := "NA"
+	if result.AssetInfo != nil && result.AssetInfo.Storage != nil && len(result.AssetInfo.Storage) > 0 {
+		var total int64 = 0
+		for _, storage := range result.AssetInfo.Storage {
+			total = total + storage.TotalCapacity
+		}
+		storage = fmt.Sprintf("%d", total)
+	}
+	r = append(r, []string{os, cpus, ram, storage})
+
+	return &ResultTable{r}
+}
+
+func FromEdgeControllerExtendedInfo(result *grpc_public_api_go.EdgeControllerExtendedInfo) *ResultTable {
+	r := make([][]string, 0)
+	geolocation := ""
+	if result.Controller != nil {
+		geolocation = result.Controller.Location.Geolocation
+	}
+
+	if result.Controller != nil {
+		r = append(r, []string{"NAME", "LABELS","LOCATION",  "STATUS", "SEEN"})
+		seen := "never"
+		if result.Controller.LastAliveTimestamp != 0{
+			seen = time.Unix(result.Controller.LastAliveTimestamp, 0).String()
+		}
+		r = append(r, []string{result.Controller.Name, TransformLabels(result.Controller.Labels),geolocation, result.Controller.StatusName, seen})
+	}
+	// Asset Info
+	r = append(r, []string{""})
+	r = append(r, []string{"OS", "CPUS", "RAM", "STORAGE"})
+	os := "NA"
+	if result.Controller.AssetInfo != nil && result.Controller.AssetInfo.Os != nil && len(result.Controller.AssetInfo.Os.Name) > 0 {
+		os = result.Controller.AssetInfo.Os.Name
+	}
+	cpus := "NA"
+	ram := "NA"
+	if result.Controller.AssetInfo != nil && result.Controller.AssetInfo.Hardware != nil {
+		count := 0
+		for _, cpu := range result.Controller.AssetInfo.Hardware.Cpus {
+			count = count + int(cpu.NumCores)
+		}
+		cpus = fmt.Sprintf("%d", count)
+		ram = fmt.Sprintf("%d", result.Controller.AssetInfo.Hardware.InstalledRam)
+	}
+	storage := "NA"
+	if result.Controller.AssetInfo != nil && result.Controller.AssetInfo.Storage != nil && len(result.Controller.AssetInfo.Storage) > 0 {
+		var total int64 = 0
+		for _, storage := range result.Controller.AssetInfo.Storage {
+			total = total + storage.TotalCapacity
+		}
+		storage = fmt.Sprintf("%d", total)
+	}
+	r = append(r, []string{os, cpus, ram, storage})
+
+	// Managed Assets
+	if len(result.ManagedAssets) > 0 {
+		r = append(r, []string{""})
+		r = append(r, []string{"ASSET_ID", "IP", "STATUS", "SEEN"})
+		for _, a := range result.ManagedAssets {
+			seen := "never"
+			if a.LastAliveTimestamp != 0{
+				seen = time.Unix(a.LastAliveTimestamp, 0).String()
+			}
+			r = append(r, []string{a.AssetId, a.EicNetIp, a.StatusName, seen})
+		}
+	}
+	return &ResultTable{r}
+}
+
 // ----
 // Agent
 // -----
+
+func FromInstallAgentResponse(result *grpc_inventory_manager_go.InstallAgentResponse) *ResultTable{
+	r := make([][]string, 0)
+	r = append(r, []string{"OPERATION"})
+	r = append(r, []string{result.OperationId})
+	return &ResultTable{r}
+}
+
 func FromAgentJoinToken(result *grpc_inventory_manager_go.AgentJoinToken) *ResultTable {
 	r := make([][]string, 0)
 	r = append(r, []string{"TOKEN", "EXPIRES"})
@@ -471,7 +596,6 @@ func FromInventoryList(result *grpc_public_api_go.InventoryList) *ResultTable {
 
 	r = append(r, []string{"TYPE", "ID", "LOCATION", "LABELS", "STATUS"})
 	for _, device := range result.Devices {
-		log.Debug().Interface(">>>>>", device).Msg("incoming device")
 		geolocation := "NA"
 		if device.Location != nil {
 			geolocation = device.Location.Geolocation
@@ -492,6 +616,14 @@ func FromInventoryList(result *grpc_public_api_go.InventoryList) *ResultTable {
 		}
 		r = append(r, []string{"ASSET", asset.AssetId, geolocation, TransformLabels(asset.Labels), asset.StatusName})
 	}
+	return &ResultTable{r}
+}
+
+func FromInventorySummary (result *grpc_inventory_manager_go.InventorySummary) *ResultTable {
+	r := make([][]string, 0)
+	r = append(r, []string{"CPUs", "STORAGE (GB)", "RAM (GB)"})
+	r = append(r, []string{strconv.FormatInt(result.TotalNumCpu, 10), strconv.FormatInt(result.TotalStorage, 10), strconv.FormatInt(result.TotalRam, 10)})
+
 	return &ResultTable{r}
 }
 
@@ -548,39 +680,57 @@ func FromAsset(result *grpc_public_api_go.Asset) *ResultTable {
 	return &ResultTable{r}
 }
 
+func FromIAsset(result *grpc_inventory_go.Asset) *ResultTable {
+	r := make([][]string, 0)
+	r = append(r, []string{"ID", "CONTROLLER", "AGENT"})
+	r = append(r, []string{result.AssetId, result.EdgeControllerId, result.AgentId})
+	r = append(r, []string{""})
+	r = append(r, []string{"IP", "SEEN"})
+	r = append(r, []string{result.EicNetIp, time.Unix(result.LastAliveTimestamp, 0).String()})
+	r = append(r, []string{""})
+	r = append(r, []string{"GEOLOCATION", "LABELS"})
+	location := "NA"
+	if result.Location != nil {
+		location = result.Location.Geolocation
+	}
+	labels := "NA"
+	if result.Labels != nil {
+		labels = TransformLabels(result.Labels)
+	}
+	r = append(r, []string{location, labels})
+	r = append(r, []string{""})
+	r = append(r, []string{"OS", "CPUS", "RAM", "STORAGE"})
+	os := "NA"
+	if result.Os != nil && len(result.Os.Name) > 0 {
+		os = result.Os.Name
+	}
+	cpus := "NA"
+	ram := "NA"
+	if result.Hardware != nil {
+		count := 0
+		for _, cpu := range result.Hardware.Cpus {
+			count = count + int(cpu.NumCores)
+		}
+		cpus = fmt.Sprintf("%d", count)
+		ram = fmt.Sprintf("%d", result.Hardware.InstalledRam)
+	}
+	storage := "NA"
+	if result.Storage != nil && len(result.Storage) > 0 {
+		var total int64 = 0
+		for _, storage := range result.Storage {
+			total = total + storage.TotalCapacity
+		}
+		storage = fmt.Sprintf("%d", total)
+	}
+	r = append(r, []string{os, cpus, ram, storage})
+
+	return &ResultTable{r}
+}
+
 func FromAgentOpResponse(result *grpc_public_api_go.AgentOpResponse) *ResultTable {
 	r := make([][]string, 0)
 	r = append(r, []string{"OPERATION_ID", "TIMESTAMP", "STATUS", "INFO"})
 	r = append(r, []string{result.OperationId, time.Unix(result.Timestamp, 0).String(), result.Status, result.Info})
-	return &ResultTable{r}
-}
-
-func FromEdgeControllerExtendedInfo(result *grpc_public_api_go.EdgeControllerExtendedInfo) *ResultTable {
-	r := make([][]string, 0)
-	geolocation := ""
-	if result.Controller != nil {
-		geolocation = result.Controller.Location.Geolocation
-	}
-	
-	if result.Controller != nil {
-		r = append(r, []string{"NAME", "LABELS","LOCATION",  "STATUS", "SEEN"})
-		seen := "never"
-		if result.Controller.LastAliveTimestamp != 0{
-			seen = time.Unix(result.Controller.LastAliveTimestamp, 0).String()
-		}
-		r = append(r, []string{result.Controller.Name, TransformLabels(result.Controller.Labels),geolocation, result.Controller.StatusName, seen})
-	}
-	if len(result.ManagedAssets) > 0 {
-		r = append(r, []string{""})
-		r = append(r, []string{"ASSET_ID", "IP", "STATUS", "SEEN"})
-		for _, a := range result.ManagedAssets {
-			seen := "never"
-			if a.LastAliveTimestamp != 0{
-				seen = time.Unix(a.LastAliveTimestamp, 0).String()
-			}
-			r = append(r, []string{a.AssetId, a.EicNetIp, a.StatusName, seen})
-		}
-	}
 	return &ResultTable{r}
 }
 
