@@ -251,12 +251,12 @@
   version = "v0.0.29"
 
 [[projects]]
-  digest = "1:3c89445da2c154f12ae720eca38b41c1b7389bc955bd9a9f2b7776c1d3b2788b"
+  digest = "1:9ea6e6e000dacc93c2fb3f73b7c93b79b35fad510fb77ec64b42ac6fcd2efd7f"
   name = "github.com/nalej/grpc-public-api-go"
   packages = ["."]
   pruneopts = ""
-  revision = "325d3fca5bcdb7d00c2ef2f1b5e56f6a11519c63"
-  version = "v0.0.88"
+  revision = "9651217637c89abee58aea50bdec2970a50cb9ea"
+  version = "v0.0.89"
 
 [[projects]]
   digest = "1:be9b75e8734511623a81a66b4e5d578ebd3b71562429950ea3784e6200d018e8"

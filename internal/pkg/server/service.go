@@ -253,7 +253,7 @@ func (s *Service) LaunchGRPC(authConfig *interceptor.AuthorizationConfig) error 
 	ecManager := ec.NewManager(clients.eicClient, clients.agentClient)
 	ecHandler := ec.NewHandler(ecManager)
 
-	invManager := inventory.NewManager(clients.invClient)
+	invManager := inventory.NewManager(clients.invClient, clients.eicClient)
 	invHandler := inventory.NewHandler(invManager)
 
 	invmManager := monitoring.NewManager(clients.invmClient)
