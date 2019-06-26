@@ -104,10 +104,10 @@ func (i *InventoryMonitoring) QueryMetrics(selector *AssetSelector, metrics []st
 	defer conn.Close()
 	defer cancel()
 
-	aggrType, found := grpc_inventory_manager_go.QueryMetricsRequest_AggregationType_value[aggr]
+	aggrType, found := grpc_inventory_manager_go.AggregationType_value[aggr]
 	if !found {
 		methods := []string{}
-		for method := range(grpc_inventory_manager_go.QueryMetricsRequest_AggregationType_value) {
+		for method := range(grpc_inventory_manager_go.AggregationType_value) {
 			methods = append(methods, method)
 		}
 		log.Fatal().Str("aggregation", aggr).Msg("Aggregation method not available. Available methods: " + strings.Join(methods, ", "))
@@ -117,7 +117,7 @@ func (i *InventoryMonitoring) QueryMetrics(selector *AssetSelector, metrics []st
 		Assets: selector.ToGRPC(),
 		Metrics: metrics,
 		TimeRange: timeRange.ToGRPC(),
-		Aggregation: grpc_inventory_manager_go.QueryMetricsRequest_AggregationType(aggrType),
+		Aggregation: grpc_inventory_manager_go.AggregationType(aggrType),
 	}
 
 	result, err := client.QueryMetrics(ctx, query)
