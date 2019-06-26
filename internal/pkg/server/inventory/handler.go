@@ -136,3 +136,8 @@ func (h*Handler) UpdateEdgeController (ctx context.Context, request *grpc_invent
 	}
 	return h.Manager.UpdateEdgeController(request)
 }
+
+// Summary retrieves a summary of the assets in the inventory.
+func (h*Handler) Summary(ctx context.Context, in *grpc_organization_go.OrganizationId) (*grpc_inventory_manager_go.InventorySummary, error){
+	return nil, conversions.ToGRPCError(derrors.NewUnimplementedError("not implemented yet"))
+}
