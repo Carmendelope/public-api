@@ -60,6 +60,8 @@ func init() {
 
 	devicesCmd.AddCommand(listDevicesCmd)
 
+	devicesCmd.AddCommand(deviceInfoCmd)
+
 	devicesCmd.AddCommand(deviceLabelsCmd)
 	deviceLabelsCmd.PersistentFlags().StringVar(&deviceID, "deviceId", "", "Device identifier")
 	deviceLabelsCmd.PersistentFlags().StringVar(&rawLabels, "labels", "", "Labels separated by ; as in key1:value;key2:value")
@@ -296,5 +298,23 @@ var removeDeviceCmd = &cobra.Command{
 			n.RemoveDevice(options.Resolve("organizationID", organizationID),
 				targetValues[0], targetValues[1])
 		}
+	},
+}
+
+var deviceInfoCmd = &cobra.Command{
+	Use: "info [deviceGroupID] [deviceID]",
+	Short: "Show device info",
+	Long:  `Show device info`,
+	Args: cobra.MaximumNArgs(2),
+	Run: func(cmd *cobra.Command, args []string) {
+		SetupLogging()
+		n := cli.NewDevices(
+			options.Resolve("nalejAddress", nalejAddress),
+			options.ResolveAsInt("port", nalejPort),
+			insecure,
+			useTLS,
+			options.Resolve("cacert", caCertPath), options.Resolve("output", output))
+
+		n.GetDeviceInfo(options.Resolve("organizationID", organizationID), args[0], args[1])
 	},
 }

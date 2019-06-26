@@ -311,3 +311,28 @@ func (d* Devices) RemoveDevice(organizationID string, deviceGroupID string, devi
 	}
 
 }
+
+func (d*Devices) GetDeviceInfo (organizationID string, deviceGroupID string, deviceID string) {
+	if organizationID == "" {
+		log.Fatal().Msg("organizationID cannot be empty")
+	}
+	if deviceGroupID == "" {
+		log.Fatal().Msg("deviceGroupID cannot be empty")
+	}
+	if deviceID == "" {
+		log.Fatal().Msg("deviceID cannot be empty")
+	}
+	d.load()
+	ctx, cancel := d.GetContext()
+	client, conn := d.getClient()
+	defer conn.Close()
+	defer cancel()
+	request := &grpc_device_go.DeviceId{
+		OrganizationId:       organizationID,
+		DeviceGroupId:        deviceGroupID,
+		DeviceId:             deviceID,
+	}
+
+	success, err := client.GetDevice(ctx, request)
+	d.PrintResultOrError(success, err, "cannot retrieve device info")
+}
