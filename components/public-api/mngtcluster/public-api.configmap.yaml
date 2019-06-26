@@ -56,6 +56,7 @@ data:
        "/public_api.EdgeControllers/CreateEICToken":{"should":["ORG", "RESOURCES"]},
        "/public_api.EdgeControllers/UnlinkEIC":{"should":["ORG", "RESOURCES"]},
        "/public_api.EdgeControllers/UpdateGeolocation":{"should":["ORG", "RESOURCES"]},
+       "/public_api.EdgeControllers/InstallAgent":{"should":["ORG", "RESOURCES"]},
        "/public_api.Inventory/List":{"should":["ORG", "RESOURCES"]},
        "/public_api.Inventory/GetControllerExtendedInfo":{"should":["ORG", "RESOURCES"]},
        "/public_api.Inventory/GetAssetInfo":{"should":["ORG", "RESOURCES"]},

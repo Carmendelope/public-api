@@ -40,7 +40,7 @@ func init() {
 	installAgentCmd.Flags().StringVar(&password, "password", "", "SSH password")
 	installAgentCmd.Flags().StringVar(&publicKeyPath, "publicKeyPath", "", "SSH public key path")
 
-	installAgentCmd.Flags().StringVar(&agentTypeRaw, "agentType", "LINUX_X86", "Agent type: LINUX_X86, LINUX_ARM32, LINUX_ARM64 or WINDOWS")
+	installAgentCmd.Flags().StringVar(&agentTypeRaw, "agentType", "LINUX_AMD64", "Agent type: LINUX_AMD64, LINUX_ARM32, LINUX_ARM64 or WINDOWS_AMD64")
 	edgeControllerCmd.AddCommand(installAgentCmd)
 }
 
@@ -99,25 +99,30 @@ var updateGeoCmd = &cobra.Command{
 }
 
 // Get the agent type enum from raw.
-//     // Linux agent on x86
-//    LINUX_X86 = 0;
-//    // Linux agent on ARM 32 bits
-//    LINUX_ARM32 = 1;
-//    // Linux agent on ARM 64 bits
-//    LINUX_ARM64 = 2;
-//    // Windows agent
-//    WINDOWS = 3;
+/*
+	// Linux agent on 64 bits
+	AgentType_LINUX_AMD64 AgentType = 0
+	// Linux agent on ARM 32 bits
+	AgentType_LINUX_ARM32 AgentType = 1
+	// Linux agent on ARM 64 bits
+	AgentType_LINUX_ARM64 AgentType = 2
+	// Windows agent
+	AgentType_WINDOWS_AMD64 AgentType = 3
+	// Darwin on 64 bits
+	AgentType_DARWIN_AMD64 AgentType = 4
+ */
 func getAgentType(agentTypeRaw string) (*grpc_inventory_manager_go.AgentType, derrors.Error){
 	types := map[string]grpc_inventory_manager_go.AgentType{
-		"linux_x86":grpc_inventory_manager_go.AgentType_LINUX_X86,
+		"linux_amd64":grpc_inventory_manager_go.AgentType_LINUX_AMD64,
 		"linux_arm32":grpc_inventory_manager_go.AgentType_LINUX_ARM32,
 		"linux_arm64":grpc_inventory_manager_go.AgentType_LINUX_ARM64,
-		"windows":grpc_inventory_manager_go.AgentType_WINDOWS,
+		"windows_amd64":grpc_inventory_manager_go.AgentType_WINDOWS_AMD64,
+		"darwin_amd64":grpc_inventory_manager_go.AgentType_DARWIN_AMD64,
 	}
 
 	agentType, exists := types[strings.ToLower(agentTypeRaw)]
 	if !exists{
-		return nil, derrors.NewInvalidArgumentError("specified agent type not suppoted")
+		return nil, derrors.NewInvalidArgumentError("specified agent type not suppoted").WithParams(agentTypeRaw)
 	}
 	return &agentType, nil
 }
