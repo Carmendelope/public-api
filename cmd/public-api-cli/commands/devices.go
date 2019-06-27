@@ -315,6 +315,12 @@ var deviceInfoCmd = &cobra.Command{
 			useTLS,
 			options.Resolve("cacert", caCertPath), options.Resolve("output", output))
 
-		n.GetDeviceInfo(options.Resolve("organizationID", organizationID), args[0], args[1])
+		targetValues, err := ResolveArgument([]string{"deviceGroupID", "deviceID"}, args, []string{deviceGroupID, deviceID})
+		if err != nil {
+			fmt.Println(err.Error())
+			cmd.Help()
+		}else{
+			n.GetDeviceInfo(options.Resolve("organizationID", organizationID), targetValues[0], targetValues[1])
+		}
 	},
 }

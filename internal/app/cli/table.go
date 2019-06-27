@@ -5,7 +5,6 @@ import (
 	"github.com/nalej/grpc-application-go"
 	"github.com/nalej/grpc-application-manager-go"
 	"github.com/nalej/grpc-common-go"
-	grpc_device_go "github.com/nalej/grpc-device-go"
 	"github.com/nalej/grpc-device-manager-go"
 	"github.com/nalej/grpc-infrastructure-manager-go"
 	"github.com/nalej/grpc-infrastructure-monitor-go"
@@ -106,8 +105,6 @@ func AsTable(result interface{}) *ResultTable {
 		return FromIEdgeController(result.(*grpc_inventory_go.EdgeController))
 	case *grpc_inventory_manager_go.InventorySummary:
 		return FromInventorySummary(result.(*grpc_inventory_manager_go.InventorySummary))
-	case *grpc_device_go.Device:
-		return FromDeviceDevice(result.(*grpc_device_go.Device))
 	default:
 		log.Fatal().Str("type", fmt.Sprintf("%T", result)).Msg("unsupported")
 	}
@@ -401,14 +398,6 @@ func FromDevice(result *grpc_public_api_go.Device) *ResultTable {
 		storage = fmt.Sprintf("%d", total)
 	}
 	r = append(r, []string{os, cpus, ram, storage})
-
-	return &ResultTable{r}
-}
-
-func FromDeviceDevice (result *grpc_device_go.Device) *ResultTable {
-	r := make([][]string, 0)
-	r = append(r, []string{"DEVICE GROUP ID", "DEVICE ID", "ASSET DEVICE ID"})
-	r = append(r, []string{result.DeviceGroupId, result.DeviceId, fmt.Sprintf("%s#%s", result.DeviceGroupId, result.DeviceId)})
 
 	return &ResultTable{r}
 }
