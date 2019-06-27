@@ -509,6 +509,13 @@ func FromIEdgeController (result *grpc_inventory_go.EdgeController) *ResultTable
 	}
 	r = append(r, []string{os, cpus, ram, storage})
 
+	if result.LastOpResult != nil {
+		r = append(r, []string{"LAST OP"})
+		r = append(r, []string{"OP_ID", "TIMESTAMP", "STATUS", "INFO"})
+		r = append(r, []string{result.LastOpResult.OperationId, time.Unix(result.LastOpResult.Timestamp, 0).String(),
+			result.LastOpResult.Status.String(), result.LastOpResult.Info})
+	}
+
 	return &ResultTable{r}
 }
 
@@ -553,6 +560,13 @@ func FromEdgeControllerExtendedInfo(result *grpc_public_api_go.EdgeControllerExt
 		storage = fmt.Sprintf("%d", total)
 	}
 	r = append(r, []string{os, cpus, ram, storage})
+
+	if result.Controller.LastOpResult != nil {
+		r = append(r, []string{"LAST OP"})
+		r = append(r, []string{"OP_ID", "TIMESTAMP", "STATUS", "INFO"})
+		r = append(r, []string{result.Controller.LastOpResult.OperationId, time.Unix(result.Controller.LastOpResult.Timestamp, 0).String(),
+		result.Controller.LastOpResult.OpStatusName, result.Controller.LastOpResult.Info})
+	}
 
 	// Managed Assets
 	if len(result.ManagedAssets) > 0 {
@@ -674,7 +688,7 @@ func FromAsset(result *grpc_public_api_go.Asset) *ResultTable {
 	if result.LastOpSummary != nil {
 		r = append(r, []string{"LAST OP"})
 		r = append(r, []string{"OP_ID", "TIMESTAMP", "STATUS", "INFO"})
-		r = append(r, []string{result.LastOpSummary.OperationId, time.Unix(result.LastOpSummary.Timestamp, 0).String(), result.LastOpSummary.Status.String(), result.LastOpSummary.Info})
+		r = append(r, []string{result.LastOpSummary.OperationId, time.Unix(result.LastOpSummary.Timestamp, 0).String(), result.LastOpSummary.OpStatusName, result.LastOpSummary.Info})
 	}
 
 	return &ResultTable{r}

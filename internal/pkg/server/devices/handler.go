@@ -169,3 +169,4 @@ func (h*Handler) RemoveDevice(ctx context.Context, deviceID *grpc_device_go.Devi
 	}
 	return h.Manager.RemoveDevice(deviceID)
 }
+
