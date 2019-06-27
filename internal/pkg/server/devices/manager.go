@@ -90,3 +90,13 @@ func (m*Manager) RemoveDevice(deviceID *grpc_device_go.DeviceId) (*grpc_common_g
 	return m.deviceClient.RemoveDevice(ctx, deviceID)
 }
 
+func (m*Manager) GetDevice (deviceID *grpc_device_go.DeviceId) (*grpc_public_api_go.Device, error){
+	ctx, cancel := common.GetContext()
+	defer cancel()
+	dmDevice, err := m.deviceClient.GetDevice(ctx, deviceID)
+	if err != nil {
+		return nil, err
+	}
+
+	return entities.ToPublicAPIDevice(dmDevice), nil
+}

@@ -22,6 +22,21 @@ type Handler struct {
 	Manager Manager
 }
 
+func (h *Handler) GetDevice(ctx context.Context, deviceID *grpc_device_go.DeviceId) (*grpc_public_api_go.Device, error) {
+	rm, err := authhelper.GetRequestMetadata(ctx)
+	if err != nil {
+		return nil, conversions.ToGRPCError(err)
+	}
+	if deviceID.OrganizationId != rm.OrganizationID {
+		return nil, derrors.NewPermissionDeniedError("cannot access requested OrganizationID")
+	}
+	err = entities.ValidDeviceID(deviceID)
+	if err != nil {
+		return nil, conversions.ToGRPCError(err)
+	}
+	return h.Manager.GetDevice(deviceID)
+}
+
 // NewHandler creates a new Handler with a linked manager.
 func NewHandler(manager Manager) *Handler {
 	return &Handler{manager}
@@ -155,7 +170,3 @@ func (h*Handler) RemoveDevice(ctx context.Context, deviceID *grpc_device_go.Devi
 	return h.Manager.RemoveDevice(deviceID)
 }
 
-// GetDevice retrieves a device from a device ID
-func (h *Handler) GetDevice(ctx context.Context, in *grpc_device_go.DeviceId) (*grpc_public_api_go.Device, error) {
-	return nil, conversions.ToGRPCError(derrors.NewUnimplementedError("not implemented yet"))
-}
