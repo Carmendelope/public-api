@@ -154,3 +154,8 @@ func (h*Handler) RemoveDevice(ctx context.Context, deviceID *grpc_device_go.Devi
 	}
 	return h.Manager.RemoveDevice(deviceID)
 }
+
+// GetDevice retrieves a device from a device ID
+func (h *Handler) GetDevice(ctx context.Context, in *grpc_device_go.DeviceId) (*grpc_public_api_go.Device, error) {
+	return nil, conversions.ToGRPCError(derrors.NewUnimplementedError("not implemented yet"))
+}
