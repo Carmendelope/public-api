@@ -51,6 +51,10 @@ var createJoinTokenECCmd = &cobra.Command{
 	Long:  `Create a join token for being able to attach new edge controllers to the platform`,
 	Run: func(cmd *cobra.Command, args []string) {
 		SetupLogging()
+		if len(args) > 0 {
+			err := derrors.NewInvalidArgumentError("too many arguments")
+			log.Fatal().Err(err).Msg("create-join-token command doesn't require additional parameters")
+		}
 		ec := cli.NewEdgeController(
 			options.Resolve("nalejAddress", nalejAddress),
 			options.ResolveAsInt("port", nalejPort),
