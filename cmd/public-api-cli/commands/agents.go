@@ -32,6 +32,7 @@ func init() {
 	agentCmd.AddCommand(activateAgentMontoringCmd)
 
 	// UninstallAgentCmd
+	uninstallAgentCmd.Flags().BoolVar(&force, "force", false, "force the agent uninstall")
 	agentCmd.AddCommand(uninstallAgentCmd)
 
 }
@@ -90,6 +91,6 @@ var uninstallAgentCmd = &cobra.Command{
 		options.ResolveAsInt("port", nalejPort),
 		insecure, useTLS,
 		options.Resolve("cacert", caCertPath), options.Resolve("output", output))
-		agent.UninstallAgent(options.Resolve("organizationID", organizationID),args[0])
+		agent.UninstallAgent(options.Resolve("organizationID", organizationID),args[0], force)
 	},
 }

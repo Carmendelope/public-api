@@ -68,4 +68,6 @@ var activate bool
 var geolocation string
 var assetDeviceId string
 
+var force bool
+
 var agentTypeRaw string

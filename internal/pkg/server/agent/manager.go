@@ -65,9 +65,9 @@ func (m *Manager) ActivateMonitoring(assetRequest *grpc_public_api_go.AssetMonit
 
 }
 
-func (m *Manager)UninstallAgent(assetId *grpc_inventory_go.AssetId) (*grpc_common_go.Success, error) {
+func (m *Manager)UninstallAgent(request *grpc_inventory_manager_go.UninstallAgentRequest) (*grpc_common_go.Success, error) {
 	ctx, cancel := common.GetContext()
 	defer cancel()
 
-	return m.agentClient.UninstallAgent(ctx, assetId)
+	return m.agentClient.UninstallAgent(ctx, request)
 }

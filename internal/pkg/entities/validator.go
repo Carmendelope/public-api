@@ -453,6 +453,16 @@ func ValidAssetID(assetID *grpc_inventory_go.AssetId) derrors.Error{
 	return nil
 }
 
+func ValidUninstallAgentRequest(request *grpc_inventory_manager_go.UninstallAgentRequest) derrors.Error{
+	if request.OrganizationId == "" {
+		return derrors.NewInvalidArgumentError(emptyOrganizationId)
+	}
+	if request.AssetId == "" {
+		return derrors.NewInvalidArgumentError(emptyAssetId)
+	}
+	return nil
+}
+
 func ValidAssetMonitoringRequest (request *grpc_public_api_go.AssetMonitoringRequest) derrors.Error {
 	if request.OrganizationId == "" {
 		return derrors.NewInvalidArgumentError(emptyOrganizationId)
