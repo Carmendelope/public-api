@@ -46,38 +46,17 @@ func recursiveTreeGenerator(c *cobra.Command, level int, last bool) string {
 		prefix = prefix + "│    "
 	}
 
-	var result = ""
-	var flags = ""
-
 	cmdName := c.Use
 	if len(c.Aliases) > 0 {
 		cmdName = cmdName + " (" + strings.Join(c.Aliases, ", ") + ")"
 	}
 
+	result := ""
+
 	if last {
-		if c.HasFlags() {
-			c.Flags().VisitAll(func(f *pflag.Flag) {
-				flags = flags + "--" + f.Name + " "
-			})
-
-			if flags != "" {
-				result = "└─── " + cmdName + " " + flags
-			}
-		} else {
-			result = "└─── " + cmdName
-		}
+		result = printLine(c, "└", cmdName)
 	} else {
-		if c.HasFlags() {
-			c.Flags().VisitAll(func(f *pflag.Flag) {
-				flags = flags + "--" + f.Name + " "
-			})
-
-			if flags != "" {
-				result = "├─── " + cmdName + " " + flags
-			}
-		}else {
-			result = "├─── " + cmdName
-		}
+		result = printLine(c, "├", cmdName)
 	}
 
 	for i, subCommand := range c.Commands() {
@@ -86,4 +65,22 @@ func recursiveTreeGenerator(c *cobra.Command, level int, last bool) string {
 	}
 
 	return prefix + result
+}
+
+func printLine (command *cobra.Command, connector string, cmdName string) string {
+	flags := ""
+	result := ""
+	if command.HasFlags() {
+		command.Flags().VisitAll(func(f *pflag.Flag) {
+			flags = flags + "--" + f.Name + " "
+		})
+
+		if flags != "" {
+			result = connector + "─── " + cmdName + " " + flags
+		}
+	} else {
+		result = connector + "─── " + cmdName
+	}
+
+	return result
 }
