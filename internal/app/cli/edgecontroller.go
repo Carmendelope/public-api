@@ -102,7 +102,7 @@ func (ec * EdgeController) writeJoinToken(token * grpc_inventory_manager_go.EICJ
 	// TODO Add information about how to copy that in the EIC as embedded documentation.
 }
 
-func (ec * EdgeController) Unlink(organizationID string, edgeControllerID string) {
+func (ec * EdgeController) Unlink(organizationID string, edgeControllerID string, force bool) {
 
 	if organizationID == "" {
 		log.Fatal().Msg("organizationID cannot be empty")
@@ -120,6 +120,7 @@ func (ec * EdgeController) Unlink(organizationID string, edgeControllerID string
 	request := &grpc_inventory_manager_go.UnlinkECRequest{
 		OrganizationId:       organizationID,
 		EdgeControllerId:     edgeControllerID,
+		Force: 				  force,
 	}
 	success, err := client.UnlinkEIC(ctx, request)
 	ec.PrintResultOrError(success, err, "cannot unlink edge controller")
