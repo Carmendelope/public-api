@@ -11,8 +11,8 @@ import (
 )
 
 var deviceGroupCmd = &cobra.Command{
-	Use:     "devicegroups",
-	Aliases: []string{"devicegroup", "dg"},
+	Use:     "devicegroup",
+	Aliases: []string{"devicegroups", "dg"},
 	Short:   "Manage device groups",
 	Long:    `Manage device groups`,
 	Run: func(cmd *cobra.Command, args []string) {
@@ -22,8 +22,8 @@ var deviceGroupCmd = &cobra.Command{
 }
 
 var devicesCmd = &cobra.Command{
-	Use:     "devices",
-	Aliases: []string{"device", "dev"},
+	Use:     "device",
+	Aliases: []string{"devices", "dev"},
 	Short:   "Manage devices",
 	Long:    `Manage devices`,
 	Run: func(cmd *cobra.Command, args []string) {
