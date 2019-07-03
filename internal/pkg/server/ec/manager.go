@@ -32,7 +32,7 @@ func (m *Manager) CreateEICToken(organizationID *grpc_organization_go.Organizati
 	return m.eicClient.CreateEICToken(ctx, organizationID)
 }
 
-func (m *Manager) UnlinkEIC(edgeControllerID *grpc_inventory_go.EdgeControllerId) (*grpc_common_go.Success, error) {
+func (m *Manager) UnlinkEIC(edgeControllerID *grpc_inventory_manager_go.UnlinkECRequest) (*grpc_common_go.Success, error) {
 	ctx, cancel := common.GetContext()
 	defer cancel()
 	return m.eicClient.UnlinkEIC(ctx, edgeControllerID)
