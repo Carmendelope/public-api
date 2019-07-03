@@ -31,6 +31,7 @@ func init() {
 	createJoinTokenECCmd.Flags().StringVar(&outputPath, "outputPath", "", "Path to store the resulting token")
 
 	// Unlink
+	unlinkECCmd.Flags().BoolVar(&force, "force", false, "force the EC unlink")
 	edgeControllerCmd.AddCommand(unlinkECCmd)
 
 	// Geolocation Update
@@ -76,7 +77,7 @@ var unlinkECCmd = &cobra.Command{
 		if len(args) > 0{
 			edgeControllerID = args[0]
 		}
-		ec.Unlink(options.Resolve("organizationID", organizationID), edgeControllerID)
+		ec.Unlink(options.Resolve("organizationID", organizationID), edgeControllerID, force)
 	},
 }
 

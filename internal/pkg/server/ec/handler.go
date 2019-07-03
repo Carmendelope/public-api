@@ -41,19 +41,19 @@ func (h*Handler) CreateEICToken(ctx context.Context, organizationID *grpc_organi
 	return h.Manager.CreateEICToken(organizationID)
 }
 
-func (h*Handler) UnlinkEIC(ctx context.Context, edgeControllerID *grpc_inventory_go.EdgeControllerId) (*grpc_common_go.Success, error) {
+func (h*Handler) UnlinkEIC(ctx context.Context, request *grpc_inventory_manager_go.UnlinkECRequest) (*grpc_common_go.Success, error) {
 	rm, err := authhelper.GetRequestMetadata(ctx)
 	if err != nil {
 		return nil, conversions.ToGRPCError(err)
 	}
-	if edgeControllerID.OrganizationId != rm.OrganizationID {
+	if request.OrganizationId != rm.OrganizationID {
 		return nil, derrors.NewPermissionDeniedError("cannot access requested OrganizationID")
 	}
-	err = entities.ValidEdgeControllerID(edgeControllerID)
+	err = entities.ValidUnlinkECRequest(request)
 	if err != nil {
 		return nil, conversions.ToGRPCError(err)
 	}
-	return h.Manager.UnlinkEIC(edgeControllerID)
+	return h.Manager.UnlinkEIC(request)
 }
 
 

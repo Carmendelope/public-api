@@ -430,6 +430,16 @@ func ValidEdgeControllerID(edgeControllerID * grpc_inventory_go.EdgeControllerId
 	return nil
 }
 
+func ValidUnlinkECRequest(request *grpc_inventory_manager_go.UnlinkECRequest) derrors.Error {
+	if request.OrganizationId == "" {
+		return derrors.NewInvalidArgumentError(emptyOrganizationId)
+	}
+	if request.EdgeControllerId == "" {
+		return derrors.NewInvalidArgumentError(emptyEdgeControllerId)
+	}
+	return nil
+}
+
 func ValidInstallAgentRequest(request *grpc_inventory_manager_go.InstallAgentRequest) derrors.Error{
 	if request.OrganizationId == ""{
 		return derrors.NewInvalidArgumentError("organization_id cannot be empty")
