@@ -86,6 +86,7 @@ var installClustersCmd = &cobra.Command{
 
 var infoClusterCmd = &cobra.Command{
 	Use:   "info [clusterID]",
+	Aliases: []string{"get"},
 	Short: "Get the cluster information",
 	Long:  `Get the cluster information`,
 	Args: cobra.MaximumNArgs(1),
@@ -110,6 +111,7 @@ var infoClusterCmd = &cobra.Command{
 
 var listClustersCmd = &cobra.Command{
 	Use:   "list",
+	Aliases: []string{"ls"},
 	Short: "List clusters",
 	Long:  `List clusters`,
 	Run: func(cmd *cobra.Command, args []string) {
@@ -125,6 +127,7 @@ var listClustersCmd = &cobra.Command{
 
 var monitorClusterCmd = &cobra.Command{
 	Use:   "monitor [clusterID]",
+	Aliases: []string{"mon"},
 	Short: "Monitor cluster",
 	Long:  `Get summarized monitoring information for a single cluster`,
 	Args: cobra.MaximumNArgs(1),
@@ -202,7 +205,7 @@ var addLabelToClusterCmd = &cobra.Command{
 
 var removeLabelFromClusterCmd = &cobra.Command{
 	Use:   "delete [clusterID] [labels]",
-	Aliases: []string{"remove", "del"},
+	Aliases: []string{"remove", "del", "rm"},
 	Short: "Remove a set of labels from a cluster",
 	Long:  `Remove a set of labels from a cluster`,
 	Args: cobra.MaximumNArgs(2),
@@ -225,7 +228,7 @@ var removeLabelFromClusterCmd = &cobra.Command{
 }
 
 var cordonClusterCmd = &cobra.Command{
-	Use: "cordon [clusterId]",
+	Use: "cordon [clusterID]",
 	Short: "cordon a cluster ignoring new application deployments",
 	Long: `cordon a cluster ignoring new application deployments`,
 	Args: cobra.MinimumNArgs(1),
@@ -241,7 +244,7 @@ var cordonClusterCmd = &cobra.Command{
 }
 
 var uncordonClusterCmd = &cobra.Command{
-	Use: "uncordon [clusterId]",
+	Use: "uncordon [clusterID]",
 	Short: "uncordon a cluster making possible new application deployments",
 	Long: `uncordon a cluster making possible new application deployments`,
 	Args: cobra.MinimumNArgs(1),
@@ -257,7 +260,7 @@ var uncordonClusterCmd = &cobra.Command{
 }
 
 var drainClusterCmd = &cobra.Command{
-	Use: "drain [clusterId]",
+	Use: "drain [clusterID]",
 	Short: "drain a cluster",
 	Long: `drain a cordoned cluster and force current applications to be re-scheduled`,
 	Args: cobra.MinimumNArgs(1),

@@ -10,7 +10,8 @@ import (
 )
 
 var orgCmd = &cobra.Command{
-	Use:   "org",
+	Use:   "organization",
+	Aliases: []string{"org"},
 	Short: "Organization related operations",
 	Long:  `Organization related operations`,
 	Run: func(cmd *cobra.Command, args []string) {
@@ -27,6 +28,7 @@ func init() {
 
 var infoCmd = &cobra.Command{
 	Use:   "info",
+	Aliases: []string{"get"},
 	Short: "Retrieve organization information",
 	Long:  `Retrieve organization information`,
 	Run: func(cmd *cobra.Command, args []string) {

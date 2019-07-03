@@ -51,6 +51,7 @@ func init() {
 
 var userInfoCmd = &cobra.Command{
 	Use:   "info",
+	Aliases: []string{"get"},
 	Short: "Get user info",
 	Long:  `Get user info`,
 	Run: func(cmd *cobra.Command, args []string) {
@@ -66,6 +67,7 @@ var userInfoCmd = &cobra.Command{
 
 var userListCmd = &cobra.Command{
 	Use:   "list",
+	Aliases: []string{"ls"},
 	Short: "List users",
 	Long:  `List users`,
 	Run: func(cmd *cobra.Command, args []string) {
@@ -81,7 +83,7 @@ var userListCmd = &cobra.Command{
 
 var deleteUserCmd = &cobra.Command{
 	Use:     "delete",
-	Aliases: []string{"remove", "del"},
+	Aliases: []string{"remove", "del", "rm"},
 	Short:   "Delete a user",
 	Long:    `Delete a user`,
 	Run: func(cmd *cobra.Command, args []string) {
