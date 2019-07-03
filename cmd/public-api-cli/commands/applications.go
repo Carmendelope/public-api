@@ -14,8 +14,8 @@ import (
 )
 
 var appsCmd = &cobra.Command{
-	Use:     "app",
-	Aliases: []string{"application", "applications"},
+	Use:     "application",
+	Aliases: []string{"app", "applications"},
 	Short:   "Manage applications",
 	Long:    `Manage applications`,
 	Run: func(cmd *cobra.Command, args []string) {
@@ -82,8 +82,8 @@ func init() {
 }
 
 var descriptorCmd = &cobra.Command{
-	Use:     "desc",
-	Aliases: []string{"descriptor", "descriptors"},
+	Use:     "descriptor",
+	Aliases: []string{"desc", "descriptors"},
 	Short:   "Manage applications descriptors",
 	Long:    `Manage applications descriptors`,
 	Run: func(cmd *cobra.Command, args []string) {
@@ -204,7 +204,7 @@ var addLabelToAppDescriptorCmd = &cobra.Command{
 
 var removeLabelFromAppDescriptorCmd = &cobra.Command{
 	Use:   "delete [descriptorID] [labels]",
-	Aliases: []string{"remove", "del"},
+	Aliases: []string{"remove", "del", "rm"},
 	Short: "Remove a set of labels from an application descriptor",
 	Long:  `Remove a set of labels from an application descriptor`,
 	Args: cobra.MaximumNArgs(2),
@@ -229,7 +229,7 @@ var removeLabelFromAppDescriptorCmd = &cobra.Command{
 
 var deleteDescriptorCmd = &cobra.Command{
 	Use:   "delete [descriptorID]",
-	Aliases: []string{"remove", "del"},
+	Aliases: []string{"remove", "del", "rm"},
 	Short: "Delete an application descriptor",
 	Long:  `Delete an application descriptor`,
 	Args: cobra.MaximumNArgs(1),
@@ -252,7 +252,8 @@ var deleteDescriptorCmd = &cobra.Command{
 }
 
 var getDescriptorParamsCmd = &cobra.Command{
-	Use:   "params [descriptorID]",
+	Use:   "parameters [descriptorID]",
+	Aliases: []string{"params", "param", "parameter"},
 	Short: "list parameters of a descriptor",
 	Long:  "list parameters of a descriptor",
 	Args: cobra.MaximumNArgs(1),
@@ -274,8 +275,8 @@ var getDescriptorParamsCmd = &cobra.Command{
 }
 
 var instanceCmd = &cobra.Command{
-	Use:     "inst",
-	Aliases: []string{"instance"},
+	Use:     "instance",
+	Aliases: []string{"inst"},
 	Short:   "Manage applications instances",
 	Long:    `Manage applications instances`,
 	Run: func(cmd *cobra.Command, args []string) {
@@ -332,6 +333,7 @@ var undeployInstanceCmd = &cobra.Command{
 
 var listInstancesCmd = &cobra.Command{
 	Use:   "list",
+	Aliases: []string{"ls"},
 	Short: "List application instances",
 	Long:  `List application intances`,
 	Run: func(cmd *cobra.Command, args []string) {
@@ -368,7 +370,8 @@ var getInstanceCmd = &cobra.Command{
 }
 
 var getInstanceParamsCmd = &cobra.Command{
-	Use:   "params [instanceID]",
+	Use:   "parameterss [instanceID]",
+	Aliases: []string{"params", "param", "parameter"},
 	Short: "list parameters of an instance",
 	Long:  "list parameters of an instance",
 	Args: cobra.MaximumNArgs(1),
