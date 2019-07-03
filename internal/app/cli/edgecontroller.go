@@ -117,11 +117,11 @@ func (ec * EdgeController) Unlink(organizationID string, edgeControllerID string
 	defer conn.Close()
 	defer cancel()
 
-	edgeID := &grpc_inventory_go.EdgeControllerId{
+	request := &grpc_inventory_manager_go.UnlinkECRequest{
 		OrganizationId:       organizationID,
 		EdgeControllerId:     edgeControllerID,
 	}
-	success, err := client.UnlinkEIC(ctx, edgeID)
+	success, err := client.UnlinkEIC(ctx, request)
 	ec.PrintResultOrError(success, err, "cannot unlink edge controller")
 
 }
