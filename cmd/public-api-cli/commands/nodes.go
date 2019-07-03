@@ -11,8 +11,8 @@ import (
 )
 
 var nodesCmd = &cobra.Command{
-	Use:     "nodes",
-	Aliases: []string{"node"},
+	Use:     "node",
+	Aliases: []string{"nodes"},
 	Short:   "Manage nodes",
 	Long:    `Manage nodes`,
 	Run: func(cmd *cobra.Command, args []string) {
@@ -35,6 +35,7 @@ func init() {
 
 var listNodesCmd = &cobra.Command{
 	Use:   "list [clusterID]",
+	Aliases: []string{"ls"},
 	Short: "List nodes",
 	Long:  `List nodes`,
 	Run: func(cmd *cobra.Command, args []string) {
@@ -93,7 +94,7 @@ var addLabelToNodeCmd = &cobra.Command{
 
 var removeLabelFromNodeCmd = &cobra.Command{
 	Use:   "delete [nodeID] [labels]",
-	Aliases: []string{"remove", "del"},
+	Aliases: []string{"remove", "del", "rm"},
 	Short: "Remove a set of labels from a cluster",
 	Long:  `Remove a set of labels from a cluster`,
 	Args: cobra.MaximumNArgs(2),

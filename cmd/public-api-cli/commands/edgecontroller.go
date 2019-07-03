@@ -15,7 +15,7 @@ import (
 
 var edgeControllerCmd = &cobra.Command{
 	Use:     "edgecontroller",
-	Aliases: []string{"ec"},
+	Aliases: []string{"ec", "controller"},
 	Short:   "Manage edge controllers",
 	Long:    `Manage edge controllers`,
 	Run: func(cmd *cobra.Command, args []string) {
@@ -81,7 +81,7 @@ var unlinkECCmd = &cobra.Command{
 }
 
 var updateGeoCmd = &cobra.Command{
-	Use:   "location-update [edgeControllerID]",
+	Use:   "update-location [edgeControllerID]",
 	Short: "update edge-controller location",
 	Long:  `update edge-controller location`,
 	Args: cobra.ExactArgs(1),

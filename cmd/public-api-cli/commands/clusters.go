@@ -86,6 +86,7 @@ var installClustersCmd = &cobra.Command{
 
 var infoClusterCmd = &cobra.Command{
 	Use:   "info [clusterID]",
+	Aliases: []string{"get"},
 	Short: "Get the cluster information",
 	Long:  `Get the cluster information`,
 	Args: cobra.MaximumNArgs(1),

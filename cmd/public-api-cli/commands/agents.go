@@ -57,6 +57,7 @@ var createAgentJoinTokenCmd = &cobra.Command{
 
 var activateAgentMontoringCmd = &cobra.Command{
 	Use:   "monitoring [edgeControllerID] [assetID]",
+	Aliases: []string{"mon"},
 	Short: "Activate agent monitoring",
 	Long:  `Activate agent monitoring`,
 	Args: cobra.ExactArgs(2),
