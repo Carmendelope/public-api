@@ -69,14 +69,26 @@ func recursiveTreeGenerator(c *cobra.Command, level int, last bool) string {
 
 func printLine (command *cobra.Command, connector string, cmdName string) string {
 	flags := ""
+	pFlags := ""
 	result := ""
-	if command.HasFlags() {
+
+	if command.HasFlags() || command.HasPersistentFlags() {
 		command.Flags().VisitAll(func(f *pflag.Flag) {
 			flags = flags + "--" + f.Name + " "
 		})
 
 		if flags != "" {
 			result = connector + "─── " + cmdName + " " + flags
+		}
+
+		if command.HasPersistentFlags() {
+			command.PersistentFlags().VisitAll(func(f *pflag.Flag) {
+				pFlags = pFlags + "--" + f.Name + " "
+			})
+
+			if pFlags != "" {
+				result = connector + "─── " + cmdName + " " + flags + pFlags
+			}
 		}
 	} else {
 		result = connector + "─── " + cmdName
