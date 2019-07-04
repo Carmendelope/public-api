@@ -95,8 +95,8 @@ func AsTable(result interface{}) *ResultTable {
 		return FromAsset(result.(*grpc_public_api_go.Asset))
 	case *grpc_public_api_go.AgentOpResponse:
 		return FromAgentOpResponse(result.(*grpc_public_api_go.AgentOpResponse))
-	case *grpc_inventory_manager_go.InstallAgentResponse:
-		return FromInstallAgentResponse(result.(*grpc_inventory_manager_go.InstallAgentResponse))
+	case *grpc_public_api_go.ECOpResponse:
+		return FromECOpResponse(result.(*grpc_public_api_go.ECOpResponse))
 	case *grpc_common_go.Success:
 		return FromSuccess(result.(*grpc_common_go.Success))
 	case *grpc_inventory_go.Asset:
@@ -589,7 +589,7 @@ func FromEdgeControllerExtendedInfo(result *grpc_public_api_go.EdgeControllerExt
 // Agent
 // -----
 
-func FromInstallAgentResponse(result *grpc_inventory_manager_go.InstallAgentResponse) *ResultTable{
+func FromECOpResponse(result *grpc_public_api_go.ECOpResponse) *ResultTable{
 	r := make([][]string, 0)
 	r = append(r, []string{"OPERATION"})
 	r = append(r, []string{result.OperationId})

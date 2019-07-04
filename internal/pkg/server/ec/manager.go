@@ -9,6 +9,8 @@ import (
 	"github.com/nalej/grpc-inventory-go"
 	"github.com/nalej/grpc-inventory-manager-go"
 	"github.com/nalej/grpc-organization-go"
+	"github.com/nalej/grpc-public-api-go"
+	"github.com/nalej/public-api/internal/pkg/entities"
 	"github.com/nalej/public-api/internal/pkg/server/common"
 )
 
@@ -38,10 +40,16 @@ func (m *Manager) UnlinkEIC(edgeControllerID *grpc_inventory_manager_go.UnlinkEC
 	return m.eicClient.UnlinkEIC(ctx, edgeControllerID)
 }
 
-func (m*Manager) InstallAgent(request *grpc_inventory_manager_go.InstallAgentRequest) (*grpc_inventory_manager_go.InstallAgentResponse, error) {
+func (m*Manager) InstallAgent(request *grpc_inventory_manager_go.InstallAgentRequest) (*grpc_public_api_go.ECOpResponse, error) {
 	ctx, cancel := common.GetContext()
 	defer cancel()
-	return m.agentClient.InstallAgent(ctx, request)
+	response, err :=  m.agentClient.InstallAgent(ctx, request)
+
+	if err != nil {
+		return nil, nil
+	}
+	return entities.ToPublicAPIECOPResponse(response), nil
+
 }
 
 func (m *Manager) UpdateGeolocation(updateRequest *grpc_inventory_manager_go.UpdateGeolocationRequest) (*grpc_inventory_go.EdgeController, error){
