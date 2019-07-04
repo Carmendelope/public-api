@@ -10,8 +10,8 @@ import (
 )
 
 var rolesCmd = &cobra.Command{
-	Use:     "roles",
-	Aliases: []string{"rol", "role"},
+	Use:     "role",
+	Aliases: []string{"rol", "roles"},
 	Short:   "Manage roles",
 	Long:    `Manage roles`,
 	Run: func(cmd *cobra.Command, args []string) {
@@ -35,6 +35,7 @@ func init() {
 
 var listRolesCmd = &cobra.Command{
 	Use:   "list",
+	Aliases: []string{"ls"},
 	Short: "List roles",
 	Long:  `List roles`,
 	Run: func(cmd *cobra.Command, args []string) {
