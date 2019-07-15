@@ -192,13 +192,19 @@ var addLabelToClusterCmd = &cobra.Command{
 			insecure, useTLS,
 			options.Resolve("cacert", caCertPath), options.Resolve("output", output))
 
-		targetValues, err := ResolveArgument([]string{"clusterID", "labels"}, args, []string{clusterID, rawLabels})
-		if err != nil {
-			fmt.Println(err.Error())
+		if len(args) > 0 && len(args) < 2{
+			fmt.Println("[clusterID] and [labels] must be flags or arguments, both the same type")
 			cmd.Help()
-		}else{
-			c.ModifyClusterLabels(options.Resolve("organizationID", organizationID),
-				targetValues[0], true, targetValues[1])
+		}else {
+
+			targetValues, err := ResolveArgument([]string{"clusterID", "labels"}, args, []string{clusterID, rawLabels})
+			if err != nil {
+				fmt.Println(err.Error())
+				cmd.Help()
+			} else {
+				c.ModifyClusterLabels(options.Resolve("organizationID", organizationID),
+					targetValues[0], true, targetValues[1])
+			}
 		}
 	},
 }
@@ -216,13 +222,20 @@ var removeLabelFromClusterCmd = &cobra.Command{
 			options.ResolveAsInt("port", nalejPort),
 			insecure, useTLS,
 			options.Resolve("cacert", caCertPath), options.Resolve("output", output))
-		targetValues, err := ResolveArgument([]string{"clusterID", "labels"}, args, []string{clusterID, rawLabels})
-		if err != nil {
-			fmt.Println(err.Error())
+
+		if len(args) > 0 && len(args) < 2{
+			fmt.Println("[clusterID] and [labels] must be flags or arguments, both the same type")
 			cmd.Help()
-		}else{
-			c.ModifyClusterLabels(options.Resolve("organizationID", organizationID),
-				targetValues[0], false, targetValues[1])
+		}else {
+
+			targetValues, err := ResolveArgument([]string{"clusterID", "labels"}, args, []string{clusterID, rawLabels})
+			if err != nil {
+				fmt.Println(err.Error())
+				cmd.Help()
+			} else {
+				c.ModifyClusterLabels(options.Resolve("organizationID", organizationID),
+					targetValues[0], false, targetValues[1])
+			}
 		}
 	},
 }
