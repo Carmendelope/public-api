@@ -15,6 +15,7 @@ import (
 	"github.com/nalej/grpc-user-manager-go"
 	"github.com/rs/zerolog/log"
 	"os"
+	"sort"
 	"strconv"
 	"strings"
 	"text/tabwriter"
@@ -132,10 +133,22 @@ func PrintFromValues(header []string, values [][]string) {
 
 func TransformLabels(labels map[string]string) string {
 	r := make([]string, 0)
-	for k, v := range labels {
-		r = append(r, fmt.Sprintf("%s:%s", k, v))
+	sortedKeys := GetSortedKeys(labels)
+	for _, k := range sortedKeys {
+		r = append(r, fmt.Sprintf("%s:%s", k, labels[k]))
 	}
 	return strings.Join(r, ",")
+}
+
+func GetSortedKeys (labels map[string]string) []string {
+	sortedKeys := make([]string, len(labels))
+	i := 0
+	for k, _ := range labels {
+		sortedKeys[i] = k
+		i++
+	}
+	sort.Strings(sortedKeys)
+	return sortedKeys
 }
 
 func FromOrganizationInfo(info *grpc_public_api_go.OrganizationInfo) *ResultTable {
