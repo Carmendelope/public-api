@@ -105,6 +105,10 @@ func AsTable(result interface{}) *ResultTable {
 		return FromIEdgeController(result.(*grpc_inventory_go.EdgeController))
 	case *grpc_inventory_manager_go.InventorySummary:
 		return FromInventorySummary(result.(*grpc_inventory_manager_go.InventorySummary))
+	case *grpc_inventory_manager_go.QueryMetricsResult:
+		return FromQueryMetricsResult(result.(*grpc_inventory_manager_go.QueryMetricsResult))
+	case *grpc_inventory_manager_go.MetricsList:
+		return FromMetricsList(result.(*grpc_inventory_manager_go.MetricsList))
 	default:
 		log.Fatal().Str("type", fmt.Sprintf("%T", result)).Msg("unsupported")
 	}
@@ -639,6 +643,37 @@ func FromInventorySummary (result *grpc_inventory_manager_go.InventorySummary) *
 	r := make([][]string, 0)
 	r = append(r, []string{"CPUs", "STORAGE (GB)", "RAM (GB)"})
 	r = append(r, []string{strconv.FormatInt(result.TotalNumCpu, 10), strconv.FormatInt(result.TotalStorage, 10), strconv.FormatInt(result.TotalRam, 10)})
+
+	return &ResultTable{r}
+}
+
+// ----
+// Inventory monitoring
+// ----
+
+func FromQueryMetricsResult(result *grpc_inventory_manager_go.QueryMetricsResult) *ResultTable {
+	r := [][]string{}
+	r = append(r, []string{"TIMESTAMP", "METRIC", "ASSET", "VALUE"})
+
+	for metric, assetMetric := range(result.GetMetrics()) {
+		for _, metrics := range(assetMetric.GetMetrics()) {
+			for _, value := range(metrics.GetValues()) {
+				timestamp := time.Unix(value.GetTimestamp(), 0).Local().String()
+				r = append(r, []string{timestamp, metric, metrics.GetAssetId(), strconv.FormatInt(value.GetValue(), 10)})
+			}
+		}
+	}
+
+	return &ResultTable{r}
+}
+
+func FromMetricsList(result *grpc_inventory_manager_go.MetricsList) *ResultTable {
+	r := [][]string{}
+	r = append(r, []string{"METRIC"})
+
+	for _, metric := range(result.GetMetrics()) {
+		r = append(r, []string{metric})
+	}
 
 	return &ResultTable{r}
 }
