@@ -25,6 +25,7 @@ func init() {
 	rootCmd.AddCommand(agentCmd)
 
 	// CreateAgentJoinToken
+	createAgentJoinTokenCmd.Flags().StringVar(&outputPath, "outputPath", "", "Path to store the resulting token")
 	agentCmd.AddCommand(createAgentJoinTokenCmd)
 
 	// ActivateAgentMonitoring
