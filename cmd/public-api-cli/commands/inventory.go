@@ -92,7 +92,7 @@ var inventoryListCmd = &cobra.Command{
 			options.Resolve("nalejAddress", nalejAddress),
 			options.ResolveAsInt("port", nalejPort),
 			insecure, useTLS,
-			options.Resolve("cacert", caCertPath), options.Resolve("output", output))
+			options.Resolve("cacert", caCertPath), options.Resolve("output", output), options.ResolveAsInt("labelLength", labelLength))
 		ec.List(options.Resolve("organizationID", organizationID))
 	},
 }
@@ -153,7 +153,7 @@ var invControllerExtInfoCmd = &cobra.Command{
 			options.Resolve("nalejAddress", nalejAddress),
 			options.ResolveAsInt("port", nalejPort),
 			insecure, useTLS,
-			options.Resolve("cacert", caCertPath), options.Resolve("output", output))
+			options.Resolve("cacert", caCertPath), options.Resolve("output", output), options.ResolveAsInt("labelLength", labelLength))
 		ec.GetControllerExtendedInfo(options.Resolve("organizationID", organizationID), args[0])
 	},
 }
@@ -172,7 +172,8 @@ var invAssetInfoCmd = &cobra.Command{
 			insecure,
 			useTLS,
 			options.Resolve("cacert", caCertPath),
-			options.Resolve("output", output))
+			options.Resolve("output", output),
+			options.ResolveAsInt("labelLength", labelLength))
 		ec.GetAssetInfo(options.Resolve("organizationID", organizationID), args[0])
 	},
 }
@@ -190,7 +191,7 @@ var invAssetUpdateLocationCmd = &cobra.Command{
 			insecure,
 			useTLS,
 			options.Resolve("cacert", caCertPath),
-			options.Resolve("output", output))
+			options.Resolve("output", output), options.ResolveAsInt("labelLength", labelLength))
 
 			assetID = args[0]
 			newLocation := args[1]
@@ -223,7 +224,7 @@ var invDeviceInfoCmd = &cobra.Command{
 			insecure,
 			useTLS,
 			options.Resolve("cacert", caCertPath),
-			options.Resolve("output", output))
+			options.Resolve("output", output), options.ResolveAsInt("labelLength", labelLength))
 		ec.GetDeviceInfo(options.Resolve("organizationID", organizationID), args[0])
 	},
 }
@@ -241,7 +242,7 @@ var invDeviceUpdateLocationCmd = &cobra.Command{
 			insecure,
 			useTLS,
 			options.Resolve("cacert", caCertPath),
-			options.Resolve("output", output))
+			options.Resolve("output", output), options.ResolveAsInt("labelLength", labelLength))
 
 			assetDeviceId = args[0]
 			newLocation := args[1]
@@ -260,7 +261,7 @@ var invEdgeControllerUpdateLocationCmd = &cobra.Command{
 			options.Resolve("nalejAddress", nalejAddress),
 			options.ResolveAsInt("port", nalejPort),
 			insecure, useTLS,
-			options.Resolve("cacert", caCertPath), options.Resolve("output", output))
+			options.Resolve("cacert", caCertPath), options.Resolve("output", output), options.ResolveAsInt("labelLength", labelLength))
 
 			edgeControllerID = args[0]
 			newLocation := args[1]
@@ -279,7 +280,7 @@ var invMonitoringCmd = &cobra.Command{
 			options.Resolve("nalejAddress", nalejAddress),
 			options.ResolveAsInt("port", nalejPort),
 			insecure, useTLS,
-			options.Resolve("cacert", caCertPath), options.Resolve("output", output))
+			options.Resolve("cacert", caCertPath), options.Resolve("output", output), options.ResolveAsInt("labelLength", labelLength))
 		queryAssetSelector.OrganizationId = options.Resolve("organizationID", organizationID)
 		inv.QueryMetrics(queryAssetSelector, queryMetrics, queryTimeRange, queryAggr)
 	},
@@ -296,7 +297,7 @@ var invMonitoringListCmd = &cobra.Command{
 			options.Resolve("nalejAddress", nalejAddress),
 			options.ResolveAsInt("port", nalejPort),
 			insecure, useTLS,
-			options.Resolve("cacert", caCertPath), options.Resolve("output", output))
+			options.Resolve("cacert", caCertPath), options.Resolve("output", output), options.ResolveAsInt("labelLength", labelLength))
 		listAssetSelector.OrganizationId = options.Resolve("organizationID", organizationID)
 		inv.ListMetrics(listAssetSelector)
 	},
@@ -324,7 +325,7 @@ var addLabelToAssetCmd = &cobra.Command{
 			options.Resolve("nalejAddress", nalejAddress),
 			options.ResolveAsInt("port", nalejPort),
 			insecure, useTLS,
-			options.Resolve("cacert", caCertPath), options.Resolve("output", output))
+			options.Resolve("cacert", caCertPath), options.Resolve("output", output), options.ResolveAsInt("labelLength", labelLength))
 
 		n.AddLabelToAsset(options.Resolve("organizationID", organizationID), args[0], args[1])
 	},
@@ -342,7 +343,7 @@ var removeLabelFromAssetCmd = &cobra.Command{
 			options.Resolve("nalejAddress", nalejAddress),
 			options.ResolveAsInt("port", nalejPort),
 			insecure, useTLS,
-			options.Resolve("cacert", caCertPath), options.Resolve("output", output))
+			options.Resolve("cacert", caCertPath), options.Resolve("output", output), options.ResolveAsInt("labelLength", labelLength))
 
 		n.RemoveLabelFromAsset(options.Resolve("organizationID", organizationID), args[0], args[1])
 	},
@@ -359,7 +360,7 @@ var addLabelToECCmd = &cobra.Command{
 			options.Resolve("nalejAddress", nalejAddress),
 			options.ResolveAsInt("port", nalejPort),
 			insecure, useTLS,
-			options.Resolve("cacert", caCertPath), options.Resolve("output", output))
+			options.Resolve("cacert", caCertPath), options.Resolve("output", output), options.ResolveAsInt("labelLength", labelLength))
 
 		n.AddLabelToEC(options.Resolve("organizationID", organizationID), args[0], args[1])
 	},
@@ -377,7 +378,7 @@ var removeLabelFromECCmd = &cobra.Command{
 			options.Resolve("nalejAddress", nalejAddress),
 			options.ResolveAsInt("port", nalejPort),
 			insecure, useTLS,
-			options.Resolve("cacert", caCertPath), options.Resolve("output", output))
+			options.Resolve("cacert", caCertPath), options.Resolve("output", output), options.ResolveAsInt("labelLength", labelLength))
 
 		n.RemoveLabelFromEC(options.Resolve("organizationID", organizationID),	args[0], args[1])
 	},
@@ -394,7 +395,7 @@ var addLabelToInvDeviceCmd = &cobra.Command{
 			options.Resolve("nalejAddress", nalejAddress),
 			options.ResolveAsInt("port", nalejPort),
 			insecure, useTLS,
-			options.Resolve("cacert", caCertPath), options.Resolve("output", output))
+			options.Resolve("cacert", caCertPath), options.Resolve("output", output), options.ResolveAsInt("labelLength", labelLength))
 
 		device := strings.Split(args[0],"#")
 		deviceGroupID := device[0]
@@ -416,7 +417,7 @@ var removeLabelFromInvDeviceCmd = &cobra.Command{
 			options.Resolve("nalejAddress", nalejAddress),
 			options.ResolveAsInt("port", nalejPort),
 			insecure, useTLS,
-			options.Resolve("cacert", caCertPath), options.Resolve("output", output))
+			options.Resolve("cacert", caCertPath), options.Resolve("output", output), options.ResolveAsInt("labelLength", labelLength))
 
 		device := strings.Split(args[0],"#")
 		deviceGroupID := device[0]
@@ -437,7 +438,7 @@ var inventorySummaryCmd = &cobra.Command{
 			options.Resolve("nalejAddress", nalejAddress),
 			options.ResolveAsInt("port", nalejPort),
 			insecure, useTLS,
-			options.Resolve("cacert", caCertPath), options.Resolve("output", output))
+			options.Resolve("cacert", caCertPath), options.Resolve("output", output), options.ResolveAsInt("labelLength", labelLength))
 		inv.Summary(options.Resolve("organizationID", organizationID))
 	},
 }

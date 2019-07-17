@@ -47,8 +47,11 @@ var createAgentJoinTokenCmd = &cobra.Command{
 		agent := cli.NewAgent(
 			options.Resolve("nalejAddress", nalejAddress),
 			options.ResolveAsInt("port", nalejPort),
-			insecure, useTLS,
-			options.Resolve("cacert", caCertPath), options.Resolve("output", output))
+			insecure,
+			useTLS,
+			options.Resolve("cacert", caCertPath),
+			options.Resolve("output", output),
+			options.ResolveAsInt("labelLength", labelLength))
 			agent.CreateAgentJoinToken(options.Resolve("organizationID", organizationID),
 				                       args[0],
 				                       outputPath)
@@ -67,7 +70,7 @@ var activateAgentMontoringCmd = &cobra.Command{
 			options.Resolve("nalejAddress", nalejAddress),
 			options.ResolveAsInt("port", nalejPort),
 			insecure, useTLS,
-			options.Resolve("cacert", caCertPath), options.Resolve("output", output))
+			options.Resolve("cacert", caCertPath), options.Resolve("output", output), options.ResolveAsInt("labelLength", labelLength))
 
 		targetValues, err := ResolveArgument([]string{"edgeControllerId", "assetID"}, args, []string{edgeControllerID, assetID})
 		if err != nil {
@@ -91,7 +94,7 @@ var uninstallAgentCmd = &cobra.Command{
 		options.Resolve("nalejAddress", nalejAddress),
 		options.ResolveAsInt("port", nalejPort),
 		insecure, useTLS,
-		options.Resolve("cacert", caCertPath), options.Resolve("output", output))
+		options.Resolve("cacert", caCertPath), options.Resolve("output", output), options.ResolveAsInt("labelLength", labelLength))
 		agent.UninstallAgent(options.Resolve("organizationID", organizationID),args[0], force)
 	},
 }

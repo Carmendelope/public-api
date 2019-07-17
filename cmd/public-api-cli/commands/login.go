@@ -27,7 +27,7 @@ var loginCmd = &cobra.Command{
 			targetAddress,
 			loginPort,
 			insecure, useTLS,
-			options.Resolve("cacert", caCertPath), options.Resolve("output", output))
+			options.Resolve("cacert", caCertPath), options.Resolve("output", output), options.ResolveAsInt("labelLength", labelLength))
 		creds, err := l.Login(email, password)
 		if err != nil {
 			if debugLevel {

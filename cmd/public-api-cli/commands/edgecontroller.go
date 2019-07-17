@@ -57,7 +57,7 @@ var createJoinTokenECCmd = &cobra.Command{
 			options.Resolve("nalejAddress", nalejAddress),
 			options.ResolveAsInt("port", nalejPort),
 			insecure, useTLS,
-			options.Resolve("cacert", caCertPath), options.Resolve("output", output))
+			options.Resolve("cacert", caCertPath), options.Resolve("output", output), options.ResolveAsInt("labelLength", labelLength))
 			ec.CreateJoinToken(options.Resolve("organizationID", organizationID), outputPath)
 	},
 }
@@ -73,7 +73,7 @@ var unlinkECCmd = &cobra.Command{
 			options.Resolve("nalejAddress", nalejAddress),
 			options.ResolveAsInt("port", nalejPort),
 			insecure, useTLS,
-			options.Resolve("cacert", caCertPath), options.Resolve("output", output))
+			options.Resolve("cacert", caCertPath), options.Resolve("output", output), options.ResolveAsInt("labelLength", labelLength))
 		if len(args) > 0{
 			edgeControllerID = args[0]
 		}
@@ -92,7 +92,7 @@ var updateGeoCmd = &cobra.Command{
 			options.Resolve("nalejAddress", nalejAddress),
 			options.ResolveAsInt("port", nalejPort),
 			insecure, useTLS,
-			options.Resolve("cacert", caCertPath), options.Resolve("output", output))
+			options.Resolve("cacert", caCertPath), options.Resolve("output", output), options.ResolveAsInt("labelLength", labelLength))
 		if len(args) > 0{
 			edgeControllerID = args[0]
 		}
@@ -140,7 +140,7 @@ var installAgentCmd = &cobra.Command{
 			options.Resolve("nalejAddress", nalejAddress),
 			options.ResolveAsInt("port", nalejPort),
 			insecure, useTLS,
-			options.Resolve("cacert", caCertPath), options.Resolve("output", output))
+			options.Resolve("cacert", caCertPath), options.Resolve("output", output), options.ResolveAsInt("labelLength", labelLength))
 
 			edgeControllerID = args[0]
 			targetHost := args[1]

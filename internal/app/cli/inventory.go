@@ -18,9 +18,9 @@ type Inventory struct {
 	Credentials
 }
 
-func NewInventory(address string, port int, insecure bool, useTLS bool, caCertPath string, output string) *Inventory {
+func NewInventory(address string, port int, insecure bool, useTLS bool, caCertPath string, output string, labelLength int) *Inventory {
 	return &Inventory{
-		Connection:  *NewConnection(address, port, insecure, useTLS, caCertPath, output),
+		Connection:  *NewConnection(address, port, insecure, useTLS, caCertPath, output, labelLength),
 		Credentials: *NewEmptyCredentials(DefaultPath),
 	}
 }
