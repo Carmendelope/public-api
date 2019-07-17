@@ -8,13 +8,14 @@ import (
 	"github.com/nalej/grpc-device-manager-go"
 	"github.com/nalej/grpc-infrastructure-manager-go"
 	"github.com/nalej/grpc-infrastructure-monitor-go"
-	grpc_inventory_go "github.com/nalej/grpc-inventory-go"
+	"github.com/nalej/grpc-inventory-go"
 	"github.com/nalej/grpc-inventory-manager-go"
 	"github.com/nalej/grpc-public-api-go"
 	"github.com/nalej/grpc-unified-logging-go"
 	"github.com/nalej/grpc-user-manager-go"
 	"github.com/rs/zerolog/log"
 	"os"
+	"sort"
 	"strconv"
 	"strings"
 	"text/tabwriter"
@@ -33,7 +34,8 @@ type ResultTable struct {
 	data [][]string
 }
 
-func AsTable(result interface{}) *ResultTable {
+func AsTable(result interface{}, labelLength int) *ResultTable {
+	log.Debug().Int("labelLength", labelLength).Msg("Label length")
 	switch result.(type) {
 	case *grpc_public_api_go.OrganizationInfo:
 		return FromOrganizationInfo(result.(*grpc_public_api_go.OrganizationInfo))
@@ -44,15 +46,15 @@ func AsTable(result interface{}) *ResultTable {
 	case *grpc_public_api_go.UserList:
 		return FromUserList(result.(*grpc_public_api_go.UserList))
 	case *grpc_public_api_go.Cluster:
-		return FromCluster(result.(*grpc_public_api_go.Cluster))
+		return FromCluster(result.(*grpc_public_api_go.Cluster), labelLength)
 	case *grpc_infrastructure_monitor_go.ClusterSummary:
 		return FromClusterSummary(result.(*grpc_infrastructure_monitor_go.ClusterSummary))
 	case *grpc_public_api_go.ClusterList:
-		return FromClusterList(result.(*grpc_public_api_go.ClusterList))
+		return FromClusterList(result.(*grpc_public_api_go.ClusterList), labelLength)
 	case *grpc_infrastructure_manager_go.InstallResponse:
 		return FromInstallResponse(result.(*grpc_infrastructure_manager_go.InstallResponse))
 	case *grpc_public_api_go.AppInstanceList:
-		return FromAppInstanceList(result.(*grpc_public_api_go.AppInstanceList))
+		return FromAppInstanceList(result.(*grpc_public_api_go.AppInstanceList), labelLength)
 	case *grpc_public_api_go.AppInstance:
 		return FromAppInstance(result.(*grpc_public_api_go.AppInstance))
 	case *grpc_application_go.InstanceParameterList:
@@ -60,9 +62,9 @@ func AsTable(result interface{}) *ResultTable {
 	case *grpc_application_manager_go.DeploymentResponse:
 		return FromDeploymentResponse(result.(*grpc_application_manager_go.DeploymentResponse))
 	case *grpc_application_go.AppDescriptorList:
-		return FromAppDescriptorList(result.(*grpc_application_go.AppDescriptorList))
+		return FromAppDescriptorList(result.(*grpc_application_go.AppDescriptorList), labelLength)
 	case *grpc_application_go.AppDescriptor:
-		return FromAppDescriptor(result.(*grpc_application_go.AppDescriptor))
+		return FromAppDescriptor(result.(*grpc_application_go.AppDescriptor), labelLength)
 	case *grpc_public_api_go.AppParameterList:
 		return FromAppParameterList(result.(*grpc_public_api_go.AppParameterList))
 	case *grpc_device_manager_go.DeviceGroup:
@@ -70,15 +72,15 @@ func AsTable(result interface{}) *ResultTable {
 	case *grpc_device_manager_go.DeviceGroupList:
 		return FromDeviceGroupList(result.(*grpc_device_manager_go.DeviceGroupList))
 	case *grpc_public_api_go.Device:
-		return FromDevice(result.(*grpc_public_api_go.Device))
+		return FromDevice(result.(*grpc_public_api_go.Device), labelLength)
 	case *grpc_public_api_go.DeviceList:
-		return FromDeviceList(result.(*grpc_public_api_go.DeviceList))
+		return FromDeviceList(result.(*grpc_public_api_go.DeviceList), labelLength)
 	case *grpc_unified_logging_go.LogResponse:
 		return FromLogResponse(result.(*grpc_unified_logging_go.LogResponse))
 	case *grpc_public_api_go.Node:
-		return FromNode(result.(*grpc_public_api_go.Node))
+		return FromNode(result.(*grpc_public_api_go.Node), labelLength)
 	case *grpc_public_api_go.NodeList:
-		return FromNodeList(result.(*grpc_public_api_go.NodeList))
+		return FromNodeList(result.(*grpc_public_api_go.NodeList), labelLength)
 	case *grpc_public_api_go.Role:
 		return FromRole(result.(*grpc_public_api_go.Role))
 	case *grpc_public_api_go.RoleList:
@@ -86,11 +88,11 @@ func AsTable(result interface{}) *ResultTable {
 	case *grpc_inventory_manager_go.EICJoinToken:
 		return FromEICJoinToken(result.(*grpc_inventory_manager_go.EICJoinToken))
 	case *grpc_public_api_go.InventoryList:
-		return FromInventoryList(result.(*grpc_public_api_go.InventoryList))
+		return FromInventoryList(result.(*grpc_public_api_go.InventoryList), labelLength)
 	case *grpc_inventory_manager_go.AgentJoinToken:
 		return FromAgentJoinToken(result.(*grpc_inventory_manager_go.AgentJoinToken))
 	case *grpc_public_api_go.EdgeControllerExtendedInfo:
-		return FromEdgeControllerExtendedInfo(result.(*grpc_public_api_go.EdgeControllerExtendedInfo))
+		return FromEdgeControllerExtendedInfo(result.(*grpc_public_api_go.EdgeControllerExtendedInfo), labelLength)
 	case *grpc_public_api_go.Asset:
 		return FromAsset(result.(*grpc_public_api_go.Asset))
 	case *grpc_public_api_go.AgentOpResponse:
@@ -100,9 +102,9 @@ func AsTable(result interface{}) *ResultTable {
 	case *grpc_common_go.Success:
 		return FromSuccess(result.(*grpc_common_go.Success))
 	case *grpc_inventory_go.Asset:
-		return  FromIAsset(result.(*grpc_inventory_go.Asset))
+		return  FromIAsset(result.(*grpc_inventory_go.Asset), labelLength)
 	case *grpc_inventory_go.EdgeController:
-		return FromIEdgeController(result.(*grpc_inventory_go.EdgeController))
+		return FromIEdgeController(result.(*grpc_inventory_go.EdgeController), labelLength)
 	case *grpc_inventory_manager_go.InventorySummary:
 		return FromInventorySummary(result.(*grpc_inventory_manager_go.InventorySummary))
 	default:
@@ -130,12 +132,43 @@ func PrintFromValues(header []string, values [][]string) {
 	w.Flush()
 }
 
-func TransformLabels(labels map[string]string) string {
+func TransformLabels(labels map[string]string, labelLength int) string {
 	r := make([]string, 0)
-	for k, v := range labels {
-		r = append(r, fmt.Sprintf("%s:%s", k, v))
+
+	sortedKeys := GetSortedKeys(labels)
+	for _, k := range sortedKeys {
+		label := fmt.Sprintf("%s:%s", k, labels[k])
+		r = append(r, label)
 	}
-	return strings.Join(r, ",")
+	labelString := strings.Join(r, ",")
+	truncatedR := TruncateString(labelString, labelLength)
+	return truncatedR
+}
+
+func GetSortedKeys (labels map[string]string) []string {
+	sortedKeys := make([]string, len(labels))
+	i := 0
+	for k, _ := range labels {
+		sortedKeys[i] = k
+		i++
+	}
+	sort.Strings(sortedKeys)
+	return sortedKeys
+}
+
+func TruncateString (text string, length int) string {
+	log.Debug().Int("length", length).Str("text", text).Msg("truncate")
+	if length <= 0 {
+		return text
+	}
+	truncatedString := text
+	if len(text) > length {
+		if length > 3 {
+			length -= 3
+		}
+		truncatedString = text[0:length] + "..."
+	}
+	return truncatedString
 }
 
 func FromOrganizationInfo(info *grpc_public_api_go.OrganizationInfo) *ResultTable {
@@ -176,18 +209,18 @@ func FromUserList(user *grpc_public_api_go.UserList) *ResultTable {
 // Clusters
 // ----
 
-func FromCluster(result *grpc_public_api_go.Cluster) *ResultTable {
+func FromCluster(result *grpc_public_api_go.Cluster, labelLength int) *ResultTable {
 	r := make([][]string, 0)
 	r = append(r, []string{"NAME", "ID", "NODES", "LABELS", "STATUS"})
-	r = append(r, []string{result.Name, result.ClusterId, fmt.Sprintf("%d", result.TotalNodes), TransformLabels(result.Labels), result.StatusName})
+	r = append(r, []string{result.Name, result.ClusterId, fmt.Sprintf("%d", result.TotalNodes), TransformLabels(result.Labels, labelLength), result.StatusName})
 	return &ResultTable{r}
 }
 
-func FromClusterList(result *grpc_public_api_go.ClusterList) *ResultTable {
+func FromClusterList(result *grpc_public_api_go.ClusterList, labelLength int) *ResultTable {
 	r := make([][]string, 0)
 	r = append(r, []string{"NAME", "ID", "NODES", "LABELS", "STATUS"})
 	for _, c := range result.Clusters {
-		r = append(r, []string{c.Name, c.ClusterId, fmt.Sprintf("%d", c.TotalNodes), TransformLabels(c.Labels), c.StatusName})
+		r = append(r, []string{c.Name, c.ClusterId, fmt.Sprintf("%d", c.TotalNodes), TransformLabels(c.Labels, labelLength), c.StatusName})
 	}
 	return &ResultTable{r}
 }
@@ -218,18 +251,18 @@ func FromInstallResponse(result *grpc_infrastructure_manager_go.InstallResponse)
 // Nodes
 // ----
 
-func FromNode(result *grpc_public_api_go.Node) *ResultTable {
+func FromNode(result *grpc_public_api_go.Node, labelLength int) *ResultTable {
 	r := make([][]string, 0)
 	r = append(r, []string{"ID", "IP", "STATE", "LABELS", "STATUS"})
-	r = append(r, []string{result.NodeId, result.Ip, result.StateName, TransformLabels(result.Labels), result.StatusName})
+	r = append(r, []string{result.NodeId, result.Ip, result.StateName, TransformLabels(result.Labels, labelLength), result.StatusName})
 	return &ResultTable{r}
 }
 
-func FromNodeList(result *grpc_public_api_go.NodeList) *ResultTable {
+func FromNodeList(result *grpc_public_api_go.NodeList, labelLength int) *ResultTable {
 	r := make([][]string, 0)
 	r = append(r, []string{"ID", "IP", "STATE", "LABELS", "STATUS"})
 	for _, n := range result.Nodes {
-		r = append(r, []string{n.NodeId, n.Ip, n.StateName, TransformLabels(n.Labels), n.StatusName})
+		r = append(r, []string{n.NodeId, n.Ip, n.StateName, TransformLabels(n.Labels, labelLength), n.StatusName})
 	}
 	return &ResultTable{r}
 }
@@ -256,11 +289,11 @@ func FromInstanceParameterList(result *grpc_application_go.InstanceParameterList
 	return &ResultTable{r}
 }
 
-func FromAppInstanceList(result *grpc_public_api_go.AppInstanceList) *ResultTable {
+func FromAppInstanceList(result *grpc_public_api_go.AppInstanceList, labelLength int) *ResultTable {
 	r := make([][]string, 0)
 	r = append(r, []string{"NAME", "ID", "LABELS", "STATUS"})
 	for _, i := range result.Instances {
-		r = append(r, []string{i.Name, i.AppInstanceId, TransformLabels(i.Labels), i.StatusName})
+		r = append(r, []string{i.Name, i.AppInstanceId, TransformLabels(i.Labels, labelLength), i.StatusName})
 	}
 	return &ResultTable{r}
 }
@@ -297,7 +330,7 @@ func FromDeploymentResponse(result *grpc_application_manager_go.DeploymentRespon
 	return &ResultTable{r}
 }
 
-func FromAppDescriptorList(result *grpc_application_go.AppDescriptorList) *ResultTable {
+func FromAppDescriptorList(result *grpc_application_go.AppDescriptorList, labelLength int) *ResultTable {
 	r := make([][]string, 0)
 	r = append(r, []string{"NAME", "ID", "LABELS", "SERVICES"})
 	for _, d := range result.Descriptors {
@@ -305,16 +338,16 @@ func FromAppDescriptorList(result *grpc_application_go.AppDescriptorList) *Resul
 		for _, g := range d.Groups {
 			numServices = numServices + len(g.Services)
 		}
-		r = append(r, []string{d.Name, d.AppDescriptorId, TransformLabels(d.Labels), strconv.Itoa(numServices)})
+		r = append(r, []string{d.Name, d.AppDescriptorId, TransformLabels(d.Labels, labelLength), strconv.Itoa(numServices)})
 	}
 	return &ResultTable{r}
 }
 
-func FromAppDescriptor(result *grpc_application_go.AppDescriptor) *ResultTable {
+func FromAppDescriptor(result *grpc_application_go.AppDescriptor, labelLength int) *ResultTable {
 	r := make([][]string, 0)
 
 	r = append(r, []string{"DESCRIPTOR", "ID", "LABELS"})
-	r = append(r, []string{result.Name, result.AppDescriptorId, TransformLabels(result.Labels)})
+	r = append(r, []string{result.Name, result.AppDescriptorId, TransformLabels(result.Labels, labelLength)})
 	r = append(r, []string{"", "", ""})
 
 	if len(result.Parameters) > 0 {
@@ -327,9 +360,9 @@ func FromAppDescriptor(result *grpc_application_go.AppDescriptor) *ResultTable {
 
 	r = append(r, []string{"NAME", "IMAGE", "LABELS"})
 	for _, g := range result.Groups {
-		r = append(r, []string{fmt.Sprintf("[Group] %s", g.Name), "===", TransformLabels(g.Labels)})
+		r = append(r, []string{fmt.Sprintf("[Group] %s", g.Name), "===", TransformLabels(g.Labels, labelLength)})
 		for _, s := range g.Services {
-			r = append(r, []string{s.Name, s.Image, TransformLabels(s.Labels)})
+			r = append(r, []string{s.Name, s.Image, TransformLabels(s.Labels, labelLength)})
 		}
 	}
 
@@ -358,14 +391,14 @@ func FromDeviceGroupList(result *grpc_device_manager_go.DeviceGroupList) *Result
 	return &ResultTable{r}
 }
 
-func FromDevice(result *grpc_public_api_go.Device) *ResultTable {
+func FromDevice(result *grpc_public_api_go.Device, labelLength int) *ResultTable {
 	id := result.AssetDeviceId
 	if id == "" {
 		id = result.DeviceId
 	}
 	r := make([][]string, 0)
 	r = append(r, []string{"ID", "DATE", "STATUS", "LABELS", "ENABLED"})
-	r = append(r, []string{id, time.Unix(result.RegisterSince, 0).String(), result.DeviceStatusName, TransformLabels(result.Labels), strconv.FormatBool(result.Enabled)})
+	r = append(r, []string{id, time.Unix(result.RegisterSince, 0).String(), result.DeviceStatusName, TransformLabels(result.Labels, labelLength), strconv.FormatBool(result.Enabled)})
 	r = append(r, []string{""})
 	r = append(r, []string{"GEOLOCATION"})
 	location := "NA"
@@ -402,12 +435,12 @@ func FromDevice(result *grpc_public_api_go.Device) *ResultTable {
 	return &ResultTable{r}
 }
 
-func FromDeviceList(result *grpc_public_api_go.DeviceList) *ResultTable {
+func FromDeviceList(result *grpc_public_api_go.DeviceList, labelLength int) *ResultTable {
 	r := make([][]string, 0)
 	r = append(r, []string{"ID", "DATE", "STATUS", "LABELS", "ENABLED"})
 
 	for _, d := range result.Devices {
-		r = append(r, []string{d.DeviceId, time.Unix(d.RegisterSince, 0).String(), d.DeviceStatusName, TransformLabels(d.Labels), strconv.FormatBool(d.Enabled)})
+		r = append(r, []string{d.DeviceId, time.Unix(d.RegisterSince, 0).String(), d.DeviceStatusName, TransformLabels(d.Labels, labelLength), strconv.FormatBool(d.Enabled)})
 	}
 
 	return &ResultTable{r}
@@ -461,7 +494,7 @@ func FromEICJoinToken(result *grpc_inventory_manager_go.EICJoinToken) *ResultTab
 	return &ResultTable{r}
 }
 
-func FromIEdgeController (result *grpc_inventory_go.EdgeController) *ResultTable {
+func FromIEdgeController (result *grpc_inventory_go.EdgeController, labelLength int) *ResultTable {
 	r := make([][]string, 0)
 	name := "NA"
 	if result.Name != "" {
@@ -478,7 +511,7 @@ func FromIEdgeController (result *grpc_inventory_go.EdgeController) *ResultTable
 	}
 	labels := "NA"
 	if result.Labels != nil {
-		labels = TransformLabels(result.Labels)
+		labels = TransformLabels(result.Labels, labelLength)
 	}
 	r = append(r, []string{name, location, labels})
 
@@ -520,7 +553,7 @@ func FromIEdgeController (result *grpc_inventory_go.EdgeController) *ResultTable
 	return &ResultTable{r}
 }
 
-func FromEdgeControllerExtendedInfo(result *grpc_public_api_go.EdgeControllerExtendedInfo) *ResultTable {
+func FromEdgeControllerExtendedInfo(result *grpc_public_api_go.EdgeControllerExtendedInfo, labelLength int) *ResultTable {
 	r := make([][]string, 0)
 	geolocation := ""
 	if result.Controller != nil {
@@ -533,7 +566,7 @@ func FromEdgeControllerExtendedInfo(result *grpc_public_api_go.EdgeControllerExt
 		if result.Controller.LastAliveTimestamp != 0{
 			seen = time.Unix(result.Controller.LastAliveTimestamp, 0).String()
 		}
-		r = append(r, []string{result.Controller.Name, TransformLabels(result.Controller.Labels),geolocation, result.Controller.StatusName, seen})
+		r = append(r, []string{result.Controller.Name, TransformLabels(result.Controller.Labels, labelLength),geolocation, result.Controller.StatusName, seen})
 	}
 	// Asset Info
 	r = append(r, []string{""})
@@ -607,7 +640,7 @@ func FromAgentJoinToken(result *grpc_inventory_manager_go.AgentJoinToken) *Resul
 // Inventory
 // ----
 
-func FromInventoryList(result *grpc_public_api_go.InventoryList) *ResultTable {
+func FromInventoryList(result *grpc_public_api_go.InventoryList, labelLength int) *ResultTable {
 	r := make([][]string, 0)
 
 	r = append(r, []string{"TYPE", "ID", "LOCATION", "LABELS", "STATUS"})
@@ -616,21 +649,21 @@ func FromInventoryList(result *grpc_public_api_go.InventoryList) *ResultTable {
 		if device.Location != nil {
 			geolocation = device.Location.Geolocation
 		}
-		r = append(r, []string{"DEVICE", device.AssetDeviceId, geolocation, TransformLabels(device.Labels), device.DeviceStatusName})
+		r = append(r, []string{"DEVICE", device.AssetDeviceId, geolocation, TransformLabels(device.Labels, labelLength), device.DeviceStatusName})
 	}
 	for _, ec := range result.Controllers {
 		geolocation := "NA"
 		if ec.Location != nil {
 			geolocation = ec.Location.Geolocation
 		}
-		r = append(r, []string{"EC", ec.EdgeControllerId, geolocation, TransformLabels(ec.Labels), ec.StatusName})
+		r = append(r, []string{"EC", ec.EdgeControllerId, geolocation, TransformLabels(ec.Labels, labelLength), ec.StatusName})
 	}
 	for _, asset := range result.Assets {
 		geolocation := "NA"
 		if asset.Location != nil {
 			geolocation = asset.Location.Geolocation
 		}
-		r = append(r, []string{"ASSET", asset.AssetId, geolocation, TransformLabels(asset.Labels), asset.StatusName})
+		r = append(r, []string{"ASSET", asset.AssetId, geolocation, TransformLabels(asset.Labels, labelLength), asset.StatusName})
 	}
 	return &ResultTable{r}
 }
@@ -697,7 +730,7 @@ func FromAsset(result *grpc_public_api_go.Asset) *ResultTable {
 	return &ResultTable{r}
 }
 
-func FromIAsset(result *grpc_inventory_go.Asset) *ResultTable {
+func FromIAsset(result *grpc_inventory_go.Asset, labelLength int) *ResultTable {
 	r := make([][]string, 0)
 	r = append(r, []string{"ID", "CONTROLLER", "AGENT"})
 	r = append(r, []string{result.AssetId, result.EdgeControllerId, result.AgentId})
@@ -712,7 +745,7 @@ func FromIAsset(result *grpc_inventory_go.Asset) *ResultTable {
 	}
 	labels := "NA"
 	if result.Labels != nil {
-		labels = TransformLabels(result.Labels)
+		labels = TransformLabels(result.Labels, labelLength)
 	}
 	r = append(r, []string{location, labels})
 	r = append(r, []string{""})

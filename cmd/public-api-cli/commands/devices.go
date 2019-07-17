@@ -89,7 +89,7 @@ var addDeviceGroupCmd = &cobra.Command{
 			options.Resolve("nalejAddress", nalejAddress),
 			options.ResolveAsInt("port", nalejPort),
 			insecure, useTLS,
-			options.Resolve("cacert", caCertPath), options.Resolve("output", output))
+			options.Resolve("cacert", caCertPath), options.Resolve("output", output), options.ResolveAsInt("labelLength", labelLength))
 
 		targetValues, err := ResolveArgument([]string{"name"}, args, []string{name})
 		if err != nil {
@@ -113,7 +113,7 @@ var updateDeviceGroupCmd = &cobra.Command{
 			options.Resolve("nalejAddress", nalejAddress),
 			options.ResolveAsInt("port", nalejPort),
 			insecure, useTLS,
-			options.Resolve("cacert", caCertPath), options.Resolve("output", output))
+			options.Resolve("cacert", caCertPath), options.Resolve("output", output), options.ResolveAsInt("labelLength", labelLength))
 
 		targetValues, err := ResolveArgument([]string{"deviceGroupID"}, args, []string{deviceGroupID})
 		if err != nil {
@@ -138,7 +138,7 @@ var removeDeviceGroupCmd = &cobra.Command{
 			options.Resolve("nalejAddress", nalejAddress),
 			options.ResolveAsInt("port", nalejPort),
 			insecure, useTLS,
-			options.Resolve("cacert", caCertPath), options.Resolve("output", output))
+			options.Resolve("cacert", caCertPath), options.Resolve("output", output), options.ResolveAsInt("labelLength", labelLength))
 
 		targetValues, err := ResolveArgument([]string{"deviceGroupID"}, args, []string{deviceGroupID})
 		if err != nil {
@@ -162,7 +162,7 @@ var listDeviceGroupsCmd = &cobra.Command{
 			options.Resolve("nalejAddress", nalejAddress),
 			options.ResolveAsInt("port", nalejPort),
 			insecure, useTLS,
-			options.Resolve("cacert", caCertPath), options.Resolve("output", output))
+			options.Resolve("cacert", caCertPath), options.Resolve("output", output), options.ResolveAsInt("labelLength", labelLength))
 		n.ListDeviceGroups(options.Resolve("organizationID", organizationID))
 	},
 }
@@ -179,7 +179,7 @@ var listDevicesCmd = &cobra.Command{
 			options.Resolve("nalejAddress", nalejAddress),
 			options.ResolveAsInt("port", nalejPort),
 			insecure, useTLS,
-			options.Resolve("cacert", caCertPath), options.Resolve("output", output))
+			options.Resolve("cacert", caCertPath), options.Resolve("output", output), options.ResolveAsInt("labelLength", labelLength))
 
 		targetValues, err := ResolveArgument([]string{"deviceGroupID"}, args, []string{deviceGroupID})
 		if err != nil {
@@ -215,7 +215,7 @@ var addLabelToDeviceCmd = &cobra.Command{
 			options.Resolve("nalejAddress", nalejAddress),
 			options.ResolveAsInt("port", nalejPort),
 			insecure, useTLS,
-			options.Resolve("cacert", caCertPath), options.Resolve("output", output))
+			options.Resolve("cacert", caCertPath), options.Resolve("output", output), options.ResolveAsInt("labelLength", labelLength))
 
 		targetValues, err := ResolveArgument([]string{"deviceGroupID", "deviceID", "labels"}, args, []string{deviceGroupID, deviceID, rawLabels})
 		if err != nil {
@@ -240,7 +240,7 @@ var removeLabelFromDeviceCmd = &cobra.Command{
 			options.Resolve("nalejAddress", nalejAddress),
 			options.ResolveAsInt("port", nalejPort),
 			insecure, useTLS,
-			options.Resolve("cacert", caCertPath), options.Resolve("output", output))
+			options.Resolve("cacert", caCertPath), options.Resolve("output", output), options.ResolveAsInt("labelLength", labelLength))
 
 		targetValues, err := ResolveArgument([]string{"deviceGroupID", "deviceID", "labels"}, args, []string{deviceGroupID, deviceID, rawLabels})
 		if err != nil {
@@ -264,7 +264,7 @@ var updateDeviceCmd = &cobra.Command{
 			options.Resolve("nalejAddress", nalejAddress),
 			options.ResolveAsInt("port", nalejPort),
 			insecure, useTLS,
-			options.Resolve("cacert", caCertPath), options.Resolve("output", output))
+			options.Resolve("cacert", caCertPath), options.Resolve("output", output), options.ResolveAsInt("labelLength", labelLength))
 
 		targetValues, err := ResolveArgument([]string{"deviceGroupID", "deviceID"}, args, []string{deviceGroupID, deviceID})
 		if err != nil {
@@ -289,7 +289,7 @@ var removeDeviceCmd = &cobra.Command{
 			options.Resolve("nalejAddress", nalejAddress),
 			options.ResolveAsInt("port", nalejPort),
 			insecure, useTLS,
-			options.Resolve("cacert", caCertPath), options.Resolve("output", output))
+			options.Resolve("cacert", caCertPath), options.Resolve("output", output), options.ResolveAsInt("labelLength", labelLength))
 
 		targetValues, err := ResolveArgument([]string{"deviceGroupID", "deviceID"}, args, []string{deviceGroupID, deviceID})
 		if err != nil {
@@ -315,7 +315,7 @@ var deviceInfoCmd = &cobra.Command{
 			options.ResolveAsInt("port", nalejPort),
 			insecure,
 			useTLS,
-			options.Resolve("cacert", caCertPath), options.Resolve("output", output))
+			options.Resolve("cacert", caCertPath), options.Resolve("output", output), options.ResolveAsInt("labelLength", labelLength))
 
 		targetValues, err := ResolveArgument([]string{"deviceGroupID", "deviceID"}, args, []string{deviceGroupID, deviceID})
 		if err != nil {
