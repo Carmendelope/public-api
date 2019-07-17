@@ -53,8 +53,8 @@ func init() {
 	rootCmd.PersistentFlags().StringVar(&caCertPath, "cacert", "", "Path of the CA certificate to validate the server connection")
 	rootCmd.PersistentFlags().StringVar(&output, "output", "", "Output format: JSON (default) or text")
 	rootCmd.PersistentFlags().MarkHidden("output")
-	rootCmd.PersistentFlags().IntVar(&labelLength, "labelLength", 10, "Maximum label text length (10 by default)")
-	rootCmd.PersistentFlags().MarkHidden("labelLength")
+	rootCmd.PersistentFlags().IntVar(&labelLength, "labelLength", -1, "Maximum labels length")
+	//rootCmd.PersistentFlags().MarkHidden("labelLength")
 }
 
 func Execute() {

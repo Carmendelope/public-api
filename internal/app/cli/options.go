@@ -106,6 +106,7 @@ func (o *Options) Resolve(key string, paramValue string) string {
 	return paramValue
 }
 
+// Resolve the effective value of a parameter as int.
 func (o *Options) ResolveAsInt(key string, paramValue int) int {
 	toStr := ""
 	if paramValue >= 0 {

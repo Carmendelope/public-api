@@ -20,7 +20,6 @@ import (
 	"strings"
 	"text/tabwriter"
 	"time"
-	"github.com/buger/goterm"
 )
 
 const MinWidth = 5
@@ -36,6 +35,7 @@ type ResultTable struct {
 }
 
 func AsTable(result interface{}, labelLength int) *ResultTable {
+	log.Debug().Int("labelLength", labelLength).Msg("Label length")
 	switch result.(type) {
 	case *grpc_public_api_go.OrganizationInfo:
 		return FromOrganizationInfo(result.(*grpc_public_api_go.OrganizationInfo))
@@ -138,10 +138,11 @@ func TransformLabels(labels map[string]string, labelLength int) string {
 	sortedKeys := GetSortedKeys(labels)
 	for _, k := range sortedKeys {
 		label := fmt.Sprintf("%s:%s", k, labels[k])
-		truncatedLabel := truncateLabel(label, labelLength)
-		r = append(r, truncatedLabel)
+		r = append(r, label)
 	}
-	return strings.Join(r, ",")
+	labelString := strings.Join(r, ",")
+	truncatedR := TruncateString(labelString, labelLength)
+	return truncatedR
 }
 
 func GetSortedKeys (labels map[string]string) []string {
@@ -155,15 +156,19 @@ func GetSortedKeys (labels map[string]string) []string {
 	return sortedKeys
 }
 
-func truncateLabel (label string, labelLength int) string {
-	truncatedLabel := label
-	if len(label) > labelLength {
-		if labelLength > 3 {
-			labelLength -= 3
-		}
-		truncatedLabel = label[0:labelLength] + "..."
+func TruncateString (text string, length int) string {
+	log.Debug().Int("length", length).Str("text", text).Msg("truncate")
+	if length <= 0 {
+		return text
 	}
-	return truncatedLabel
+	truncatedString := text
+	if len(text) > length {
+		if length > 3 {
+			length -= 3
+		}
+		truncatedString = text[0:length] + "..."
+	}
+	return truncatedString
 }
 
 func FromOrganizationInfo(info *grpc_public_api_go.OrganizationInfo) *ResultTable {
@@ -171,12 +176,6 @@ func FromOrganizationInfo(info *grpc_public_api_go.OrganizationInfo) *ResultTabl
 	result = append(result, []string{"ID", "NAME"})
 	result = append(result, []string{info.OrganizationId, info.Name})
 	return &ResultTable{result}
-}
-
-func GetTerminalSize () (int, int) {
-	tHeight := goterm.Height()
-	tWidth := goterm.Width()
-	return tHeight, tWidth
 }
 
 // ----
