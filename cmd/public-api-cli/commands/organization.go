@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018 Nalej - All Rights Reserved
+ * Copyright (C) 2019 Nalej - All Rights Reserved
  */
 
 package commands
@@ -38,7 +38,8 @@ var infoCmd = &cobra.Command{
 			options.ResolveAsInt("port", nalejPort),
 			insecure, useTLS,
 			options.Resolve("cacert", caCertPath),
-			options.Resolve("output", output))
+			options.Resolve("output", output),
+			options.ResolveAsInt("labelLength", labelLength))
 		o.Info(options.Resolve("organizationID", organizationID))
 	},
 }

@@ -21,9 +21,9 @@ type UnifiedLogging struct {
 	Credentials
 }
 
-func NewUnifiedLogging(address string, port int, insecure bool, useTLS bool, caCertPath string, output string) *UnifiedLogging {
+func NewUnifiedLogging(address string, port int, insecure bool, useTLS bool, caCertPath string, output string, labelLength int) *UnifiedLogging {
 	return &UnifiedLogging{
-		Connection:  *NewConnection(address, port, insecure, useTLS, caCertPath, output),
+		Connection:  *NewConnection(address, port, insecure, useTLS, caCertPath, output, labelLength),
 		Credentials: *NewEmptyCredentials(DefaultPath),
 	}
 }
