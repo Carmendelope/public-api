@@ -44,7 +44,7 @@ var listNodesCmd = &cobra.Command{
 			options.Resolve("nalejAddress", nalejAddress),
 			options.ResolveAsInt("port", nalejPort),
 			insecure, useTLS,
-			options.Resolve("cacert", caCertPath), options.Resolve("output", output))
+			options.Resolve("cacert", caCertPath), options.Resolve("output", output), options.ResolveAsInt("labelLength", labelLength))
 
 		targetValues, err := ResolveArgument([]string{"clusterID"}, args, []string{clusterID})
 		if err != nil {
@@ -79,7 +79,7 @@ var addLabelToNodeCmd = &cobra.Command{
 			options.Resolve("nalejAddress", nalejAddress),
 			options.ResolveAsInt("port", nalejPort),
 			insecure, useTLS,
-			options.Resolve("cacert", caCertPath), options.Resolve("output", output))
+			options.Resolve("cacert", caCertPath), options.Resolve("output", output), options.ResolveAsInt("labelLength", labelLength))
 
 		targetValues, err := ResolveArgument([]string{"nodeID", "labels"}, args, []string{nodeID, rawLabels})
 		if err != nil {
@@ -104,7 +104,7 @@ var removeLabelFromNodeCmd = &cobra.Command{
 			options.Resolve("nalejAddress", nalejAddress),
 			options.ResolveAsInt("port", nalejPort),
 			insecure, useTLS,
-			options.Resolve("cacert", caCertPath), options.Resolve("output", output))
+			options.Resolve("cacert", caCertPath), options.Resolve("output", output), options.ResolveAsInt("labelLength", labelLength))
 
 		targetValues, err := ResolveArgument([]string{"nodeID", "labels"}, args, []string{nodeID, rawLabels})
 		if err != nil {

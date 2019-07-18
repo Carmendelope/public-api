@@ -25,9 +25,9 @@ type Applications struct {
 	Credentials
 }
 
-func NewApplications(address string, port int, insecure bool, useTLS bool, caCertPath string, output string) *Applications {
+func NewApplications(address string, port int, insecure bool, useTLS bool, caCertPath string, output string, labelLength int) *Applications {
 	return &Applications{
-		Connection:  *NewConnection(address, port, insecure, useTLS, caCertPath, output),
+		Connection:  *NewConnection(address, port, insecure, useTLS, caCertPath, output, labelLength),
 		Credentials: *NewEmptyCredentials(DefaultPath),
 	}
 }

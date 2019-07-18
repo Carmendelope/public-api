@@ -9,6 +9,14 @@
   revision = "21df004e09ca46e07ce99bbba1e8c2422ba4ecf9"
 
 [[projects]]
+  branch = "master"
+  digest = "1:980024b62c4dd2a365bdffff761c9ad3ed907ebd71042a6007334399c179d43f"
+  name = "github.com/buger/goterm"
+  packages = ["."]
+  pruneopts = ""
+  revision = "c206103e1f37c0c6c5c039706305ea2aa6e8ad3b"
+
+[[projects]]
   digest = "1:6098222470fe0172157ce9bbef5d2200df4edde17ee649c5d6e48330e4afa4c6"
   name = "github.com/dgrijalva/jwt-go"
   packages = ["."]
@@ -543,6 +551,7 @@
   analyzer-version = 1
   input-imports = [
     "github.com/araddon/dateparse",
+    "github.com/buger/goterm",
     "github.com/dgrijalva/jwt-go",
     "github.com/golang/protobuf/ptypes",
     "github.com/golang/protobuf/ptypes/timestamp",

@@ -31,11 +31,13 @@ type Connection struct {
 	CACertPath string
 	// Output specifies how the output will be shown.
 	output string
+	// Label Length specifies the maximum length that will be displayed from the labels
+	labelLength int
 }
 
 // NewConnection creates a new connection object that will establish the communication with the public API.
-func NewConnection(address string, port int, insecure bool, useTLS bool, caCertPath string, output string) *Connection {
-	return &Connection{address, port, insecure, useTLS,caCertPath, output}
+func NewConnection(address string, port int, insecure bool, useTLS bool, caCertPath string, output string, labelLength int) *Connection {
+	return &Connection{address, port, insecure, useTLS,caCertPath, output, labelLength}
 }
 
 // GetPath resolves a given path by adding support for relative paths.
@@ -166,6 +168,6 @@ func (c * Connection) asText() bool {
 }
 
 func (c * Connection) PrintResultAsTable(result interface{}) {
-	table := AsTable(result)
+	table := AsTable(result, c.labelLength)
 	table.Print()
 }
