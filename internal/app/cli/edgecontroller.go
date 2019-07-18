@@ -127,10 +127,11 @@ func (ec * EdgeController) Unlink(organizationID string, edgeControllerID string
 
 }
 
-func (ec *EdgeController) getInstallCredentials(username string, password string, publicKeyPath string) *grpc_inventory_manager_go.SSHCredentials{
+func (ec *EdgeController) getInstallCredentials(username string, password string, publicKeyPath string, isSudoer bool) *grpc_inventory_manager_go.SSHCredentials{
 
 	credentials := &grpc_inventory_manager_go.SSHCredentials{
-		Username:             username,
+		Username:	username,
+		IsSudoer:	isSudoer,
 	}
 
 	if publicKeyPath != ""{
@@ -154,7 +155,8 @@ func (ec *EdgeController) getInstallCredentials(username string, password string
 	return credentials
 }
 
-func (ec *EdgeController) InstallAgent(organizationID string, edgeControllerID string, agentType grpc_inventory_manager_go.AgentType, targetHost string, username string, password string, publicKeyPath string){
+func (ec *EdgeController) InstallAgent(organizationID string, edgeControllerID string, agentType grpc_inventory_manager_go.AgentType, targetHost string, username string, password string,
+	publicKeyPath string, isSudoer bool){
 
 	if organizationID == "" {
 		log.Fatal().Msg("organizationID cannot be empty")
@@ -172,7 +174,7 @@ func (ec *EdgeController) InstallAgent(organizationID string, edgeControllerID s
 		log.Fatal().Msg("either password or public key must be specified")
 	}
 
-	credentials := ec.getInstallCredentials(username, password, publicKeyPath)
+	credentials := ec.getInstallCredentials(username, password, publicKeyPath, isSudoer)
 	installRequest := &grpc_inventory_manager_go.InstallAgentRequest{
 		OrganizationId:       organizationID,
 		EdgeControllerId:     edgeControllerID,
