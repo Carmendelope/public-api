@@ -71,3 +71,4 @@ var assetDeviceId string
 var force bool
 
 var agentTypeRaw string
+var sudoer bool

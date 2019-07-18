@@ -40,8 +40,8 @@ func init() {
 
 	installAgentCmd.Flags().StringVar(&password, "password", "", "SSH password")
 	installAgentCmd.Flags().StringVar(&publicKeyPath, "publicKeyPath", "", "SSH public key path")
-
 	installAgentCmd.Flags().StringVar(&agentTypeRaw, "agentType", "LINUX_AMD64", "Agent type: LINUX_AMD64, LINUX_ARM32, LINUX_ARM64 or WINDOWS_AMD64")
+	installAgentCmd.Flags().BoolVar(&sudoer, "sudoer", false, "The user is sudoer")
 	edgeControllerCmd.AddCommand(installAgentCmd)
 }
 
@@ -150,6 +150,6 @@ var installAgentCmd = &cobra.Command{
 				log.Fatal().Err(err).Msg("invalid agent type")
 			}
 
-		ec.InstallAgent(options.Resolve("organizationID", organizationID), edgeControllerID, *agentType, targetHost, username, password, publicKeyPath)
+		ec.InstallAgent(options.Resolve("organizationID", organizationID), edgeControllerID, *agentType, targetHost, username, password, publicKeyPath, sudoer)
 	},
 }
