@@ -111,7 +111,10 @@ func (o *Options) ResolveAsInt(key string, paramValue int) int {
 	toStr := ""
 	if paramValue >= 0 {
 		toStr = strconv.Itoa(paramValue)
+	} else {
+		return paramValue
 	}
+
 	value, err := strconv.Atoi(o.Resolve(key, toStr))
 	if err != nil {
 		log.Fatal().Err(err).Msg("cannot convert value to int")

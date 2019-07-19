@@ -54,7 +54,7 @@ func init() {
 	rootCmd.PersistentFlags().StringVar(&output, "output", "", "Output format: JSON (default) or text")
 	rootCmd.PersistentFlags().MarkHidden("output")
 	rootCmd.PersistentFlags().IntVar(&labelLength, "labelLength", -1, "Maximum labels length")
-	//rootCmd.PersistentFlags().MarkHidden("labelLength")
+	rootCmd.PersistentFlags().MarkHidden("labelLength")
 }
 
 func Execute() {
