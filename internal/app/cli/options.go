@@ -109,10 +109,15 @@ func (o *Options) Resolve(key string, paramValue string) string {
 // Resolve the effective value of a parameter as int.
 func (o *Options) ResolveAsInt(key string, paramValue int) int {
 	toStr := ""
-	if paramValue >= 0 {
+	if paramValue > 0 {
 		toStr = strconv.Itoa(paramValue)
 	}
-	value, err := strconv.Atoi(o.Resolve(key, toStr))
+
+	res := o.Resolve(key, toStr)
+	if res == "" {
+		return 0
+	}
+	value, err := strconv.Atoi(res)
 	if err != nil {
 		log.Fatal().Err(err).Msg("cannot convert value to int")
 	}
