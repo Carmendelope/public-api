@@ -70,7 +70,7 @@ var installClustersCmd = &cobra.Command{
 			options.Resolve("nalejAddress", nalejAddress),
 			options.ResolveAsInt("port", nalejPort),
 			insecure, useTLS,
-			options.Resolve("cacert", caCertPath), options.Resolve("output", output))
+			options.Resolve("cacert", caCertPath), options.Resolve("output", output), options.ResolveAsInt("labelLength", labelLength))
 		c.Install(
 			options.Resolve("organizationID", organizationID),
 			kubeConfigPath,
@@ -86,6 +86,7 @@ var installClustersCmd = &cobra.Command{
 
 var infoClusterCmd = &cobra.Command{
 	Use:   "info [clusterID]",
+	Aliases: []string{"get"},
 	Short: "Get the cluster information",
 	Long:  `Get the cluster information`,
 	Args: cobra.MaximumNArgs(1),
@@ -95,7 +96,7 @@ var infoClusterCmd = &cobra.Command{
 			options.Resolve("nalejAddress", nalejAddress),
 			options.ResolveAsInt("port", nalejPort),
 			insecure, useTLS,
-			options.Resolve("cacert", caCertPath), options.Resolve("output", output))
+			options.Resolve("cacert", caCertPath), options.Resolve("output", output), options.ResolveAsInt("labelLength", labelLength))
 
 		targetValues, err := ResolveArgument([]string{"clusterID"}, args, []string{clusterID})
 		if err != nil {
@@ -110,6 +111,7 @@ var infoClusterCmd = &cobra.Command{
 
 var listClustersCmd = &cobra.Command{
 	Use:   "list",
+	Aliases: []string{"ls"},
 	Short: "List clusters",
 	Long:  `List clusters`,
 	Run: func(cmd *cobra.Command, args []string) {
@@ -118,13 +120,14 @@ var listClustersCmd = &cobra.Command{
 			options.Resolve("nalejAddress", nalejAddress),
 			options.ResolveAsInt("port", nalejPort),
 			insecure, useTLS,
-			options.Resolve("cacert", caCertPath), options.Resolve("output", output))
+			options.Resolve("cacert", caCertPath), options.Resolve("output", output), options.ResolveAsInt("labelLength", labelLength))
 		c.List(options.Resolve("organizationID", organizationID))
 	},
 }
 
 var monitorClusterCmd = &cobra.Command{
 	Use:   "monitor [clusterID]",
+	Aliases: []string{"mon"},
 	Short: "Monitor cluster",
 	Long:  `Get summarized monitoring information for a single cluster`,
 	Args: cobra.MaximumNArgs(1),
@@ -134,7 +137,7 @@ var monitorClusterCmd = &cobra.Command{
 			options.Resolve("nalejAddress", nalejAddress),
 			options.ResolveAsInt("port", nalejPort),
 			insecure, useTLS,
-			options.Resolve("cacert", caCertPath), options.Resolve("output", output))
+			options.Resolve("cacert", caCertPath), options.Resolve("output", output), options.ResolveAsInt("labelLength", labelLength))
 
 		targetValues, err := ResolveArgument([]string{"clusterID"}, args, []string{clusterID})
 		if err != nil {
@@ -187,22 +190,28 @@ var addLabelToClusterCmd = &cobra.Command{
 			options.Resolve("nalejAddress", nalejAddress),
 			options.ResolveAsInt("port", nalejPort),
 			insecure, useTLS,
-			options.Resolve("cacert", caCertPath), options.Resolve("output", output))
+			options.Resolve("cacert", caCertPath), options.Resolve("output", output), options.ResolveAsInt("labelLength", labelLength))
 
-		targetValues, err := ResolveArgument([]string{"clusterID", "labels"}, args, []string{clusterID, rawLabels})
-		if err != nil {
-			fmt.Println(err.Error())
+		if len(args) > 0 && len(args) < 2{
+			fmt.Println("[clusterID] and [labels] must be flags or arguments, both the same type")
 			cmd.Help()
-		}else{
-			c.ModifyClusterLabels(options.Resolve("organizationID", organizationID),
-				targetValues[0], true, targetValues[1])
+		}else {
+
+			targetValues, err := ResolveArgument([]string{"clusterID", "labels"}, args, []string{clusterID, rawLabels})
+			if err != nil {
+				fmt.Println(err.Error())
+				cmd.Help()
+			} else {
+				c.ModifyClusterLabels(options.Resolve("organizationID", organizationID),
+					targetValues[0], true, targetValues[1])
+			}
 		}
 	},
 }
 
 var removeLabelFromClusterCmd = &cobra.Command{
 	Use:   "delete [clusterID] [labels]",
-	Aliases: []string{"remove", "del"},
+	Aliases: []string{"remove", "del", "rm"},
 	Short: "Remove a set of labels from a cluster",
 	Long:  `Remove a set of labels from a cluster`,
 	Args: cobra.MaximumNArgs(2),
@@ -212,20 +221,27 @@ var removeLabelFromClusterCmd = &cobra.Command{
 			options.Resolve("nalejAddress", nalejAddress),
 			options.ResolveAsInt("port", nalejPort),
 			insecure, useTLS,
-			options.Resolve("cacert", caCertPath), options.Resolve("output", output))
-		targetValues, err := ResolveArgument([]string{"clusterID", "labels"}, args, []string{clusterID, rawLabels})
-		if err != nil {
-			fmt.Println(err.Error())
+			options.Resolve("cacert", caCertPath), options.Resolve("output", output), options.ResolveAsInt("labelLength", labelLength))
+
+		if len(args) > 0 && len(args) < 2{
+			fmt.Println("[clusterID] and [labels] must be flags or arguments, both the same type")
 			cmd.Help()
-		}else{
-			c.ModifyClusterLabels(options.Resolve("organizationID", organizationID),
-				targetValues[0], false, targetValues[1])
+		}else {
+
+			targetValues, err := ResolveArgument([]string{"clusterID", "labels"}, args, []string{clusterID, rawLabels})
+			if err != nil {
+				fmt.Println(err.Error())
+				cmd.Help()
+			} else {
+				c.ModifyClusterLabels(options.Resolve("organizationID", organizationID),
+					targetValues[0], false, targetValues[1])
+			}
 		}
 	},
 }
 
 var cordonClusterCmd = &cobra.Command{
-	Use: "cordon [clusterId]",
+	Use: "cordon [clusterID]",
 	Short: "cordon a cluster ignoring new application deployments",
 	Long: `cordon a cluster ignoring new application deployments`,
 	Args: cobra.MinimumNArgs(1),
@@ -235,13 +251,13 @@ var cordonClusterCmd = &cobra.Command{
 			options.Resolve("nalejAddress", nalejAddress),
 			options.ResolveAsInt("port", nalejPort),
 			insecure, useTLS,
-			options.Resolve("cacert", caCertPath), options.Resolve("output", output))
+			options.Resolve("cacert", caCertPath), options.Resolve("output", output), options.ResolveAsInt("labelLength", labelLength))
 		c.CordonCluster(options.Resolve("organizationID", organizationID),args[0])
 	},
 }
 
 var uncordonClusterCmd = &cobra.Command{
-	Use: "uncordon [clusterId]",
+	Use: "uncordon [clusterID]",
 	Short: "uncordon a cluster making possible new application deployments",
 	Long: `uncordon a cluster making possible new application deployments`,
 	Args: cobra.MinimumNArgs(1),
@@ -251,13 +267,13 @@ var uncordonClusterCmd = &cobra.Command{
 			options.Resolve("nalejAddress", nalejAddress),
 			options.ResolveAsInt("port", nalejPort),
 			insecure, useTLS,
-			options.Resolve("cacert", caCertPath), options.Resolve("output", output))
+			options.Resolve("cacert", caCertPath), options.Resolve("output", output), options.ResolveAsInt("labelLength", labelLength))
 		c.UncordonCluster(options.Resolve("organizationID", organizationID),args[0])
 	},
 }
 
 var drainClusterCmd = &cobra.Command{
-	Use: "drain [clusterId]",
+	Use: "drain [clusterID]",
 	Short: "drain a cluster",
 	Long: `drain a cordoned cluster and force current applications to be re-scheduled`,
 	Args: cobra.MinimumNArgs(1),
@@ -267,7 +283,7 @@ var drainClusterCmd = &cobra.Command{
 			options.Resolve("nalejAddress", nalejAddress),
 			options.ResolveAsInt("port", nalejPort),
 			insecure, useTLS,
-			options.Resolve("cacert", caCertPath), options.Resolve("output", output))
+			options.Resolve("cacert", caCertPath), options.Resolve("output", output), options.ResolveAsInt("labelLength", labelLength))
 		c.DrainCluster(options.Resolve("organizationID", organizationID),args[0])
 	},
 }

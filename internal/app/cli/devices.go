@@ -19,9 +19,9 @@ type Devices struct{
 	Credentials
 }
 
-func NewDevices(address string, port int, insecure bool, useTLS bool, caCertPath string, output string) *Devices {
+func NewDevices(address string, port int, insecure bool, useTLS bool, caCertPath string, output string, labelLength int) *Devices {
 	return &Devices{
-		Connection:  *NewConnection(address, port, insecure, useTLS, caCertPath, output),
+		Connection:  *NewConnection(address, port, insecure, useTLS, caCertPath, output, labelLength),
 		Credentials: *NewEmptyCredentials(DefaultPath),
 	}
 }
@@ -310,4 +310,29 @@ func (d* Devices) RemoveDevice(organizationID string, deviceGroupID string, devi
 		d.PrintResultOrError(success, err, "cannot remove device")
 	}
 
+}
+
+func (d*Devices) GetDeviceInfo (organizationID string, deviceGroupID string, deviceID string) {
+	if organizationID == "" {
+		log.Fatal().Msg("organizationID cannot be empty")
+	}
+	if deviceGroupID == "" {
+		log.Fatal().Msg("deviceGroupID cannot be empty")
+	}
+	if deviceID == "" {
+		log.Fatal().Msg("deviceID cannot be empty")
+	}
+	d.load()
+	ctx, cancel := d.GetContext()
+	client, conn := d.getClient()
+	defer conn.Close()
+	defer cancel()
+	request := &grpc_device_go.DeviceId{
+		OrganizationId:       organizationID,
+		DeviceGroupId:        deviceGroupID,
+		DeviceId:             deviceID,
+	}
+
+	success, err := client.GetDevice(ctx, request)
+	d.PrintResultOrError(success, err, "cannot retrieve device info")
 }

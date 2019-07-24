@@ -343,6 +343,18 @@ func ToPublicAPIAssetOS(os * grpc_inventory_go.OperatingSystemInfo) * grpc_publi
 		Architecture:         os.Architecture,
 	}
 }
+func ToPublicApiAgentOpSummary(opSummary *grpc_inventory_go.AgentOpSummary) *grpc_public_api_go.AgentOpSummary {
+	if opSummary == nil {
+		return nil
+	}
+	return &grpc_public_api_go.AgentOpSummary{
+		OperationId:	opSummary.OperationId,
+		Timestamp: 		opSummary.Timestamp,
+		Status: 		opSummary.Status,
+		OpStatusName: 	opSummary.Status.String(),
+		Info: 			opSummary.Info,
+	}
+}
 
 func ToPublicAPIAsset(asset *grpc_inventory_manager_go.Asset) * grpc_public_api_go.Asset{
 	if asset == nil {
@@ -359,7 +371,7 @@ func ToPublicAPIAsset(asset *grpc_inventory_manager_go.Asset) * grpc_public_api_
 		Hardware:             asset.Hardware,
 		Storage:              asset.Storage,
 		EicNetIp:             asset.EicNetIp,
-		LastOpSummary:        asset.LastOpSummary,
+		LastOpSummary:        ToPublicApiAgentOpSummary(asset.LastOpSummary),
 		LastAliveTimestamp:   asset.LastAliveTimestamp,
 		Status:               asset.Status,
 		StatusName:           asset.Status.String(),
@@ -378,6 +390,19 @@ func ToPublicAPIAssetArray(assets [] * grpc_inventory_manager_go.Asset) [] * grp
 	return result
 }
 
+func ToPublicApiECOpSummary(opSummary *grpc_inventory_go.ECOpSummary) *grpc_public_api_go.ECOpSummary {
+	if opSummary == nil {
+		return nil
+	}
+	return &grpc_public_api_go.ECOpSummary{
+		OperationId:	opSummary.OperationId,
+		Timestamp: 		opSummary.Timestamp,
+		Status: 		opSummary.Status,
+		OpStatusName: 	opSummary.Status.String(),
+		Info: 			opSummary.Info,
+	}
+}
+
 func ToPublicAPIController(controller *grpc_inventory_manager_go.EdgeController) *grpc_public_api_go.EdgeController{
 	return &grpc_public_api_go.EdgeController{
 		OrganizationId:       controller.OrganizationId,
@@ -389,7 +414,19 @@ func ToPublicAPIController(controller *grpc_inventory_manager_go.EdgeController)
 		Status:               controller.Status,
 		StatusName:           controller.Status.String(),
 		Location:             controller.Location,
+		LastOpResult:         ToPublicApiECOpSummary(controller.LastOpResult),
 		AssetInfo:            ToPublicAPIAssetInfo(controller.AssetInfo),
+	}
+}
+
+func ToPublicAPIECOPResponse(response *grpc_inventory_manager_go.EdgeControllerOpResponse) *grpc_public_api_go.ECOpResponse{
+	return &grpc_public_api_go.ECOpResponse{
+		OrganizationId: response.OperationId,
+		EdgeControllerId: response.EdgeControllerId,
+		OperationId:response.OperationId,
+		Timestamp: response.Timestamp,
+		Status: response.Status.String(),
+		Info: response.Info,
 	}
 }
 

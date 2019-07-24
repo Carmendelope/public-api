@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018 Nalej - All Rights Reserved
+ * Copyright (C) 2019 Nalej - All Rights Reserved
  */
 
 package commands
@@ -19,6 +19,7 @@ var runCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		SetupLogging()
 		log.Info().Msg("Launching API!")
+		config.Debug = debugLevel
 		server := server.NewService(config)
 		server.Run()
 	},

@@ -25,6 +25,7 @@ func init() {
 	rootCmd.AddCommand(agentCmd)
 
 	// CreateAgentJoinToken
+	createAgentJoinTokenCmd.Flags().StringVar(&outputPath, "outputPath", "", "Path to store the resulting token")
 	agentCmd.AddCommand(createAgentJoinTokenCmd)
 
 	// ActivateAgentMonitoring
@@ -32,12 +33,13 @@ func init() {
 	agentCmd.AddCommand(activateAgentMontoringCmd)
 
 	// UninstallAgentCmd
+	uninstallAgentCmd.Flags().BoolVar(&force, "force", false, "force the agent uninstall")
 	agentCmd.AddCommand(uninstallAgentCmd)
 
 }
 
 var createAgentJoinTokenCmd = &cobra.Command{
-	Use:   "create-join-token [edgeControllerId]",
+	Use:   "create-join-token [edgeControllerID]",
 	Short: "Create a join token to attach new agent to an edge controller",
 	Long:  `Create a join token for being able to attach new agent to an edge controller`,
 	Args: cobra.ExactArgs(1),
@@ -46,8 +48,11 @@ var createAgentJoinTokenCmd = &cobra.Command{
 		agent := cli.NewAgent(
 			options.Resolve("nalejAddress", nalejAddress),
 			options.ResolveAsInt("port", nalejPort),
-			insecure, useTLS,
-			options.Resolve("cacert", caCertPath), options.Resolve("output", output))
+			insecure,
+			useTLS,
+			options.Resolve("cacert", caCertPath),
+			options.Resolve("output", output),
+			options.ResolveAsInt("labelLength", labelLength))
 			agent.CreateAgentJoinToken(options.Resolve("organizationID", organizationID),
 				                       args[0],
 				                       outputPath)
@@ -55,7 +60,8 @@ var createAgentJoinTokenCmd = &cobra.Command{
 }
 
 var activateAgentMontoringCmd = &cobra.Command{
-	Use:   "monitoring [edgeControllerId] [assetID]",
+	Use:   "monitoring [edgeControllerID] [assetID]",
+	Aliases: []string{"mon"},
 	Short: "Activate agent monitoring",
 	Long:  `Activate agent monitoring`,
 	Args: cobra.ExactArgs(2),
@@ -65,7 +71,7 @@ var activateAgentMontoringCmd = &cobra.Command{
 			options.Resolve("nalejAddress", nalejAddress),
 			options.ResolveAsInt("port", nalejPort),
 			insecure, useTLS,
-			options.Resolve("cacert", caCertPath), options.Resolve("output", output))
+			options.Resolve("cacert", caCertPath), options.Resolve("output", output), options.ResolveAsInt("labelLength", labelLength))
 
 		targetValues, err := ResolveArgument([]string{"edgeControllerId", "assetID"}, args, []string{edgeControllerID, assetID})
 		if err != nil {
@@ -89,7 +95,7 @@ var uninstallAgentCmd = &cobra.Command{
 		options.Resolve("nalejAddress", nalejAddress),
 		options.ResolveAsInt("port", nalejPort),
 		insecure, useTLS,
-		options.Resolve("cacert", caCertPath), options.Resolve("output", output))
-		agent.UninstallAgent(options.Resolve("organizationID", organizationID),args[0])
+		options.Resolve("cacert", caCertPath), options.Resolve("output", output), options.ResolveAsInt("labelLength", labelLength))
+		agent.UninstallAgent(options.Resolve("organizationID", organizationID),args[0], force)
 	},
 }

@@ -51,6 +51,7 @@ func init() {
 
 var userInfoCmd = &cobra.Command{
 	Use:   "info",
+	Aliases: []string{"get"},
 	Short: "Get user info",
 	Long:  `Get user info`,
 	Run: func(cmd *cobra.Command, args []string) {
@@ -59,13 +60,14 @@ var userInfoCmd = &cobra.Command{
 			options.Resolve("nalejAddress", nalejAddress),
 			options.ResolveAsInt("port", nalejPort),
 			insecure, useTLS,
-			options.Resolve("cacert", caCertPath), options.Resolve("output", output))
+			options.Resolve("cacert", caCertPath), options.Resolve("output", output), options.ResolveAsInt("labelLength", labelLength))
 		u.Info(options.Resolve("organizationID", organizationID), options.Resolve("email", email))
 	},
 }
 
 var userListCmd = &cobra.Command{
 	Use:   "list",
+	Aliases: []string{"ls"},
 	Short: "List users",
 	Long:  `List users`,
 	Run: func(cmd *cobra.Command, args []string) {
@@ -74,14 +76,14 @@ var userListCmd = &cobra.Command{
 			options.Resolve("nalejAddress", nalejAddress),
 			options.ResolveAsInt("port", nalejPort),
 			insecure, useTLS,
-			options.Resolve("cacert", caCertPath), options.Resolve("output", output))
+			options.Resolve("cacert", caCertPath), options.Resolve("output", output), options.ResolveAsInt("labelLength", labelLength))
 		u.List(options.Resolve("organizationID", organizationID))
 	},
 }
 
 var deleteUserCmd = &cobra.Command{
 	Use:     "delete",
-	Aliases: []string{"remove", "del"},
+	Aliases: []string{"remove", "del", "rm"},
 	Short:   "Delete a user",
 	Long:    `Delete a user`,
 	Run: func(cmd *cobra.Command, args []string) {
@@ -90,7 +92,7 @@ var deleteUserCmd = &cobra.Command{
 			options.Resolve("nalejAddress", nalejAddress),
 			options.ResolveAsInt("port", nalejPort),
 			insecure, useTLS,
-			options.Resolve("cacert", caCertPath), options.Resolve("output", output))
+			options.Resolve("cacert", caCertPath), options.Resolve("output", output), options.ResolveAsInt("labelLength", labelLength))
 		u.Delete(options.Resolve("organizationID", organizationID), email)
 	},
 }
@@ -106,7 +108,7 @@ var resetPasswordCmd = &cobra.Command{
 			options.Resolve("nalejAddress", nalejAddress),
 			options.ResolveAsInt("port", nalejPort),
 			insecure, useTLS,
-			options.Resolve("cacert", caCertPath), options.Resolve("output", output))
+			options.Resolve("cacert", caCertPath), options.Resolve("output", output), options.ResolveAsInt("labelLength", labelLength))
 		u.ChangePassword(options.Resolve("organizationID", organizationID), email, password, newPassword)
 	},
 }
@@ -121,7 +123,7 @@ var updateUserCmd = &cobra.Command{
 			options.Resolve("nalejAddress", nalejAddress),
 			options.ResolveAsInt("port", nalejPort),
 			insecure, useTLS,
-			options.Resolve("cacert", caCertPath), options.Resolve("output", output))
+			options.Resolve("cacert", caCertPath), options.Resolve("output", output), options.ResolveAsInt("labelLength", labelLength))
 		u.Update(options.Resolve("organizationID", organizationID), email, name)
 	},
 }
@@ -136,7 +138,7 @@ var addUserCmd = &cobra.Command{
 			options.Resolve("nalejAddress", nalejAddress),
 			options.ResolveAsInt("port", nalejPort),
 			insecure, useTLS,
-			options.Resolve("cacert", caCertPath), options.Resolve("output", output))
+			options.Resolve("cacert", caCertPath), options.Resolve("output", output), options.ResolveAsInt("labelLength", labelLength))
 		u.Add(options.Resolve("organizationID", organizationID), email, password, name, roleName)
 	},
 }

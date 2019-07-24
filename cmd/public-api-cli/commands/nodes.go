@@ -11,8 +11,8 @@ import (
 )
 
 var nodesCmd = &cobra.Command{
-	Use:     "nodes",
-	Aliases: []string{"node"},
+	Use:     "node",
+	Aliases: []string{"nodes"},
 	Short:   "Manage nodes",
 	Long:    `Manage nodes`,
 	Run: func(cmd *cobra.Command, args []string) {
@@ -35,6 +35,7 @@ func init() {
 
 var listNodesCmd = &cobra.Command{
 	Use:   "list [clusterID]",
+	Aliases: []string{"ls"},
 	Short: "List nodes",
 	Long:  `List nodes`,
 	Run: func(cmd *cobra.Command, args []string) {
@@ -43,7 +44,7 @@ var listNodesCmd = &cobra.Command{
 			options.Resolve("nalejAddress", nalejAddress),
 			options.ResolveAsInt("port", nalejPort),
 			insecure, useTLS,
-			options.Resolve("cacert", caCertPath), options.Resolve("output", output))
+			options.Resolve("cacert", caCertPath), options.Resolve("output", output), options.ResolveAsInt("labelLength", labelLength))
 
 		targetValues, err := ResolveArgument([]string{"clusterID"}, args, []string{clusterID})
 		if err != nil {
@@ -78,7 +79,7 @@ var addLabelToNodeCmd = &cobra.Command{
 			options.Resolve("nalejAddress", nalejAddress),
 			options.ResolveAsInt("port", nalejPort),
 			insecure, useTLS,
-			options.Resolve("cacert", caCertPath), options.Resolve("output", output))
+			options.Resolve("cacert", caCertPath), options.Resolve("output", output), options.ResolveAsInt("labelLength", labelLength))
 
 		targetValues, err := ResolveArgument([]string{"nodeID", "labels"}, args, []string{nodeID, rawLabels})
 		if err != nil {
@@ -93,7 +94,7 @@ var addLabelToNodeCmd = &cobra.Command{
 
 var removeLabelFromNodeCmd = &cobra.Command{
 	Use:   "delete [nodeID] [labels]",
-	Aliases: []string{"remove", "del"},
+	Aliases: []string{"remove", "del", "rm"},
 	Short: "Remove a set of labels from a cluster",
 	Long:  `Remove a set of labels from a cluster`,
 	Args: cobra.MaximumNArgs(2),
@@ -103,7 +104,7 @@ var removeLabelFromNodeCmd = &cobra.Command{
 			options.Resolve("nalejAddress", nalejAddress),
 			options.ResolveAsInt("port", nalejPort),
 			insecure, useTLS,
-			options.Resolve("cacert", caCertPath), options.Resolve("output", output))
+			options.Resolve("cacert", caCertPath), options.Resolve("output", output), options.ResolveAsInt("labelLength", labelLength))
 
 		targetValues, err := ResolveArgument([]string{"nodeID", "labels"}, args, []string{nodeID, rawLabels})
 		if err != nil {

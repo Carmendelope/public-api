@@ -15,7 +15,7 @@ import (
 
 var edgeControllerCmd = &cobra.Command{
 	Use:     "edgecontroller",
-	Aliases: []string{"ec"},
+	Aliases: []string{"ec", "controller"},
 	Short:   "Manage edge controllers",
 	Long:    `Manage edge controllers`,
 	Run: func(cmd *cobra.Command, args []string) {
@@ -31,6 +31,7 @@ func init() {
 	createJoinTokenECCmd.Flags().StringVar(&outputPath, "outputPath", "", "Path to store the resulting token")
 
 	// Unlink
+	unlinkECCmd.Flags().BoolVar(&force, "force", false, "force the EC unlink")
 	edgeControllerCmd.AddCommand(unlinkECCmd)
 
 	// Geolocation Update
@@ -39,23 +40,24 @@ func init() {
 
 	installAgentCmd.Flags().StringVar(&password, "password", "", "SSH password")
 	installAgentCmd.Flags().StringVar(&publicKeyPath, "publicKeyPath", "", "SSH public key path")
-
 	installAgentCmd.Flags().StringVar(&agentTypeRaw, "agentType", "LINUX_AMD64", "Agent type: LINUX_AMD64, LINUX_ARM32, LINUX_ARM64 or WINDOWS_AMD64")
+	installAgentCmd.Flags().BoolVar(&sudoer, "sudoer", false, "The user is sudoer")
 	edgeControllerCmd.AddCommand(installAgentCmd)
 }
 
 
 var createJoinTokenECCmd = &cobra.Command{
-	Use:   "create-join-token to attach new edge controllers to the platform",
-	Short: "Create a join token",
+	Use:   "create-join-token",
+	Short: "Create a join token to attach new edge controllers to the platform",
 	Long:  `Create a join token for being able to attach new edge controllers to the platform`,
+	Args: cobra.ExactArgs(0),
 	Run: func(cmd *cobra.Command, args []string) {
 		SetupLogging()
 		ec := cli.NewEdgeController(
 			options.Resolve("nalejAddress", nalejAddress),
 			options.ResolveAsInt("port", nalejPort),
 			insecure, useTLS,
-			options.Resolve("cacert", caCertPath), options.Resolve("output", output))
+			options.Resolve("cacert", caCertPath), options.Resolve("output", output), options.ResolveAsInt("labelLength", labelLength))
 			ec.CreateJoinToken(options.Resolve("organizationID", organizationID), outputPath)
 	},
 }
@@ -71,16 +73,16 @@ var unlinkECCmd = &cobra.Command{
 			options.Resolve("nalejAddress", nalejAddress),
 			options.ResolveAsInt("port", nalejPort),
 			insecure, useTLS,
-			options.Resolve("cacert", caCertPath), options.Resolve("output", output))
+			options.Resolve("cacert", caCertPath), options.Resolve("output", output), options.ResolveAsInt("labelLength", labelLength))
 		if len(args) > 0{
 			edgeControllerID = args[0]
 		}
-		ec.Unlink(options.Resolve("organizationID", organizationID), edgeControllerID)
+		ec.Unlink(options.Resolve("organizationID", organizationID), edgeControllerID, force)
 	},
 }
 
 var updateGeoCmd = &cobra.Command{
-	Use:   "location-update [edgeControllerID]",
+	Use:   "update-location [edgeControllerID]",
 	Short: "update edge-controller location",
 	Long:  `update edge-controller location`,
 	Args: cobra.ExactArgs(1),
@@ -90,7 +92,7 @@ var updateGeoCmd = &cobra.Command{
 			options.Resolve("nalejAddress", nalejAddress),
 			options.ResolveAsInt("port", nalejPort),
 			insecure, useTLS,
-			options.Resolve("cacert", caCertPath), options.Resolve("output", output))
+			options.Resolve("cacert", caCertPath), options.Resolve("output", output), options.ResolveAsInt("labelLength", labelLength))
 		if len(args) > 0{
 			edgeControllerID = args[0]
 		}
@@ -138,7 +140,7 @@ var installAgentCmd = &cobra.Command{
 			options.Resolve("nalejAddress", nalejAddress),
 			options.ResolveAsInt("port", nalejPort),
 			insecure, useTLS,
-			options.Resolve("cacert", caCertPath), options.Resolve("output", output))
+			options.Resolve("cacert", caCertPath), options.Resolve("output", output), options.ResolveAsInt("labelLength", labelLength))
 
 			edgeControllerID = args[0]
 			targetHost := args[1]
@@ -148,6 +150,6 @@ var installAgentCmd = &cobra.Command{
 				log.Fatal().Err(err).Msg("invalid agent type")
 			}
 
-		ec.InstallAgent(options.Resolve("organizationID", organizationID), edgeControllerID, *agentType, targetHost, username, password, publicKeyPath)
+		ec.InstallAgent(options.Resolve("organizationID", organizationID), edgeControllerID, *agentType, targetHost, username, password, publicKeyPath, sudoer)
 	},
 }

@@ -7,7 +7,6 @@ package agent
 import (
 	"context"
 	"github.com/nalej/derrors"
-	"github.com/nalej/grpc-common-go"
 	"github.com/nalej/grpc-inventory-go"
 	"github.com/nalej/grpc-inventory-manager-go"
 	"github.com/nalej/grpc-public-api-go"
@@ -59,20 +58,20 @@ func (h *Handler) ActivateMonitoring(ctx context.Context, assetRequest *grpc_pub
 
 
 // UninstallAgent operation to uninstall an agent
-func (h *Handler) UninstallAgent(ctx context.Context, assetId *grpc_inventory_go.AssetId) (*grpc_common_go.Success, error) {
+func (h *Handler) UninstallAgent(ctx context.Context, request *grpc_inventory_manager_go.UninstallAgentRequest) (*grpc_public_api_go.ECOpResponse, error) {
 	rm, err := authhelper.GetRequestMetadata(ctx)
 	if err != nil {
 		return nil, conversions.ToGRPCError(err)
 	}
-	if assetId.OrganizationId != rm.OrganizationID {
+	if request.OrganizationId != rm.OrganizationID {
 		return nil, derrors.NewPermissionDeniedError("cannot access requested OrganizationID")
 	}
 
-	err = entities.ValidAssetID(assetId)
+	err = entities.ValidUninstallAgentRequest(request)
 	if err != nil {
 		return nil, conversions.ToGRPCError(err)
 	}
-	return h.Manager.UninstallAgent(assetId)
+	return h.Manager.UninstallAgent(request)
 
 }
 

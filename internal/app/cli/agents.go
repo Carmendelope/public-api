@@ -24,9 +24,9 @@ type Agent struct{
 	Credentials
 }
 
-func NewAgent(address string, port int, insecure bool, useTLS bool, caCertPath string, output string) *Agent {
+func NewAgent(address string, port int, insecure bool, useTLS bool, caCertPath string, output string, labelLength int) *Agent {
 	return &Agent{
-		Connection:  *NewConnection(address, port, insecure, useTLS, caCertPath, output),
+		Connection:  *NewConnection(address, port, insecure, useTLS, caCertPath, output, labelLength),
 		Credentials: *NewEmptyCredentials(DefaultPath),
 	}
 }
@@ -126,7 +126,7 @@ func (a *Agent) writeAgentJoinToken(token *grpc_inventory_manager_go.AgentJoinTo
 	fmt.Printf("\nAgent Token file: %s\n", outputFilePath)
 }
 
-func (a *Agent) UninstallAgent(organizationID string, assetID string) {
+func (a *Agent) UninstallAgent(organizationID string, assetID string, force bool) {
 	if organizationID == "" {
 		log.Fatal().Msg("organizationID cannot be empty")
 	}
@@ -141,9 +141,10 @@ func (a *Agent) UninstallAgent(organizationID string, assetID string) {
 	defer conn.Close()
 	defer cancel()
 
-	request := &grpc_inventory_go.AssetId{
+	request := &grpc_inventory_manager_go.UninstallAgentRequest{
 		OrganizationId: organizationID,
 		AssetId: assetID,
+		Force: force,
 	}
 
 	token, err := client.UninstallAgent(ctx, request)
