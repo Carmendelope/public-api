@@ -686,13 +686,13 @@ func FromInventorySummary (result *grpc_inventory_manager_go.InventorySummary) *
 
 func FromQueryMetricsResult(result *grpc_inventory_manager_go.QueryMetricsResult) *ResultTable {
 	r := [][]string{}
-	r = append(r, []string{"TIMESTAMP", "METRIC", "ASSET", "VALUE"})
+	r = append(r, []string{"TIMESTAMP", "METRIC", "ASSET", "AGGR", "VALUE"})
 
 	for metric, assetMetric := range(result.GetMetrics()) {
 		for _, metrics := range(assetMetric.GetMetrics()) {
 			for _, value := range(metrics.GetValues()) {
 				timestamp := time.Unix(value.GetTimestamp(), 0).Local().String()
-				r = append(r, []string{timestamp, metric, metrics.GetAssetId(), strconv.FormatInt(value.GetValue(), 10)})
+				r = append(r, []string{timestamp, metric, metrics.GetAssetId(), metrics.GetAggregation().String(), strconv.FormatInt(value.GetValue(), 10)})
 			}
 		}
 	}
