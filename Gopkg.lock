@@ -87,7 +87,6 @@
   version = "v1.0"
 
 [[projects]]
-  branch = "master"
   digest = "1:18ed66bd8d4a26b523e182baa3fa3dfd8a5ad5eb712af4bc3eddb98048979212"
   name = "github.com/nalej/authx"
   packages = [
@@ -97,6 +96,7 @@
   ]
   pruneopts = ""
   revision = "b148308c906c0425a4604c9cf6bbb84b9a66356e"
+  version = "v0.3.0"
 
 [[projects]]
   digest = "1:0cc441f3dfe124dd74f44dd7e466dfc17cc7edff468094fbc3847a96b5ebf6f7"
