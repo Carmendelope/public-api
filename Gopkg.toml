@@ -99,7 +99,7 @@
   version = "v0.0.3"
  
 [[constraint]]
-  name = "github.com/nalej/grpc-infrastructure-monitor-go"
+  name = "github.com/nalej/grpc-monitoring-go"
   version = "v0.0.3"
  
 [[constraint]]

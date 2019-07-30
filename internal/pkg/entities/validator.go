@@ -13,7 +13,7 @@ import (
 	"github.com/nalej/grpc-device-go"
 	"github.com/nalej/grpc-device-manager-go"
 	"github.com/nalej/grpc-infrastructure-go"
-	"github.com/nalej/grpc-infrastructure-monitor-go"
+	"github.com/nalej/grpc-monitoring-go"
 	"github.com/nalej/grpc-inventory-go"
 	"github.com/nalej/grpc-inventory-manager-go"
 	"github.com/nalej/grpc-organization-go"
@@ -409,7 +409,7 @@ func ValidSearchRequest(request *grpc_unified_logging_go.SearchRequest) derrors.
 	return nil
 }
 
-func ValidMonitorRequest(request *grpc_infrastructure_monitor_go.ClusterSummaryRequest) derrors.Error {
+func ValidMonitorRequest(request *grpc_monitoring_go.ClusterSummaryRequest) derrors.Error {
 	if request.OrganizationId == "" {
 		return derrors.NewInvalidArgumentError(emptyOrganizationId)
 	}

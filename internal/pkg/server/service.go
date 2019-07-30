@@ -10,8 +10,8 @@ import (
 	"github.com/nalej/grpc-device-manager-go"
 	"github.com/nalej/grpc-infrastructure-go"
 	"github.com/nalej/grpc-infrastructure-manager-go"
-	"github.com/nalej/grpc-infrastructure-monitor-go"
 	"github.com/nalej/grpc-inventory-manager-go"
+	"github.com/nalej/grpc-monitoring-go"
 	"github.com/nalej/grpc-organization-go"
 	"github.com/nalej/grpc-public-api-go"
 	"github.com/nalej/grpc-unified-logging-go"
@@ -57,7 +57,7 @@ type Clients struct {
 	appClient   grpc_application_manager_go.ApplicationManagerClient
 	deviceClient grpc_device_manager_go.DevicesClient
 	ulClient    grpc_unified_logging_go.CoordinatorClient
-	imClient    grpc_infrastructure_monitor_go.CoordinatorClient
+	mmClient    grpc_monitoring_go.MonitoringManagerClient
 	eicClient grpc_inventory_manager_go.EICClient
 	invClient grpc_inventory_manager_go.InventoryClient
 	invmClient grpc_inventory_manager_go.InventoryMonitoringClient
@@ -89,7 +89,7 @@ func (s *Service) GetClients() (*Clients, derrors.Error) {
 	if err != nil {
 		return nil, derrors.AsError(err, "cannot create connection with unified logging coordinator")
 	}
-	imConn, err := grpc.Dial(s.Configuration.InfrastructureMonitorAddress, grpc.WithInsecure())
+	mmConn, err := grpc.Dial(s.Configuration.MonitoringManagerAddress, grpc.WithInsecure())
 	if err != nil {
 		return nil, derrors.AsError(err, "cannot create connection with infrastructure monitor coordinator")
 	}
@@ -106,13 +106,13 @@ func (s *Service) GetClients() (*Clients, derrors.Error) {
 	appClient := grpc_application_manager_go.NewApplicationManagerClient(appConn)
 	deviceClient := grpc_device_manager_go.NewDevicesClient(devConn)
 	ulClient := grpc_unified_logging_go.NewCoordinatorClient(ulConn)
-	imClient := grpc_infrastructure_monitor_go.NewCoordinatorClient(imConn)
+	mmClient := grpc_monitoring_go.NewMonitoringManagerClient(mmConn)
 	eicClient := grpc_inventory_manager_go.NewEICClient(invManagerConn)
 	invClient := grpc_inventory_manager_go.NewInventoryClient(invManagerConn)
 	invmClient := grpc_inventory_manager_go.NewInventoryMonitoringClient(invManagerConn)
 	agentClient := grpc_inventory_manager_go.NewAgentClient(invManagerConn)
 
-	return &Clients{oClient, cClient, nClient, infraClient, umClient, appClient, deviceClient, ulClient, imClient, eicClient, invClient, invmClient, agentClient}, nil
+	return &Clients{oClient, cClient, nClient, infraClient, umClient, appClient, deviceClient, ulClient, mmClient, eicClient, invClient, invmClient, agentClient}, nil
 }
 
 // Run the service, launch the REST service handler.
@@ -226,7 +226,7 @@ func (s *Service) LaunchGRPC(authConfig *interceptor.AuthorizationConfig) error 
 	orgManager := organizations.NewManager(clients.orgClient)
 	orgHandler := organizations.NewHandler(orgManager)
 
-	clusManager := clusters.NewManager(clients.clusClient, clients.nodeClient, clients.infraClient, clients.imClient)
+	clusManager := clusters.NewManager(clients.clusClient, clients.nodeClient, clients.infraClient, clients.mmClient)
 	clusHandler := clusters.NewHandler(clusManager)
 
 	nodesManager := nodes.NewManager(clients.nodeClient)

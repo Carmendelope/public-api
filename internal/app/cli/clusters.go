@@ -9,7 +9,7 @@ import (
 	"time"
 
 	"github.com/nalej/grpc-infrastructure-go"
-	"github.com/nalej/grpc-infrastructure-monitor-go"
+	"github.com/nalej/grpc-monitoring-go"
 	"github.com/nalej/grpc-installer-go"
 	"github.com/nalej/grpc-organization-go"
 	"github.com/nalej/grpc-public-api-go"
@@ -135,7 +135,7 @@ func (c *Clusters) Monitor(organizationID string, clusterID string, rangeMinutes
 	client, conn := c.getClient()
 	defer conn.Close()
 	defer cancel()
-	request := &grpc_infrastructure_monitor_go.ClusterSummaryRequest{
+	request := &grpc_monitoring_go.ClusterSummaryRequest{
 		OrganizationId: organizationID,
 		ClusterId:      clusterID,
 		RangeMinutes:   rangeMinutes,
