@@ -2,16 +2,23 @@
  * Copyright (C)  2018 Nalej - All Rights Reserved
  */
 
-package cli
+package options
 
 import (
+	"github.com/nalej/public-api/internal/app/output"
 	"github.com/rs/zerolog/log"
 	"io/ioutil"
 	"os"
+	"os/user"
 	"path/filepath"
 	"strconv"
+	"strings"
 )
 
+// DefaultPath to store and retrieve credentials
+const DefaultPath = "~/.nalej/"
+
+// OptionsPath with the path inside DefaultPath where options are stored.
 const OptionsPath = "options"
 
 type Options struct {
@@ -24,7 +31,7 @@ func NewOptions() *Options {
 }
 
 func (o *Options) getPath() string {
-	path := filepath.Join(resolvePath(DefaultPath), OptionsPath)
+	path := filepath.Join(GetPath(DefaultPath), OptionsPath)
 	log.Debug().Str("path", path).Msg("Options directory")
 	return path
 }
@@ -89,10 +96,10 @@ func (o *Options) List() {
 		}
 		return nil
 	})
-	PrintFromValues(header, values)
+	output.PrintFromValues(header, values)
 }
 
-// Resolve the effective value of a parameter.
+// Resolve the effective value of a parameter as string.
 func (o *Options) Resolve(key string, paramValue string) string {
 	log.Debug().Str("key", key).Str("paramValue", paramValue).Msg("resolving option")
 	stored := o.Get(key)
@@ -106,7 +113,7 @@ func (o *Options) Resolve(key string, paramValue string) string {
 	return paramValue
 }
 
-// Resolve the effective value of a parameter as int.
+// ResolveAsInt resolves the value of an option as int.
 func (o *Options) ResolveAsInt(key string, paramValue int) int {
 	toStr := ""
 	if paramValue > 0 {
@@ -122,4 +129,21 @@ func (o *Options) ResolveAsInt(key string, paramValue int) int {
 		log.Fatal().Err(err).Msg("cannot convert value to int")
 	}
 	return value
+}
+
+// GetPath resolves a given path by adding support for relative paths.
+func GetPath(path string) string {
+	if strings.HasPrefix(path, "~") {
+		usr, _ := user.Current()
+		return strings.Replace(path, "~", usr.HomeDir, 1)
+	}
+	if strings.HasPrefix(path, "../"){
+		abs, _ := filepath.Abs("../")
+		return strings.Replace(path, "..", abs, 1)
+	}
+	if strings.HasPrefix(path, "."){
+		abs, _ := filepath.Abs("./")
+		return strings.Replace(path, ".", abs, 1)
+	}
+	return path
 }

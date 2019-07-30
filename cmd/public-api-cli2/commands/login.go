@@ -5,8 +5,8 @@
 package commands
 
 import (
-	"github.com/nalej/public-api/internal/app/cli"
-	"github.com/nalej/public-api/internal/app/options"
+	tableOutput "github.com/nalej/public-api/internal/app/output"
+	"github.com/nalej/public-api/internal/app/cli2"
 	"github.com/rs/zerolog/log"
 	"github.com/spf13/cobra"
 	"time"
@@ -19,18 +19,9 @@ var loginCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		SetupLogging()
 
-		targetAddress := cliOptions.Resolve("loginAddress", loginAddress)
-		if targetAddress == ""{
-			log.Fatal().Msg("loginAddress is required")
-		}
+		conn, output := cli2.NewLoginParameters(cliOptions, loginAddress, loginPort, insecure, useTLS, caCertPath, output, labelLength)
+		l := cli2.NewLogin(conn, output)
 
-		l := cli.NewLogin(
-			targetAddress,
-			loginPort,
-			insecure, useTLS,
-			cliOptions.Resolve("cacert", caCertPath),
-			cliOptions.Resolve("output", output),
-			cliOptions.ResolveAsInt("labelLength", labelLength))
 		creds, err := l.Login(email, password)
 		if err != nil {
 			if debugLevel {
@@ -47,9 +38,9 @@ var loginCmd = &cobra.Command{
 				log.Fatal().Str("trace", err.Error()).Msg("unable to login into the platform")
 			}
 		}
-		opts := options.NewOptions()
-		opts.Set("organizationID", claims.OrganizationID)
-		opts.Set("email", claims.UserID)
+		// TODO Update with the new fields in the newer claim
+		cliOptions.Set("organizationID", claims.OrganizationID)
+		cliOptions.Set("email", claims.UserID)
 		expiration := time.Unix(claims.ExpiresAt, 0).String()
 		printLoginResult(claims.UserID, claims.RoleName, claims.OrganizationID, expiration)
 	},
@@ -58,7 +49,7 @@ var loginCmd = &cobra.Command{
 func printLoginResult(email string, role string, organizationID string, expiration string){
 	header := []string{"EMAIL", "ROLE", "ORG_ID", "EXPIRES"}
 	values := [][]string{[]string{email, role, organizationID, expiration}}
-	cli.PrintFromValues(header, values)
+	tableOutput.PrintFromValues(header, values)
 }
 
 func init() {

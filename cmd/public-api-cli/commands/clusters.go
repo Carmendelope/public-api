@@ -67,12 +67,12 @@ var installClustersCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		SetupLogging()
 		c := cli.NewClusters(
-			options.Resolve("nalejAddress", nalejAddress),
-			options.ResolveAsInt("port", nalejPort),
+			cliOptions.Resolve("nalejAddress", nalejAddress),
+			cliOptions.ResolveAsInt("port", nalejPort),
 			insecure, useTLS,
-			options.Resolve("cacert", caCertPath), options.Resolve("output", output), options.ResolveAsInt("labelLength", labelLength))
+			cliOptions.Resolve("cacert", caCertPath), cliOptions.Resolve("output", output), cliOptions.ResolveAsInt("labelLength", labelLength))
 		c.Install(
-			options.Resolve("organizationID", organizationID),
+			cliOptions.Resolve("organizationID", organizationID),
 			kubeConfigPath,
 			hostname,
 			username,
@@ -93,17 +93,17 @@ var infoClusterCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		SetupLogging()
 		c := cli.NewClusters(
-			options.Resolve("nalejAddress", nalejAddress),
-			options.ResolveAsInt("port", nalejPort),
+			cliOptions.Resolve("nalejAddress", nalejAddress),
+			cliOptions.ResolveAsInt("port", nalejPort),
 			insecure, useTLS,
-			options.Resolve("cacert", caCertPath), options.Resolve("output", output), options.ResolveAsInt("labelLength", labelLength))
+			cliOptions.Resolve("cacert", caCertPath), cliOptions.Resolve("output", output), cliOptions.ResolveAsInt("labelLength", labelLength))
 
 		targetValues, err := ResolveArgument([]string{"clusterID"}, args, []string{clusterID})
 		if err != nil {
 			fmt.Println(err.Error())
 			cmd.Help()
 		}else{
-		c.Info(options.Resolve("organizationID", organizationID), options.Resolve("clusterID", targetValues[0]))
+		c.Info(cliOptions.Resolve("organizationID", organizationID), cliOptions.Resolve("clusterID", targetValues[0]))
 		}
 
 	},
@@ -117,11 +117,11 @@ var listClustersCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		SetupLogging()
 		c := cli.NewClusters(
-			options.Resolve("nalejAddress", nalejAddress),
-			options.ResolveAsInt("port", nalejPort),
+			cliOptions.Resolve("nalejAddress", nalejAddress),
+			cliOptions.ResolveAsInt("port", nalejPort),
 			insecure, useTLS,
-			options.Resolve("cacert", caCertPath), options.Resolve("output", output), options.ResolveAsInt("labelLength", labelLength))
-		c.List(options.Resolve("organizationID", organizationID))
+			cliOptions.Resolve("cacert", caCertPath), cliOptions.Resolve("output", output), cliOptions.ResolveAsInt("labelLength", labelLength))
+		c.List(cliOptions.Resolve("organizationID", organizationID))
 	},
 }
 
@@ -134,10 +134,10 @@ var monitorClusterCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		SetupLogging()
 		c := cli.NewClusters(
-			options.Resolve("nalejAddress", nalejAddress),
-			options.ResolveAsInt("port", nalejPort),
+			cliOptions.Resolve("nalejAddress", nalejAddress),
+			cliOptions.ResolveAsInt("port", nalejPort),
 			insecure, useTLS,
-			options.Resolve("cacert", caCertPath), options.Resolve("output", output), options.ResolveAsInt("labelLength", labelLength))
+			cliOptions.Resolve("cacert", caCertPath), cliOptions.Resolve("output", output), cliOptions.ResolveAsInt("labelLength", labelLength))
 
 		targetValues, err := ResolveArgument([]string{"clusterID"}, args, []string{clusterID})
 		if err != nil {
@@ -145,8 +145,8 @@ var monitorClusterCmd = &cobra.Command{
 			cmd.Help()
 		}else{
 			c.Monitor(
-				options.Resolve("organizationID", organizationID),
-				options.Resolve("clusterID", targetValues[0]),
+				cliOptions.Resolve("organizationID", organizationID),
+				cliOptions.Resolve("clusterID", targetValues[0]),
 				rangeMinutes,
 			)
 		}
@@ -187,10 +187,10 @@ var addLabelToClusterCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		SetupLogging()
 		c := cli.NewClusters(
-			options.Resolve("nalejAddress", nalejAddress),
-			options.ResolveAsInt("port", nalejPort),
+			cliOptions.Resolve("nalejAddress", nalejAddress),
+			cliOptions.ResolveAsInt("port", nalejPort),
 			insecure, useTLS,
-			options.Resolve("cacert", caCertPath), options.Resolve("output", output), options.ResolveAsInt("labelLength", labelLength))
+			cliOptions.Resolve("cacert", caCertPath), cliOptions.Resolve("output", output), cliOptions.ResolveAsInt("labelLength", labelLength))
 
 		if len(args) > 0 && len(args) < 2{
 			fmt.Println("[clusterID] and [labels] must be flags or arguments, both the same type")
@@ -202,7 +202,7 @@ var addLabelToClusterCmd = &cobra.Command{
 				fmt.Println(err.Error())
 				cmd.Help()
 			} else {
-				c.ModifyClusterLabels(options.Resolve("organizationID", organizationID),
+				c.ModifyClusterLabels(cliOptions.Resolve("organizationID", organizationID),
 					targetValues[0], true, targetValues[1])
 			}
 		}
@@ -218,10 +218,10 @@ var removeLabelFromClusterCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		SetupLogging()
 		c := cli.NewClusters(
-			options.Resolve("nalejAddress", nalejAddress),
-			options.ResolveAsInt("port", nalejPort),
+			cliOptions.Resolve("nalejAddress", nalejAddress),
+			cliOptions.ResolveAsInt("port", nalejPort),
 			insecure, useTLS,
-			options.Resolve("cacert", caCertPath), options.Resolve("output", output), options.ResolveAsInt("labelLength", labelLength))
+			cliOptions.Resolve("cacert", caCertPath), cliOptions.Resolve("output", output), cliOptions.ResolveAsInt("labelLength", labelLength))
 
 		if len(args) > 0 && len(args) < 2{
 			fmt.Println("[clusterID] and [labels] must be flags or arguments, both the same type")
@@ -233,7 +233,7 @@ var removeLabelFromClusterCmd = &cobra.Command{
 				fmt.Println(err.Error())
 				cmd.Help()
 			} else {
-				c.ModifyClusterLabels(options.Resolve("organizationID", organizationID),
+				c.ModifyClusterLabels(cliOptions.Resolve("organizationID", organizationID),
 					targetValues[0], false, targetValues[1])
 			}
 		}
@@ -248,11 +248,11 @@ var cordonClusterCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		SetupLogging()
 		c := cli.NewClusters(
-			options.Resolve("nalejAddress", nalejAddress),
-			options.ResolveAsInt("port", nalejPort),
+			cliOptions.Resolve("nalejAddress", nalejAddress),
+			cliOptions.ResolveAsInt("port", nalejPort),
 			insecure, useTLS,
-			options.Resolve("cacert", caCertPath), options.Resolve("output", output), options.ResolveAsInt("labelLength", labelLength))
-		c.CordonCluster(options.Resolve("organizationID", organizationID),args[0])
+			cliOptions.Resolve("cacert", caCertPath), cliOptions.Resolve("output", output), cliOptions.ResolveAsInt("labelLength", labelLength))
+		c.CordonCluster(cliOptions.Resolve("organizationID", organizationID),args[0])
 	},
 }
 
@@ -264,11 +264,11 @@ var uncordonClusterCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		SetupLogging()
 		c := cli.NewClusters(
-			options.Resolve("nalejAddress", nalejAddress),
-			options.ResolveAsInt("port", nalejPort),
+			cliOptions.Resolve("nalejAddress", nalejAddress),
+			cliOptions.ResolveAsInt("port", nalejPort),
 			insecure, useTLS,
-			options.Resolve("cacert", caCertPath), options.Resolve("output", output), options.ResolveAsInt("labelLength", labelLength))
-		c.UncordonCluster(options.Resolve("organizationID", organizationID),args[0])
+			cliOptions.Resolve("cacert", caCertPath), cliOptions.Resolve("output", output), cliOptions.ResolveAsInt("labelLength", labelLength))
+		c.UncordonCluster(cliOptions.Resolve("organizationID", organizationID),args[0])
 	},
 }
 
@@ -280,11 +280,11 @@ var drainClusterCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		SetupLogging()
 		c := cli.NewClusters(
-			options.Resolve("nalejAddress", nalejAddress),
-			options.ResolveAsInt("port", nalejPort),
+			cliOptions.Resolve("nalejAddress", nalejAddress),
+			cliOptions.ResolveAsInt("port", nalejPort),
 			insecure, useTLS,
-			options.Resolve("cacert", caCertPath), options.Resolve("output", output), options.ResolveAsInt("labelLength", labelLength))
-		c.DrainCluster(options.Resolve("organizationID", organizationID),args[0])
+			cliOptions.Resolve("cacert", caCertPath), cliOptions.Resolve("output", output), cliOptions.ResolveAsInt("labelLength", labelLength))
+		c.DrainCluster(cliOptions.Resolve("organizationID", organizationID),args[0])
 	},
 }
 

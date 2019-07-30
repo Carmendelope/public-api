@@ -100,16 +100,16 @@ var addDescriptorCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		SetupLogging()
 		a := cli.NewApplications(
-			options.Resolve("nalejAddress", nalejAddress),
-			options.ResolveAsInt("port", nalejPort),
+			cliOptions.Resolve("nalejAddress", nalejAddress),
+			cliOptions.ResolveAsInt("port", nalejPort),
 			insecure, useTLS,
-			options.Resolve("cacert", caCertPath), options.Resolve("output", output), options.ResolveAsInt("labelLength", labelLength))
+			cliOptions.Resolve("cacert", caCertPath), cliOptions.Resolve("output", output), cliOptions.ResolveAsInt("labelLength", labelLength))
 		targetDescriptorPath, err := ResolveArgument([]string{"descriptorPath"}, args, []string{descriptorPath})
 		if err != nil {
 			fmt.Println(err.Error())
 			cmd.Help()
 		}else {
-			a.AddDescriptor(options.Resolve("organizationID", organizationID), targetDescriptorPath[0])
+			a.AddDescriptor(cliOptions.Resolve("organizationID", organizationID), targetDescriptorPath[0])
 		}
 
 	},
@@ -125,7 +125,7 @@ var addDescriptorHelpCmd = &cobra.Command{
 			"",
 			0,
 			insecure, useTLS,
-			options.Resolve("cacert", caCertPath), options.Resolve("output", output), options.ResolveAsInt("labelLength", labelLength))
+			cliOptions.Resolve("cacert", caCertPath), cliOptions.Resolve("output", output), cliOptions.ResolveAsInt("labelLength", labelLength))
 		a.ShowDescriptorHelp(exampleName, storageType)
 	},
 }
@@ -138,11 +138,11 @@ var listDescriptorsCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		SetupLogging()
 		a := cli.NewApplications(
-			options.Resolve("nalejAddress", nalejAddress),
-			options.ResolveAsInt("port", nalejPort),
+			cliOptions.Resolve("nalejAddress", nalejAddress),
+			cliOptions.ResolveAsInt("port", nalejPort),
 			insecure, useTLS,
-			options.Resolve("cacert", caCertPath), options.Resolve("output", output), options.ResolveAsInt("labelLength", labelLength))
-		a.ListDescriptors(options.Resolve("organizationID", organizationID))
+			cliOptions.Resolve("cacert", caCertPath), cliOptions.Resolve("output", output), cliOptions.ResolveAsInt("labelLength", labelLength))
+		a.ListDescriptors(cliOptions.Resolve("organizationID", organizationID))
 	},
 }
 
@@ -155,16 +155,16 @@ var getDescriptorCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		SetupLogging()
 		a := cli.NewApplications(
-			options.Resolve("nalejAddress", nalejAddress),
-			options.ResolveAsInt("port", nalejPort),
+			cliOptions.Resolve("nalejAddress", nalejAddress),
+			cliOptions.ResolveAsInt("port", nalejPort),
 			insecure, useTLS,
-			options.Resolve("cacert", caCertPath), options.Resolve("output", output), options.ResolveAsInt("labelLength", labelLength))
+			cliOptions.Resolve("cacert", caCertPath), cliOptions.Resolve("output", output), cliOptions.ResolveAsInt("labelLength", labelLength))
 		targetValues, err := ResolveArgument([]string{"descriptorID"}, args, []string{descriptorID})
 		if err != nil {
 			fmt.Println(err.Error())
 			cmd.Help()
 		}else{
-			a.GetDescriptor(options.Resolve("organizationID", organizationID), targetValues[0])
+			a.GetDescriptor(cliOptions.Resolve("organizationID", organizationID), targetValues[0])
 		}
 	},
 }
@@ -188,17 +188,17 @@ var addLabelToAppDescriptorCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		SetupLogging()
 		a := cli.NewApplications(
-			options.Resolve("nalejAddress", nalejAddress),
-			options.ResolveAsInt("port", nalejPort),
+			cliOptions.Resolve("nalejAddress", nalejAddress),
+			cliOptions.ResolveAsInt("port", nalejPort),
 			insecure, useTLS,
-			options.Resolve("cacert", caCertPath), options.Resolve("output", output), options.ResolveAsInt("labelLength", labelLength))
+			cliOptions.Resolve("cacert", caCertPath), cliOptions.Resolve("output", output), cliOptions.ResolveAsInt("labelLength", labelLength))
 
 		targetValues, err := ResolveArgument([]string{"descriptorID", "labels"}, args, []string{descriptorID, rawLabels})
 		if err != nil {
 			fmt.Println(err.Error())
 			cmd.Help()
 		}else{
-			a.ModifyAppDescriptorLabels(options.Resolve("organizationID", organizationID),
+			a.ModifyAppDescriptorLabels(cliOptions.Resolve("organizationID", organizationID),
 				targetValues[0], true, targetValues[1])
 		}
 	},
@@ -213,17 +213,17 @@ var removeLabelFromAppDescriptorCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		SetupLogging()
 		a := cli.NewApplications(
-			options.Resolve("nalejAddress", nalejAddress),
-			options.ResolveAsInt("port", nalejPort),
+			cliOptions.Resolve("nalejAddress", nalejAddress),
+			cliOptions.ResolveAsInt("port", nalejPort),
 			insecure, useTLS,
-			options.Resolve("cacert", caCertPath), options.Resolve("output", output), options.ResolveAsInt("labelLength", labelLength))
+			cliOptions.Resolve("cacert", caCertPath), cliOptions.Resolve("output", output), cliOptions.ResolveAsInt("labelLength", labelLength))
 
 		targetValues, err := ResolveArgument([]string{"descriptorID", "labels"}, args, []string{descriptorID, rawLabels})
 		if err != nil {
 			fmt.Println(err.Error())
 			cmd.Help()
 		}else{
-			a.ModifyAppDescriptorLabels(options.Resolve("organizationID", organizationID),
+			a.ModifyAppDescriptorLabels(cliOptions.Resolve("organizationID", organizationID),
 				targetValues[0], false, targetValues[1])
 		}
 	},
@@ -238,16 +238,16 @@ var deleteDescriptorCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		SetupLogging()
 		a := cli.NewApplications(
-			options.Resolve("nalejAddress", nalejAddress),
-			options.ResolveAsInt("port", nalejPort),
+			cliOptions.Resolve("nalejAddress", nalejAddress),
+			cliOptions.ResolveAsInt("port", nalejPort),
 			insecure, useTLS,
-			options.Resolve("cacert", caCertPath), options.Resolve("output", output), options.ResolveAsInt("labelLength", labelLength))
+			cliOptions.Resolve("cacert", caCertPath), cliOptions.Resolve("output", output), cliOptions.ResolveAsInt("labelLength", labelLength))
 		targetValues, err := ResolveArgument([]string{"descriptorID"}, args, []string{descriptorID})
 		if err != nil {
 			fmt.Println(err.Error())
 			cmd.Help()
 		}else{
-			a.DeleteDescriptor(options.Resolve("organizationID", organizationID), targetValues[0])
+			a.DeleteDescriptor(cliOptions.Resolve("organizationID", organizationID), targetValues[0])
 		}
 
 	},
@@ -262,16 +262,16 @@ var getDescriptorParamsCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		SetupLogging()
 		a := cli.NewApplications(
-			options.Resolve("nalejAddress", nalejAddress),
-			options.ResolveAsInt("port", nalejPort),
+			cliOptions.Resolve("nalejAddress", nalejAddress),
+			cliOptions.ResolveAsInt("port", nalejPort),
 			insecure, useTLS,
-			options.Resolve("cacert", caCertPath), options.Resolve("output", output), options.ResolveAsInt("labelLength", labelLength))
+			cliOptions.Resolve("cacert", caCertPath), cliOptions.Resolve("output", output), cliOptions.ResolveAsInt("labelLength", labelLength))
 		targetDescriptorID, err := ResolveArgument([]string{"descriptorID"}, args, []string{descriptorID})
 		if err != nil {
 			fmt.Println(err.Error())
 			cmd.Help()
 		}else{
-			a.GetDescriptorParameters(options.Resolve("organizationID", organizationID),targetDescriptorID[0])
+			a.GetDescriptorParameters(cliOptions.Resolve("organizationID", organizationID),targetDescriptorID[0])
 		}
 	},
 }
@@ -295,17 +295,17 @@ var deployInstanceCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		SetupLogging()
 		a := cli.NewApplications(
-			options.Resolve("nalejAddress", nalejAddress),
-			options.ResolveAsInt("port", nalejPort),
+			cliOptions.Resolve("nalejAddress", nalejAddress),
+			cliOptions.ResolveAsInt("port", nalejPort),
 			insecure, useTLS,
-			options.Resolve("cacert", caCertPath), options.Resolve("output", output), options.ResolveAsInt("labelLength", labelLength))
+			cliOptions.Resolve("cacert", caCertPath), cliOptions.Resolve("output", output), cliOptions.ResolveAsInt("labelLength", labelLength))
 
 		targetValues, err := ResolveArgument([]string{"descriptorID", "name"}, args, []string{descriptorID, name})
 		if err != nil {
 			fmt.Println(err.Error())
 			cmd.Help()
 		}else{
-			a.Deploy(options.Resolve("organizationID", organizationID), targetValues[0], targetValues[1], params)
+			a.Deploy(cliOptions.Resolve("organizationID", organizationID), targetValues[0], targetValues[1], params)
 		}
 
 	},
@@ -319,16 +319,16 @@ var undeployInstanceCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		SetupLogging()
 		a := cli.NewApplications(
-			options.Resolve("nalejAddress", nalejAddress),
-			options.ResolveAsInt("port", nalejPort),
+			cliOptions.Resolve("nalejAddress", nalejAddress),
+			cliOptions.ResolveAsInt("port", nalejPort),
 			insecure, useTLS,
-			options.Resolve("cacert", caCertPath), options.Resolve("output", output), options.ResolveAsInt("labelLength", labelLength))
+			cliOptions.Resolve("cacert", caCertPath), cliOptions.Resolve("output", output), cliOptions.ResolveAsInt("labelLength", labelLength))
 		targetInstanceID, err := ResolveArgument([]string{"instanceID"}, args, []string{instanceID})
 		if err != nil {
 			fmt.Println(err.Error())
 			cmd.Help()
 		}else{
-			a.Undeploy(options.Resolve("organizationID", organizationID), targetInstanceID[0])
+			a.Undeploy(cliOptions.Resolve("organizationID", organizationID), targetInstanceID[0])
 		}
 	},
 }
@@ -341,11 +341,11 @@ var listInstancesCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		SetupLogging()
 		a := cli.NewApplications(
-			options.Resolve("nalejAddress", nalejAddress),
-			options.ResolveAsInt("port", nalejPort),
+			cliOptions.Resolve("nalejAddress", nalejAddress),
+			cliOptions.ResolveAsInt("port", nalejPort),
 			insecure, useTLS,
-			options.Resolve("cacert", caCertPath), options.Resolve("output", output), options.ResolveAsInt("labelLength", labelLength))
-		a.ListInstances(options.Resolve("organizationID", organizationID))
+			cliOptions.Resolve("cacert", caCertPath), cliOptions.Resolve("output", output), cliOptions.ResolveAsInt("labelLength", labelLength))
+		a.ListInstances(cliOptions.Resolve("organizationID", organizationID))
 	},
 }
 
@@ -358,16 +358,16 @@ var getInstanceCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		SetupLogging()
 		a := cli.NewApplications(
-			options.Resolve("nalejAddress", nalejAddress),
-			options.ResolveAsInt("port", nalejPort),
+			cliOptions.Resolve("nalejAddress", nalejAddress),
+			cliOptions.ResolveAsInt("port", nalejPort),
 			insecure, useTLS,
-			options.Resolve("cacert", caCertPath), options.Resolve("output", output), options.ResolveAsInt("labelLength", labelLength))
+			cliOptions.Resolve("cacert", caCertPath), cliOptions.Resolve("output", output), cliOptions.ResolveAsInt("labelLength", labelLength))
 		targetInstanceID, err := ResolveArgument([]string{"instanceID"}, args, []string{instanceID})
 		if err != nil {
 			fmt.Println(err.Error())
 			cmd.Help()
 		}else{
-			a.GetInstance(options.Resolve("organizationID", organizationID), targetInstanceID[0], watch)
+			a.GetInstance(cliOptions.Resolve("organizationID", organizationID), targetInstanceID[0], watch)
 		}
 	},
 }
@@ -381,16 +381,16 @@ var getInstanceParamsCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		SetupLogging()
 		a := cli.NewApplications(
-			options.Resolve("nalejAddress", nalejAddress),
-			options.ResolveAsInt("port", nalejPort),
+			cliOptions.Resolve("nalejAddress", nalejAddress),
+			cliOptions.ResolveAsInt("port", nalejPort),
 			insecure, useTLS,
-			options.Resolve("cacert", caCertPath), options.Resolve("output", output), options.ResolveAsInt("labelLength", labelLength))
+			cliOptions.Resolve("cacert", caCertPath), cliOptions.Resolve("output", output), cliOptions.ResolveAsInt("labelLength", labelLength))
 		targetInstanceID, err := ResolveArgument([]string{"instanceID"}, args, []string{instanceID})
 		if err != nil {
 			fmt.Println(err.Error())
 			cmd.Help()
 		}else{
-			a.GetInstanceParameters(options.Resolve("organizationID", organizationID),targetInstanceID[0])
+			a.GetInstanceParameters(cliOptions.Resolve("organizationID", organizationID),targetInstanceID[0])
 		}
 	},
 }

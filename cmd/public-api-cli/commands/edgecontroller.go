@@ -54,11 +54,11 @@ var createJoinTokenECCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		SetupLogging()
 		ec := cli.NewEdgeController(
-			options.Resolve("nalejAddress", nalejAddress),
-			options.ResolveAsInt("port", nalejPort),
+			cliOptions.Resolve("nalejAddress", nalejAddress),
+			cliOptions.ResolveAsInt("port", nalejPort),
 			insecure, useTLS,
-			options.Resolve("cacert", caCertPath), options.Resolve("output", output), options.ResolveAsInt("labelLength", labelLength))
-			ec.CreateJoinToken(options.Resolve("organizationID", organizationID), outputPath)
+			cliOptions.Resolve("cacert", caCertPath), cliOptions.Resolve("output", output), cliOptions.ResolveAsInt("labelLength", labelLength))
+			ec.CreateJoinToken(cliOptions.Resolve("organizationID", organizationID), outputPath)
 	},
 }
 
@@ -70,14 +70,14 @@ var unlinkECCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		SetupLogging()
 		ec := cli.NewEdgeController(
-			options.Resolve("nalejAddress", nalejAddress),
-			options.ResolveAsInt("port", nalejPort),
+			cliOptions.Resolve("nalejAddress", nalejAddress),
+			cliOptions.ResolveAsInt("port", nalejPort),
 			insecure, useTLS,
-			options.Resolve("cacert", caCertPath), options.Resolve("output", output), options.ResolveAsInt("labelLength", labelLength))
+			cliOptions.Resolve("cacert", caCertPath), cliOptions.Resolve("output", output), cliOptions.ResolveAsInt("labelLength", labelLength))
 		if len(args) > 0{
 			edgeControllerID = args[0]
 		}
-		ec.Unlink(options.Resolve("organizationID", organizationID), edgeControllerID, force)
+		ec.Unlink(cliOptions.Resolve("organizationID", organizationID), edgeControllerID, force)
 	},
 }
 
@@ -89,14 +89,14 @@ var updateGeoCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		SetupLogging()
 		ec := cli.NewEdgeController(
-			options.Resolve("nalejAddress", nalejAddress),
-			options.ResolveAsInt("port", nalejPort),
+			cliOptions.Resolve("nalejAddress", nalejAddress),
+			cliOptions.ResolveAsInt("port", nalejPort),
 			insecure, useTLS,
-			options.Resolve("cacert", caCertPath), options.Resolve("output", output), options.ResolveAsInt("labelLength", labelLength))
+			cliOptions.Resolve("cacert", caCertPath), cliOptions.Resolve("output", output), cliOptions.ResolveAsInt("labelLength", labelLength))
 		if len(args) > 0{
 			edgeControllerID = args[0]
 		}
-		ec.UpdateGeolocation(options.Resolve("organizationID", organizationID), edgeControllerID, geolocation)
+		ec.UpdateGeolocation(cliOptions.Resolve("organizationID", organizationID), edgeControllerID, geolocation)
 	},
 }
 
@@ -137,10 +137,10 @@ var installAgentCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		SetupLogging()
 		ec := cli.NewEdgeController(
-			options.Resolve("nalejAddress", nalejAddress),
-			options.ResolveAsInt("port", nalejPort),
+			cliOptions.Resolve("nalejAddress", nalejAddress),
+			cliOptions.ResolveAsInt("port", nalejPort),
 			insecure, useTLS,
-			options.Resolve("cacert", caCertPath), options.Resolve("output", output), options.ResolveAsInt("labelLength", labelLength))
+			cliOptions.Resolve("cacert", caCertPath), cliOptions.Resolve("output", output), cliOptions.ResolveAsInt("labelLength", labelLength))
 
 			edgeControllerID = args[0]
 			targetHost := args[1]
@@ -150,6 +150,6 @@ var installAgentCmd = &cobra.Command{
 				log.Fatal().Err(err).Msg("invalid agent type")
 			}
 
-		ec.InstallAgent(options.Resolve("organizationID", organizationID), edgeControllerID, *agentType, targetHost, username, password, publicKeyPath, sudoer)
+		ec.InstallAgent(cliOptions.Resolve("organizationID", organizationID), edgeControllerID, *agentType, targetHost, username, password, publicKeyPath, sudoer)
 	},
 }

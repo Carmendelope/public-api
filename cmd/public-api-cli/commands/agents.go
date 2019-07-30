@@ -46,14 +46,14 @@ var createAgentJoinTokenCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		SetupLogging()
 		agent := cli.NewAgent(
-			options.Resolve("nalejAddress", nalejAddress),
-			options.ResolveAsInt("port", nalejPort),
+			cliOptions.Resolve("nalejAddress", nalejAddress),
+			cliOptions.ResolveAsInt("port", nalejPort),
 			insecure,
 			useTLS,
-			options.Resolve("cacert", caCertPath),
-			options.Resolve("output", output),
-			options.ResolveAsInt("labelLength", labelLength))
-			agent.CreateAgentJoinToken(options.Resolve("organizationID", organizationID),
+			cliOptions.Resolve("cacert", caCertPath),
+			cliOptions.Resolve("output", output),
+			cliOptions.ResolveAsInt("labelLength", labelLength))
+			agent.CreateAgentJoinToken(cliOptions.Resolve("organizationID", organizationID),
 				                       args[0],
 				                       outputPath)
 	},
@@ -68,17 +68,17 @@ var activateAgentMontoringCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		SetupLogging()
 		agent := cli.NewAgent(
-			options.Resolve("nalejAddress", nalejAddress),
-			options.ResolveAsInt("port", nalejPort),
+			cliOptions.Resolve("nalejAddress", nalejAddress),
+			cliOptions.ResolveAsInt("port", nalejPort),
 			insecure, useTLS,
-			options.Resolve("cacert", caCertPath), options.Resolve("output", output), options.ResolveAsInt("labelLength", labelLength))
+			cliOptions.Resolve("cacert", caCertPath), cliOptions.Resolve("output", output), cliOptions.ResolveAsInt("labelLength", labelLength))
 
 		targetValues, err := ResolveArgument([]string{"edgeControllerId", "assetID"}, args, []string{edgeControllerID, assetID})
 		if err != nil {
 			fmt.Println(err.Error())
 			cmd.Help()
 		}else {
-			agent.ActivateAgentMonitoring(options.Resolve("organizationID", organizationID),
+			agent.ActivateAgentMonitoring(cliOptions.Resolve("organizationID", organizationID),
 				targetValues[0], targetValues[1], activate)
 		}
 	},
@@ -92,10 +92,12 @@ var uninstallAgentCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		SetupLogging()
 		agent := cli.NewAgent(
-		options.Resolve("nalejAddress", nalejAddress),
-		options.ResolveAsInt("port", nalejPort),
+			cliOptions.Resolve("nalejAddress", nalejAddress),
+			cliOptions.ResolveAsInt("port", nalejPort),
 		insecure, useTLS,
-		options.Resolve("cacert", caCertPath), options.Resolve("output", output), options.ResolveAsInt("labelLength", labelLength))
-		agent.UninstallAgent(options.Resolve("organizationID", organizationID),args[0], force)
+			cliOptions.Resolve("cacert", caCertPath),
+			cliOptions.Resolve("output", output),
+			cliOptions.ResolveAsInt("labelLength", labelLength))
+		agent.UninstallAgent(cliOptions.Resolve("organizationID", organizationID),args[0], force)
 	},
 }
