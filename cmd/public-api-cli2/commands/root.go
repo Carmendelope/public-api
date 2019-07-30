@@ -8,6 +8,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/nalej/derrors"
+	"github.com/nalej/public-api/internal/app/cli2"
 	"github.com/nalej/public-api/internal/app/options"
 	"github.com/nalej/public-api/version"
 	"github.com/rs/zerolog"
@@ -32,9 +33,9 @@ var labelLength int
 var cliOptions options.Options
 
 var rootCmd = &cobra.Command{
-	Use:     "public-api-cli",
-	Short:   "CLI for the public-api",
-	Long:    `A command line client for the public-api`,
+	Use:     "public-api-cli2",
+	Short:   "CLI for the new version of public-api",
+	Long:    `A command line client for the public-api with improved entities`,
 	Version: "unknown-version",
 	Run: func(cmd *cobra.Command, args []string) {
 		SetupLogging()
@@ -45,16 +46,16 @@ var rootCmd = &cobra.Command{
 func init() {
 	rootCmd.PersistentFlags().BoolVar(&debugLevel, "debug", false, "Set debug level")
 	rootCmd.PersistentFlags().BoolVar(&consoleLogging, "consoleLogging", false, "Pretty print logging")
-	rootCmd.PersistentFlags().StringVar(&nalejAddress, "nalejAddress", "", "Address (host) of the Nalej platform")
+	rootCmd.PersistentFlags().StringVar(&nalejAddress, cli2.NalejAddress, "", "Address (host) of the Nalej platform")
 	rootCmd.PersistentFlags().IntVar(&nalejPort, "port", 443, "Port of the Nalej platform Public API")
 	rootCmd.PersistentFlags().MarkHidden("port")
 	rootCmd.PersistentFlags().BoolVar(&insecure, "insecure", false, "Skip CA validation when connecting to a secure TLS server")
 	rootCmd.PersistentFlags().BoolVar(&useTLS, "useTLS", true, "Connect to a TLS server")
 	rootCmd.PersistentFlags().StringVar(&caCertPath, "cacert", "", "Path of the CA certificate to validate the server connection")
-	rootCmd.PersistentFlags().StringVar(&output, "output", "", "Output format: JSON (default) or text")
-	rootCmd.PersistentFlags().MarkHidden("output")
-	rootCmd.PersistentFlags().IntVar(&labelLength, "labelLength", 0, "Maximum labels length")
-	rootCmd.PersistentFlags().MarkHidden("labelLength")
+	rootCmd.PersistentFlags().StringVar(&output, cli2.OutputFormat, "table", "Output format: JSON or table (default)")
+	rootCmd.PersistentFlags().MarkHidden(cli2.OutputFormat)
+	rootCmd.PersistentFlags().IntVar(&labelLength, cli2.OutputLabelLength, 0, "Maximum labels length")
+	rootCmd.PersistentFlags().MarkHidden(cli2.OutputLabelLength)
 }
 
 func Execute() {
