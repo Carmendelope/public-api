@@ -86,17 +86,17 @@ var addDeviceGroupCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		SetupLogging()
 		n := cli.NewDevices(
-			options.Resolve("nalejAddress", nalejAddress),
-			options.ResolveAsInt("port", nalejPort),
+			cliOptions.Resolve("nalejAddress", nalejAddress),
+			cliOptions.ResolveAsInt("port", nalejPort),
 			insecure, useTLS,
-			options.Resolve("cacert", caCertPath), options.Resolve("output", output), options.ResolveAsInt("labelLength", labelLength))
+			cliOptions.Resolve("cacert", caCertPath), cliOptions.Resolve("output", output), cliOptions.ResolveAsInt("labelLength", labelLength))
 
 		targetValues, err := ResolveArgument([]string{"name"}, args, []string{name})
 		if err != nil {
 			fmt.Println(err.Error())
 			cmd.Help()
 		}else{
-			n.AddDeviceGroup(options.Resolve("organizationID", organizationID),
+			n.AddDeviceGroup(cliOptions.Resolve("organizationID", organizationID),
 				targetValues[0], enabled, disabled, enabledDefaultConnectivity, disabledDefaultConnectivity)
 		}
 	},
@@ -110,17 +110,17 @@ var updateDeviceGroupCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		SetupLogging()
 		n := cli.NewDevices(
-			options.Resolve("nalejAddress", nalejAddress),
-			options.ResolveAsInt("port", nalejPort),
+			cliOptions.Resolve("nalejAddress", nalejAddress),
+			cliOptions.ResolveAsInt("port", nalejPort),
 			insecure, useTLS,
-			options.Resolve("cacert", caCertPath), options.Resolve("output", output), options.ResolveAsInt("labelLength", labelLength))
+			cliOptions.Resolve("cacert", caCertPath), cliOptions.Resolve("output", output), cliOptions.ResolveAsInt("labelLength", labelLength))
 
 		targetValues, err := ResolveArgument([]string{"deviceGroupID"}, args, []string{deviceGroupID})
 		if err != nil {
 			fmt.Println(err.Error())
 			cmd.Help()
 		}else{
-			n.UpdateDeviceGroup(options.Resolve("organizationID", organizationID),
+			n.UpdateDeviceGroup(cliOptions.Resolve("organizationID", organizationID),
 				targetValues[0], enabled, disabled, enabledDefaultConnectivity, disabledDefaultConnectivity)
 		}
 	},
@@ -135,17 +135,17 @@ var removeDeviceGroupCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		SetupLogging()
 		n := cli.NewDevices(
-			options.Resolve("nalejAddress", nalejAddress),
-			options.ResolveAsInt("port", nalejPort),
+			cliOptions.Resolve("nalejAddress", nalejAddress),
+			cliOptions.ResolveAsInt("port", nalejPort),
 			insecure, useTLS,
-			options.Resolve("cacert", caCertPath), options.Resolve("output", output), options.ResolveAsInt("labelLength", labelLength))
+			cliOptions.Resolve("cacert", caCertPath), cliOptions.Resolve("output", output), cliOptions.ResolveAsInt("labelLength", labelLength))
 
 		targetValues, err := ResolveArgument([]string{"deviceGroupID"}, args, []string{deviceGroupID})
 		if err != nil {
 			fmt.Println(err.Error())
 			cmd.Help()
 		}else{
-			n.RemoveDeviceGroup(options.Resolve("organizationID", organizationID),
+			n.RemoveDeviceGroup(cliOptions.Resolve("organizationID", organizationID),
 				targetValues[0])
 		}
 	},
@@ -159,11 +159,11 @@ var listDeviceGroupsCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		SetupLogging()
 		n := cli.NewDevices(
-			options.Resolve("nalejAddress", nalejAddress),
-			options.ResolveAsInt("port", nalejPort),
+			cliOptions.Resolve("nalejAddress", nalejAddress),
+			cliOptions.ResolveAsInt("port", nalejPort),
 			insecure, useTLS,
-			options.Resolve("cacert", caCertPath), options.Resolve("output", output), options.ResolveAsInt("labelLength", labelLength))
-		n.ListDeviceGroups(options.Resolve("organizationID", organizationID))
+			cliOptions.Resolve("cacert", caCertPath), cliOptions.Resolve("output", output), cliOptions.ResolveAsInt("labelLength", labelLength))
+		n.ListDeviceGroups(cliOptions.Resolve("organizationID", organizationID))
 	},
 }
 
@@ -176,17 +176,17 @@ var listDevicesCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		SetupLogging()
 		n := cli.NewDevices(
-			options.Resolve("nalejAddress", nalejAddress),
-			options.ResolveAsInt("port", nalejPort),
+			cliOptions.Resolve("nalejAddress", nalejAddress),
+			cliOptions.ResolveAsInt("port", nalejPort),
 			insecure, useTLS,
-			options.Resolve("cacert", caCertPath), options.Resolve("output", output), options.ResolveAsInt("labelLength", labelLength))
+			cliOptions.Resolve("cacert", caCertPath), cliOptions.Resolve("output", output), cliOptions.ResolveAsInt("labelLength", labelLength))
 
 		targetValues, err := ResolveArgument([]string{"deviceGroupID"}, args, []string{deviceGroupID})
 		if err != nil {
 			fmt.Println(err.Error())
 			cmd.Help()
 		}else{
-			n.ListDevices(options.Resolve("organizationID", organizationID),
+			n.ListDevices(cliOptions.Resolve("organizationID", organizationID),
 				targetValues[0])
 		}
 
@@ -212,17 +212,17 @@ var addLabelToDeviceCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		SetupLogging()
 		n := cli.NewDevices(
-			options.Resolve("nalejAddress", nalejAddress),
-			options.ResolveAsInt("port", nalejPort),
+			cliOptions.Resolve("nalejAddress", nalejAddress),
+			cliOptions.ResolveAsInt("port", nalejPort),
 			insecure, useTLS,
-			options.Resolve("cacert", caCertPath), options.Resolve("output", output), options.ResolveAsInt("labelLength", labelLength))
+			cliOptions.Resolve("cacert", caCertPath), cliOptions.Resolve("output", output), cliOptions.ResolveAsInt("labelLength", labelLength))
 
 		targetValues, err := ResolveArgument([]string{"deviceGroupID", "deviceID", "labels"}, args, []string{deviceGroupID, deviceID, rawLabels})
 		if err != nil {
 			fmt.Println(err.Error())
 			cmd.Help()
 		}else{
-			n.AddLabelToDevice(options.Resolve("organizationID", organizationID),
+			n.AddLabelToDevice(cliOptions.Resolve("organizationID", organizationID),
 				targetValues[0], targetValues[1], targetValues[2])
 		}
 	},
@@ -237,17 +237,17 @@ var removeLabelFromDeviceCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		SetupLogging()
 		n := cli.NewDevices(
-			options.Resolve("nalejAddress", nalejAddress),
-			options.ResolveAsInt("port", nalejPort),
+			cliOptions.Resolve("nalejAddress", nalejAddress),
+			cliOptions.ResolveAsInt("port", nalejPort),
 			insecure, useTLS,
-			options.Resolve("cacert", caCertPath), options.Resolve("output", output), options.ResolveAsInt("labelLength", labelLength))
+			cliOptions.Resolve("cacert", caCertPath), cliOptions.Resolve("output", output), cliOptions.ResolveAsInt("labelLength", labelLength))
 
 		targetValues, err := ResolveArgument([]string{"deviceGroupID", "deviceID", "labels"}, args, []string{deviceGroupID, deviceID, rawLabels})
 		if err != nil {
 			fmt.Println(err.Error())
 			cmd.Help()
 		}else{
-			n.RemoveLabelFromDevice(options.Resolve("organizationID", organizationID),
+			n.RemoveLabelFromDevice(cliOptions.Resolve("organizationID", organizationID),
 				targetValues[0], targetValues[1], targetValues[2])
 		}
 	},
@@ -261,17 +261,17 @@ var updateDeviceCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		SetupLogging()
 		n := cli.NewDevices(
-			options.Resolve("nalejAddress", nalejAddress),
-			options.ResolveAsInt("port", nalejPort),
+			cliOptions.Resolve("nalejAddress", nalejAddress),
+			cliOptions.ResolveAsInt("port", nalejPort),
 			insecure, useTLS,
-			options.Resolve("cacert", caCertPath), options.Resolve("output", output), options.ResolveAsInt("labelLength", labelLength))
+			cliOptions.Resolve("cacert", caCertPath), cliOptions.Resolve("output", output), cliOptions.ResolveAsInt("labelLength", labelLength))
 
 		targetValues, err := ResolveArgument([]string{"deviceGroupID", "deviceID"}, args, []string{deviceGroupID, deviceID})
 		if err != nil {
 			fmt.Println(err.Error())
 			cmd.Help()
 		}else{
-			n.UpdateDevice(options.Resolve("organizationID", organizationID),
+			n.UpdateDevice(cliOptions.Resolve("organizationID", organizationID),
 				targetValues[0], targetValues[1], enabled, disabled)
 		}
 	},
@@ -286,17 +286,17 @@ var removeDeviceCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		SetupLogging()
 		n := cli.NewDevices(
-			options.Resolve("nalejAddress", nalejAddress),
-			options.ResolveAsInt("port", nalejPort),
+			cliOptions.Resolve("nalejAddress", nalejAddress),
+			cliOptions.ResolveAsInt("port", nalejPort),
 			insecure, useTLS,
-			options.Resolve("cacert", caCertPath), options.Resolve("output", output), options.ResolveAsInt("labelLength", labelLength))
+			cliOptions.Resolve("cacert", caCertPath), cliOptions.Resolve("output", output), cliOptions.ResolveAsInt("labelLength", labelLength))
 
 		targetValues, err := ResolveArgument([]string{"deviceGroupID", "deviceID"}, args, []string{deviceGroupID, deviceID})
 		if err != nil {
 			fmt.Println(err.Error())
 			cmd.Help()
 		}else{
-			n.RemoveDevice(options.Resolve("organizationID", organizationID),
+			n.RemoveDevice(cliOptions.Resolve("organizationID", organizationID),
 				targetValues[0], targetValues[1])
 		}
 	},
@@ -311,18 +311,18 @@ var deviceInfoCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		SetupLogging()
 		n := cli.NewDevices(
-			options.Resolve("nalejAddress", nalejAddress),
-			options.ResolveAsInt("port", nalejPort),
+			cliOptions.Resolve("nalejAddress", nalejAddress),
+			cliOptions.ResolveAsInt("port", nalejPort),
 			insecure,
 			useTLS,
-			options.Resolve("cacert", caCertPath), options.Resolve("output", output), options.ResolveAsInt("labelLength", labelLength))
+			cliOptions.Resolve("cacert", caCertPath), cliOptions.Resolve("output", output), cliOptions.ResolveAsInt("labelLength", labelLength))
 
 		targetValues, err := ResolveArgument([]string{"deviceGroupID", "deviceID"}, args, []string{deviceGroupID, deviceID})
 		if err != nil {
 			fmt.Println(err.Error())
 			cmd.Help()
 		}else{
-			n.GetDeviceInfo(options.Resolve("organizationID", organizationID), targetValues[0], targetValues[1])
+			n.GetDeviceInfo(cliOptions.Resolve("organizationID", organizationID), targetValues[0], targetValues[1])
 		}
 	},
 }

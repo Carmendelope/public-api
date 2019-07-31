@@ -34,12 +34,12 @@ var infoCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		SetupLogging()
 		o := cli.NewOrganizations(
-			options.Resolve("nalejAddress", nalejAddress),
-			options.ResolveAsInt("port", nalejPort),
+			cliOptions.Resolve("nalejAddress", nalejAddress),
+			cliOptions.ResolveAsInt("port", nalejPort),
 			insecure, useTLS,
-			options.Resolve("cacert", caCertPath),
-			options.Resolve("output", output),
-			options.ResolveAsInt("labelLength", labelLength))
-		o.Info(options.Resolve("organizationID", organizationID))
+			cliOptions.Resolve("cacert", caCertPath),
+			cliOptions.Resolve("output", output),
+			cliOptions.ResolveAsInt("labelLength", labelLength))
+		o.Info(cliOptions.Resolve("organizationID", organizationID))
 	},
 }
