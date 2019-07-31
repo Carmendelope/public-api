@@ -38,7 +38,7 @@ $ minikube config set embed-certs true
  | RUN_INTEGRATION_TEST  | true | Run integration tests |
  | IT_SM_ADDRESS  | localhost:8800 | System Model Address |
  | IT_INFRAMGR_ADDRESS  | localhost:8860 | Infrastructure Manager Address |
- | IT_MONITORING_MANAGER_ADDRESS  | localhost:8423 | Monitoring Manage rAddress |
+ | IT_MONITORING_MANAGER_ADDRESS  | localhost:8423 | Monitoring Manager Address |
  | IT_APPMGR_ADDRESS  | localhost:8910 | Applications Manager Address |
  | IT_UL_COORD_ADDRESS | localhost:8323 | Unified Logging Coordinator Address
  | IT_USER_MANAGER_ADDRESS  | localhost:8920 | User Manager Address |
