@@ -17,7 +17,7 @@ import (
 	"github.com/nalej/grpc-authx-go"
 	"github.com/nalej/grpc-infrastructure-go"
 	"github.com/nalej/grpc-infrastructure-manager-go"
-	"github.com/nalej/grpc-infrastructure-monitor-go"
+	"github.com/nalej/grpc-monitoring-go"
 	"github.com/nalej/grpc-organization-go"
 	"github.com/nalej/grpc-public-api-go"
 	"github.com/nalej/grpc-utils/pkg/test"
@@ -43,10 +43,10 @@ var _ = ginkgo.Describe("Clusters", func() {
 	var (
 		systemModelAddress  = os.Getenv("IT_SM_ADDRESS")
 		infraManagerAddress = os.Getenv("IT_INFRAMGR_ADDRESS")
-		infraMonitorAddress = os.Getenv("IT_IM_COORD_ADDRESS")
+		monitorManagerAddress = os.Getenv("IT_MONITORING_MANAGER_ADDRESS")
 	)
 
-	if systemModelAddress == "" || infraManagerAddress == "" || infraMonitorAddress == "" {
+	if systemModelAddress == "" || infraManagerAddress == "" || monitorManagerAddress == "" {
 		ginkgo.Fail("missing environment variables")
 	}
 
@@ -59,10 +59,10 @@ var _ = ginkgo.Describe("Clusters", func() {
 	var clustClient grpc_infrastructure_go.ClustersClient
 	var nodeClient grpc_infrastructure_go.NodesClient
 	var infraClient grpc_infrastructure_manager_go.InfrastructureManagerClient
-	var imClient grpc_infrastructure_monitor_go.CoordinatorClient
+	var mmClient grpc_monitoring_go.MonitoringManagerClient
 	var smConn *grpc.ClientConn
 	var infraConn *grpc.ClientConn
-	var imConn *grpc.ClientConn
+	var mmConn *grpc.ClientConn
 	var client grpc_public_api_go.ClustersClient
 
 	// Target organization.
@@ -83,13 +83,13 @@ var _ = ginkgo.Describe("Clusters", func() {
 		nodeClient = grpc_infrastructure_go.NewNodesClient(smConn)
 		infraConn = utils.GetConnection(infraManagerAddress)
 		infraClient = grpc_infrastructure_manager_go.NewInfrastructureManagerClient(infraConn)
-		imConn = utils.GetConnection(infraMonitorAddress)
-		imClient = grpc_infrastructure_monitor_go.NewCoordinatorClient(imConn)
+		mmConn = utils.GetConnection(monitorManagerAddress)
+		mmClient = grpc_monitoring_go.NewMonitoringManagerClient(mmConn)
 
 		conn, err := test.GetConn(*listener)
 		gomega.Expect(err).To(gomega.Succeed())
 
-		manager := NewManager(clustClient, nodeClient, infraClient, imClient)
+		manager := NewManager(clustClient, nodeClient, infraClient, mmClient)
 		handler := NewHandler(manager)
 		grpc_public_api_go.RegisterClustersServer(server, handler)
 		test.LaunchServer(server, listener)

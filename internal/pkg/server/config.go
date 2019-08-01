@@ -27,8 +27,8 @@ type Config struct {
 	DeviceManagerAddress string
 	// UnifiedLoggingAddress with the host:port to connect to the Unified Logging Coordinator component.
 	UnifiedLoggingAddress string
-	// InfrastructureMonitorAddress with the host:port to connect to the Infrastructure Monitor Coordinator component.
-	InfrastructureMonitorAddress string
+	// MonitoringManagerAddress with the host:port to connect to the Monitoring Manager component.
+	MonitoringManagerAddress string
 	// InventoryManagerAddress with the host:port to connect to the Inventory Manager component.
 	InventoryManagerAddress string
 	// AuthSecret contains the shared authx secret.
@@ -57,10 +57,6 @@ func (conf *Config) Validate() derrors.Error {
 		return derrors.NewInvalidArgumentError("applicationsManagerAddress must be set")
 	}
 
-	if conf.InfrastructureManagerAddress == "" {
-		return derrors.NewInvalidArgumentError("infrastructureManagerAddress must be set")
-	}
-
 	if conf.UserManagerAddress == "" {
 		return derrors.NewInvalidArgumentError("userManagerAddress must be set")
 	}
@@ -73,8 +69,8 @@ func (conf *Config) Validate() derrors.Error {
 		return derrors.NewInvalidArgumentError("unifiedLoggingAddress must be set")
 	}
 
-	if conf.InfrastructureMonitorAddress == "" {
-		return derrors.NewInvalidArgumentError("infrastructureMonitorAddress must be set")
+	if conf.MonitoringManagerAddress == "" {
+		return derrors.NewInvalidArgumentError("monitoringManagerAddress must be set")
 	}
 
 	if conf.InventoryManagerAddress == "" {
@@ -107,7 +103,7 @@ func (conf *Config) Print() {
 	log.Info().Str("URL", conf.ApplicationsManagerAddress).Msg("Applications Manager")
 	log.Info().Str("URL", conf.UserManagerAddress).Msg("User Manager")
 	log.Info().Str("URL", conf.UnifiedLoggingAddress).Msg("Unified Logging Coordinator Service")
-	log.Info().Str("URL", conf.InfrastructureMonitorAddress).Msg("Infrastructure Monitor Coordinator Service")
+	log.Info().Str("URL", conf.MonitoringManagerAddress).Msg("Monitoring Manager Service")
 	log.Info().Str("URL", conf.DeviceManagerAddress).Msg("Device Manager Service")
 	log.Info().Str("URL", conf.InventoryManagerAddress).Msg("Inventory Manager Service")
 	log.Info().Str("header", conf.AuthHeader).Str("secret", strings.Repeat("*", len(conf.AuthSecret))).Msg("Authorization")

@@ -195,14 +195,6 @@
   version = "v0.0.33"
 
 [[projects]]
-  digest = "1:6bbca7d893e45448d94e677f49b6dddd710afc2866408f8109a7313f36ed221d"
-  name = "github.com/nalej/grpc-infrastructure-monitor-go"
-  packages = ["."]
-  pruneopts = ""
-  revision = "f0b2679383393f4de772889420b1e5ab6ee77447"
-  version = "v0.0.3"
-
-[[projects]]
   digest = "1:fc1de6bfd5f9f96ae418410548e84207d26b28d5bb4f5560d922f9f8b75913ba"
   name = "github.com/nalej/grpc-installer-go"
   packages = ["."]
@@ -235,6 +227,14 @@
   version = "v0.0.22"
 
 [[projects]]
+  digest = "1:9c4948fc5141c6c3e5287e5a7c60b06e1465751012c5451dc5d9ee8b045d2c7c"
+  name = "github.com/nalej/grpc-monitoring-go"
+  packages = ["."]
+  pruneopts = ""
+  revision = "0004501b8eb8a1fac8a69f1fa8e36c845ee33783"
+  version = "v0.0.4"
+
+[[projects]]
   digest = "1:f41783cc6d03c6734fe9bb8b42ca4aa87651430e98cd8fe0ad5c72ca30da2efa"
   name = "github.com/nalej/grpc-network-go"
   packages = ["."]
@@ -251,12 +251,12 @@
   version = "v0.0.29"
 
 [[projects]]
-  digest = "1:4f60c64d8b19bc4663be78875dc33509e48df74d93bfba9d99dcc8326cdccc25"
+  digest = "1:7ed8ecf97e0e543408386581e0a9eadd73ca81c752f6b7e42fd435b25100a47d"
   name = "github.com/nalej/grpc-public-api-go"
   packages = ["."]
   pruneopts = ""
-  revision = "ed04440fdf94b0e4068381ec68284986cdb15306"
-  version = "v0.0.97"
+  revision = "f10424c19e9f5ba05e3cb85481e1b00d000a7e02"
+  version = "v0.0.98"
 
 [[projects]]
   digest = "1:be9b75e8734511623a81a66b4e5d578ebd3b71562429950ea3784e6200d018e8"
@@ -413,11 +413,11 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:99cdf3e6a8e8b44d680573992c2a19192f47da37a05eccf205cd16add40de159"
+  digest = "1:73d6ce4026bb0d6f74095f87134087d3009861558e7f0213e581276dd35cabd7"
   name = "golang.org/x/sys"
   packages = ["unix"]
   pruneopts = ""
-  revision = "fc99dfbffb4e5ed5758a37e31dd861afe285406b"
+  revision = "1393eb0183657fb29200106b17a5042ec6e48dbe"
 
 [[projects]]
   digest = "1:740b51a55815493a8d0f2b1e0d0ae48fe48953bf7eaf3fcc4198823bf67768c0"
@@ -560,11 +560,11 @@
     "github.com/nalej/grpc-device-manager-go",
     "github.com/nalej/grpc-infrastructure-go",
     "github.com/nalej/grpc-infrastructure-manager-go",
-    "github.com/nalej/grpc-infrastructure-monitor-go",
     "github.com/nalej/grpc-installer-go",
     "github.com/nalej/grpc-inventory-go",
     "github.com/nalej/grpc-inventory-manager-go",
     "github.com/nalej/grpc-login-api-go",
+    "github.com/nalej/grpc-monitoring-go",
     "github.com/nalej/grpc-organization-go",
     "github.com/nalej/grpc-public-api-go",
     "github.com/nalej/grpc-unified-logging-go",

@@ -7,9 +7,9 @@ import (
 	"github.com/nalej/grpc-common-go"
 	"github.com/nalej/grpc-device-manager-go"
 	"github.com/nalej/grpc-infrastructure-manager-go"
-	"github.com/nalej/grpc-infrastructure-monitor-go"
 	"github.com/nalej/grpc-inventory-go"
 	"github.com/nalej/grpc-inventory-manager-go"
+	"github.com/nalej/grpc-monitoring-go"
 	"github.com/nalej/grpc-public-api-go"
 	"github.com/nalej/grpc-unified-logging-go"
 	"github.com/nalej/grpc-user-manager-go"
@@ -47,8 +47,8 @@ func AsTable(result interface{}, labelLength int) *ResultTable {
 		return FromUserList(result.(*grpc_public_api_go.UserList))
 	case *grpc_public_api_go.Cluster:
 		return FromCluster(result.(*grpc_public_api_go.Cluster), labelLength)
-	case *grpc_infrastructure_monitor_go.ClusterSummary:
-		return FromClusterSummary(result.(*grpc_infrastructure_monitor_go.ClusterSummary))
+	case *grpc_monitoring_go.ClusterSummary:
+		return FromClusterSummary(result.(*grpc_monitoring_go.ClusterSummary))
 	case *grpc_public_api_go.ClusterList:
 		return FromClusterList(result.(*grpc_public_api_go.ClusterList), labelLength)
 	case *grpc_infrastructure_manager_go.InstallResponse:
@@ -229,7 +229,7 @@ func FromClusterList(result *grpc_public_api_go.ClusterList, labelLength int) *R
 	return &ResultTable{r}
 }
 
-func FromClusterSummary(result *grpc_infrastructure_monitor_go.ClusterSummary) *ResultTable {
+func FromClusterSummary(result *grpc_monitoring_go.ClusterSummary) *ResultTable {
 	r := make([][]string, 0)
 	r = append(r, []string{"CPU", "MEM", "STORAGE"})
 
