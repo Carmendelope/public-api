@@ -107,10 +107,10 @@ func AsTable(result interface{}, labelLength int) *ResultTable {
 		return FromIEdgeController(result.(*grpc_inventory_go.EdgeController), labelLength)
 	case *grpc_inventory_manager_go.InventorySummary:
 		return FromInventorySummary(result.(*grpc_inventory_manager_go.InventorySummary))
-	case *grpc_inventory_manager_go.QueryMetricsResult:
-		return FromQueryMetricsResult(result.(*grpc_inventory_manager_go.QueryMetricsResult))
-	case *grpc_inventory_manager_go.MetricsList:
-		return FromMetricsList(result.(*grpc_inventory_manager_go.MetricsList))
+	case *grpc_monitoring_go.QueryMetricsResult:
+		return FromQueryMetricsResult(result.(*grpc_monitoring_go.QueryMetricsResult))
+	case *grpc_monitoring_go.MetricsList:
+		return FromMetricsList(result.(*grpc_monitoring_go.MetricsList))
 	default:
 		log.Fatal().Str("type", fmt.Sprintf("%T", result)).Msg("unsupported")
 	}
@@ -684,7 +684,7 @@ func FromInventorySummary (result *grpc_inventory_manager_go.InventorySummary) *
 // Inventory monitoring
 // ----
 
-func FromQueryMetricsResult(result *grpc_inventory_manager_go.QueryMetricsResult) *ResultTable {
+func FromQueryMetricsResult(result *grpc_monitoring_go.QueryMetricsResult) *ResultTable {
 	r := [][]string{}
 	r = append(r, []string{"TIMESTAMP", "METRIC", "ASSET", "AGGR", "VALUE"})
 
@@ -700,7 +700,7 @@ func FromQueryMetricsResult(result *grpc_inventory_manager_go.QueryMetricsResult
 	return &ResultTable{r}
 }
 
-func FromMetricsList(result *grpc_inventory_manager_go.MetricsList) *ResultTable {
+func FromMetricsList(result *grpc_monitoring_go.MetricsList) *ResultTable {
 	r := [][]string{}
 	r = append(r, []string{"METRIC"})
 
