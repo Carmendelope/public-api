@@ -58,9 +58,9 @@ type Clients struct {
 	deviceClient grpc_device_manager_go.DevicesClient
 	ulClient    grpc_unified_logging_go.CoordinatorClient
 	mmClient    grpc_monitoring_go.MonitoringManagerClient
+	amClient    grpc_monitoring_go.AssetMonitoringClient
 	eicClient grpc_inventory_manager_go.EICClient
 	invClient grpc_inventory_manager_go.InventoryClient
-	invmClient grpc_inventory_manager_go.InventoryMonitoringClient
 	agentClient grpc_inventory_manager_go.AgentClient
 }
 
@@ -107,12 +107,12 @@ func (s *Service) GetClients() (*Clients, derrors.Error) {
 	deviceClient := grpc_device_manager_go.NewDevicesClient(devConn)
 	ulClient := grpc_unified_logging_go.NewCoordinatorClient(ulConn)
 	mmClient := grpc_monitoring_go.NewMonitoringManagerClient(mmConn)
+	amClient := grpc_monitoring_go.NewAssetMonitoringClient(mmConn)
 	eicClient := grpc_inventory_manager_go.NewEICClient(invManagerConn)
 	invClient := grpc_inventory_manager_go.NewInventoryClient(invManagerConn)
-	invmClient := grpc_inventory_manager_go.NewInventoryMonitoringClient(invManagerConn)
 	agentClient := grpc_inventory_manager_go.NewAgentClient(invManagerConn)
 
-	return &Clients{oClient, cClient, nClient, infraClient, umClient, appClient, deviceClient, ulClient, mmClient, eicClient, invClient, invmClient, agentClient}, nil
+	return &Clients{oClient, cClient, nClient, infraClient, umClient, appClient, deviceClient, ulClient, mmClient, amClient, eicClient, invClient, agentClient}, nil
 }
 
 // Run the service, launch the REST service handler.
@@ -256,8 +256,8 @@ func (s *Service) LaunchGRPC(authConfig *interceptor.AuthorizationConfig) error 
 	invManager := inventory.NewManager(clients.invClient, clients.eicClient)
 	invHandler := inventory.NewHandler(invManager)
 
-	invmManager := monitoring.NewManager(clients.invmClient)
-	invmHandler := monitoring.NewHandler(invmManager)
+	amManager := monitoring.NewManager(clients.amClient)
+	amHandler := monitoring.NewHandler(amManager)
 
 	agentManager := agent.NewManager(clients.agentClient)
 	agentHandler := agent.NewHandler(agentManager)
@@ -275,7 +275,7 @@ func (s *Service) LaunchGRPC(authConfig *interceptor.AuthorizationConfig) error 
 	grpc_public_api_go.RegisterUnifiedLoggingServer(grpcServer, ulHandler)
 	grpc_public_api_go.RegisterEdgeControllersServer(grpcServer, ecHandler)
 	grpc_public_api_go.RegisterInventoryServer(grpcServer, invHandler)
-	grpc_public_api_go.RegisterInventoryMonitoringServer(grpcServer, invmHandler)
+	grpc_public_api_go.RegisterInventoryMonitoringServer(grpcServer, amHandler)
 	grpc_public_api_go.RegisterAgentServer(grpcServer, agentHandler)
 
 	if s.Configuration.Debug{

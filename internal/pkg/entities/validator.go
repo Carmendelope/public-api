@@ -511,7 +511,7 @@ func ValidUpdateDeviceLocationRequest (request *grpc_inventory_manager_go.Update
 	return nil
 }
 
-func ValidAssetSelector(selector *grpc_inventory_manager_go.AssetSelector) derrors.Error {
+func ValidAssetSelector(selector *grpc_inventory_go.AssetSelector) derrors.Error {
 	if selector == nil {
 		return derrors.NewInvalidArgumentError("empty asset selector")
 	}
@@ -521,7 +521,7 @@ func ValidAssetSelector(selector *grpc_inventory_manager_go.AssetSelector) derro
 	return nil
 }
 
-func ValidTimeRange(timeRange *grpc_inventory_manager_go.QueryMetricsRequest_TimeRange) derrors.Error {
+func ValidTimeRange(timeRange *grpc_monitoring_go.QueryMetricsRequest_TimeRange) derrors.Error {
 	if !(timeRange.GetTimestamp() == 0) {
 		if timeRange.GetTimeStart() != 0 || timeRange.GetTimeEnd() != 0 || timeRange.GetResolution() != 0 {
 			return derrors.NewInvalidArgumentError("timestamp is set; start, end and resolution should be 0").
@@ -539,7 +539,7 @@ func ValidTimeRange(timeRange *grpc_inventory_manager_go.QueryMetricsRequest_Tim
 	return nil
 }
 
-func ValidQueryMetricsRequest(request *grpc_inventory_manager_go.QueryMetricsRequest) derrors.Error {
+func ValidQueryMetricsRequest(request *grpc_monitoring_go.QueryMetricsRequest) derrors.Error {
 	// We check the asset selector so we know we have an organization ID.
 	derr := ValidAssetSelector(request.GetAssets())
 	if derr != nil {
@@ -552,7 +552,7 @@ func ValidQueryMetricsRequest(request *grpc_inventory_manager_go.QueryMetricsReq
 		return derr
 	}
 
-	if len(request.GetAssets().GetAssetIds()) != 1 && request.GetAggregation() == grpc_inventory_manager_go.AggregationType_NONE {
+	if len(request.GetAssets().GetAssetIds()) != 1 && request.GetAggregation() == grpc_monitoring_go.AggregationType_NONE {
 		return derrors.NewInvalidArgumentError("metrics for more than one asset requested without aggregation method")
 	}
 
