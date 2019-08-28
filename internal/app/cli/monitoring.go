@@ -10,7 +10,8 @@ import (
 
 	"github.com/araddon/dateparse"
 
-	"github.com/nalej/grpc-inventory-manager-go"
+	"github.com/nalej/grpc-inventory-go"
+	"github.com/nalej/grpc-monitoring-go"
 	"github.com/nalej/grpc-public-api-go"
 
 	"github.com/rs/zerolog/log"
@@ -25,8 +26,8 @@ type AssetSelector struct {
 	Labels map[string]string
 }
 
-func (a *AssetSelector) ToGRPC() *grpc_inventory_manager_go.AssetSelector {
-	selector := &grpc_inventory_manager_go.AssetSelector{
+func (a *AssetSelector) ToGRPC() *grpc_inventory_go.AssetSelector {
+	selector := &grpc_inventory_go.AssetSelector{
 		OrganizationId: a.OrganizationId,
 		EdgeControllerId: a.EdgeControllerId,
 		AssetIds: a.AssetIds,
@@ -58,8 +59,8 @@ func dateParse(in string) int64 {
 	return t.UTC().Unix()
 }
 
-func (t *TimeRange) ToGRPC() *grpc_inventory_manager_go.QueryMetricsRequest_TimeRange {
-	timeRange := &grpc_inventory_manager_go.QueryMetricsRequest_TimeRange{
+func (t *TimeRange) ToGRPC() *grpc_monitoring_go.QueryMetricsRequest_TimeRange {
+	timeRange := &grpc_monitoring_go.QueryMetricsRequest_TimeRange{
 		Timestamp: dateParse(t.Timestamp),
 		TimeStart: dateParse(t.Start),
 		TimeEnd: dateParse(t.End),
@@ -74,9 +75,9 @@ type InventoryMonitoring struct {
 	Credentials
 }
 
-func NewInventoryMonitoring(address string, port int, insecure bool, useTLS bool, caCertPath string, output string) *InventoryMonitoring {
+func NewInventoryMonitoring(address string, port int, insecure bool, useTLS bool, caCertPath string, output string, labelLength int) *InventoryMonitoring {
 	return &InventoryMonitoring{
-		Connection:  *NewConnection(address, port, insecure, useTLS, caCertPath, output),
+		Connection:  *NewConnection(address, port, insecure, useTLS, caCertPath, output, labelLength),
 		Credentials: *NewEmptyCredentials(DefaultPath),
 	}
 }
@@ -104,20 +105,20 @@ func (i *InventoryMonitoring) QueryMetrics(selector *AssetSelector, metrics []st
 	defer conn.Close()
 	defer cancel()
 
-	aggrType, found := grpc_inventory_manager_go.QueryMetricsRequest_AggregationType_value[aggr]
+	aggrType, found := grpc_monitoring_go.AggregationType_value[aggr]
 	if !found {
 		methods := []string{}
-		for method := range(grpc_inventory_manager_go.QueryMetricsRequest_AggregationType_value) {
+		for method := range(grpc_monitoring_go.AggregationType_value) {
 			methods = append(methods, method)
 		}
 		log.Fatal().Str("aggregation", aggr).Msg("Aggregation method not available. Available methods: " + strings.Join(methods, ", "))
 	}
 
-	query := &grpc_inventory_manager_go.QueryMetricsRequest{
+	query := &grpc_monitoring_go.QueryMetricsRequest{
 		Assets: selector.ToGRPC(),
 		Metrics: metrics,
 		TimeRange: timeRange.ToGRPC(),
-		Aggregation: grpc_inventory_manager_go.QueryMetricsRequest_AggregationType(aggrType),
+		Aggregation: grpc_monitoring_go.AggregationType(aggrType),
 	}
 
 	result, err := client.QueryMetrics(ctx, query)

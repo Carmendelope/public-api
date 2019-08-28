@@ -11,8 +11,8 @@ import (
 )
 
 var nodesCmd = &cobra.Command{
-	Use:     "nodes",
-	Aliases: []string{"node"},
+	Use:     "node",
+	Aliases: []string{"nodes"},
 	Short:   "Manage nodes",
 	Long:    `Manage nodes`,
 	Run: func(cmd *cobra.Command, args []string) {
@@ -35,23 +35,24 @@ func init() {
 
 var listNodesCmd = &cobra.Command{
 	Use:   "list [clusterID]",
+	Aliases: []string{"ls"},
 	Short: "List nodes",
 	Long:  `List nodes`,
 	Run: func(cmd *cobra.Command, args []string) {
 		SetupLogging()
 		n := cli.NewNodes(
-			options.Resolve("nalejAddress", nalejAddress),
-			options.ResolveAsInt("port", nalejPort),
+			cliOptions.Resolve("nalejAddress", nalejAddress),
+			cliOptions.ResolveAsInt("port", nalejPort),
 			insecure, useTLS,
-			options.Resolve("cacert", caCertPath), options.Resolve("output", output))
+			cliOptions.Resolve("cacert", caCertPath), cliOptions.Resolve("output", output), cliOptions.ResolveAsInt("labelLength", labelLength))
 
 		targetValues, err := ResolveArgument([]string{"clusterID"}, args, []string{clusterID})
 		if err != nil {
 			fmt.Println(err.Error())
 			cmd.Help()
 		}else{
-			n.List(options.Resolve("organizationID", organizationID),
-				options.Resolve("clusterID", targetValues[0]))
+			n.List(cliOptions.Resolve("organizationID", organizationID),
+				cliOptions.Resolve("clusterID", targetValues[0]))
 		}
 	},
 }
@@ -75,17 +76,17 @@ var addLabelToNodeCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		SetupLogging()
 		n := cli.NewNodes(
-			options.Resolve("nalejAddress", nalejAddress),
-			options.ResolveAsInt("port", nalejPort),
+			cliOptions.Resolve("nalejAddress", nalejAddress),
+			cliOptions.ResolveAsInt("port", nalejPort),
 			insecure, useTLS,
-			options.Resolve("cacert", caCertPath), options.Resolve("output", output))
+			cliOptions.Resolve("cacert", caCertPath), cliOptions.Resolve("output", output), cliOptions.ResolveAsInt("labelLength", labelLength))
 
 		targetValues, err := ResolveArgument([]string{"nodeID", "labels"}, args, []string{nodeID, rawLabels})
 		if err != nil {
 			fmt.Println(err.Error())
 			cmd.Help()
 		}else{
-			n.ModifyNodeLabels(options.Resolve("organizationID", organizationID),
+			n.ModifyNodeLabels(cliOptions.Resolve("organizationID", organizationID),
 				targetValues[0], true, targetValues[1])
 		}
 	},
@@ -93,24 +94,24 @@ var addLabelToNodeCmd = &cobra.Command{
 
 var removeLabelFromNodeCmd = &cobra.Command{
 	Use:   "delete [nodeID] [labels]",
-	Aliases: []string{"remove", "del"},
+	Aliases: []string{"remove", "del", "rm"},
 	Short: "Remove a set of labels from a cluster",
 	Long:  `Remove a set of labels from a cluster`,
 	Args: cobra.MaximumNArgs(2),
 	Run: func(cmd *cobra.Command, args []string) {
 		SetupLogging()
 		n := cli.NewNodes(
-			options.Resolve("nalejAddress", nalejAddress),
-			options.ResolveAsInt("port", nalejPort),
+			cliOptions.Resolve("nalejAddress", nalejAddress),
+			cliOptions.ResolveAsInt("port", nalejPort),
 			insecure, useTLS,
-			options.Resolve("cacert", caCertPath), options.Resolve("output", output))
+			cliOptions.Resolve("cacert", caCertPath), cliOptions.Resolve("output", output), cliOptions.ResolveAsInt("labelLength", labelLength))
 
 		targetValues, err := ResolveArgument([]string{"nodeID", "labels"}, args, []string{nodeID, rawLabels})
 		if err != nil {
 			fmt.Println(err.Error())
 			cmd.Help()
 		}else{
-			n.ModifyNodeLabels(options.Resolve("organizationID", organizationID),
+			n.ModifyNodeLabels(cliOptions.Resolve("organizationID", organizationID),
 				targetValues[0], false, targetValues[1])
 		}
 	},

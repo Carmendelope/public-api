@@ -30,9 +30,9 @@ var (
 )
 
 func addAssetSelector(cmd *cobra.Command, selector *cli.AssetSelector) {
-	cmd.Flags().StringVar(&selector.EdgeControllerId, "edgeControllerId", "", "Select assets for this Edge Controller")
-	cmd.Flags().StringSliceVar(&selector.AssetIds, "assetId", []string{}, "Select one or multiple assets")
-	cmd.Flags().StringSliceVar(&selector.GroupIds, "groupId", []string{}, "Select assets in one or multiple groups")
+	cmd.Flags().StringVar(&selector.EdgeControllerId, "edgeControllerID", "", "Select assets for this Edge Controller")
+	cmd.Flags().StringSliceVar(&selector.AssetIds, "assetID", []string{}, "Select one or multiple assets")
+	cmd.Flags().StringSliceVar(&selector.GroupIds, "groupID", []string{}, "Select assets in one or multiple groups")
 	cmd.Flags().StringToStringVar(&selector.Labels, "label", map[string]string{}, "Select assets with the intersection of a set of labels")
 }
 
@@ -83,22 +83,23 @@ func init() {
 
 var inventoryListCmd = &cobra.Command{
 	Use:   "list",
+	Aliases: []string{"ls"},
 	Short: "List the inventory",
 	Long:  `List the inventory in a given organization`,
 	Run: func(cmd *cobra.Command, args []string) {
 		SetupLogging()
 		ec := cli.NewInventory(
-			options.Resolve("nalejAddress", nalejAddress),
-			options.ResolveAsInt("port", nalejPort),
+			cliOptions.Resolve("nalejAddress", nalejAddress),
+			cliOptions.ResolveAsInt("port", nalejPort),
 			insecure, useTLS,
-			options.Resolve("cacert", caCertPath), options.Resolve("output", output))
-		ec.List(options.Resolve("organizationID", organizationID))
+			cliOptions.Resolve("cacert", caCertPath), cliOptions.Resolve("output", output), cliOptions.ResolveAsInt("labelLength", labelLength))
+		ec.List(cliOptions.Resolve("organizationID", organizationID))
 	},
 }
 
 var invControllerCommand = &cobra.Command{
-	Use:     "controller",
-	Aliases: []string{"ec"},
+	Use:     "edgecontroller",
+	Aliases: []string{"ec", "controller"},
 	Short:   "Controller commands",
 	Long:    `Controller commands`,
 	Run: func(cmd *cobra.Command, args []string) {
@@ -109,6 +110,7 @@ var invControllerCommand = &cobra.Command{
 
 var invAssetCommand = &cobra.Command{
 	Use:   "asset",
+	Aliases: []string{"ass"},
 	Short: "Asset commands",
 	Long:  `Asset commands`,
 	Run: func(cmd *cobra.Command, args []string) {
@@ -119,7 +121,7 @@ var invAssetCommand = &cobra.Command{
 
 var invDeviceCommand = &cobra.Command{
 	Use:     "device",
-	Aliases: []string{"dev"},
+	Aliases: []string{"dev", "devices"},
 	Short:   "Device commands",
 	Long:    `Device commands`,
 	Run: func(cmd *cobra.Command, args []string) {
@@ -141,56 +143,59 @@ var invDeviceLabelsCmd = &cobra.Command{
 
 var invControllerExtInfoCmd = &cobra.Command{
 	Use:   "info [edgeControllerID]",
+	Aliases: []string{"get"},
 	Short: "Get extended information on an edge controller",
 	Long:  `Get extended information on an edge controller`,
 	Args:  cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		SetupLogging()
 		ec := cli.NewInventory(
-			options.Resolve("nalejAddress", nalejAddress),
-			options.ResolveAsInt("port", nalejPort),
+			cliOptions.Resolve("nalejAddress", nalejAddress),
+			cliOptions.ResolveAsInt("port", nalejPort),
 			insecure, useTLS,
-			options.Resolve("cacert", caCertPath), options.Resolve("output", output))
-		ec.GetControllerExtendedInfo(options.Resolve("organizationID", organizationID), args[0])
+			cliOptions.Resolve("cacert", caCertPath), cliOptions.Resolve("output", output), cliOptions.ResolveAsInt("labelLength", labelLength))
+		ec.GetControllerExtendedInfo(cliOptions.Resolve("organizationID", organizationID), args[0])
 	},
 }
 
 var invAssetInfoCmd = &cobra.Command{
 	Use:   "info [assetID]",
+	Aliases: []string{"get"},
 	Short: "Get extended information on an asset",
 	Long:  `Get extended information on an asset`,
 	Args:  cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		SetupLogging()
 		ec := cli.NewInventory(
-			options.Resolve("nalejAddress", nalejAddress),
-			options.ResolveAsInt("port", nalejPort),
+			cliOptions.Resolve("nalejAddress", nalejAddress),
+			cliOptions.ResolveAsInt("port", nalejPort),
 			insecure,
 			useTLS,
-			options.Resolve("cacert", caCertPath),
-			options.Resolve("output", output))
-		ec.GetAssetInfo(options.Resolve("organizationID", organizationID), args[0])
+			cliOptions.Resolve("cacert", caCertPath),
+			cliOptions.Resolve("output", output),
+			cliOptions.ResolveAsInt("labelLength", labelLength))
+		ec.GetAssetInfo(cliOptions.Resolve("organizationID", organizationID), args[0])
 	},
 }
 
 var invAssetUpdateLocationCmd = &cobra.Command{
-	Use:   "location-update [assetID] [location]",
+	Use:   "update-location [assetID] [location]",
 	Short: "Update asset location",
 	Long:  `Update asset location`,
 	Args:  cobra.ExactArgs(2),
 	Run: func(cmd *cobra.Command, args []string) {
 		SetupLogging()
 		a := cli.NewAsset(
-			options.Resolve("nalejAddress", nalejAddress),
-			options.ResolveAsInt("port", nalejPort),
+			cliOptions.Resolve("nalejAddress", nalejAddress),
+			cliOptions.ResolveAsInt("port", nalejPort),
 			insecure,
 			useTLS,
-			options.Resolve("cacert", caCertPath),
-			options.Resolve("output", output))
+			cliOptions.Resolve("cacert", caCertPath),
+			cliOptions.Resolve("output", output), cliOptions.ResolveAsInt("labelLength", labelLength))
 
 			assetID = args[0]
 			newLocation := args[1]
-		a.UpdateLocation(options.Resolve("organizationID", organizationID), assetID, newLocation)
+		a.UpdateLocation(cliOptions.Resolve("organizationID", organizationID), assetID, newLocation)
 	},
 }
 
@@ -207,60 +212,61 @@ var assetLabelsCmd = &cobra.Command{
 
 var invDeviceInfoCmd = &cobra.Command{
 	Use:   "info [deviceID]",
+	Aliases: []string{"get"},
 	Short: "Get extended information of a device",
 	Long:  `Get extended information of a device`,
 	Args:  cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		SetupLogging()
 		ec := cli.NewInventory(
-			options.Resolve("nalejAddress", nalejAddress),
-			options.ResolveAsInt("port", nalejPort),
+			cliOptions.Resolve("nalejAddress", nalejAddress),
+			cliOptions.ResolveAsInt("port", nalejPort),
 			insecure,
 			useTLS,
-			options.Resolve("cacert", caCertPath),
-			options.Resolve("output", output))
-		ec.GetDeviceInfo(options.Resolve("organizationID", organizationID), args[0])
+			cliOptions.Resolve("cacert", caCertPath),
+			cliOptions.Resolve("output", output), cliOptions.ResolveAsInt("labelLength", labelLength))
+		ec.GetDeviceInfo(cliOptions.Resolve("organizationID", organizationID), args[0])
 	},
 }
 
 var invDeviceUpdateLocationCmd = &cobra.Command{
-	Use:   "location-update [assetDeviceID] [location]",
+	Use:   "update-location [assetDeviceID] [location]",
 	Short: "update the location of a device",
 	Long:  `Update the location of a device`,
 	Args:  cobra.ExactArgs(2),
 	Run: func(cmd *cobra.Command, args []string) {
 		SetupLogging()
 		device := cli.NewInventory(
-			options.Resolve("nalejAddress", nalejAddress),
-			options.ResolveAsInt("port", nalejPort),
+			cliOptions.Resolve("nalejAddress", nalejAddress),
+			cliOptions.ResolveAsInt("port", nalejPort),
 			insecure,
 			useTLS,
-			options.Resolve("cacert", caCertPath),
-			options.Resolve("output", output))
+			cliOptions.Resolve("cacert", caCertPath),
+			cliOptions.Resolve("output", output), cliOptions.ResolveAsInt("labelLength", labelLength))
 
 			assetDeviceId = args[0]
 			newLocation := args[1]
-		device.UpdateDeviceLocation(options.Resolve("organizationID", organizationID), assetDeviceId, newLocation)
+		device.UpdateDeviceLocation(cliOptions.Resolve("organizationID", organizationID), assetDeviceId, newLocation)
 	},
 }
 
 var invEdgeControllerUpdateLocationCmd = &cobra.Command{
-	Use:   "location-update [edgeControllerID] [location]",
+	Use:   "update-location [edgeControllerID] [location]",
 	Short: "update the location of a device",
 	Long:  `Update the location of a device`,
 	Args:  cobra.ExactArgs(2),
 	Run: func(cmd *cobra.Command, args []string) {
 		SetupLogging()
 		ec := cli.NewEdgeController(
-			options.Resolve("nalejAddress", nalejAddress),
-			options.ResolveAsInt("port", nalejPort),
+			cliOptions.Resolve("nalejAddress", nalejAddress),
+			cliOptions.ResolveAsInt("port", nalejPort),
 			insecure, useTLS,
-			options.Resolve("cacert", caCertPath), options.Resolve("output", output))
+			cliOptions.Resolve("cacert", caCertPath), cliOptions.Resolve("output", output), cliOptions.ResolveAsInt("labelLength", labelLength))
 
 			edgeControllerID = args[0]
 			newLocation := args[1]
 
-		ec.UpdateGeolocation(options.Resolve("organizationID", organizationID), edgeControllerID, newLocation)
+		ec.UpdateGeolocation(cliOptions.Resolve("organizationID", organizationID), edgeControllerID, newLocation)
 	},
 }
 
@@ -271,27 +277,28 @@ var invMonitoringCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		SetupLogging()
 		inv := cli.NewInventoryMonitoring(
-			options.Resolve("nalejAddress", nalejAddress),
-			options.ResolveAsInt("port", nalejPort),
+			cliOptions.Resolve("nalejAddress", nalejAddress),
+			cliOptions.ResolveAsInt("port", nalejPort),
 			insecure, useTLS,
-			options.Resolve("cacert", caCertPath), options.Resolve("output", output))
-		queryAssetSelector.OrganizationId = options.Resolve("organizationID", organizationID)
+			cliOptions.Resolve("cacert", caCertPath), cliOptions.Resolve("output", output), cliOptions.ResolveAsInt("labelLength", labelLength))
+		queryAssetSelector.OrganizationId = cliOptions.Resolve("organizationID", organizationID)
 		inv.QueryMetrics(queryAssetSelector, queryMetrics, queryTimeRange, queryAggr)
 	},
 }
 
 var invMonitoringListCmd = &cobra.Command{
 	Use:   "list",
+	Aliases: []string{"ls"},
 	Short: "List available metrics for assets",
 	Long:  `List available metrics for assets`,
 	Run: func(cmd *cobra.Command, args []string) {
 		SetupLogging()
 		inv := cli.NewInventoryMonitoring(
-			options.Resolve("nalejAddress", nalejAddress),
-			options.ResolveAsInt("port", nalejPort),
+			cliOptions.Resolve("nalejAddress", nalejAddress),
+			cliOptions.ResolveAsInt("port", nalejPort),
 			insecure, useTLS,
-			options.Resolve("cacert", caCertPath), options.Resolve("output", output))
-		listAssetSelector.OrganizationId = options.Resolve("organizationID", organizationID)
+			cliOptions.Resolve("cacert", caCertPath), cliOptions.Resolve("output", output), cliOptions.ResolveAsInt("labelLength", labelLength))
+		listAssetSelector.OrganizationId = cliOptions.Resolve("organizationID", organizationID)
 		inv.ListMetrics(listAssetSelector)
 	},
 }
@@ -315,30 +322,30 @@ var addLabelToAssetCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		SetupLogging()
 		n := cli.NewAsset(
-			options.Resolve("nalejAddress", nalejAddress),
-			options.ResolveAsInt("port", nalejPort),
+			cliOptions.Resolve("nalejAddress", nalejAddress),
+			cliOptions.ResolveAsInt("port", nalejPort),
 			insecure, useTLS,
-			options.Resolve("cacert", caCertPath), options.Resolve("output", output))
+			cliOptions.Resolve("cacert", caCertPath), cliOptions.Resolve("output", output), cliOptions.ResolveAsInt("labelLength", labelLength))
 
-		n.AddLabelToAsset(options.Resolve("organizationID", organizationID), args[0], args[1])
+		n.AddLabelToAsset(cliOptions.Resolve("organizationID", organizationID), args[0], args[1])
 	},
 }
 
 var removeLabelFromAssetCmd = &cobra.Command{
 	Use:   "delete [assetID] [labels]",
-	Aliases: []string{"remove", "del"},
+	Aliases: []string{"remove", "del", "rm"},
 	Short: "Remove a set of labels from an asset",
 	Long:  `Remove a set of labels from an asset`,
 	Args: cobra.MaximumNArgs(2),
 	Run: func(cmd *cobra.Command, args []string) {
 		SetupLogging()
 		n := cli.NewAsset(
-			options.Resolve("nalejAddress", nalejAddress),
-			options.ResolveAsInt("port", nalejPort),
+			cliOptions.Resolve("nalejAddress", nalejAddress),
+			cliOptions.ResolveAsInt("port", nalejPort),
 			insecure, useTLS,
-			options.Resolve("cacert", caCertPath), options.Resolve("output", output))
+			cliOptions.Resolve("cacert", caCertPath), cliOptions.Resolve("output", output), cliOptions.ResolveAsInt("labelLength", labelLength))
 
-		n.RemoveLabelFromAsset(options.Resolve("organizationID", organizationID), args[0], args[1])
+		n.RemoveLabelFromAsset(cliOptions.Resolve("organizationID", organizationID), args[0], args[1])
 	},
 }
 
@@ -350,87 +357,88 @@ var addLabelToECCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		SetupLogging()
 		n := cli.NewEdgeController(
-			options.Resolve("nalejAddress", nalejAddress),
-			options.ResolveAsInt("port", nalejPort),
+			cliOptions.Resolve("nalejAddress", nalejAddress),
+			cliOptions.ResolveAsInt("port", nalejPort),
 			insecure, useTLS,
-			options.Resolve("cacert", caCertPath), options.Resolve("output", output))
+			cliOptions.Resolve("cacert", caCertPath), cliOptions.Resolve("output", output), cliOptions.ResolveAsInt("labelLength", labelLength))
 
-		n.AddLabelToEC(options.Resolve("organizationID", organizationID), args[0], args[1])
+		n.AddLabelToEC(cliOptions.Resolve("organizationID", organizationID), args[0], args[1])
 	},
 }
 
 var removeLabelFromECCmd = &cobra.Command{
 	Use:   "delete [edgeControllerID] [labels]",
-	Aliases: []string{"remove", "del"},
+	Aliases: []string{"remove", "del", "rm"},
 	Short: "Remove a set of labels from an EC",
 	Long:  `Remove a set of labels from an EC`,
 	Args: cobra.MaximumNArgs(2),
 	Run: func(cmd *cobra.Command, args []string) {
 		SetupLogging()
 		n := cli.NewEdgeController(
-			options.Resolve("nalejAddress", nalejAddress),
-			options.ResolveAsInt("port", nalejPort),
+			cliOptions.Resolve("nalejAddress", nalejAddress),
+			cliOptions.ResolveAsInt("port", nalejPort),
 			insecure, useTLS,
-			options.Resolve("cacert", caCertPath), options.Resolve("output", output))
+			cliOptions.Resolve("cacert", caCertPath), cliOptions.Resolve("output", output), cliOptions.ResolveAsInt("labelLength", labelLength))
 
-		n.RemoveLabelFromEC(options.Resolve("organizationID", organizationID),	args[0], args[1])
+		n.RemoveLabelFromEC(cliOptions.Resolve("organizationID", organizationID),	args[0], args[1])
 	},
 }
 
 var addLabelToInvDeviceCmd = &cobra.Command{
-	Use:   "add [assetDeviceId] [labels]",
+	Use:   "add [assetDeviceID] [labels]",
 	Short: "Add a set of labels to a device",
 	Long:  `Add a set of labels to a device`,
 	Args: cobra.MaximumNArgs(2),
 	Run: func(cmd *cobra.Command, args []string) {
 		SetupLogging()
 		n := cli.NewDevices(
-			options.Resolve("nalejAddress", nalejAddress),
-			options.ResolveAsInt("port", nalejPort),
+			cliOptions.Resolve("nalejAddress", nalejAddress),
+			cliOptions.ResolveAsInt("port", nalejPort),
 			insecure, useTLS,
-			options.Resolve("cacert", caCertPath), options.Resolve("output", output))
+			cliOptions.Resolve("cacert", caCertPath), cliOptions.Resolve("output", output), cliOptions.ResolveAsInt("labelLength", labelLength))
 
 		device := strings.Split(args[0],"#")
 		deviceGroupID := device[0]
 		deviceID := device[1]
 
-		n.AddLabelToDevice(options.Resolve("organizationID", organizationID), deviceGroupID, deviceID, args[1])
+		n.AddLabelToDevice(cliOptions.Resolve("organizationID", organizationID), deviceGroupID, deviceID, args[1])
 	},
 }
 
 var removeLabelFromInvDeviceCmd = &cobra.Command{
-	Use:   "delete [assetDeviceId] [labels]",
-	Aliases: []string{"remove", "del"},
+	Use:   "delete [assetDeviceID] [labels]",
+	Aliases: []string{"remove", "del", "rm"},
 	Short: "Remove a set of labels from a device",
 	Long:  `Remove a set of labels from a device`,
 	Args: cobra.MaximumNArgs(2),
 	Run: func(cmd *cobra.Command, args []string) {
 		SetupLogging()
 		n := cli.NewDevices(
-			options.Resolve("nalejAddress", nalejAddress),
-			options.ResolveAsInt("port", nalejPort),
+			cliOptions.Resolve("nalejAddress", nalejAddress),
+			cliOptions.ResolveAsInt("port", nalejPort),
 			insecure, useTLS,
-			options.Resolve("cacert", caCertPath), options.Resolve("output", output))
+			cliOptions.Resolve("cacert", caCertPath), cliOptions.Resolve("output", output), cliOptions.ResolveAsInt("labelLength", labelLength))
 
 		device := strings.Split(args[0],"#")
 		deviceGroupID := device[0]
 		deviceID := device[1]
 
-		n.RemoveLabelFromDevice(options.Resolve("organizationID", organizationID),	deviceGroupID, deviceID, args[1])
+		n.RemoveLabelFromDevice(cliOptions.Resolve("organizationID", organizationID),	deviceGroupID, deviceID, args[1])
 	},
 }
 
 var inventorySummaryCmd = &cobra.Command{
 	Use:   "summary",
+	Aliases: []string{"sum"},
 	Short: "Provides a summary of the inventory elements",
 	Long:  `Provides a summary of the inventory elements`,
 	Run: func(cmd *cobra.Command, args []string) {
 		SetupLogging()
 		inv := cli.NewInventory(
-			options.Resolve("nalejAddress", nalejAddress),
-			options.ResolveAsInt("port", nalejPort),
+			cliOptions.Resolve("nalejAddress", nalejAddress),
+			cliOptions.ResolveAsInt("port", nalejPort),
 			insecure, useTLS,
-			options.Resolve("cacert", caCertPath), options.Resolve("output", output))
-		inv.Summary(options.Resolve("organizationID", organizationID))
+			cliOptions.Resolve("cacert", caCertPath), cliOptions.Resolve("output", output), cliOptions.ResolveAsInt("labelLength", labelLength))
+		inv.Summary(cliOptions.Resolve("organizationID", organizationID))
 	},
 }

@@ -1,20 +1,15 @@
-package cli
+package cli2
 
 import (
 	"crypto/tls"
 	"crypto/x509"
-	"encoding/json"
 	"fmt"
 	"github.com/nalej/derrors"
-	"github.com/nalej/grpc-utils/pkg/conversions"
-	"github.com/rs/zerolog"
+	"github.com/nalej/public-api/internal/app/options"
 	"github.com/rs/zerolog/log"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
 	"io/ioutil"
-	"os/user"
-	"path/filepath"
-	"strings"
 )
 
 // Connection structure for the public API
@@ -29,32 +24,11 @@ type Connection struct {
 	UseTLS bool
 	// CACertPath contains the path of the CA that will be used for verifications.
 	CACertPath string
-	// Output specifies how the output will be shown.
-	output string
-	// Label Length specifies the maximum length that will be displayed from the labels
-	labelLength int
 }
 
 // NewConnection creates a new connection object that will establish the communication with the public API.
-func NewConnection(address string, port int, insecure bool, useTLS bool, caCertPath string, output string, labelLength int) *Connection {
-	return &Connection{address, port, insecure, useTLS,caCertPath, output, labelLength}
-}
-
-// GetPath resolves a given path by adding support for relative paths.
-func GetPath(path string) string {
-	if strings.HasPrefix(path, "~") {
-		usr, _ := user.Current()
-		return strings.Replace(path, "~", usr.HomeDir, 1)
-	}
-	if strings.HasPrefix(path, "../"){
-		abs, _ := filepath.Abs("../")
-		return strings.Replace(path, "..", abs, 1)
-	}
-	if strings.HasPrefix(path, "."){
-		abs, _ := filepath.Abs("./")
-		return strings.Replace(path, ".", abs, 1)
-	}
-	return path
+func NewConnection(address string, port int, insecure bool, useTLS bool, caCertPath string) *Connection {
+	return &Connection{address, port, insecure, useTLS,caCertPath}
 }
 
 // GetSecureConnection returns a secure connection.
@@ -68,7 +42,7 @@ func (c *Connection) GetSecureConnection() (*grpc.ClientConn, derrors.Error) {
 		log.Warn().Msg("CA validation will be skipped")
 	}else{
 		rootCAs := x509.NewCertPool()
-		caPath := GetPath(c.CACertPath)
+		caPath := options.GetPath(c.CACertPath)
 		log.Debug().Str("caCertPath", caPath).Msg("loading CA cert")
 		caCert, err := ioutil.ReadFile(caPath)
 		if err != nil {
@@ -115,59 +89,4 @@ func (c *Connection) GetConnection() (*grpc.ClientConn, derrors.Error) {
 		}
 	}
 	return c.GetNoTLSConnection()
-}
-
-func (c *Connection) PrintResultOrError(result interface{}, err error, errMsg string) {
-	if err != nil {
-		converted := conversions.ToDerror(err)
-		if zerolog.GlobalLevel() == zerolog.DebugLevel{
-			log.Fatal().Str("trace", conversions.ToDerror(err).DebugReport()).Msg(errMsg)
-		}else{
-			log.Fatal().Str("err", converted.Error()).Msg(errMsg)
-		}
-	} else {
-		if c.asText(){
-			c.PrintResultAsTable(result)
-		}else{
-			c.PrintResult(result)
-		}
-	}
-}
-
-func (c *Connection) ExitOnError(err error, errMsg string) {
-	if err != nil {
-		converted := conversions.ToDerror(err)
-		if zerolog.GlobalLevel() == zerolog.DebugLevel{
-			log.Fatal().Str("trace", conversions.ToDerror(err).DebugReport()).Msg(errMsg)
-		}else{
-			log.Fatal().Str("err", converted.Error()).Msg(errMsg)
-		}
-	}
-}
-
-// TODO Refactor a move print methods to other entity.
-func (c *Connection) PrintSuccessOrError(err error, errMsg string, successMsg string) {
-	if err != nil {
-		log.Fatal().Str("trace", conversions.ToDerror(err).DebugReport()).Msg(errMsg)
-	} else {
-		fmt.Println(fmt.Sprintf("{\"msg\":\"%s\"}", successMsg))
-	}
-}
-
-func (c *Connection) PrintResult(result interface{}) error {
-	//Print descriptors
-	res, err := json.MarshalIndent(result, "", "  ")
-	if err == nil {
-		fmt.Println(string(res))
-	}
-	return err
-}
-
-func (c * Connection) asText() bool {
-	return strings.ToLower(c.output) == "text"
-}
-
-func (c * Connection) PrintResultAsTable(result interface{}) {
-	table := AsTable(result, c.labelLength)
-	table.Print()
 }

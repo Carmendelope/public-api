@@ -419,6 +419,17 @@ func ToPublicAPIController(controller *grpc_inventory_manager_go.EdgeController)
 	}
 }
 
+func ToPublicAPIECOPResponse(response *grpc_inventory_manager_go.EdgeControllerOpResponse) *grpc_public_api_go.ECOpResponse{
+	return &grpc_public_api_go.ECOpResponse{
+		OrganizationId: response.OperationId,
+		EdgeControllerId: response.EdgeControllerId,
+		OperationId:response.OperationId,
+		Timestamp: response.Timestamp,
+		Status: response.Status.String(),
+		Info: response.Info,
+	}
+}
+
 func ToPublicAPIControllerArray(controllers []*grpc_inventory_manager_go.EdgeController) [] *grpc_public_api_go.EdgeController{
 	result := make([]*grpc_public_api_go.EdgeController, 0)
 	for _, controller := range controllers {

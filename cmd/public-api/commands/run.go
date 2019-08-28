@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018 Nalej - All Rights Reserved
+ * Copyright (C) 2019 Nalej - All Rights Reserved
  */
 
 package commands
@@ -19,6 +19,7 @@ var runCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		SetupLogging()
 		log.Info().Msg("Launching API!")
+		config.Debug = debugLevel
 		server := server.NewService(config)
 		server.Run()
 	},
@@ -42,8 +43,8 @@ func init() {
 		"Device Manager address (host:port)")
 	runCmd.PersistentFlags().StringVar(&config.UnifiedLoggingAddress, "unifiedLoggingAddress", "localhost:8323",
 		"Unified Logging Coordinator address (host:port)")
-	runCmd.PersistentFlags().StringVar(&config.InfrastructureMonitorAddress, "infrastructureMonitorAddress", "localhost:8423",
-		"Infrastructure Monitor Coordinator address (host:port)")
+	runCmd.PersistentFlags().StringVar(&config.MonitoringManagerAddress, "monitoringManagerAddress", "localhost:8423",
+		"Monitoring Manager address (host:port)")
 	runCmd.PersistentFlags().StringVar(&config.InventoryManagerAddress, "inventoryManagerAddress", "localhost:5510",
 		"Inventory Manager address (host:port)")
 

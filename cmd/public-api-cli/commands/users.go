@@ -51,47 +51,49 @@ func init() {
 
 var userInfoCmd = &cobra.Command{
 	Use:   "info",
+	Aliases: []string{"get"},
 	Short: "Get user info",
 	Long:  `Get user info`,
 	Run: func(cmd *cobra.Command, args []string) {
 		SetupLogging()
 		u := cli.NewUsers(
-			options.Resolve("nalejAddress", nalejAddress),
-			options.ResolveAsInt("port", nalejPort),
+			cliOptions.Resolve("nalejAddress", nalejAddress),
+			cliOptions.ResolveAsInt("port", nalejPort),
 			insecure, useTLS,
-			options.Resolve("cacert", caCertPath), options.Resolve("output", output))
-		u.Info(options.Resolve("organizationID", organizationID), options.Resolve("email", email))
+			cliOptions.Resolve("cacert", caCertPath), cliOptions.Resolve("output", output), cliOptions.ResolveAsInt("labelLength", labelLength))
+		u.Info(cliOptions.Resolve("organizationID", organizationID), cliOptions.Resolve("email", email))
 	},
 }
 
 var userListCmd = &cobra.Command{
 	Use:   "list",
+	Aliases: []string{"ls"},
 	Short: "List users",
 	Long:  `List users`,
 	Run: func(cmd *cobra.Command, args []string) {
 		SetupLogging()
 		u := cli.NewUsers(
-			options.Resolve("nalejAddress", nalejAddress),
-			options.ResolveAsInt("port", nalejPort),
+			cliOptions.Resolve("nalejAddress", nalejAddress),
+			cliOptions.ResolveAsInt("port", nalejPort),
 			insecure, useTLS,
-			options.Resolve("cacert", caCertPath), options.Resolve("output", output))
-		u.List(options.Resolve("organizationID", organizationID))
+			cliOptions.Resolve("cacert", caCertPath), cliOptions.Resolve("output", output), cliOptions.ResolveAsInt("labelLength", labelLength))
+		u.List(cliOptions.Resolve("organizationID", organizationID))
 	},
 }
 
 var deleteUserCmd = &cobra.Command{
 	Use:     "delete",
-	Aliases: []string{"remove", "del"},
+	Aliases: []string{"remove", "del", "rm"},
 	Short:   "Delete a user",
 	Long:    `Delete a user`,
 	Run: func(cmd *cobra.Command, args []string) {
 		SetupLogging()
 		u := cli.NewUsers(
-			options.Resolve("nalejAddress", nalejAddress),
-			options.ResolveAsInt("port", nalejPort),
+			cliOptions.Resolve("nalejAddress", nalejAddress),
+			cliOptions.ResolveAsInt("port", nalejPort),
 			insecure, useTLS,
-			options.Resolve("cacert", caCertPath), options.Resolve("output", output))
-		u.Delete(options.Resolve("organizationID", organizationID), email)
+			cliOptions.Resolve("cacert", caCertPath), cliOptions.Resolve("output", output), cliOptions.ResolveAsInt("labelLength", labelLength))
+		u.Delete(cliOptions.Resolve("organizationID", organizationID), email)
 	},
 }
 
@@ -103,11 +105,11 @@ var resetPasswordCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		SetupLogging()
 		u := cli.NewUsers(
-			options.Resolve("nalejAddress", nalejAddress),
-			options.ResolveAsInt("port", nalejPort),
+			cliOptions.Resolve("nalejAddress", nalejAddress),
+			cliOptions.ResolveAsInt("port", nalejPort),
 			insecure, useTLS,
-			options.Resolve("cacert", caCertPath), options.Resolve("output", output))
-		u.ChangePassword(options.Resolve("organizationID", organizationID), email, password, newPassword)
+			cliOptions.Resolve("cacert", caCertPath), cliOptions.Resolve("output", output), cliOptions.ResolveAsInt("labelLength", labelLength))
+		u.ChangePassword(cliOptions.Resolve("organizationID", organizationID), email, password, newPassword)
 	},
 }
 
@@ -118,11 +120,11 @@ var updateUserCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		SetupLogging()
 		u := cli.NewUsers(
-			options.Resolve("nalejAddress", nalejAddress),
-			options.ResolveAsInt("port", nalejPort),
+			cliOptions.Resolve("nalejAddress", nalejAddress),
+			cliOptions.ResolveAsInt("port", nalejPort),
 			insecure, useTLS,
-			options.Resolve("cacert", caCertPath), options.Resolve("output", output))
-		u.Update(options.Resolve("organizationID", organizationID), email, name)
+			cliOptions.Resolve("cacert", caCertPath), cliOptions.Resolve("output", output), cliOptions.ResolveAsInt("labelLength", labelLength))
+		u.Update(cliOptions.Resolve("organizationID", organizationID), email, name)
 	},
 }
 
@@ -133,10 +135,10 @@ var addUserCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		SetupLogging()
 		u := cli.NewUsers(
-			options.Resolve("nalejAddress", nalejAddress),
-			options.ResolveAsInt("port", nalejPort),
+			cliOptions.Resolve("nalejAddress", nalejAddress),
+			cliOptions.ResolveAsInt("port", nalejPort),
 			insecure, useTLS,
-			options.Resolve("cacert", caCertPath), options.Resolve("output", output))
-		u.Add(options.Resolve("organizationID", organizationID), email, password, name, roleName)
+			cliOptions.Resolve("cacert", caCertPath), cliOptions.Resolve("output", output), cliOptions.ResolveAsInt("labelLength", labelLength))
+		u.Add(cliOptions.Resolve("organizationID", organizationID), email, password, name, roleName)
 	},
 }

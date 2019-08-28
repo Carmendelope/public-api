@@ -5,7 +5,7 @@
 package main
 
 import (
-	"github.com/nalej/public-api/cmd/public-api-cli/commands"
+	"github.com/nalej/public-api/cmd/public-api-cli2/commands"
 	"github.com/nalej/public-api/version"
 )
 

@@ -8,8 +8,8 @@ import (
 	"github.com/nalej/grpc-common-go"
 	"github.com/nalej/grpc-infrastructure-go"
 	"github.com/nalej/grpc-infrastructure-manager-go"
-	"github.com/nalej/grpc-infrastructure-monitor-go"
 	"github.com/nalej/grpc-installer-go"
+	"github.com/nalej/grpc-monitoring-go"
 	"github.com/nalej/grpc-organization-go"
 	"github.com/nalej/grpc-public-api-go"
 	"github.com/nalej/public-api/internal/pkg/entities"
@@ -22,7 +22,7 @@ type Manager struct {
 	clustClient grpc_infrastructure_go.ClustersClient
 	nodeClient  grpc_infrastructure_go.NodesClient
 	infraClient grpc_infrastructure_manager_go.InfrastructureManagerClient
-	imClient    grpc_infrastructure_monitor_go.CoordinatorClient
+	mmClient    grpc_monitoring_go.MonitoringManagerClient
 
 }
 
@@ -30,9 +30,9 @@ type Manager struct {
 func NewManager(clustClient grpc_infrastructure_go.ClustersClient,
 	nodeClient grpc_infrastructure_go.NodesClient,
 	infraClient grpc_infrastructure_manager_go.InfrastructureManagerClient,
-	imClient grpc_infrastructure_monitor_go.CoordinatorClient) Manager {
+	mmClient grpc_monitoring_go.MonitoringManagerClient) Manager {
 	return Manager{
-		clustClient: clustClient, nodeClient: nodeClient, infraClient: infraClient, imClient: imClient,
+		clustClient: clustClient, nodeClient: nodeClient, infraClient: infraClient, mmClient: mmClient,
 	}
 }
 
@@ -135,10 +135,10 @@ func (m *Manager) Update(updateClusterRequest *grpc_public_api_go.UpdateClusterR
 	return result, nil
 }
 
-func (m *Manager) Monitor(request *grpc_infrastructure_monitor_go.ClusterSummaryRequest) (*grpc_infrastructure_monitor_go.ClusterSummary, error) {
+func (m *Manager) Monitor(request *grpc_monitoring_go.ClusterSummaryRequest) (*grpc_monitoring_go.ClusterSummary, error) {
 	ctx, cancel := common.GetContext()
 	defer cancel()
-	return m.imClient.GetClusterSummary(ctx, request)
+	return m.mmClient.GetClusterSummary(ctx, request)
 }
 
 func (m *Manager) Cordon(clusterID *grpc_infrastructure_go.ClusterId) (*grpc_common_go.Success, error) {

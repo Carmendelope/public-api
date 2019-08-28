@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018 Nalej - All Rights Reserved
+ * Copyright (C) 2019 Nalej - All Rights Reserved
  */
 
 package commands
@@ -10,7 +10,8 @@ import (
 )
 
 var orgCmd = &cobra.Command{
-	Use:   "org",
+	Use:   "organization",
+	Aliases: []string{"org"},
 	Short: "Organization related operations",
 	Long:  `Organization related operations`,
 	Run: func(cmd *cobra.Command, args []string) {
@@ -27,16 +28,18 @@ func init() {
 
 var infoCmd = &cobra.Command{
 	Use:   "info",
+	Aliases: []string{"get"},
 	Short: "Retrieve organization information",
 	Long:  `Retrieve organization information`,
 	Run: func(cmd *cobra.Command, args []string) {
 		SetupLogging()
 		o := cli.NewOrganizations(
-			options.Resolve("nalejAddress", nalejAddress),
-			options.ResolveAsInt("port", nalejPort),
+			cliOptions.Resolve("nalejAddress", nalejAddress),
+			cliOptions.ResolveAsInt("port", nalejPort),
 			insecure, useTLS,
-			options.Resolve("cacert", caCertPath),
-			options.Resolve("output", output))
-		o.Info(options.Resolve("organizationID", organizationID))
+			cliOptions.Resolve("cacert", caCertPath),
+			cliOptions.Resolve("output", output),
+			cliOptions.ResolveAsInt("labelLength", labelLength))
+		o.Info(cliOptions.Resolve("organizationID", organizationID))
 	},
 }

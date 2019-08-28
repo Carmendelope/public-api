@@ -13,9 +13,9 @@ type Roles struct {
 	Credentials
 }
 
-func NewRoles(address string, port int, insecure bool, useTLS bool, caCertPath string, output string) *Roles {
+func NewRoles(address string, port int, insecure bool, useTLS bool, caCertPath string, output string, labelLength int) *Roles {
 	return &Roles{
-		Connection:  *NewConnection(address, port, insecure, useTLS, caCertPath, output),
+		Connection:  *NewConnection(address, port, insecure, useTLS, caCertPath, output, labelLength),
 		Credentials: *NewEmptyCredentials(DefaultPath),
 	}
 }

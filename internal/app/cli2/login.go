@@ -2,7 +2,7 @@
  * Copyright (C)  2018 Nalej - All Rights Reserved
  */
 
-package cli
+package cli2
 
 import (
 	"context"
@@ -12,18 +12,19 @@ import (
 	"github.com/nalej/grpc-authx-go"
 	"github.com/nalej/grpc-login-api-go"
 	"github.com/nalej/grpc-utils/pkg/conversions"
+	"github.com/nalej/public-api/internal/app/options"
+	"github.com/nalej/public-api/internal/app/output"
 	"github.com/rs/zerolog/log"
 )
 
 type Login struct {
-	Connection
+	*Connection
+	*output.Output
 }
 
 // NewLogin creates a new Login structure.
-func NewLogin(address string, port int, insecure bool, useTLS bool, caCertPath string, output string, labelLength int) *Login {
-	return &Login{
-		*NewConnection(address, port, insecure, useTLS, caCertPath, output, labelLength),
-	}
+func NewLogin(connection * Connection, output * output.Output) *Login {
+	return &Login{ connection, output }
 }
 
 // Login into the platform using email and password.
@@ -45,7 +46,7 @@ func (l *Login) Login(email string, password string) (*Credentials, derrors.Erro
 		return nil, conversions.ToDerror(lErr)
 	}
 	log.Debug().Str("token", response.Token).Msg("Login success")
-	credentials := NewCredentials(DefaultPath, response.Token, response.RefreshToken)
+	credentials := NewCredentials(options.DefaultPath, response.Token, response.RefreshToken)
 	sErr := credentials.Store()
 	if sErr != nil {
 		return nil, sErr

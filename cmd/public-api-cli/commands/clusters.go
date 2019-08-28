@@ -67,12 +67,12 @@ var installClustersCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		SetupLogging()
 		c := cli.NewClusters(
-			options.Resolve("nalejAddress", nalejAddress),
-			options.ResolveAsInt("port", nalejPort),
+			cliOptions.Resolve("nalejAddress", nalejAddress),
+			cliOptions.ResolveAsInt("port", nalejPort),
 			insecure, useTLS,
-			options.Resolve("cacert", caCertPath), options.Resolve("output", output))
+			cliOptions.Resolve("cacert", caCertPath), cliOptions.Resolve("output", output), cliOptions.ResolveAsInt("labelLength", labelLength))
 		c.Install(
-			options.Resolve("organizationID", organizationID),
+			cliOptions.Resolve("organizationID", organizationID),
 			kubeConfigPath,
 			hostname,
 			username,
@@ -86,23 +86,24 @@ var installClustersCmd = &cobra.Command{
 
 var infoClusterCmd = &cobra.Command{
 	Use:   "info [clusterID]",
+	Aliases: []string{"get"},
 	Short: "Get the cluster information",
 	Long:  `Get the cluster information`,
 	Args: cobra.MaximumNArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		SetupLogging()
 		c := cli.NewClusters(
-			options.Resolve("nalejAddress", nalejAddress),
-			options.ResolveAsInt("port", nalejPort),
+			cliOptions.Resolve("nalejAddress", nalejAddress),
+			cliOptions.ResolveAsInt("port", nalejPort),
 			insecure, useTLS,
-			options.Resolve("cacert", caCertPath), options.Resolve("output", output))
+			cliOptions.Resolve("cacert", caCertPath), cliOptions.Resolve("output", output), cliOptions.ResolveAsInt("labelLength", labelLength))
 
 		targetValues, err := ResolveArgument([]string{"clusterID"}, args, []string{clusterID})
 		if err != nil {
 			fmt.Println(err.Error())
 			cmd.Help()
 		}else{
-		c.Info(options.Resolve("organizationID", organizationID), options.Resolve("clusterID", targetValues[0]))
+		c.Info(cliOptions.Resolve("organizationID", organizationID), cliOptions.Resolve("clusterID", targetValues[0]))
 		}
 
 	},
@@ -110,31 +111,33 @@ var infoClusterCmd = &cobra.Command{
 
 var listClustersCmd = &cobra.Command{
 	Use:   "list",
+	Aliases: []string{"ls"},
 	Short: "List clusters",
 	Long:  `List clusters`,
 	Run: func(cmd *cobra.Command, args []string) {
 		SetupLogging()
 		c := cli.NewClusters(
-			options.Resolve("nalejAddress", nalejAddress),
-			options.ResolveAsInt("port", nalejPort),
+			cliOptions.Resolve("nalejAddress", nalejAddress),
+			cliOptions.ResolveAsInt("port", nalejPort),
 			insecure, useTLS,
-			options.Resolve("cacert", caCertPath), options.Resolve("output", output))
-		c.List(options.Resolve("organizationID", organizationID))
+			cliOptions.Resolve("cacert", caCertPath), cliOptions.Resolve("output", output), cliOptions.ResolveAsInt("labelLength", labelLength))
+		c.List(cliOptions.Resolve("organizationID", organizationID))
 	},
 }
 
 var monitorClusterCmd = &cobra.Command{
 	Use:   "monitor [clusterID]",
+	Aliases: []string{"mon"},
 	Short: "Monitor cluster",
 	Long:  `Get summarized monitoring information for a single cluster`,
 	Args: cobra.MaximumNArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		SetupLogging()
 		c := cli.NewClusters(
-			options.Resolve("nalejAddress", nalejAddress),
-			options.ResolveAsInt("port", nalejPort),
+			cliOptions.Resolve("nalejAddress", nalejAddress),
+			cliOptions.ResolveAsInt("port", nalejPort),
 			insecure, useTLS,
-			options.Resolve("cacert", caCertPath), options.Resolve("output", output))
+			cliOptions.Resolve("cacert", caCertPath), cliOptions.Resolve("output", output), cliOptions.ResolveAsInt("labelLength", labelLength))
 
 		targetValues, err := ResolveArgument([]string{"clusterID"}, args, []string{clusterID})
 		if err != nil {
@@ -142,8 +145,8 @@ var monitorClusterCmd = &cobra.Command{
 			cmd.Help()
 		}else{
 			c.Monitor(
-				options.Resolve("organizationID", organizationID),
-				options.Resolve("clusterID", targetValues[0]),
+				cliOptions.Resolve("organizationID", organizationID),
+				cliOptions.Resolve("clusterID", targetValues[0]),
 				rangeMinutes,
 			)
 		}
@@ -184,91 +187,104 @@ var addLabelToClusterCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		SetupLogging()
 		c := cli.NewClusters(
-			options.Resolve("nalejAddress", nalejAddress),
-			options.ResolveAsInt("port", nalejPort),
+			cliOptions.Resolve("nalejAddress", nalejAddress),
+			cliOptions.ResolveAsInt("port", nalejPort),
 			insecure, useTLS,
-			options.Resolve("cacert", caCertPath), options.Resolve("output", output))
+			cliOptions.Resolve("cacert", caCertPath), cliOptions.Resolve("output", output), cliOptions.ResolveAsInt("labelLength", labelLength))
 
-		targetValues, err := ResolveArgument([]string{"clusterID", "labels"}, args, []string{clusterID, rawLabels})
-		if err != nil {
-			fmt.Println(err.Error())
+		if len(args) > 0 && len(args) < 2{
+			fmt.Println("[clusterID] and [labels] must be flags or arguments, both the same type")
 			cmd.Help()
-		}else{
-			c.ModifyClusterLabels(options.Resolve("organizationID", organizationID),
-				targetValues[0], true, targetValues[1])
+		}else {
+
+			targetValues, err := ResolveArgument([]string{"clusterID", "labels"}, args, []string{clusterID, rawLabels})
+			if err != nil {
+				fmt.Println(err.Error())
+				cmd.Help()
+			} else {
+				c.ModifyClusterLabels(cliOptions.Resolve("organizationID", organizationID),
+					targetValues[0], true, targetValues[1])
+			}
 		}
 	},
 }
 
 var removeLabelFromClusterCmd = &cobra.Command{
 	Use:   "delete [clusterID] [labels]",
-	Aliases: []string{"remove", "del"},
+	Aliases: []string{"remove", "del", "rm"},
 	Short: "Remove a set of labels from a cluster",
 	Long:  `Remove a set of labels from a cluster`,
 	Args: cobra.MaximumNArgs(2),
 	Run: func(cmd *cobra.Command, args []string) {
 		SetupLogging()
 		c := cli.NewClusters(
-			options.Resolve("nalejAddress", nalejAddress),
-			options.ResolveAsInt("port", nalejPort),
+			cliOptions.Resolve("nalejAddress", nalejAddress),
+			cliOptions.ResolveAsInt("port", nalejPort),
 			insecure, useTLS,
-			options.Resolve("cacert", caCertPath), options.Resolve("output", output))
-		targetValues, err := ResolveArgument([]string{"clusterID", "labels"}, args, []string{clusterID, rawLabels})
-		if err != nil {
-			fmt.Println(err.Error())
+			cliOptions.Resolve("cacert", caCertPath), cliOptions.Resolve("output", output), cliOptions.ResolveAsInt("labelLength", labelLength))
+
+		if len(args) > 0 && len(args) < 2{
+			fmt.Println("[clusterID] and [labels] must be flags or arguments, both the same type")
 			cmd.Help()
-		}else{
-			c.ModifyClusterLabels(options.Resolve("organizationID", organizationID),
-				targetValues[0], false, targetValues[1])
+		}else {
+
+			targetValues, err := ResolveArgument([]string{"clusterID", "labels"}, args, []string{clusterID, rawLabels})
+			if err != nil {
+				fmt.Println(err.Error())
+				cmd.Help()
+			} else {
+				c.ModifyClusterLabels(cliOptions.Resolve("organizationID", organizationID),
+					targetValues[0], false, targetValues[1])
+			}
 		}
 	},
 }
 
 var cordonClusterCmd = &cobra.Command{
-	Use: "cordon [clusterId]",
+	Use: "cordon [clusterID]",
 	Short: "cordon a cluster ignoring new application deployments",
 	Long: `cordon a cluster ignoring new application deployments`,
 	Args: cobra.MinimumNArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		SetupLogging()
 		c := cli.NewClusters(
-			options.Resolve("nalejAddress", nalejAddress),
-			options.ResolveAsInt("port", nalejPort),
+			cliOptions.Resolve("nalejAddress", nalejAddress),
+			cliOptions.ResolveAsInt("port", nalejPort),
 			insecure, useTLS,
-			options.Resolve("cacert", caCertPath), options.Resolve("output", output))
-		c.CordonCluster(options.Resolve("organizationID", organizationID),args[0])
+			cliOptions.Resolve("cacert", caCertPath), cliOptions.Resolve("output", output), cliOptions.ResolveAsInt("labelLength", labelLength))
+		c.CordonCluster(cliOptions.Resolve("organizationID", organizationID),args[0])
 	},
 }
 
 var uncordonClusterCmd = &cobra.Command{
-	Use: "uncordon [clusterId]",
+	Use: "uncordon [clusterID]",
 	Short: "uncordon a cluster making possible new application deployments",
 	Long: `uncordon a cluster making possible new application deployments`,
 	Args: cobra.MinimumNArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		SetupLogging()
 		c := cli.NewClusters(
-			options.Resolve("nalejAddress", nalejAddress),
-			options.ResolveAsInt("port", nalejPort),
+			cliOptions.Resolve("nalejAddress", nalejAddress),
+			cliOptions.ResolveAsInt("port", nalejPort),
 			insecure, useTLS,
-			options.Resolve("cacert", caCertPath), options.Resolve("output", output))
-		c.UncordonCluster(options.Resolve("organizationID", organizationID),args[0])
+			cliOptions.Resolve("cacert", caCertPath), cliOptions.Resolve("output", output), cliOptions.ResolveAsInt("labelLength", labelLength))
+		c.UncordonCluster(cliOptions.Resolve("organizationID", organizationID),args[0])
 	},
 }
 
 var drainClusterCmd = &cobra.Command{
-	Use: "drain [clusterId]",
+	Use: "drain [clusterID]",
 	Short: "drain a cluster",
 	Long: `drain a cordoned cluster and force current applications to be re-scheduled`,
 	Args: cobra.MinimumNArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		SetupLogging()
 		c := cli.NewClusters(
-			options.Resolve("nalejAddress", nalejAddress),
-			options.ResolveAsInt("port", nalejPort),
+			cliOptions.Resolve("nalejAddress", nalejAddress),
+			cliOptions.ResolveAsInt("port", nalejPort),
 			insecure, useTLS,
-			options.Resolve("cacert", caCertPath), options.Resolve("output", output))
-		c.DrainCluster(options.Resolve("organizationID", organizationID),args[0])
+			cliOptions.Resolve("cacert", caCertPath), cliOptions.Resolve("output", output), cliOptions.ResolveAsInt("labelLength", labelLength))
+		c.DrainCluster(cliOptions.Resolve("organizationID", organizationID),args[0])
 	},
 }
 

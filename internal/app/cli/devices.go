@@ -19,9 +19,9 @@ type Devices struct{
 	Credentials
 }
 
-func NewDevices(address string, port int, insecure bool, useTLS bool, caCertPath string, output string) *Devices {
+func NewDevices(address string, port int, insecure bool, useTLS bool, caCertPath string, output string, labelLength int) *Devices {
 	return &Devices{
-		Connection:  *NewConnection(address, port, insecure, useTLS, caCertPath, output),
+		Connection:  *NewConnection(address, port, insecure, useTLS, caCertPath, output, labelLength),
 		Credentials: *NewEmptyCredentials(DefaultPath),
 	}
 }

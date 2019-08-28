@@ -24,9 +24,9 @@ type Agent struct{
 	Credentials
 }
 
-func NewAgent(address string, port int, insecure bool, useTLS bool, caCertPath string, output string) *Agent {
+func NewAgent(address string, port int, insecure bool, useTLS bool, caCertPath string, output string, labelLength int) *Agent {
 	return &Agent{
-		Connection:  *NewConnection(address, port, insecure, useTLS, caCertPath, output),
+		Connection:  *NewConnection(address, port, insecure, useTLS, caCertPath, output, labelLength),
 		Credentials: *NewEmptyCredentials(DefaultPath),
 	}
 }

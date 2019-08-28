@@ -1,5 +1,5 @@
 /*
- * Copyright (C)  2018 Nalej - All Rights Reserved
+ * Copyright (C)  2019 Nalej - All Rights Reserved
  */
 
 // This file contains the variables that are used through the commands.
@@ -71,3 +71,4 @@ var assetDeviceId string
 var force bool
 
 var agentTypeRaw string
+var sudoer bool

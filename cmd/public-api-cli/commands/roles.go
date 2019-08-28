@@ -10,8 +10,8 @@ import (
 )
 
 var rolesCmd = &cobra.Command{
-	Use:     "roles",
-	Aliases: []string{"rol", "role"},
+	Use:     "role",
+	Aliases: []string{"rol", "roles"},
 	Short:   "Manage roles",
 	Long:    `Manage roles`,
 	Run: func(cmd *cobra.Command, args []string) {
@@ -35,16 +35,17 @@ func init() {
 
 var listRolesCmd = &cobra.Command{
 	Use:   "list",
+	Aliases: []string{"ls"},
 	Short: "List roles",
 	Long:  `List roles`,
 	Run: func(cmd *cobra.Command, args []string) {
 		SetupLogging()
 		r := cli.NewRoles(
-			options.Resolve("nalejAddress", nalejAddress),
-			options.ResolveAsInt("port", nalejPort),
+			cliOptions.Resolve("nalejAddress", nalejAddress),
+			cliOptions.ResolveAsInt("port", nalejPort),
 			insecure, useTLS,
-			options.Resolve("cacert", caCertPath), options.Resolve("output", output))
-		r.List(options.Resolve("organizationID", organizationID), internal)
+			cliOptions.Resolve("cacert", caCertPath), cliOptions.Resolve("output", output), cliOptions.ResolveAsInt("labelLength", labelLength))
+		r.List(cliOptions.Resolve("organizationID", organizationID), internal)
 	},
 }
 
@@ -55,10 +56,10 @@ var assignRolesCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		SetupLogging()
 		r := cli.NewRoles(
-			options.Resolve("nalejAddress", nalejAddress),
-			options.ResolveAsInt("port", nalejPort),
+			cliOptions.Resolve("nalejAddress", nalejAddress),
+			cliOptions.ResolveAsInt("port", nalejPort),
 			insecure, useTLS,
-			options.Resolve("cacert", caCertPath), options.Resolve("output", output))
-		r.Assign(options.Resolve("organizationID", organizationID), email, roleID)
+			cliOptions.Resolve("cacert", caCertPath), cliOptions.Resolve("output", output), cliOptions.ResolveAsInt("labelLength", labelLength))
+		r.Assign(cliOptions.Resolve("organizationID", organizationID), email, roleID)
 	},
 }

@@ -10,7 +10,8 @@ import (
 	"github.com/nalej/derrors"
 
 	"github.com/nalej/grpc-common-go"
-	"github.com/nalej/grpc-inventory-manager-go"
+	"github.com/nalej/grpc-inventory-go"
+	"github.com/nalej/grpc-monitoring-go"
 	"github.com/nalej/grpc-public-api-go"
 
 	"github.com/nalej/grpc-utils/pkg/conversions"
@@ -31,7 +32,7 @@ func NewHandler(manager Manager) *Handler {
 	}
 }
 
-func (h *Handler) ListMetrics(ctx context.Context, selector *grpc_inventory_manager_go.AssetSelector) (*grpc_inventory_manager_go.MetricsList, error) {
+func (h *Handler) ListMetrics(ctx context.Context, selector *grpc_inventory_go.AssetSelector) (*grpc_monitoring_go.MetricsList, error) {
 	rm, err := authhelper.GetRequestMetadata(ctx)
 	if err != nil {
 		return nil, conversions.ToGRPCError(err)
@@ -46,7 +47,7 @@ func (h *Handler) ListMetrics(ctx context.Context, selector *grpc_inventory_mana
 	return h.manager.ListMetrics(selector)
 }
 
-func (h *Handler) QueryMetrics(ctx context.Context, request *grpc_inventory_manager_go.QueryMetricsRequest) (*grpc_inventory_manager_go.QueryMetricsResult, error) {
+func (h *Handler) QueryMetrics(ctx context.Context, request *grpc_monitoring_go.QueryMetricsRequest) (*grpc_monitoring_go.QueryMetricsResult, error) {
 	rm, err := authhelper.GetRequestMetadata(ctx)
 	if err != nil {
 		return nil, conversions.ToGRPCError(err)

@@ -13,7 +13,7 @@ import (
 	"github.com/nalej/grpc-device-go"
 	"github.com/nalej/grpc-device-manager-go"
 	"github.com/nalej/grpc-infrastructure-go"
-	"github.com/nalej/grpc-infrastructure-monitor-go"
+	"github.com/nalej/grpc-monitoring-go"
 	"github.com/nalej/grpc-inventory-go"
 	"github.com/nalej/grpc-inventory-manager-go"
 	"github.com/nalej/grpc-organization-go"
@@ -409,7 +409,7 @@ func ValidSearchRequest(request *grpc_unified_logging_go.SearchRequest) derrors.
 	return nil
 }
 
-func ValidMonitorRequest(request *grpc_infrastructure_monitor_go.ClusterSummaryRequest) derrors.Error {
+func ValidMonitorRequest(request *grpc_monitoring_go.ClusterSummaryRequest) derrors.Error {
 	if request.OrganizationId == "" {
 		return derrors.NewInvalidArgumentError(emptyOrganizationId)
 	}
@@ -425,6 +425,16 @@ func ValidEdgeControllerID(edgeControllerID * grpc_inventory_go.EdgeControllerId
 		return derrors.NewInvalidArgumentError(emptyOrganizationId)
 	}
 	if edgeControllerID.EdgeControllerId == "" {
+		return derrors.NewInvalidArgumentError(emptyEdgeControllerId)
+	}
+	return nil
+}
+
+func ValidUnlinkECRequest(request *grpc_inventory_manager_go.UnlinkECRequest) derrors.Error {
+	if request.OrganizationId == "" {
+		return derrors.NewInvalidArgumentError(emptyOrganizationId)
+	}
+	if request.EdgeControllerId == "" {
 		return derrors.NewInvalidArgumentError(emptyEdgeControllerId)
 	}
 	return nil
@@ -501,7 +511,7 @@ func ValidUpdateDeviceLocationRequest (request *grpc_inventory_manager_go.Update
 	return nil
 }
 
-func ValidAssetSelector(selector *grpc_inventory_manager_go.AssetSelector) derrors.Error {
+func ValidAssetSelector(selector *grpc_inventory_go.AssetSelector) derrors.Error {
 	if selector == nil {
 		return derrors.NewInvalidArgumentError("empty asset selector")
 	}
@@ -511,7 +521,7 @@ func ValidAssetSelector(selector *grpc_inventory_manager_go.AssetSelector) derro
 	return nil
 }
 
-func ValidTimeRange(timeRange *grpc_inventory_manager_go.QueryMetricsRequest_TimeRange) derrors.Error {
+func ValidTimeRange(timeRange *grpc_monitoring_go.QueryMetricsRequest_TimeRange) derrors.Error {
 	if !(timeRange.GetTimestamp() == 0) {
 		if timeRange.GetTimeStart() != 0 || timeRange.GetTimeEnd() != 0 || timeRange.GetResolution() != 0 {
 			return derrors.NewInvalidArgumentError("timestamp is set; start, end and resolution should be 0").
@@ -529,7 +539,7 @@ func ValidTimeRange(timeRange *grpc_inventory_manager_go.QueryMetricsRequest_Tim
 	return nil
 }
 
-func ValidQueryMetricsRequest(request *grpc_inventory_manager_go.QueryMetricsRequest) derrors.Error {
+func ValidQueryMetricsRequest(request *grpc_monitoring_go.QueryMetricsRequest) derrors.Error {
 	// We check the asset selector so we know we have an organization ID.
 	derr := ValidAssetSelector(request.GetAssets())
 	if derr != nil {
@@ -542,8 +552,7 @@ func ValidQueryMetricsRequest(request *grpc_inventory_manager_go.QueryMetricsReq
 		return derr
 	}
 
-	// See [NP-1520]
-	if len(request.GetAssets().GetAssetIds()) != 1 && request.GetAggregation() == grpc_inventory_manager_go.QueryMetricsRequest_NONE {
+	if len(request.GetAssets().GetAssetIds()) != 1 && request.GetAggregation() == grpc_monitoring_go.AggregationType_NONE {
 		return derrors.NewInvalidArgumentError("metrics for more than one asset requested without aggregation method")
 	}
 
