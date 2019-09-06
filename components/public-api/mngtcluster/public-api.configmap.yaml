@@ -28,7 +28,7 @@ data:
        "/public_api.Roles/AssignRole":{"must":["ORG_MNGT"]},
        "/public_api.Users/Add":{"must":["ORG_MNGT"]},
        "/public_api.Users/Info":{"should":["ORG", "PROFILE", "ORG_MNGT"]},
-       "/public_api.Users/List":{"must":["ORG, "ORG_MNGT"]},
+       "/public_api.Users/List":{"must":["ORG", "ORG_MNGT"]},
        "/public_api.Users/Delete":{"must":["ORG_MNGT"]},
        "/public_api.Users/ChangePassword":{"should":["ORG", "PROFILE", "ORG_MNGT"]},
        "/public_api.Users/Update":{"should":["ORG", "PROFILE", "ORG_MNGT"]},
@@ -66,14 +66,14 @@ data:
        "/public_api.Inventory/UpdateDeviceLocation":{"should":["ORG", "RESOURCES"]},
        "/public_api.Inventory/AddLabelToAsset":{"should":["ORG", "RESOURCES"]},
        "/public_api.Inventory/RemoveLabelFromAsset":{"should":["ORG", "RESOURCES"]},
-       "/public_api.Inventory/UpdateEdgeController":/public_api.Users/List
+       "/public_api.Inventory/UpdateEdgeController":{"must":["RESOURCES_MNGT"]},
        "/public_api.Inventory/AddLabelToDevice":{"should":["ORG", "RESOURCES"]},
        "/public_api.Inventory/RemoveLabelFromDevice":{"should":["ORG", "RESOURCES"]},
        "/public_api.InventoryMonitoring/ListMetrics":{"should":["ORG", "RESOURCES"]},
        "/public_api.InventoryMonitoring/QueryMetrics":{"should":["ORG", "RESOURCES"]},
        "/public_api.InventoryMonitoring/ConfigureMetrics":{"should":["ORG", "RESOURCES"]},
-       "/public_api.Agent/CreateAgentJoinToken":/public_api.Users/List
-       "/public_api.Agent/ActivateMonitoring":/public_api.Users/List
-       "/public_api.Agent/UninstallAgent":/public_api.Users/List
+       "/public_api.Agent/CreateAgentJoinToken":{"must":["RESOURCES_MNGT"]},
+       "/public_api.Agent/ActivateMonitoring":{"must":["RESOURCES_MNGT"]},
+       "/public_api.Agent/UninstallAgent":{"must":["RESOURCES_MNGT"]},
      }
     }
