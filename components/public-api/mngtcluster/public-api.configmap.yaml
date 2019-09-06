@@ -74,6 +74,6 @@ data:
        "/public_api.InventoryMonitoring/ConfigureMetrics":{"should":["ORG", "RESOURCES"]},
        "/public_api.Agent/CreateAgentJoinToken":{"must":["RESOURCES_MNGT"]},
        "/public_api.Agent/ActivateMonitoring":{"must":["RESOURCES_MNGT"]},
-       "/public_api.Agent/UninstallAgent":{"must":["RESOURCES_MNGT"]},
+       "/public_api.Agent/UninstallAgent":{"must":["RESOURCES_MNGT"]}
      }
     }
