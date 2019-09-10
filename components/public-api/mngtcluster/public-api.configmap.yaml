@@ -28,7 +28,7 @@ data:
        "/public_api.Roles/AssignRole":{"must":["ORG_MNGT"]},
        "/public_api.Users/Add":{"must":["ORG_MNGT"]},
        "/public_api.Users/Info":{"should":["ORG", "PROFILE", "ORG_MNGT"]},
-       "/public_api.Users/List":{"must":["ORG", "ORG_MNGT"]},
+       "/public_api.Users/List":{"should":["ORG", "ORG_MNGT"]},
        "/public_api.Users/Delete":{"must":["ORG_MNGT"]},
        "/public_api.Users/ChangePassword":{"should":["ORG", "PROFILE", "ORG_MNGT"]},
        "/public_api.Users/Update":{"should":["ORG", "PROFILE", "ORG_MNGT"]},
