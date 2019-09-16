@@ -72,3 +72,9 @@ var force bool
 
 var agentTypeRaw string
 var sudoer bool
+
+
+var sourceInstanceID string
+var targetInstanceID string
+var inbound string
+var outbound string
