@@ -6,6 +6,7 @@ package entities
 
 import (
 	"github.com/nalej/grpc-application-go"
+	"github.com/nalej/grpc-application-manager-go"
 	"github.com/nalej/grpc-device-manager-go"
 	"github.com/nalej/grpc-infrastructure-go"
 	"github.com/nalej/grpc-inventory-go"
@@ -233,7 +234,7 @@ func ToPublicAPISecurityRules(source []*grpc_application_go.SecurityRule) []*grp
 	return result
 }
 
-func ToPublicAPIAppInstance(source *grpc_application_go.AppInstance) *grpc_public_api_go.AppInstance {
+func ToPublicAPIAppInstance(source *grpc_application_manager_go.AppInstance) *grpc_public_api_go.AppInstance {
 
 	metadata := make ([]*grpc_public_api_go.InstanceMetadata, 0)
 	for _, met := range source.Metadata {
@@ -241,18 +242,22 @@ func ToPublicAPIAppInstance(source *grpc_application_go.AppInstance) *grpc_publi
 	}
 
 	return &grpc_public_api_go.AppInstance{
-		OrganizationId:       source.OrganizationId,
-		AppDescriptorId:      source.AppDescriptorId,
-		AppInstanceId:        source.AppInstanceId,
-		Name:                 source.Name,
-		ConfigurationOptions: source.ConfigurationOptions,
-		EnvironmentVariables: source.EnvironmentVariables,
-		Labels:               source.Labels,
-		Rules:                ToPublicAPISecurityRules(source.Rules),
-		Groups:               ToPublicAPIGroupInstances(source.Groups),
-		StatusName:           source.Status.String(),
-		Metadata:			  metadata,
-		Info: 				  source.Info,
+		OrganizationId:       	source.OrganizationId,
+		AppDescriptorId:      	source.AppDescriptorId,
+		AppInstanceId:        	source.AppInstanceId,
+		Name:                 	source.Name,
+		ConfigurationOptions: 	source.ConfigurationOptions,
+		EnvironmentVariables: 	source.EnvironmentVariables,
+		Labels:               	source.Labels,
+		Rules:                	ToPublicAPISecurityRules(source.Rules),
+		Groups:               	ToPublicAPIGroupInstances(source.Groups),
+		StatusName:           	source.Status.String(),
+		Metadata:			  	metadata,
+		Info: 				  	source.Info,
+		InboundNetInterfaces: 	source.InboundNetInterfaces,
+		OutboundNetInterfaces:	source.OutboundNetInterfaces,
+		InboundConnections: 	source.InboundConnections,
+		OutboundConnections: 	source.OutboundConnections,
 	}
 }
 
