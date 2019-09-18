@@ -268,7 +268,7 @@ func (a *Applications) getParams (params string) *grpc_application_go.InstancePa
 			if len(param) != 2 {
 				log.Fatal().Msg("param format error (param1=value1;...;paramN=valueN)")
 			}
-			instParams = append(instParams, &grpc_application_manager_go.InstanceParameter{
+			instParams = append(instParams, &grpc_application_go.InstanceParameter{
 				ParameterName: param[0],
 				Value:         param[1],
 			})
