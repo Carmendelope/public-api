@@ -40,7 +40,7 @@ func (an *ApplicationNetwork) getClient() (grpc_public_api_go.ApplicationNetwork
 	return client, conn
 }
 
-func (an *ApplicationNetwork) AddConnection(organizationID string, sourceInstanceID string, targetInstanceID string, outbound string, inbound string) {
+func (an *ApplicationNetwork) AddConnection(organizationID string, sourceInstanceID string, outbound string, targetInstanceID string, inbound string) {
 	if organizationID == "" {
 		log.Fatal().Msg("organizationID cannot be empty")
 	}
@@ -63,7 +63,7 @@ func (an *ApplicationNetwork) AddConnection(organizationID string, sourceInstanc
 	an.PrintResultOrError(added, err, "cannot add a new connection")
 }
 
-func (an *ApplicationNetwork) RemoveConnection(organizationID string, sourceInstanceID string, targetInstanceID string, outbound string, inbound string, force bool) {
+func (an *ApplicationNetwork) RemoveConnection(organizationID string, sourceInstanceID string, outbound string, targetInstanceID string, inbound string, force bool) {
 	if organizationID == "" {
 		log.Fatal().Msg("organizationID cannot be empty")
 	}

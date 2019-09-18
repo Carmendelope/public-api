@@ -1,7 +1,6 @@
 package commands
 
 import (
-	"fmt"
 	"github.com/nalej/public-api/internal/app/cli"
 	"github.com/spf13/cobra"
 )
@@ -30,11 +29,11 @@ func init() {
 }
 
 var addConnectionCmd = &cobra.Command{
-	Use:   "add [sourceInstanceID] [targetInstanceID] [outboundName] [inboundName]",
+	Use:   "add [sourceInstanceID] [outboundName] [targetInstanceID] [inboundName]",
 	Short: "Add a new connection",
 	Long:  `Add a new connection`,
 
-	Args: cobra.MaximumNArgs(4),
+	Args: cobra.ExactArgs(4),
 	Run: func(cmd *cobra.Command, args []string) {
 		SetupLogging()
 		 appNet := cli.NewApplicationNetwork(
@@ -43,24 +42,17 @@ var addConnectionCmd = &cobra.Command{
 			insecure, useTLS,
 			cliOptions.Resolve("cacert", caCertPath), cliOptions.Resolve("output", output), cliOptions.ResolveAsInt("labelLength", labelLength))
 
-		targetValues, err := ResolveArgument([]string{"sourceInstanceID", "targetInstanceID", "outboundName", "inboundName"}, args,
-			[]string{sourceInstanceID, targetInstanceID, outbound, inbound})
-		if err != nil {
-			fmt.Println(err.Error())
-			cmd.Help()
-		}else{
-			appNet.AddConnection(cliOptions.Resolve("organizationID", organizationID), targetValues[0],
-				targetValues[1], targetValues[2], targetValues[3])
-		}
+		appNet.AddConnection(cliOptions.Resolve("organizationID", organizationID), args[0], args[1], args[2], args[3])
+
 	},
 }
 
 var removeConnectionCmd = &cobra.Command{
-	Use:   "delete [sourceInstanceID] [targetInstanceID] [outboundName] [inboundName]",
+	Use:   "delete [sourceInstanceID] [outboundName] [targetInstanceID] [inboundName]",
 	Short: "remove a connection",
 	Long:  `Remove a connection`,
 	Aliases: []string{"remove", "del", "rm"},
-	Args: cobra.MaximumNArgs(4),
+	Args: cobra.ExactArgs(4),
 	Run: func(cmd *cobra.Command, args []string) {
 		SetupLogging()
 		appNet := cli.NewApplicationNetwork(
@@ -69,15 +61,8 @@ var removeConnectionCmd = &cobra.Command{
 			insecure, useTLS,
 			cliOptions.Resolve("cacert", caCertPath), cliOptions.Resolve("output", output), cliOptions.ResolveAsInt("labelLength", labelLength))
 
-		targetValues, err := ResolveArgument([]string{"sourceInstanceID", "targetInstanceID", "outboundName", "inboundName"}, args,
-			[]string{sourceInstanceID, targetInstanceID, outbound, inbound})
-		if err != nil {
-			fmt.Println(err.Error())
-			cmd.Help()
-		}else{
-			appNet.RemoveConnection(cliOptions.Resolve("organizationID", organizationID), targetValues[0],
-				targetValues[1], targetValues[2], targetValues[3], force)
-		}
+		appNet.RemoveConnection(cliOptions.Resolve("organizationID", organizationID), args[0], args[1], args[2], args[3], force)
+
 	},
 }
 
