@@ -242,18 +242,22 @@ func ToPublicAPIAppInstance(source *grpc_application_manager_go.AppInstance) *gr
 	}
 
 	return &grpc_public_api_go.AppInstance{
-		OrganizationId:       source.OrganizationId,
-		AppDescriptorId:      source.AppDescriptorId,
-		AppInstanceId:        source.AppInstanceId,
-		Name:                 source.Name,
-		ConfigurationOptions: source.ConfigurationOptions,
-		EnvironmentVariables: source.EnvironmentVariables,
-		Labels:               source.Labels,
-		Rules:                ToPublicAPISecurityRules(source.Rules),
-		Groups:               ToPublicAPIGroupInstances(source.Groups),
-		StatusName:           source.Status.String(),
-		Metadata:			  metadata,
-		Info: 				  source.Info,
+		OrganizationId:       	source.OrganizationId,
+		AppDescriptorId:      	source.AppDescriptorId,
+		AppInstanceId:        	source.AppInstanceId,
+		Name:                 	source.Name,
+		ConfigurationOptions: 	source.ConfigurationOptions,
+		EnvironmentVariables: 	source.EnvironmentVariables,
+		Labels:               	source.Labels,
+		Rules:                	ToPublicAPISecurityRules(source.Rules),
+		Groups:               	ToPublicAPIGroupInstances(source.Groups),
+		StatusName:           	source.Status.String(),
+		Metadata:			  	metadata,
+		Info: 				  	source.Info,
+		InboundNetInterfaces: 	source.InboundNetInterfaces,
+		OutboundNetInterfaces:	source.OutboundNetInterfaces,
+		InboundConnections: 	source.InboundConnections,
+		OutboundConnections: 	source.OutboundConnections,
 	}
 }
 
