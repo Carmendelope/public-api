@@ -5,6 +5,7 @@
 package application_network
 
 import (
+	"github.com/nalej/grpc-application-manager-go"
 	"github.com/nalej/grpc-application-network-go"
 	"github.com/nalej/grpc-common-go"
 	"github.com/nalej/grpc-organization-go"
@@ -12,15 +13,15 @@ import (
 )
 
 type Manager struct {
-	appNetClient grpc_application_network_go.ApplicationNetworkClient
+	appNetClient grpc_application_manager_go.ApplicationNetworkClient
 }
 
-func NewManager(client grpc_application_network_go.ApplicationNetworkClient) Manager {
+func NewManager(client grpc_application_manager_go.ApplicationNetworkClient) Manager {
 	return Manager{appNetClient: client}
 }
 
 // AddConnection adds a new connection between one outbound and one inbound
-func (m *Manager) AddConnection(connRequest *grpc_application_network_go.AddConnectionRequest) (*grpc_application_network_go.ConnectionInstance, error){
+func (m *Manager) AddConnection(connRequest *grpc_application_network_go.AddConnectionRequest) (*grpc_common_go.OpResponse, error){
 	ctx, cancel := common.GetContext()
 	defer cancel()
 
@@ -28,7 +29,7 @@ func (m *Manager) AddConnection(connRequest *grpc_application_network_go.AddConn
 }
 
 // RemoveConnection removes a connection
-func (m *Manager) RemoveConnection(connRequest *grpc_application_network_go.RemoveConnectionRequest) (*grpc_common_go.Success, error){
+func (m *Manager) RemoveConnection(connRequest *grpc_application_network_go.RemoveConnectionRequest) (*grpc_common_go.OpResponse, error){
 	ctx, cancel := common.GetContext()
 	defer cancel()
 

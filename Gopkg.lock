@@ -139,12 +139,20 @@
   version = "v0.0.53"
 
 [[projects]]
-  digest = "1:7ac3b52b49a158e5caa95ab5fd9fce275fdef9f1f19ad0954d7ac051586c1d1c"
+  digest = "1:e1f1a3e2ba70453678c93a2d9131a17f5b6410fda42b87a7716066b654db4ee3"
   name = "github.com/nalej/grpc-cluster-api-go"
   packages = ["."]
   pruneopts = ""
-  revision = "da7ec3bded3982f694a636b26b2f5afd5c062d76"
-  version = "v0.0.22"
+  revision = "44dae4f0098f8fcf9aad073780a5aa45fb1b1049"
+  version = "v0.0.23"
+
+[[projects]]
+  digest = "1:1ed874bfd5103d0fe53e49e1f4464d377cf5cac051ae7e43b3c3e69888f499ef"
+  name = "github.com/nalej/grpc-cluster-watcher-go"
+  packages = ["."]
+  pruneopts = ""
+  revision = "cc605d606b1ff550d0abb037317da15292d655af"
+  version = "v0.0.3"
 
 [[projects]]
   digest = "1:b6d762d6f7e153404d1491e9531ad92e1ef1f151dc00763e129bf390bbff6e68"

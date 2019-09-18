@@ -28,7 +28,7 @@ func NewHandler(manager Manager) *Handler {
 
 
 // AddConnection adds a new connection between one outbound and one inbound
-func (h *Handler) AddConnection(ctx context.Context, connRequest *grpc_application_network_go.AddConnectionRequest) (*grpc_application_network_go.ConnectionInstance, error){
+func (h *Handler) AddConnection(ctx context.Context, connRequest *grpc_application_network_go.AddConnectionRequest) (*grpc_common_go.OpResponse, error){
 
 	rm, err := authhelper.GetRequestMetadata(ctx)
 	if err != nil {
@@ -46,7 +46,7 @@ func (h *Handler) AddConnection(ctx context.Context, connRequest *grpc_applicati
 }
 
 // RemoveConnection removes a connection
-func (h *Handler) RemoveConnection(ctx context.Context, request *grpc_application_network_go.RemoveConnectionRequest) (*grpc_common_go.Success, error){
+func (h *Handler) RemoveConnection(ctx context.Context, request *grpc_application_network_go.RemoveConnectionRequest) (*grpc_common_go.OpResponse, error){
 	rm, err := authhelper.GetRequestMetadata(ctx)
 	if err != nil {
 		return nil, conversions.ToGRPCError(err)

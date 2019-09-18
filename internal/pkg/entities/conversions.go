@@ -6,6 +6,7 @@ package entities
 
 import (
 	"github.com/nalej/grpc-application-go"
+	"github.com/nalej/grpc-application-manager-go"
 	"github.com/nalej/grpc-device-manager-go"
 	"github.com/nalej/grpc-infrastructure-go"
 	"github.com/nalej/grpc-inventory-go"
@@ -233,7 +234,7 @@ func ToPublicAPISecurityRules(source []*grpc_application_go.SecurityRule) []*grp
 	return result
 }
 
-func ToPublicAPIAppInstance(source *grpc_application_go.AppInstance) *grpc_public_api_go.AppInstance {
+func ToPublicAPIAppInstance(source *grpc_application_manager_go.AppInstance) *grpc_public_api_go.AppInstance {
 
 	metadata := make ([]*grpc_public_api_go.InstanceMetadata, 0)
 	for _, met := range source.Metadata {

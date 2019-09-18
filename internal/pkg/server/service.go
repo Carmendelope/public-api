@@ -7,7 +7,6 @@ import (
 	"github.com/nalej/authx/pkg/interceptor"
 	"github.com/nalej/derrors"
 	"github.com/nalej/grpc-application-manager-go"
-	"github.com/nalej/grpc-application-network-go"
 	"github.com/nalej/grpc-device-manager-go"
 	"github.com/nalej/grpc-infrastructure-go"
 	"github.com/nalej/grpc-infrastructure-manager-go"
@@ -18,8 +17,8 @@ import (
 	"github.com/nalej/grpc-unified-logging-go"
 	"github.com/nalej/grpc-user-manager-go"
 	"github.com/nalej/public-api/internal/pkg/server/agent"
-	"github.com/nalej/public-api/internal/pkg/server/applications"
 	"github.com/nalej/public-api/internal/pkg/server/application-network"
+	"github.com/nalej/public-api/internal/pkg/server/applications"
 	"github.com/nalej/public-api/internal/pkg/server/clusters"
 	"github.com/nalej/public-api/internal/pkg/server/devices"
 	"github.com/nalej/public-api/internal/pkg/server/ec"
@@ -64,7 +63,7 @@ type Clients struct {
 	eicClient grpc_inventory_manager_go.EICClient
 	invClient grpc_inventory_manager_go.InventoryClient
 	agentClient grpc_inventory_manager_go.AgentClient
-	appNetClient grpc_application_network_go.ApplicationNetworkClient
+	appNetClient grpc_application_manager_go.ApplicationNetworkClient
 }
 
 func (s *Service) GetClients() (*Clients, derrors.Error) {
@@ -114,7 +113,7 @@ func (s *Service) GetClients() (*Clients, derrors.Error) {
 	eicClient := grpc_inventory_manager_go.NewEICClient(invManagerConn)
 	invClient := grpc_inventory_manager_go.NewInventoryClient(invManagerConn)
 	agentClient := grpc_inventory_manager_go.NewAgentClient(invManagerConn)
-	appNetClient := grpc_application_network_go.NewApplicationNetworkClient(smConn)
+	appNetClient := grpc_application_manager_go.NewApplicationNetworkClient(smConn)
 
 	return &Clients{oClient, cClient, nClient, infraClient, umClient,
 	appClient, deviceClient, ulClient, mmClient, amClient,
