@@ -17,6 +17,7 @@ import (
 	"github.com/nalej/grpc-unified-logging-go"
 	"github.com/nalej/grpc-user-manager-go"
 	"github.com/nalej/public-api/internal/pkg/server/agent"
+	"github.com/nalej/public-api/internal/pkg/server/application-network"
 	"github.com/nalej/public-api/internal/pkg/server/applications"
 	"github.com/nalej/public-api/internal/pkg/server/clusters"
 	"github.com/nalej/public-api/internal/pkg/server/devices"
@@ -62,6 +63,7 @@ type Clients struct {
 	eicClient grpc_inventory_manager_go.EICClient
 	invClient grpc_inventory_manager_go.InventoryClient
 	agentClient grpc_inventory_manager_go.AgentClient
+	appNetClient grpc_application_manager_go.ApplicationNetworkClient
 }
 
 func (s *Service) GetClients() (*Clients, derrors.Error) {
@@ -111,8 +113,11 @@ func (s *Service) GetClients() (*Clients, derrors.Error) {
 	eicClient := grpc_inventory_manager_go.NewEICClient(invManagerConn)
 	invClient := grpc_inventory_manager_go.NewInventoryClient(invManagerConn)
 	agentClient := grpc_inventory_manager_go.NewAgentClient(invManagerConn)
+	appNetClient := grpc_application_manager_go.NewApplicationNetworkClient(smConn)
 
-	return &Clients{oClient, cClient, nClient, infraClient, umClient, appClient, deviceClient, ulClient, mmClient, amClient, eicClient, invClient, agentClient}, nil
+	return &Clients{oClient, cClient, nClient, infraClient, umClient,
+	appClient, deviceClient, ulClient, mmClient, amClient,
+	eicClient, invClient, agentClient, appNetClient}, nil
 }
 
 // Run the service, launch the REST service handler.
@@ -202,6 +207,9 @@ func (s *Service) LaunchHTTP() error {
 	if err := grpc_public_api_go.RegisterAgentHandlerFromEndpoint(context.Background(), mux, clientAddr, opts); err != nil {
 		log.Fatal().Err(err).Msg("failed to start agent handler")
 	}
+	if err := grpc_public_api_go.RegisterApplicationNetworkHandlerFromEndpoint(context.Background(), mux, clientAddr, opts); err != nil {
+		log.Fatal().Err(err).Msg("failed to start application-network handler")
+	}
 
 	server := &http.Server{
 		Addr:    addr,
@@ -262,6 +270,9 @@ func (s *Service) LaunchGRPC(authConfig *interceptor.AuthorizationConfig) error 
 	agentManager := agent.NewManager(clients.agentClient)
 	agentHandler := agent.NewHandler(agentManager)
 
+	appNetManager := application_network.NewManager(clients.appNetClient)
+	appNetHandler := application_network.NewHandler(appNetManager)
+
 	grpcServer := grpc.NewServer(interceptor.WithServerAuthxInterceptor(
 		interceptor.NewConfig(authConfig, s.Configuration.AuthSecret, s.Configuration.AuthHeader)))
 	grpc_public_api_go.RegisterOrganizationsServer(grpcServer, orgHandler)
@@ -277,6 +288,7 @@ func (s *Service) LaunchGRPC(authConfig *interceptor.AuthorizationConfig) error 
 	grpc_public_api_go.RegisterInventoryServer(grpcServer, invHandler)
 	grpc_public_api_go.RegisterInventoryMonitoringServer(grpcServer, amHandler)
 	grpc_public_api_go.RegisterAgentServer(grpcServer, agentHandler)
+	grpc_public_api_go.RegisterApplicationNetworkServer(grpcServer, appNetHandler)
 
 	if s.Configuration.Debug{
 		log.Info().Msg("Enabling gRPC server reflection")

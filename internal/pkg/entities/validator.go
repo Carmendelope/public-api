@@ -10,6 +10,7 @@ import (
 	"github.com/nalej/derrors"
 	"github.com/nalej/grpc-application-go"
 	"github.com/nalej/grpc-application-manager-go"
+	"github.com/nalej/grpc-application-network-go"
 	"github.com/nalej/grpc-device-go"
 	"github.com/nalej/grpc-device-manager-go"
 	"github.com/nalej/grpc-infrastructure-go"
@@ -47,6 +48,13 @@ const emptyEdgeControllerId = "edge_controller_id cannot be empty"
 const emptyAssetId = "asset_id cannot be empty"
 const emptyAssetDeviceId = "asset_device_id cannot be empty"
 const emptyGeolocation = "geolocation cannot be empty"
+
+const emptySourceInstanceId = "source_instance_id cannot be empty"
+const emptyTargetInstanceId = "target_instance_id cannot be empty"
+const emptyInboundName = "inbound_name cannot be empty"
+const emptyOutboundName = "outbound_name cannot be empty"
+
+
 
 // --------- Application descriptor JSON Schema
 type AppJSONSchema struct {
@@ -586,6 +594,46 @@ func ValidUpdateEdgeControllerRequest (request *grpc_inventory_go.UpdateEdgeCont
 	}
 	if request.EdgeControllerId == "" {
 		return derrors.NewInvalidArgumentError(emptyEdgeControllerId)
+	}
+
+	return nil
+}
+
+func ValidAddConnectionRequest (conn *grpc_application_network_go.AddConnectionRequest) derrors.Error {
+	if conn.OrganizationId == "" {
+		return derrors.NewInvalidArgumentError(emptyOrganizationId)
+	}
+	if conn.TargetInstanceId == "" {
+		return derrors.NewInvalidArgumentError(emptyTargetInstanceId)
+	}
+	if conn.SourceInstanceId == "" {
+		return derrors.NewInvalidArgumentError(emptySourceInstanceId)
+	}
+	if conn.InboundName == "" {
+		return derrors.NewInvalidArgumentError(emptyInboundName)
+	}
+	if conn.OutboundName == "" {
+		return derrors.NewInvalidArgumentError(emptyOutboundName)
+	}
+
+	return nil
+}
+
+func ValidRemoveConnectionRequest (conn *grpc_application_network_go.RemoveConnectionRequest) derrors.Error {
+	if conn.OrganizationId == "" {
+		return derrors.NewInvalidArgumentError(emptyOrganizationId)
+	}
+	if conn.TargetInstanceId == "" {
+		return derrors.NewInvalidArgumentError(emptyTargetInstanceId)
+	}
+	if conn.SourceInstanceId == "" {
+		return derrors.NewInvalidArgumentError(emptySourceInstanceId)
+	}
+	if conn.InboundName == "" {
+		return derrors.NewInvalidArgumentError(emptyInboundName)
+	}
+	if conn.OutboundName == "" {
+		return derrors.NewInvalidArgumentError(emptyOutboundName)
 	}
 
 	return nil
