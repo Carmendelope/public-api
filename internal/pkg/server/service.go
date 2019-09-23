@@ -113,7 +113,7 @@ func (s *Service) GetClients() (*Clients, derrors.Error) {
 	eicClient := grpc_inventory_manager_go.NewEICClient(invManagerConn)
 	invClient := grpc_inventory_manager_go.NewInventoryClient(invManagerConn)
 	agentClient := grpc_inventory_manager_go.NewAgentClient(invManagerConn)
-	appNetClient := grpc_application_manager_go.NewApplicationNetworkClient(smConn)
+	appNetClient := grpc_application_manager_go.NewApplicationNetworkClient(appConn)
 
 	return &Clients{oClient, cClient, nClient, infraClient, umClient,
 	appClient, deviceClient, ulClient, mmClient, amClient,
