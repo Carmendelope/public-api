@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/nalej/grpc-application-go"
 	"github.com/nalej/grpc-application-manager-go"
+	"github.com/nalej/grpc-application-network-go"
 	"github.com/nalej/grpc-common-go"
 	"github.com/nalej/grpc-device-manager-go"
 	"github.com/nalej/grpc-infrastructure-manager-go"
@@ -115,6 +116,10 @@ func AsTable(result interface{}, labelLength int) *ResultTable {
 		return FromAvailableInboundList(result.(*grpc_application_manager_go.AvailableInstanceInboundList))
 	case *grpc_application_manager_go.AvailableInstanceOutboundList:
 		return FromAvailableOutboundList(result.(*grpc_application_manager_go.AvailableInstanceOutboundList))
+	case *grpc_application_network_go.ConnectionInstanceList:
+		return FromConnectionInstanceListResult(result.(*grpc_application_network_go.ConnectionInstanceList))
+	case *grpc_common_go.OpResponse:
+		return FomOpResponse(result.(*grpc_common_go.OpResponse))
 	default:
 		log.Fatal().Str("type", fmt.Sprintf("%T", result)).Msg("unsupported")
 	}
@@ -709,6 +714,17 @@ func FromAvailableOutboundList(result *grpc_application_manager_go.AvailableInst
 	return &ResultTable{r}
 }
 
+func FromConnectionInstanceListResult(result *grpc_application_network_go.ConnectionInstanceList) *ResultTable {
+	r := make([][]string, 0)
+	r = append(r, []string{"SOURCE_INSTANCE_ID","SOURCE_INSTANCE_NAME", "OUTBOUND", "TARGET_INSTANCE_ID", "TARGET_INSTANCE_NAME", "INBOUND"})
+	for _, connection := range result.Connections {
+		r = append(r, []string{connection.SourceInstanceId, connection.SourceInstanceName, connection.OutboundName, connection.TargetInstanceId,
+			connection.TargetInstanceName, connection.InboundName})
+	}
+
+	return &ResultTable{r}
+}
+
 // ----
 // Inventory monitoring
 // ----
@@ -841,6 +857,7 @@ func FromIAsset(result *grpc_inventory_go.Asset, labelLength int) *ResultTable {
 	return &ResultTable{r}
 }
 
+
 func FromAgentOpResponse(result *grpc_public_api_go.AgentOpResponse) *ResultTable {
 	r := make([][]string, 0)
 	r = append(r, []string{"OPERATION_ID", "TIMESTAMP", "STATUS", "INFO"})
@@ -856,5 +873,12 @@ func FromSuccess(result *grpc_common_go.Success) *ResultTable {
 	r := make([][]string, 0)
 	r = append(r, []string{"RESULT"})
 	r = append(r, []string{"OK"})
+	return &ResultTable{r}
+}
+
+func FomOpResponse(result *grpc_common_go.OpResponse) *ResultTable {
+	r := make([][]string, 0)
+	r = append(r, []string{"REQUEST_ID", "TIMESTAMP", "STATUS", "INFO"})
+	r = append(r, []string{result.RequestId, time.Unix(result.Timestamp, 0).String(), result.Status, result.Info})
 	return &ResultTable{r}
 }
