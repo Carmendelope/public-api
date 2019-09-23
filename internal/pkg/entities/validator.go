@@ -5,7 +5,6 @@
 package entities
 
 import (
-	"bytes"
 	"fmt"
 	"github.com/nalej/derrors"
 	"github.com/nalej/grpc-application-go"
@@ -14,9 +13,9 @@ import (
 	"github.com/nalej/grpc-device-go"
 	"github.com/nalej/grpc-device-manager-go"
 	"github.com/nalej/grpc-infrastructure-go"
-	"github.com/nalej/grpc-monitoring-go"
 	"github.com/nalej/grpc-inventory-go"
 	"github.com/nalej/grpc-inventory-manager-go"
+	"github.com/nalej/grpc-monitoring-go"
 	"github.com/nalej/grpc-organization-go"
 	"github.com/nalej/grpc-public-api-go"
 	"github.com/nalej/grpc-unified-logging-go"
@@ -143,11 +142,12 @@ func ValidAppDescriptorFormat(jsonContent []byte) derrors.Error {
 	// Initialize JSON in case it is not working
 	InitializeJSON()
 
-	err := AppDescValidator.appDescriptorSchema.Validate(bytes.NewReader(jsonContent))
+	// TODO: commented until inbound-outbounds are consolidated∫
+	//err := AppDescValidator.appDescriptorSchema.Validate(bytes.NewReader(jsonContent))
 
-	if err != nil {
-		return derrors.NewInvalidArgumentError(err.Error())
-	}
+	//if err != nil {
+	//	return derrors.NewInvalidArgumentError(err.Error())
+	//}
 	return nil
 }
 
