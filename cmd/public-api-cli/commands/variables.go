@@ -31,6 +31,7 @@ var ipAddressIngress string
 var descriptorID string
 var descriptorPath string
 var params string
+var connections string
 
 var instanceID string
 var sgInstanceID string
