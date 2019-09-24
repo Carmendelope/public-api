@@ -328,6 +328,25 @@ func FromAppInstance(result *grpc_public_api_go.AppInstance) *ResultTable {
 				r = append(r, []string{s.Name, strconv.Itoa(int(s.Specs.Replicas)), s.StatusName, strings.Join(s.Endpoints, ", ")})
 			}
 		}
+		r = append(r, []string{"", "", "", ""})
+		if (result.OutboundConnections != nil && len(result.OutboundConnections) > 0) ||
+			(result.InboundConnections != nil && len(result.InboundConnections) > 0) {
+			r = append(r, []string{"SOURCE", "OUTBOUND", "TARGET", "INBOUND", "REQUIRED"})
+			if result.OutboundConnections != nil && len(result.OutboundConnections) > 0 {
+				for _, out := range result.OutboundConnections {
+					required := "FALSE"
+					if out.OutboundRequired {
+						required = "TRUE"
+					}
+					r = append(r, []string{out.SourceInstanceId, out.OutboundName, out.TargetInstanceId, out.InboundName, required})
+				}
+			}
+			if result.InboundConnections != nil && len(result.InboundConnections) > 0 {
+				for _, in := range result.InboundConnections {
+					r = append(r, []string{in.SourceInstanceId, in.OutboundName, in.TargetInstanceId, in.InboundName, "N/A"})
+				}
+			}
+		}
 	}
 	return &ResultTable{r}
 }
