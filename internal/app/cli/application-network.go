@@ -52,11 +52,11 @@ func (an *ApplicationNetwork) AddConnection(organizationID string, sourceInstanc
 	defer cancel()
 
 	connection := &grpc_application_network_go.AddConnectionRequest{
-		OrganizationId: organizationID,
+		OrganizationId:   organizationID,
 		SourceInstanceId: sourceInstanceID,
 		TargetInstanceId: targetInstanceID,
-		InboundName: inbound,
-		OutboundName: outbound,
+		InboundName:      inbound,
+		OutboundName:     outbound,
 	}
 
 	added, err := client.AddConnection(ctx, connection)
@@ -75,11 +75,11 @@ func (an *ApplicationNetwork) RemoveConnection(organizationID string, sourceInst
 	defer cancel()
 
 	connection := &grpc_application_network_go.RemoveConnectionRequest{
-		OrganizationId: organizationID,
+		OrganizationId:   organizationID,
 		SourceInstanceId: sourceInstanceID,
 		TargetInstanceId: targetInstanceID,
-		InboundName: inbound,
-		OutboundName: outbound,
+		InboundName:      inbound,
+		OutboundName:     outbound,
 		UserConfirmation: force,
 	}
 
@@ -104,4 +104,42 @@ func (an *ApplicationNetwork) ListConnection(organizationID string) {
 
 	added, err := client.ListConnections(ctx, &orgID)
 	an.PrintResultOrError(added, err, "cannot list connections")
+}
+
+func (an *ApplicationNetwork) ListAvailableInbounds(organizationID string) {
+	if organizationID == "" {
+		log.Fatal().Msg("organizationID cannot be empty")
+	}
+
+	an.load()
+	ctx, cancel := an.GetContext()
+	client, conn := an.getClient()
+	defer conn.Close()
+	defer cancel()
+
+	orgID := grpc_organization_go.OrganizationId{
+		OrganizationId: organizationID,
+	}
+
+	inboundList, err := client.ListAvailableInstanceInbounds(ctx, &orgID)
+	an.PrintResultOrError(inboundList, err, "cannot list available inbound interfaces")
+}
+
+func (an *ApplicationNetwork) ListAvailableOutbounds(organizationID string) {
+	if organizationID == "" {
+		log.Fatal().Msg("organizationID cannot be empty")
+	}
+
+	an.load()
+	ctx, cancel := an.GetContext()
+	client, conn := an.getClient()
+	defer conn.Close()
+	defer cancel()
+
+	orgID := grpc_organization_go.OrganizationId{
+		OrganizationId: organizationID,
+	}
+
+	outboundList, err := client.ListAvailableInstanceOutbounds(ctx, &orgID)
+	an.PrintResultOrError(outboundList, err, "cannot list available outbound interfaces")
 }
