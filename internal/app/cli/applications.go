@@ -280,7 +280,29 @@ func (a *Applications) getParams (params string) *grpc_application_go.InstancePa
 	}
 }
 
-func (a *Applications) Deploy(organizationID string, appDescriptorID string, name string, params string) {
+func (a *Applications) getConnectionRequest (connections string) []*grpc_application_manager_go.ConnectionRequest {
+
+	connectionList := make([]*grpc_application_manager_go.ConnectionRequest, 0)
+
+	if connections != "" {
+		connSplit := strings.Split(connections, "#")
+		for _, conn := range connSplit {
+			connValues := strings.Split(conn, ",")
+			if len(connValues) != 3 {
+				log.Fatal().Msg("connection format error (soure_instance_id, outboundName, target_instance_id")
+			}
+			connectionList = append(connectionList,&grpc_application_manager_go.ConnectionRequest{
+				SourceOutboundName: connValues[0],
+				TargetInstanceId: connValues[1],
+				TargetInboundName: connValues[2],
+			})
+		}
+	}
+
+	return connectionList
+}
+
+func (a *Applications) Deploy(organizationID string, appDescriptorID string, name string, params string, connections string) {
 	if organizationID == "" {
 		log.Fatal().Msg("organizationID cannot be empty")
 	}
@@ -299,6 +321,7 @@ func (a *Applications) Deploy(organizationID string, appDescriptorID string, nam
 		AppDescriptorId: appDescriptorID,
 		Name:            name,
 		Parameters:		 paramList,
+		OutboundConnections: a.getConnectionRequest(connections),
 	}
 	deployed, err := client.Deploy(ctx, deployRequest)
 	a.PrintResultOrError(deployed, err, "cannot deploy application")
