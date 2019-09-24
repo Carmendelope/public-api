@@ -342,12 +342,16 @@ func FromAppInstance(result *grpc_public_api_go.AppInstance) *ResultTable {
 					if out.OutboundRequired {
 						required = "TRUE"
 					}
-					r = append(r, []string{out.SourceInstanceId, out.OutboundName, out.TargetInstanceId, out.InboundName, required})
+					r = append(r, []string{out.SourceInstanceName, out.OutboundName, out.TargetInstanceName, out.InboundName, required})
 				}
 			}
 			if result.InboundConnections != nil && len(result.InboundConnections) > 0 {
 				for _, in := range result.InboundConnections {
-					r = append(r, []string{in.SourceInstanceId, in.OutboundName, in.TargetInstanceId, in.InboundName, "N/A"})
+					required := "FALSE"
+					if in.OutboundRequired {
+						required = "TRUE"
+					}
+					r = append(r, []string{in.SourceInstanceName, in.OutboundName, in.TargetInstanceName, in.InboundName, required})
 				}
 			}
 		}
