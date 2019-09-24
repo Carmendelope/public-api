@@ -694,7 +694,7 @@ func FromInventorySummary(result *grpc_inventory_manager_go.InventorySummary) *R
 // ----
 func FromAvailableInboundList(result *grpc_application_manager_go.AvailableInstanceInboundList) *ResultTable {
 	r := make([][]string, len(result.InstanceInbounds))
-	r = append(r, []string{"INSTANCE_ID", "INSTANCE_NAME", "INBOUND NAME"})
+	r = append(r, []string{"INSTANCE_ID", "INSTANCE_NAME", "INBOUND_NAME"})
 
 	for _, inbound := range result.InstanceInbounds {
 		r = append(r, []string{inbound.AppInstanceId, inbound.InstanceName, inbound.InboundName})
@@ -705,7 +705,7 @@ func FromAvailableInboundList(result *grpc_application_manager_go.AvailableInsta
 
 func FromAvailableOutboundList(result *grpc_application_manager_go.AvailableInstanceOutboundList) *ResultTable {
 	r := make([][]string, len(result.InstanceOutbounds))
-	r = append(r, []string{"INSTANCE_ID", "INSTANCE_NAME", "OUTBOUND NAME"})
+	r = append(r, []string{"INSTANCE_ID", "INSTANCE_NAME", "OUTBOUND_NAME"})
 
 	for _, outbound := range result.InstanceOutbounds {
 		r = append(r, []string{outbound.AppInstanceId, outbound.InstanceName, outbound.OutboundName})
@@ -716,7 +716,7 @@ func FromAvailableOutboundList(result *grpc_application_manager_go.AvailableInst
 
 func FromConnectionInstanceListResult(result *grpc_application_network_go.ConnectionInstanceList) *ResultTable {
 	r := make([][]string, 0)
-	r = append(r, []string{"SOURCE_INSTANCE_ID","SOURCE_INSTANCE_NAME", "OUTBOUND", "TARGET_INSTANCE_ID", "TARGET_INSTANCE_NAME", "INBOUND"})
+	r = append(r, []string{"SOURCE_INSTANCE_ID", "SOURCE_INSTANCE_NAME", "OUTBOUND", "TARGET_INSTANCE_ID", "TARGET_INSTANCE_NAME", "INBOUND"})
 	for _, connection := range result.Connections {
 		r = append(r, []string{connection.SourceInstanceId, connection.SourceInstanceName, connection.OutboundName, connection.TargetInstanceId,
 			connection.TargetInstanceName, connection.InboundName})
@@ -856,7 +856,6 @@ func FromIAsset(result *grpc_inventory_go.Asset, labelLength int) *ResultTable {
 
 	return &ResultTable{r}
 }
-
 
 func FromAgentOpResponse(result *grpc_public_api_go.AgentOpResponse) *ResultTable {
 	r := make([][]string, 0)
