@@ -21,7 +21,7 @@ func NewManager(client grpc_application_manager_go.ApplicationNetworkClient) Man
 }
 
 // AddConnection adds a new connection between one outbound and one inbound
-func (m *Manager) AddConnection(connRequest *grpc_application_network_go.AddConnectionRequest) (*grpc_common_go.OpResponse, error){
+func (m *Manager) AddConnection(connRequest *grpc_application_network_go.AddConnectionRequest) (*grpc_common_go.OpResponse, error) {
 	ctx, cancel := common.GetContext()
 	defer cancel()
 
@@ -29,7 +29,7 @@ func (m *Manager) AddConnection(connRequest *grpc_application_network_go.AddConn
 }
 
 // RemoveConnection removes a connection
-func (m *Manager) RemoveConnection(connRequest *grpc_application_network_go.RemoveConnectionRequest) (*grpc_common_go.OpResponse, error){
+func (m *Manager) RemoveConnection(connRequest *grpc_application_network_go.RemoveConnectionRequest) (*grpc_common_go.OpResponse, error) {
 	ctx, cancel := common.GetContext()
 	defer cancel()
 
@@ -37,9 +37,23 @@ func (m *Manager) RemoveConnection(connRequest *grpc_application_network_go.Remo
 }
 
 // ListConnections retrieves a list all the established connections of an organization
-func (m *Manager) ListConnections(organizationID *grpc_organization_go.OrganizationId) (*grpc_application_network_go.ConnectionInstanceList, error){
+func (m *Manager) ListConnections(organizationID *grpc_organization_go.OrganizationId) (*grpc_application_network_go.ConnectionInstanceList, error) {
 	ctx, cancel := common.GetContext()
 	defer cancel()
 
 	return m.appNetClient.ListConnections(ctx, organizationID)
+}
+
+func (m *Manager) ListAvailableInboundConnections(organizationID *grpc_organization_go.OrganizationId) (*grpc_application_manager_go.AvailableInstanceInboundList, error) {
+	ctx, cancel := common.GetContext()
+	defer cancel()
+
+	return m.appNetClient.ListAvailableInstanceInbounds(ctx, organizationID)
+}
+
+func (m *Manager) ListAvailableOutboundConnections(organizationID *grpc_organization_go.OrganizationId) (*grpc_application_manager_go.AvailableInstanceOutboundList, error) {
+	ctx, cancel := common.GetContext()
+	defer cancel()
+
+	return m.appNetClient.ListAvailableInstanceOutbounds(ctx, organizationID)
 }

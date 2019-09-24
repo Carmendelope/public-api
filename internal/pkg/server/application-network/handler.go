@@ -26,9 +26,8 @@ func NewHandler(manager Manager) *Handler {
 	return &Handler{manager}
 }
 
-
 // AddConnection adds a new connection between one outbound and one inbound
-func (h *Handler) AddConnection(ctx context.Context, connRequest *grpc_application_network_go.AddConnectionRequest) (*grpc_common_go.OpResponse, error){
+func (h *Handler) AddConnection(ctx context.Context, connRequest *grpc_application_network_go.AddConnectionRequest) (*grpc_common_go.OpResponse, error) {
 
 	rm, err := authhelper.GetRequestMetadata(ctx)
 	if err != nil {
@@ -46,7 +45,7 @@ func (h *Handler) AddConnection(ctx context.Context, connRequest *grpc_applicati
 }
 
 // RemoveConnection removes a connection
-func (h *Handler) RemoveConnection(ctx context.Context, request *grpc_application_network_go.RemoveConnectionRequest) (*grpc_common_go.OpResponse, error){
+func (h *Handler) RemoveConnection(ctx context.Context, request *grpc_application_network_go.RemoveConnectionRequest) (*grpc_common_go.OpResponse, error) {
 	rm, err := authhelper.GetRequestMetadata(ctx)
 	if err != nil {
 		return nil, conversions.ToGRPCError(err)
@@ -63,7 +62,7 @@ func (h *Handler) RemoveConnection(ctx context.Context, request *grpc_applicatio
 }
 
 // ListConnections retrieves a list all the established connections of an organization
-func (h *Handler) ListConnections(ctx context.Context, organizationID *grpc_organization_go.OrganizationId) (*grpc_application_network_go.ConnectionInstanceList, error){
+func (h *Handler) ListConnections(ctx context.Context, organizationID *grpc_organization_go.OrganizationId) (*grpc_application_network_go.ConnectionInstanceList, error) {
 	rm, err := authhelper.GetRequestMetadata(ctx)
 	if err != nil {
 		return nil, conversions.ToGRPCError(err)
@@ -79,10 +78,35 @@ func (h *Handler) ListConnections(ctx context.Context, organizationID *grpc_orga
 }
 
 // ListAvailableInstanceInbounds retrieves a list of available inbounds of an organization
-func (h *Handler) ListAvailableInstanceInbounds(ctx context.Context, in *grpc_organization_go.OrganizationId) (*grpc_application_manager_go.AvailableInstanceInboundList, error){
-	return nil, derrors.NewUnimplementedError("not implemented yet")}
-// ListAvailableInstanceOutbounds retrieves a list of available outbounds of an organization
+func (h *Handler) ListAvailableInstanceInbounds(ctx context.Context, organizationID *grpc_organization_go.OrganizationId) (*grpc_application_manager_go.AvailableInstanceInboundList, error) {
+	rm, err := authhelper.GetRequestMetadata(ctx)
+	if err != nil {
+		return nil, conversions.ToGRPCError(err)
+	}
+	if organizationID.OrganizationId != rm.OrganizationID {
+		return nil, derrors.NewPermissionDeniedError("cannot access requested OrganizationID")
+	}
+	err = entities.ValidOrganizationId(organizationID)
+	if err != nil {
+		return nil, conversions.ToGRPCError(err)
+	}
 
-func (h *Handler) ListAvailableInstanceOutbounds(ctx context.Context, in *grpc_organization_go.OrganizationId) (*grpc_application_manager_go.AvailableInstanceOutboundList, error){
-	return nil, derrors.NewUnimplementedError("not implemented yet")
+	return h.Manager.ListAvailableInboundConnections(organizationID)
+}
+
+// ListAvailableInstanceOutbounds retrieves a list of available outbounds of an organization
+func (h *Handler) ListAvailableInstanceOutbounds(ctx context.Context, organizationID *grpc_organization_go.OrganizationId) (*grpc_application_manager_go.AvailableInstanceOutboundList, error) {
+	rm, err := authhelper.GetRequestMetadata(ctx)
+	if err != nil {
+		return nil, conversions.ToGRPCError(err)
+	}
+	if organizationID.OrganizationId != rm.OrganizationID {
+		return nil, derrors.NewPermissionDeniedError("cannot access requested OrganizationID")
+	}
+	err = entities.ValidOrganizationId(organizationID)
+	if err != nil {
+		return nil, conversions.ToGRPCError(err)
+	}
+
+	return h.Manager.ListAvailableOutboundConnections(organizationID)
 }

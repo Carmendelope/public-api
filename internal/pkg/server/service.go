@@ -50,19 +50,19 @@ func NewService(conf Config) *Service {
 }
 
 type Clients struct {
-	orgClient   grpc_organization_go.OrganizationsClient
-	clusClient  grpc_infrastructure_go.ClustersClient
-	nodeClient  grpc_infrastructure_go.NodesClient
-	infraClient grpc_infrastructure_manager_go.InfrastructureManagerClient
-	umClient    grpc_user_manager_go.UserManagerClient
-	appClient   grpc_application_manager_go.ApplicationManagerClient
+	orgClient    grpc_organization_go.OrganizationsClient
+	clusClient   grpc_infrastructure_go.ClustersClient
+	nodeClient   grpc_infrastructure_go.NodesClient
+	infraClient  grpc_infrastructure_manager_go.InfrastructureManagerClient
+	umClient     grpc_user_manager_go.UserManagerClient
+	appClient    grpc_application_manager_go.ApplicationManagerClient
 	deviceClient grpc_device_manager_go.DevicesClient
-	ulClient    grpc_unified_logging_go.CoordinatorClient
-	mmClient    grpc_monitoring_go.MonitoringManagerClient
-	amClient    grpc_monitoring_go.AssetMonitoringClient
-	eicClient grpc_inventory_manager_go.EICClient
-	invClient grpc_inventory_manager_go.InventoryClient
-	agentClient grpc_inventory_manager_go.AgentClient
+	ulClient     grpc_unified_logging_go.CoordinatorClient
+	mmClient     grpc_monitoring_go.MonitoringManagerClient
+	amClient     grpc_monitoring_go.AssetMonitoringClient
+	eicClient    grpc_inventory_manager_go.EICClient
+	invClient    grpc_inventory_manager_go.InventoryClient
+	agentClient  grpc_inventory_manager_go.AgentClient
 	appNetClient grpc_application_manager_go.ApplicationNetworkClient
 }
 
@@ -116,8 +116,8 @@ func (s *Service) GetClients() (*Clients, derrors.Error) {
 	appNetClient := grpc_application_manager_go.NewApplicationNetworkClient(appConn)
 
 	return &Clients{oClient, cClient, nClient, infraClient, umClient,
-	appClient, deviceClient, ulClient, mmClient, amClient,
-	eicClient, invClient, agentClient, appNetClient}, nil
+		appClient, deviceClient, ulClient, mmClient, amClient,
+		eicClient, invClient, agentClient, appNetClient}, nil
 }
 
 // Run the service, launch the REST service handler.
@@ -290,7 +290,7 @@ func (s *Service) LaunchGRPC(authConfig *interceptor.AuthorizationConfig) error 
 	grpc_public_api_go.RegisterAgentServer(grpcServer, agentHandler)
 	grpc_public_api_go.RegisterApplicationNetworkServer(grpcServer, appNetHandler)
 
-	if s.Configuration.Debug{
+	if s.Configuration.Debug {
 		log.Info().Msg("Enabling gRPC server reflection")
 		// Register reflection service on gRPC server.
 		reflection.Register(grpcServer)

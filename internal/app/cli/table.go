@@ -103,7 +103,7 @@ func AsTable(result interface{}, labelLength int) *ResultTable {
 	case *grpc_common_go.Success:
 		return FromSuccess(result.(*grpc_common_go.Success))
 	case *grpc_inventory_go.Asset:
-		return  FromIAsset(result.(*grpc_inventory_go.Asset), labelLength)
+		return FromIAsset(result.(*grpc_inventory_go.Asset), labelLength)
 	case *grpc_inventory_go.EdgeController:
 		return FromIEdgeController(result.(*grpc_inventory_go.EdgeController), labelLength)
 	case *grpc_inventory_manager_go.InventorySummary:
@@ -112,6 +112,10 @@ func AsTable(result interface{}, labelLength int) *ResultTable {
 		return FromQueryMetricsResult(result.(*grpc_monitoring_go.QueryMetricsResult))
 	case *grpc_monitoring_go.MetricsList:
 		return FromMetricsList(result.(*grpc_monitoring_go.MetricsList))
+	case *grpc_application_manager_go.AvailableInstanceInboundList:
+		return FromAvailableInboundList(result.(*grpc_application_manager_go.AvailableInstanceInboundList))
+	case *grpc_application_manager_go.AvailableInstanceOutboundList:
+		return FromAvailableOutboundList(result.(*grpc_application_manager_go.AvailableInstanceOutboundList))
 	case *grpc_application_network_go.ConnectionInstanceList:
 		return FromConnectionInstanceListResult(result.(*grpc_application_network_go.ConnectionInstanceList))
 	case *grpc_common_go.OpResponse:
@@ -154,10 +158,10 @@ func TransformLabels(labels map[string]string, labelLength int) string {
 	return truncatedR
 }
 
-func GetSortedKeys (labels map[string]string) []string {
+func GetSortedKeys(labels map[string]string) []string {
 	sortedKeys := make([]string, len(labels))
 	i := 0
-	for k, _ := range labels {
+	for k := range labels {
 		sortedKeys[i] = k
 		i++
 	}
@@ -165,7 +169,7 @@ func GetSortedKeys (labels map[string]string) []string {
 	return sortedKeys
 }
 
-func TruncateString (text string, length int) string {
+func TruncateString(text string, length int) string {
 	log.Debug().Int("length", length).Str("text", text).Msg("truncate")
 	if length <= 0 {
 		return text
@@ -430,7 +434,7 @@ func FromDevice(result *grpc_public_api_go.Device, labelLength int) *ResultTable
 	r = append(r, []string{""})
 	r = append(r, []string{"GEOLOCATION"})
 	location := "NA"
-	if result.Location != nil{
+	if result.Location != nil {
 		location = result.Location.Geolocation
 	}
 	r = append(r, []string{location})
@@ -522,7 +526,7 @@ func FromEICJoinToken(result *grpc_inventory_manager_go.EICJoinToken) *ResultTab
 	return &ResultTable{r}
 }
 
-func FromIEdgeController (result *grpc_inventory_go.EdgeController, labelLength int) *ResultTable {
+func FromIEdgeController(result *grpc_inventory_go.EdgeController, labelLength int) *ResultTable {
 	r := make([][]string, 0)
 	name := "NA"
 	if result.Name != "" {
@@ -589,12 +593,12 @@ func FromEdgeControllerExtendedInfo(result *grpc_public_api_go.EdgeControllerExt
 	}
 
 	if result.Controller != nil {
-		r = append(r, []string{"NAME", "LABELS","LOCATION",  "STATUS", "SEEN"})
+		r = append(r, []string{"NAME", "LABELS", "LOCATION", "STATUS", "SEEN"})
 		seen := "never"
-		if result.Controller.LastAliveTimestamp != 0{
+		if result.Controller.LastAliveTimestamp != 0 {
 			seen = time.Unix(result.Controller.LastAliveTimestamp, 0).String()
 		}
-		r = append(r, []string{result.Controller.Name, TransformLabels(result.Controller.Labels, labelLength),geolocation, result.Controller.StatusName, seen})
+		r = append(r, []string{result.Controller.Name, TransformLabels(result.Controller.Labels, labelLength), geolocation, result.Controller.StatusName, seen})
 	}
 	// Asset Info
 	r = append(r, []string{""})
@@ -628,7 +632,7 @@ func FromEdgeControllerExtendedInfo(result *grpc_public_api_go.EdgeControllerExt
 		r = append(r, []string{"LAST OP"})
 		r = append(r, []string{"OP_ID", "TIMESTAMP", "STATUS", "INFO"})
 		r = append(r, []string{result.Controller.LastOpResult.OperationId, time.Unix(result.Controller.LastOpResult.Timestamp, 0).String(),
-		result.Controller.LastOpResult.OpStatusName, result.Controller.LastOpResult.Info})
+			result.Controller.LastOpResult.OpStatusName, result.Controller.LastOpResult.Info})
 	}
 
 	// Managed Assets
@@ -637,7 +641,7 @@ func FromEdgeControllerExtendedInfo(result *grpc_public_api_go.EdgeControllerExt
 		r = append(r, []string{"ASSET_ID", "IP", "STATUS", "SEEN"})
 		for _, a := range result.ManagedAssets {
 			seen := "never"
-			if a.LastAliveTimestamp != 0{
+			if a.LastAliveTimestamp != 0 {
 				seen = time.Unix(a.LastAliveTimestamp, 0).String()
 			}
 			r = append(r, []string{a.AssetId, a.EicNetIp, a.StatusName, seen})
@@ -650,7 +654,7 @@ func FromEdgeControllerExtendedInfo(result *grpc_public_api_go.EdgeControllerExt
 // Agent
 // -----
 
-func FromECOpResponse(result *grpc_public_api_go.ECOpResponse) *ResultTable{
+func FromECOpResponse(result *grpc_public_api_go.ECOpResponse) *ResultTable {
 	r := make([][]string, 0)
 	r = append(r, []string{"OPERATION"})
 	r = append(r, []string{result.OperationId})
@@ -696,10 +700,46 @@ func FromInventoryList(result *grpc_public_api_go.InventoryList, labelLength int
 	return &ResultTable{r}
 }
 
-func FromInventorySummary (result *grpc_inventory_manager_go.InventorySummary) *ResultTable {
+func FromInventorySummary(result *grpc_inventory_manager_go.InventorySummary) *ResultTable {
 	r := make([][]string, 0)
 	r = append(r, []string{"CPUs", "STORAGE (GB)", "RAM (GB)"})
 	r = append(r, []string{strconv.FormatInt(result.TotalNumCpu, 10), strconv.FormatInt(result.TotalStorage, 10), strconv.FormatInt(result.TotalRam, 10)})
+
+	return &ResultTable{r}
+}
+
+// ----
+// Application Network
+// ----
+func FromAvailableInboundList(result *grpc_application_manager_go.AvailableInstanceInboundList) *ResultTable {
+	r := make([][]string, len(result.InstanceInbounds))
+	r = append(r, []string{"INSTANCE_ID", "INSTANCE_NAME", "INBOUND_NAME"})
+
+	for _, inbound := range result.InstanceInbounds {
+		r = append(r, []string{inbound.AppInstanceId, inbound.InstanceName, inbound.InboundName})
+	}
+
+	return &ResultTable{r}
+}
+
+func FromAvailableOutboundList(result *grpc_application_manager_go.AvailableInstanceOutboundList) *ResultTable {
+	r := make([][]string, len(result.InstanceOutbounds))
+	r = append(r, []string{"INSTANCE_ID", "INSTANCE_NAME", "OUTBOUND_NAME"})
+
+	for _, outbound := range result.InstanceOutbounds {
+		r = append(r, []string{outbound.AppInstanceId, outbound.InstanceName, outbound.OutboundName})
+	}
+
+	return &ResultTable{r}
+}
+
+func FromConnectionInstanceListResult(result *grpc_application_network_go.ConnectionInstanceList) *ResultTable {
+	r := make([][]string, 0)
+	r = append(r, []string{"SOURCE_INSTANCE_ID", "SOURCE_INSTANCE_NAME", "OUTBOUND", "TARGET_INSTANCE_ID", "TARGET_INSTANCE_NAME", "INBOUND"})
+	for _, connection := range result.Connections {
+		r = append(r, []string{connection.SourceInstanceId, connection.SourceInstanceName, connection.OutboundName, connection.TargetInstanceId,
+			connection.TargetInstanceName, connection.InboundName})
+	}
 
 	return &ResultTable{r}
 }
@@ -712,9 +752,9 @@ func FromQueryMetricsResult(result *grpc_monitoring_go.QueryMetricsResult) *Resu
 	r := [][]string{}
 	r = append(r, []string{"TIMESTAMP", "METRIC", "ASSET", "AGGR", "VALUE"})
 
-	for metric, assetMetric := range(result.GetMetrics()) {
-		for _, metrics := range(assetMetric.GetMetrics()) {
-			for _, value := range(metrics.GetValues()) {
+	for metric, assetMetric := range result.GetMetrics() {
+		for _, metrics := range assetMetric.GetMetrics() {
+			for _, value := range metrics.GetValues() {
 				timestamp := time.Unix(value.GetTimestamp(), 0).Local().String()
 				r = append(r, []string{timestamp, metric, metrics.GetAssetId(), metrics.GetAggregation().String(), strconv.FormatInt(value.GetValue(), 10)})
 			}
@@ -728,7 +768,7 @@ func FromMetricsList(result *grpc_monitoring_go.MetricsList) *ResultTable {
 	r := [][]string{}
 	r = append(r, []string{"METRIC"})
 
-	for _, metric := range(result.GetMetrics()) {
+	for _, metric := range result.GetMetrics() {
 		r = append(r, []string{metric})
 	}
 
@@ -749,7 +789,7 @@ func FromAsset(result *grpc_public_api_go.Asset) *ResultTable {
 	r = append(r, []string{""})
 	r = append(r, []string{"GEOLOCATION"})
 	location := "NA"
-	if result.Location != nil{
+	if result.Location != nil {
 		location = result.Location.Geolocation
 	}
 	r = append(r, []string{location})
@@ -836,26 +876,10 @@ func FromIAsset(result *grpc_inventory_go.Asset, labelLength int) *ResultTable {
 	return &ResultTable{r}
 }
 
-
 func FromAgentOpResponse(result *grpc_public_api_go.AgentOpResponse) *ResultTable {
 	r := make([][]string, 0)
 	r = append(r, []string{"OPERATION_ID", "TIMESTAMP", "STATUS", "INFO"})
 	r = append(r, []string{result.OperationId, time.Unix(result.Timestamp, 0).String(), result.Status, result.Info})
-	return &ResultTable{r}
-}
-
-// ---
-// Connection
-// ---
-
-func FromConnectionInstanceListResult(result *grpc_application_network_go.ConnectionInstanceList) *ResultTable {
-	r := make([][]string, 0)
-	r = append(r, []string{"SOURCE_INSTANCE_ID","SOURCE_INSTANCE_NAME", "OUTBOUND", "TARGET_INSTANCE_ID", "TARGET_INSTANCE_NAME", "INBOUND"})
-	for _, connection := range result.Connections {
-		r = append(r, []string{connection.SourceInstanceId, connection.SourceInstanceName, connection.OutboundName, connection.TargetInstanceId,
-			connection.TargetInstanceName, connection.InboundName})
-	}
-
 	return &ResultTable{r}
 }
 
