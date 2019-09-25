@@ -57,7 +57,7 @@ func AsTable(result interface{}, labelLength int) *ResultTable {
 	case *grpc_public_api_go.AppInstanceList:
 		return FromAppInstanceList(result.(*grpc_public_api_go.AppInstanceList), labelLength)
 	case *grpc_public_api_go.AppInstance:
-		return FromAppInstance(result.(*grpc_public_api_go.AppInstance))
+		return FromAppInstance(result.(*grpc_public_api_go.AppInstance), labelLength)
 	case *grpc_application_go.InstanceParameterList:
 		return FromInstanceParameterList(result.(*grpc_application_go.InstanceParameterList))
 	case *grpc_application_manager_go.DeploymentResponse:
@@ -311,13 +311,18 @@ func FromAppInstanceList(result *grpc_public_api_go.AppInstanceList, labelLength
 	return &ResultTable{r}
 }
 
-func FromAppInstance(result *grpc_public_api_go.AppInstance) *ResultTable {
+func FromAppInstance(result *grpc_public_api_go.AppInstance, labelLength int) *ResultTable {
 	r := make([][]string, 0)
+
+	r = append(r, []string{"NAME", "LABELS"})
+	r = append(r, []string{result.Name, TransformLabels(result.Labels, labelLength)})
+	r = append(r, []string{""})
+
 	if result.StatusName == grpc_application_go.ApplicationStatus_DEPLOYMENT_ERROR.String() {
 		r = append(r, []string{"STATUS", "INFO"})
 		r = append(r, []string{result.StatusName, result.Info})
 	} else {
-		r = append(r, []string{"NAME", "REPLICAS", "STATUS", "ENDPOINTS"})
+		r = append(r, []string{"SERVICE_NAME", "REPLICAS", "STATUS", "ENDPOINTS"})
 		for _, g := range result.Groups {
 			groupReplicas := "NA"
 			if g.Specs != nil {
