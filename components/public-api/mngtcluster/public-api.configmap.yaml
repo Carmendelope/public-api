@@ -46,6 +46,8 @@ data:
        "/public_api.ApplicationNetwork/AddConnection": {"should":["ORG", "APPS"]},
        "/public_api.ApplicationNetwork/RemoveConnection": {"should":["ORG", "APPS"]},
        "/public_api.ApplicationNetwork/ListConnections": {"should":["ORG", "APPS"]},
+       "/public_api.ApplicationNetwork/ListAvailableInstanceInbounds": {"should":["ORG", "APPS"]},
+       "/public_api.ApplicationNetwork/ListAvailableInstanceOutbounds": {"should":["ORG", "APPS"]},
        "/public_api.UnifiedLogging/Search":{"should":["ORG", "APPS"]},
        "/public_api.Devices/AddDeviceGroup":{"should":["ORG", "DEVMNGR"]},
        "/public_api.Devices/UpdateDeviceGroup":{"should":["ORG", "DEVMNGR"]},
