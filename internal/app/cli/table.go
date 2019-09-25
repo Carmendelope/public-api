@@ -57,7 +57,7 @@ func AsTable(result interface{}, labelLength int) *ResultTable {
 	case *grpc_public_api_go.AppInstanceList:
 		return FromAppInstanceList(result.(*grpc_public_api_go.AppInstanceList), labelLength)
 	case *grpc_public_api_go.AppInstance:
-		return FromAppInstance(result.(*grpc_public_api_go.AppInstance))
+		return FromAppInstance(result.(*grpc_public_api_go.AppInstance), labelLength)
 	case *grpc_application_go.InstanceParameterList:
 		return FromInstanceParameterList(result.(*grpc_application_go.InstanceParameterList))
 	case *grpc_application_manager_go.DeploymentResponse:
@@ -311,13 +311,18 @@ func FromAppInstanceList(result *grpc_public_api_go.AppInstanceList, labelLength
 	return &ResultTable{r}
 }
 
-func FromAppInstance(result *grpc_public_api_go.AppInstance) *ResultTable {
+func FromAppInstance(result *grpc_public_api_go.AppInstance, labelLength int) *ResultTable {
 	r := make([][]string, 0)
+
+	r = append(r, []string{"NAME", "LABELS"})
+	r = append(r, []string{result.Name, TransformLabels(result.Labels, labelLength)})
+	r = append(r, []string{""})
+
 	if result.StatusName == grpc_application_go.ApplicationStatus_DEPLOYMENT_ERROR.String() {
 		r = append(r, []string{"STATUS", "INFO"})
 		r = append(r, []string{result.StatusName, result.Info})
 	} else {
-		r = append(r, []string{"NAME", "REPLICAS", "STATUS", "ENDPOINTS"})
+		r = append(r, []string{"SERVICE_NAME", "REPLICAS", "STATUS", "ENDPOINTS"})
 		for _, g := range result.Groups {
 			groupReplicas := "NA"
 			if g.Specs != nil {
@@ -330,6 +335,29 @@ func FromAppInstance(result *grpc_public_api_go.AppInstance) *ResultTable {
 			r = append(r, []string{fmt.Sprintf("[Group] %s", g.Name), groupReplicas, g.StatusName, strings.Join(g.GlobalFqdn, ", ")})
 			for _, s := range g.ServiceInstances {
 				r = append(r, []string{s.Name, strconv.Itoa(int(s.Specs.Replicas)), s.StatusName, strings.Join(s.Endpoints, ", ")})
+			}
+		}
+		r = append(r, []string{"", "", "", ""})
+		if (result.OutboundConnections != nil && len(result.OutboundConnections) > 0) ||
+			(result.InboundConnections != nil && len(result.InboundConnections) > 0) {
+			r = append(r, []string{"SOURCE", "OUTBOUND", "TARGET", "INBOUND", "REQUIRED"})
+			if result.OutboundConnections != nil && len(result.OutboundConnections) > 0 {
+				for _, out := range result.OutboundConnections {
+					required := "FALSE"
+					if out.OutboundRequired {
+						required = "TRUE"
+					}
+					r = append(r, []string{out.SourceInstanceName, out.OutboundName, out.TargetInstanceName, out.InboundName, required})
+				}
+			}
+			if result.InboundConnections != nil && len(result.InboundConnections) > 0 {
+				for _, in := range result.InboundConnections {
+					required := "FALSE"
+					if in.OutboundRequired {
+						required = "TRUE"
+					}
+					r = append(r, []string{in.SourceInstanceName, in.OutboundName, in.TargetInstanceName, in.InboundName, required})
+				}
 			}
 		}
 	}
