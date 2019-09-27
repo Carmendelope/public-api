@@ -21,7 +21,7 @@ func NewManager(client grpc_application_manager_go.ApplicationNetworkClient) Man
 	return Manager{appNetClient: client}
 }
 
-func translateOpResponse(appNetResponse *grpc_common_go.OpResponse) *grpc_public_api_go.OpResponse {
+func (m *Manager) translateOpResponse(appNetResponse *grpc_common_go.OpResponse) *grpc_public_api_go.OpResponse {
 	return &grpc_public_api_go.OpResponse{
 		OrganizationId: appNetResponse.OrganizationId,
 		RequestId:      appNetResponse.RequestId,
@@ -41,7 +41,7 @@ func (m *Manager) AddConnection(connRequest *grpc_application_network_go.AddConn
 	if err != nil {
 		return nil, err
 	}
-	return translateOpResponse(appNetResponse), nil
+	return m.translateOpResponse(appNetResponse), nil
 }
 
 // RemoveConnection removes a connection
@@ -53,7 +53,7 @@ func (m *Manager) RemoveConnection(connRequest *grpc_application_network_go.Remo
 	if err != nil {
 		return nil, err
 	}
-	return translateOpResponse(appNetResponse), nil
+	return m.translateOpResponse(appNetResponse), nil
 }
 
 // ListConnections retrieves a list all the established connections of an organization
