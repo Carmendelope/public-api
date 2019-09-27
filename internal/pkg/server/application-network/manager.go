@@ -9,7 +9,7 @@ import (
 	"github.com/nalej/grpc-application-network-go"
 	"github.com/nalej/grpc-common-go"
 	"github.com/nalej/grpc-organization-go"
-	grpc_public_api_go "github.com/nalej/grpc-public-api-go"
+	"github.com/nalej/grpc-public-api-go"
 	"github.com/nalej/public-api/internal/pkg/server/common"
 )
 
