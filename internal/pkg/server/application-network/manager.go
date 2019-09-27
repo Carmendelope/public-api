@@ -7,9 +7,9 @@ package application_network
 import (
 	"github.com/nalej/grpc-application-manager-go"
 	"github.com/nalej/grpc-application-network-go"
-	"github.com/nalej/grpc-common-go"
 	"github.com/nalej/grpc-organization-go"
 	"github.com/nalej/grpc-public-api-go"
+	"github.com/nalej/public-api/internal/pkg/entities"
 	"github.com/nalej/public-api/internal/pkg/server/common"
 )
 
@@ -21,17 +21,6 @@ func NewManager(client grpc_application_manager_go.ApplicationNetworkClient) Man
 	return Manager{appNetClient: client}
 }
 
-func (m *Manager) translateOpResponse(appNetResponse *grpc_common_go.OpResponse) *grpc_public_api_go.OpResponse {
-	return &grpc_public_api_go.OpResponse{
-		OrganizationId: appNetResponse.OrganizationId,
-		RequestId:      appNetResponse.RequestId,
-		Timestamp:      appNetResponse.Timestamp,
-		Status:         appNetResponse.Status,
-		StatusName:     appNetResponse.Status.String(),
-		Info:           appNetResponse.Info,
-	}
-}
-
 // AddConnection adds a new connection between one outbound and one inbound
 func (m *Manager) AddConnection(connRequest *grpc_application_network_go.AddConnectionRequest) (*grpc_public_api_go.OpResponse, error) {
 	ctx, cancel := common.GetContext()
@@ -41,7 +30,7 @@ func (m *Manager) AddConnection(connRequest *grpc_application_network_go.AddConn
 	if err != nil {
 		return nil, err
 	}
-	return m.translateOpResponse(appNetResponse), nil
+	return entities.ToPublicAPIOpResponse(appNetResponse), nil
 }
 
 // RemoveConnection removes a connection
@@ -53,7 +42,7 @@ func (m *Manager) RemoveConnection(connRequest *grpc_application_network_go.Remo
 	if err != nil {
 		return nil, err
 	}
-	return m.translateOpResponse(appNetResponse), nil
+	return entities.ToPublicAPIOpResponse(appNetResponse), nil
 }
 
 // ListConnections retrieves a list all the established connections of an organization
