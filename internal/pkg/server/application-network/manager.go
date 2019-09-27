@@ -26,7 +26,7 @@ func translateOpResponse(appNetResponse *grpc_common_go.OpResponse) *grpc_public
 		OrganizationId: appNetResponse.OrganizationId,
 		RequestId:      appNetResponse.RequestId,
 		Timestamp:      appNetResponse.Timestamp,
-		Status:         grpc_public_api_go.OpStatus(grpc_public_api_go.OpStatus_value[appNetResponse.Status.String()]),
+		Status:         appNetResponse.Status,
 		StatusName:     appNetResponse.Status.String(),
 		Info:           appNetResponse.Info,
 	}
