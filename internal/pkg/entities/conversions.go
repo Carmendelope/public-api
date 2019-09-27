@@ -7,6 +7,7 @@ package entities
 import (
 	"github.com/nalej/grpc-application-go"
 	"github.com/nalej/grpc-application-manager-go"
+	grpc_common_go "github.com/nalej/grpc-common-go"
 	"github.com/nalej/grpc-device-manager-go"
 	"github.com/nalej/grpc-infrastructure-go"
 	"github.com/nalej/grpc-inventory-go"
@@ -18,13 +19,13 @@ import (
 func ToInfraClusterUpdate(update grpc_public_api_go.UpdateClusterRequest) *grpc_infrastructure_go.UpdateClusterRequest {
 
 	result := &grpc_infrastructure_go.UpdateClusterRequest{
-		OrganizationId:    update.OrganizationId,
-		ClusterId:         update.ClusterId,
-		UpdateName:        update.Name != "",
-		Name:              update.Name,
-		AddLabels: update.AddLabels,
-		RemoveLabels: update.RemoveLabels,
-		Labels:            update.Labels,
+		OrganizationId: update.OrganizationId,
+		ClusterId:      update.ClusterId,
+		UpdateName:     update.Name != "",
+		Name:           update.Name,
+		AddLabels:      update.AddLabels,
+		RemoveLabels:   update.RemoveLabels,
+		Labels:         update.Labels,
 	}
 
 	return result
@@ -41,7 +42,7 @@ func ToPublicAPICluster(source *grpc_infrastructure_go.Cluster, totalNodes int64
 		Labels:             source.Labels,
 		TotalNodes:         totalNodes,
 		RunningNodes:       runningNodes,
-		Cordon:				source.Cordon,
+		Cordon:             source.Cordon,
 	}
 }
 
@@ -96,24 +97,22 @@ func ToPublicAPIStorage(source []*grpc_application_go.Storage) []*grpc_public_ap
 	return result
 }
 
-
-func hideCredentials (credentials * grpc_application_go.ImageCredentials) *grpc_application_go.ImageCredentials {
+func hideCredentials(credentials *grpc_application_go.ImageCredentials) *grpc_application_go.ImageCredentials {
 
 	return &grpc_application_go.ImageCredentials{
-		Username: credentials.Username,
-		Password: "redacted",
-		Email: credentials.Email,
-		DockerRepository:credentials.DockerRepository,
+		Username:         credentials.Username,
+		Password:         "redacted",
+		Email:            credentials.Email,
+		DockerRepository: credentials.DockerRepository,
 	}
 }
 
 func ToPublicAPIServiceInstances(source []*grpc_application_go.ServiceInstance) []*grpc_public_api_go.ServiceInstance {
 	result := make([]*grpc_public_api_go.ServiceInstance, 0)
 
-
 	for _, si := range source {
-		endpoints := make([]string,len(si.Endpoints))
-		for i,e := range si.Endpoints {
+		endpoints := make([]string, len(si.Endpoints))
+		for i, e := range si.Endpoints {
 			endpoints[i] = e.Fqdn
 		}
 		credentials := si.Credentials
@@ -151,9 +150,9 @@ func ToPublicAPIServiceInstances(source []*grpc_application_go.ServiceInstance) 
 	return result
 }
 
-func ToPublicAPIInstanceMetadata (metadata * grpc_application_go.InstanceMetadata) *grpc_public_api_go.InstanceMetadata {
+func ToPublicAPIInstanceMetadata(metadata *grpc_application_go.InstanceMetadata) *grpc_public_api_go.InstanceMetadata {
 
-	if metadata == nil{
+	if metadata == nil {
 		return nil
 	}
 
@@ -162,17 +161,17 @@ func ToPublicAPIInstanceMetadata (metadata * grpc_application_go.InstanceMetadat
 		status[key] = value.String()
 	}
 	instance := &grpc_public_api_go.InstanceMetadata{
-		OrganizationId:		metadata.OrganizationId,
-		AppDescriptorId:	metadata.AppDescriptorId,
-		AppInstanceId: 		metadata.AppInstanceId,
-		MonitoredInstanceId:metadata.MonitoredInstanceId,
-		TypeName:           metadata.Type.String(),
-		InstancesId:        metadata.InstancesId,
-		DesiredReplicas:    metadata.DesiredReplicas,
-		AvailableReplicas:  metadata.AvailableReplicas,
-		UnavailableReplicas:metadata.UnavailableReplicas,
-		StatusName:         status,
-		Info:               metadata.Info,
+		OrganizationId:      metadata.OrganizationId,
+		AppDescriptorId:     metadata.AppDescriptorId,
+		AppInstanceId:       metadata.AppInstanceId,
+		MonitoredInstanceId: metadata.MonitoredInstanceId,
+		TypeName:            metadata.Type.String(),
+		InstancesId:         metadata.InstancesId,
+		DesiredReplicas:     metadata.DesiredReplicas,
+		AvailableReplicas:   metadata.AvailableReplicas,
+		UnavailableReplicas: metadata.UnavailableReplicas,
+		StatusName:          status,
+		Info:                metadata.Info,
 	}
 	return instance
 }
@@ -185,10 +184,10 @@ func ToPublicAPIGroupInstances(source []*grpc_application_go.ServiceGroupInstanc
 		var spec *grpc_public_api_go.ServiceGroupDeploymentSpecs
 		if sgi.Specs != nil {
 			spec = &grpc_public_api_go.ServiceGroupDeploymentSpecs{
-				Replicas:         sgi.Specs.Replicas,
+				Replicas:            sgi.Specs.Replicas,
 				MultiClusterReplica: sgi.Specs.MultiClusterReplica,
 				DeploymentSelectors: sgi.Specs.DeploymentSelectors,
-				}
+			}
 		}
 
 		toAdd := &grpc_public_api_go.ServiceGroupInstance{
@@ -216,18 +215,18 @@ func ToPublicAPISecurityRules(source []*grpc_application_go.SecurityRule) []*grp
 	result := make([]*grpc_public_api_go.SecurityRule, 0)
 	for _, sr := range source {
 		toAdd := &grpc_public_api_go.SecurityRule{
-			OrganizationId:  sr.OrganizationId,
-			AppDescriptorId: sr.AppDescriptorId,
-			RuleId:          sr.RuleId,
-			Name:            sr.Name,
+			OrganizationId:         sr.OrganizationId,
+			AppDescriptorId:        sr.AppDescriptorId,
+			RuleId:                 sr.RuleId,
+			Name:                   sr.Name,
 			TargetServiceGroupName: sr.TargetServiceGroupName,
-			TargetServiceName: sr.TargetServiceName,
-			TargetPort:      sr.TargetPort,
-			AccessName:      sr.Access.String(),
-			AuthServiceGroupName: sr.AuthServiceGroupName,
-			AuthServices:    sr.AuthServices,
-			DeviceGroupNames:sr.DeviceGroupNames,
-			DeviceGroupIds:  sr.DeviceGroupIds,
+			TargetServiceName:      sr.TargetServiceName,
+			TargetPort:             sr.TargetPort,
+			AccessName:             sr.Access.String(),
+			AuthServiceGroupName:   sr.AuthServiceGroupName,
+			AuthServices:           sr.AuthServices,
+			DeviceGroupNames:       sr.DeviceGroupNames,
+			DeviceGroupIds:         sr.DeviceGroupIds,
 		}
 		result = append(result, toAdd)
 	}
@@ -236,83 +235,83 @@ func ToPublicAPISecurityRules(source []*grpc_application_go.SecurityRule) []*grp
 
 func ToPublicAPIAppInstance(source *grpc_application_manager_go.AppInstance) *grpc_public_api_go.AppInstance {
 
-	metadata := make ([]*grpc_public_api_go.InstanceMetadata, 0)
+	metadata := make([]*grpc_public_api_go.InstanceMetadata, 0)
 	for _, met := range source.Metadata {
 		metadata = append(metadata, ToPublicAPIInstanceMetadata(met))
 	}
 
 	return &grpc_public_api_go.AppInstance{
-		OrganizationId:       	source.OrganizationId,
-		AppDescriptorId:      	source.AppDescriptorId,
-		AppInstanceId:        	source.AppInstanceId,
-		Name:                 	source.Name,
-		ConfigurationOptions: 	source.ConfigurationOptions,
-		EnvironmentVariables: 	source.EnvironmentVariables,
-		Labels:               	source.Labels,
-		Rules:                	ToPublicAPISecurityRules(source.Rules),
-		Groups:               	ToPublicAPIGroupInstances(source.Groups),
-		StatusName:           	source.Status.String(),
-		Metadata:			  	metadata,
-		Info: 				  	source.Info,
-		InboundNetInterfaces: 	source.InboundNetInterfaces,
-		OutboundNetInterfaces:	source.OutboundNetInterfaces,
-		InboundConnections: 	source.InboundConnections,
-		OutboundConnections: 	source.OutboundConnections,
+		OrganizationId:        source.OrganizationId,
+		AppDescriptorId:       source.AppDescriptorId,
+		AppInstanceId:         source.AppInstanceId,
+		Name:                  source.Name,
+		ConfigurationOptions:  source.ConfigurationOptions,
+		EnvironmentVariables:  source.EnvironmentVariables,
+		Labels:                source.Labels,
+		Rules:                 ToPublicAPISecurityRules(source.Rules),
+		Groups:                ToPublicAPIGroupInstances(source.Groups),
+		StatusName:            source.Status.String(),
+		Metadata:              metadata,
+		Info:                  source.Info,
+		InboundNetInterfaces:  source.InboundNetInterfaces,
+		OutboundNetInterfaces: source.OutboundNetInterfaces,
+		InboundConnections:    source.InboundConnections,
+		OutboundConnections:   source.OutboundConnections,
 	}
 }
 
-func ToPublicAPIAssetInfo (assetInfo *grpc_inventory_go.AssetInfo) *grpc_public_api_go.AssetInfo {
+func ToPublicAPIAssetInfo(assetInfo *grpc_inventory_go.AssetInfo) *grpc_public_api_go.AssetInfo {
 	if assetInfo == nil {
 		return nil
 	}
 	return &grpc_public_api_go.AssetInfo{
-		Hardware: 	assetInfo.Hardware,
-		Storage: 	assetInfo.Storage,
-		Os:			ToPublicAPIAssetOS(assetInfo.Os),
+		Hardware: assetInfo.Hardware,
+		Storage:  assetInfo.Storage,
+		Os:       ToPublicAPIAssetOS(assetInfo.Os),
 	}
 }
 
-func ToPublicAPIDevice(device * grpc_device_manager_go.Device) * grpc_public_api_go.Device  {
+func ToPublicAPIDevice(device *grpc_device_manager_go.Device) *grpc_public_api_go.Device {
 	return &grpc_public_api_go.Device{
-		OrganizationId:       device.OrganizationId,
-		DeviceGroupId:        device.DeviceGroupId,
-		DeviceId:             device.DeviceId,
-		RegisterSince:        device.RegisterSince,
-		Labels:               device.Labels,
-		Enabled:              device.Enabled,
-		DeviceStatusName:     device.DeviceStatus.String(),
-		Location:             device.Location,
-		AssetInfo:            ToPublicAPIAssetInfo(device.AssetInfo),
+		OrganizationId:   device.OrganizationId,
+		DeviceGroupId:    device.DeviceGroupId,
+		DeviceId:         device.DeviceId,
+		RegisterSince:    device.RegisterSince,
+		Labels:           device.Labels,
+		Enabled:          device.Enabled,
+		DeviceStatusName: device.DeviceStatus.String(),
+		Location:         device.Location,
+		AssetInfo:        ToPublicAPIAssetInfo(device.AssetInfo),
 	}
 }
 
-func InventoryDeviceToPublicAPIDevice(device * grpc_inventory_manager_go.Device) * grpc_public_api_go.Device  {
+func InventoryDeviceToPublicAPIDevice(device *grpc_inventory_manager_go.Device) *grpc_public_api_go.Device {
 	return &grpc_public_api_go.Device{
-		OrganizationId:       device.OrganizationId,
-		DeviceGroupId:        device.DeviceGroupId,
-		DeviceId:             device.DeviceId,
-		AssetDeviceId:        device.AssetDeviceId,
-		RegisterSince:        device.RegisterSince,
-		Labels:               device.Labels,
-		Enabled:              device.Enabled,
-		DeviceStatusName:     device.DeviceStatus.String(),
-		Location:             device.Location,
-		AssetInfo:            ToPublicAPIAssetInfo(device.AssetInfo),
+		OrganizationId:   device.OrganizationId,
+		DeviceGroupId:    device.DeviceGroupId,
+		DeviceId:         device.DeviceId,
+		AssetDeviceId:    device.AssetDeviceId,
+		RegisterSince:    device.RegisterSince,
+		Labels:           device.Labels,
+		Enabled:          device.Enabled,
+		DeviceStatusName: device.DeviceStatus.String(),
+		Location:         device.Location,
+		AssetInfo:        ToPublicAPIAssetInfo(device.AssetInfo),
 	}
 }
 
-func ToPublicAPIDeviceList(list * grpc_device_manager_go.DeviceList) * grpc_public_api_go.DeviceList  {
+func ToPublicAPIDeviceList(list *grpc_device_manager_go.DeviceList) *grpc_public_api_go.DeviceList {
 	result := make([]*grpc_public_api_go.Device, 0)
 	for _, device := range list.Devices {
 		toAdd := ToPublicAPIDevice(device)
 		result = append(result, toAdd)
 	}
-	return & grpc_public_api_go.DeviceList {
+	return &grpc_public_api_go.DeviceList{
 		Devices: result,
 	}
 }
 
-func ToPublicAPIDeviceArray(devices [] * grpc_inventory_manager_go.Device) [] * grpc_public_api_go.Device  {
+func ToPublicAPIDeviceArray(devices []*grpc_inventory_manager_go.Device) []*grpc_public_api_go.Device {
 	result := make([]*grpc_public_api_go.Device, 0)
 	for _, device := range devices {
 		toAdd := InventoryDeviceToPublicAPIDevice(device)
@@ -321,31 +320,31 @@ func ToPublicAPIDeviceArray(devices [] * grpc_inventory_manager_go.Device) [] * 
 	return result
 }
 
-func ToPublicAPIAppParam (param *grpc_application_go.AppParameter) * grpc_public_api_go.AppParameter {
+func ToPublicAPIAppParam(param *grpc_application_go.AppParameter) *grpc_public_api_go.AppParameter {
 	if param == nil {
 		return nil
 	}
 	return &grpc_public_api_go.AppParameter{
-		Name: 			param.Name,
-		Description:	param.Description,
-		Path: 			param.Path,
-		Type: 			param.Type.String(),
-		DefaultValue: 	param.DefaultValue,
-		EnumValues: 	param.EnumValues,
-		Category:    	param.Category.String(),
+		Name:         param.Name,
+		Description:  param.Description,
+		Path:         param.Path,
+		Type:         param.Type.String(),
+		DefaultValue: param.DefaultValue,
+		EnumValues:   param.EnumValues,
+		Category:     param.Category.String(),
 	}
 }
 
-func ToPublicAPIAssetOS(os * grpc_inventory_go.OperatingSystemInfo) * grpc_public_api_go.OperatingSystemInfo{
+func ToPublicAPIAssetOS(os *grpc_inventory_go.OperatingSystemInfo) *grpc_public_api_go.OperatingSystemInfo {
 	if os == nil {
 		return nil
 	}
 	return &grpc_public_api_go.OperatingSystemInfo{
-		Name:                 os.Name,
-		Version:              os.Version,
-		Class:                os.Class,
-		ClassName:            os.Class.String(),
-		Architecture:         os.Architecture,
+		Name:         os.Name,
+		Version:      os.Version,
+		Class:        os.Class,
+		ClassName:    os.Class.String(),
+		Architecture: os.Architecture,
 	}
 }
 func ToPublicApiAgentOpSummary(opSummary *grpc_inventory_go.AgentOpSummary) *grpc_public_api_go.AgentOpSummary {
@@ -353,41 +352,41 @@ func ToPublicApiAgentOpSummary(opSummary *grpc_inventory_go.AgentOpSummary) *grp
 		return nil
 	}
 	return &grpc_public_api_go.AgentOpSummary{
-		OperationId:	opSummary.OperationId,
-		Timestamp: 		opSummary.Timestamp,
-		Status: 		opSummary.Status,
-		OpStatusName: 	opSummary.Status.String(),
-		Info: 			opSummary.Info,
+		OperationId:  opSummary.OperationId,
+		Timestamp:    opSummary.Timestamp,
+		Status:       opSummary.Status,
+		OpStatusName: opSummary.Status.String(),
+		Info:         opSummary.Info,
 	}
 }
 
-func ToPublicAPIAsset(asset *grpc_inventory_manager_go.Asset) * grpc_public_api_go.Asset{
+func ToPublicAPIAsset(asset *grpc_inventory_manager_go.Asset) *grpc_public_api_go.Asset {
 	if asset == nil {
 		return nil
 	}
 	return &grpc_public_api_go.Asset{
-		OrganizationId:       asset.OrganizationId,
-		EdgeControllerId:     asset.EdgeControllerId,
-		AssetId:              asset.AssetId,
-		AgentId:              asset.AgentId,
-		Created:              asset.Created,
-		Labels:               asset.Labels,
-		Os:                   ToPublicAPIAssetOS(asset.Os),
-		Hardware:             asset.Hardware,
-		Storage:              asset.Storage,
-		EicNetIp:             asset.EicNetIp,
-		LastOpSummary:        ToPublicApiAgentOpSummary(asset.LastOpSummary),
-		LastAliveTimestamp:   asset.LastAliveTimestamp,
-		Status:               asset.Status,
-		StatusName:           asset.Status.String(),
-		Location:             asset.Location,
+		OrganizationId:     asset.OrganizationId,
+		EdgeControllerId:   asset.EdgeControllerId,
+		AssetId:            asset.AssetId,
+		AgentId:            asset.AgentId,
+		Created:            asset.Created,
+		Labels:             asset.Labels,
+		Os:                 ToPublicAPIAssetOS(asset.Os),
+		Hardware:           asset.Hardware,
+		Storage:            asset.Storage,
+		EicNetIp:           asset.EicNetIp,
+		LastOpSummary:      ToPublicApiAgentOpSummary(asset.LastOpSummary),
+		LastAliveTimestamp: asset.LastAliveTimestamp,
+		Status:             asset.Status,
+		StatusName:         asset.Status.String(),
+		Location:           asset.Location,
 	}
 }
 
-func ToPublicAPIAssetArray(assets [] * grpc_inventory_manager_go.Asset) [] * grpc_public_api_go.Asset  {
+func ToPublicAPIAssetArray(assets []*grpc_inventory_manager_go.Asset) []*grpc_public_api_go.Asset {
 	result := make([]*grpc_public_api_go.Asset, 0)
 	for _, asset := range assets {
-		if asset.Show{
+		if asset.Show {
 			toAdd := ToPublicAPIAsset(asset)
 			result = append(result, toAdd)
 		}
@@ -400,45 +399,45 @@ func ToPublicApiECOpSummary(opSummary *grpc_inventory_go.ECOpSummary) *grpc_publ
 		return nil
 	}
 	return &grpc_public_api_go.ECOpSummary{
-		OperationId:	opSummary.OperationId,
-		Timestamp: 		opSummary.Timestamp,
-		Status: 		opSummary.Status,
-		OpStatusName: 	opSummary.Status.String(),
-		Info: 			opSummary.Info,
+		OperationId:  opSummary.OperationId,
+		Timestamp:    opSummary.Timestamp,
+		Status:       opSummary.Status,
+		OpStatusName: opSummary.Status.String(),
+		Info:         opSummary.Info,
 	}
 }
 
-func ToPublicAPIController(controller *grpc_inventory_manager_go.EdgeController) *grpc_public_api_go.EdgeController{
+func ToPublicAPIController(controller *grpc_inventory_manager_go.EdgeController) *grpc_public_api_go.EdgeController {
 	return &grpc_public_api_go.EdgeController{
-		OrganizationId:       controller.OrganizationId,
-		EdgeControllerId:     controller.EdgeControllerId,
-		Created:              controller.Created,
-		Name:                 controller.Name,
-		Labels:               controller.Labels,
-		LastAliveTimestamp:   controller.LastAliveTimestamp,
-		Status:               controller.Status,
-		StatusName:           controller.Status.String(),
-		Location:             controller.Location,
-		LastOpResult:         ToPublicApiECOpSummary(controller.LastOpResult),
-		AssetInfo:            ToPublicAPIAssetInfo(controller.AssetInfo),
+		OrganizationId:     controller.OrganizationId,
+		EdgeControllerId:   controller.EdgeControllerId,
+		Created:            controller.Created,
+		Name:               controller.Name,
+		Labels:             controller.Labels,
+		LastAliveTimestamp: controller.LastAliveTimestamp,
+		Status:             controller.Status,
+		StatusName:         controller.Status.String(),
+		Location:           controller.Location,
+		LastOpResult:       ToPublicApiECOpSummary(controller.LastOpResult),
+		AssetInfo:          ToPublicAPIAssetInfo(controller.AssetInfo),
 	}
 }
 
-func ToPublicAPIECOPResponse(response *grpc_inventory_manager_go.EdgeControllerOpResponse) *grpc_public_api_go.ECOpResponse{
+func ToPublicAPIECOPResponse(response *grpc_inventory_manager_go.EdgeControllerOpResponse) *grpc_public_api_go.ECOpResponse {
 	return &grpc_public_api_go.ECOpResponse{
-		OrganizationId: response.OperationId,
+		OrganizationId:   response.OperationId,
 		EdgeControllerId: response.EdgeControllerId,
-		OperationId:response.OperationId,
-		Timestamp: response.Timestamp,
-		Status: response.Status.String(),
-		Info: response.Info,
+		OperationId:      response.OperationId,
+		Timestamp:        response.Timestamp,
+		Status:           response.Status.String(),
+		Info:             response.Info,
 	}
 }
 
-func ToPublicAPIControllerArray(controllers []*grpc_inventory_manager_go.EdgeController) [] *grpc_public_api_go.EdgeController{
+func ToPublicAPIControllerArray(controllers []*grpc_inventory_manager_go.EdgeController) []*grpc_public_api_go.EdgeController {
 	result := make([]*grpc_public_api_go.EdgeController, 0)
 	for _, controller := range controllers {
-		if controller.Show{
+		if controller.Show {
 			toAdd := ToPublicAPIController(controller)
 			result = append(result, toAdd)
 		}
@@ -452,12 +451,23 @@ func ToPublicAPIAgentOpRequest(response *grpc_inventory_manager_go.AgentOpRespon
 	}
 
 	return &grpc_public_api_go.AgentOpResponse{
-		OrganizationId: response.OperationId,
+		OrganizationId:   response.OperationId,
 		EdgeControllerId: response.EdgeControllerId,
-		AssetId: response.AssetId,
-		OperationId:response.OperationId,
-		Timestamp: response.Timestamp,
-		Status: response.Status.String(),
-		Info: response.Info,
+		AssetId:          response.AssetId,
+		OperationId:      response.OperationId,
+		Timestamp:        response.Timestamp,
+		Status:           response.Status.String(),
+		Info:             response.Info,
+	}
+}
+
+func ToPublicAPIOpResponse(appNetResponse *grpc_common_go.OpResponse) *grpc_public_api_go.OpResponse {
+	return &grpc_public_api_go.OpResponse{
+		OrganizationId: appNetResponse.OrganizationId,
+		RequestId:      appNetResponse.RequestId,
+		Timestamp:      appNetResponse.Timestamp,
+		Status:         appNetResponse.Status,
+		StatusName:     appNetResponse.Status.String(),
+		Info:           appNetResponse.Info,
 	}
 }

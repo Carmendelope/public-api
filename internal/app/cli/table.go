@@ -118,8 +118,8 @@ func AsTable(result interface{}, labelLength int) *ResultTable {
 		return FromAvailableOutboundList(result.(*grpc_application_manager_go.AvailableInstanceOutboundList))
 	case *grpc_application_network_go.ConnectionInstanceList:
 		return FromConnectionInstanceListResult(result.(*grpc_application_network_go.ConnectionInstanceList))
-	case *grpc_common_go.OpResponse:
-		return FomOpResponse(result.(*grpc_common_go.OpResponse))
+	case *grpc_public_api_go.OpResponse:
+		return FromOpResponse(result.(*grpc_public_api_go.OpResponse))
 	default:
 		log.Fatal().Str("type", fmt.Sprintf("%T", result)).Msg("unsupported")
 	}
@@ -903,9 +903,9 @@ func FromSuccess(result *grpc_common_go.Success) *ResultTable {
 	return &ResultTable{r}
 }
 
-func FomOpResponse(result *grpc_common_go.OpResponse) *ResultTable {
+func FromOpResponse(result *grpc_public_api_go.OpResponse) *ResultTable {
 	r := make([][]string, 0)
 	r = append(r, []string{"REQUEST_ID", "TIMESTAMP", "STATUS", "INFO"})
-	r = append(r, []string{result.RequestId, time.Unix(result.Timestamp, 0).String(), result.Status, result.Info})
+	r = append(r, []string{result.RequestId, time.Unix(result.Timestamp, 0).String(), result.StatusName, result.Info})
 	return &ResultTable{r}
 }

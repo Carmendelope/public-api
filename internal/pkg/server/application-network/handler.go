@@ -9,8 +9,8 @@ import (
 	"github.com/nalej/derrors"
 	"github.com/nalej/grpc-application-manager-go"
 	"github.com/nalej/grpc-application-network-go"
-	"github.com/nalej/grpc-common-go"
 	"github.com/nalej/grpc-organization-go"
+	grpc_public_api_go "github.com/nalej/grpc-public-api-go"
 	"github.com/nalej/grpc-utils/pkg/conversions"
 	"github.com/nalej/public-api/internal/pkg/authhelper"
 	"github.com/nalej/public-api/internal/pkg/entities"
@@ -27,7 +27,7 @@ func NewHandler(manager Manager) *Handler {
 }
 
 // AddConnection adds a new connection between one outbound and one inbound
-func (h *Handler) AddConnection(ctx context.Context, connRequest *grpc_application_network_go.AddConnectionRequest) (*grpc_common_go.OpResponse, error) {
+func (h *Handler) AddConnection(ctx context.Context, connRequest *grpc_application_network_go.AddConnectionRequest) (*grpc_public_api_go.OpResponse, error) {
 
 	rm, err := authhelper.GetRequestMetadata(ctx)
 	if err != nil {
@@ -45,7 +45,7 @@ func (h *Handler) AddConnection(ctx context.Context, connRequest *grpc_applicati
 }
 
 // RemoveConnection removes a connection
-func (h *Handler) RemoveConnection(ctx context.Context, request *grpc_application_network_go.RemoveConnectionRequest) (*grpc_common_go.OpResponse, error) {
+func (h *Handler) RemoveConnection(ctx context.Context, request *grpc_application_network_go.RemoveConnectionRequest) (*grpc_public_api_go.OpResponse, error) {
 	rm, err := authhelper.GetRequestMetadata(ctx)
 	if err != nil {
 		return nil, conversions.ToGRPCError(err)
