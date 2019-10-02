@@ -91,7 +91,7 @@ func (h *Handler) ListAvailableInstanceInbounds(ctx context.Context, organizatio
 		return nil, conversions.ToGRPCError(err)
 	}
 
-	return h.Manager.ListAvailableInboundConnections(organizationID)
+	return h.Manager.ListAvailableInstanceInbounds(organizationID)
 }
 
 // ListAvailableInstanceOutbounds retrieves a list of available outbounds of an organization
@@ -108,5 +108,5 @@ func (h *Handler) ListAvailableInstanceOutbounds(ctx context.Context, organizati
 		return nil, conversions.ToGRPCError(err)
 	}
 
-	return h.Manager.ListAvailableOutboundConnections(organizationID)
+	return h.Manager.ListAvailableInstanceOutbounds(organizationID)
 }

@@ -15,10 +15,14 @@ import (
 
 type Manager struct {
 	appNetClient grpc_application_manager_go.ApplicationNetworkClient
+	appClient    grpc_application_manager_go.ApplicationManagerClient
 }
 
-func NewManager(client grpc_application_manager_go.ApplicationNetworkClient) Manager {
-	return Manager{appNetClient: client}
+func NewManager(
+	applicationNetworkClient grpc_application_manager_go.ApplicationNetworkClient,
+	applicationClient grpc_application_manager_go.ApplicationManagerClient,
+) Manager {
+	return Manager{appNetClient: applicationNetworkClient, appClient: applicationClient}
 }
 
 // AddConnection adds a new connection between one outbound and one inbound
@@ -53,16 +57,16 @@ func (m *Manager) ListConnections(organizationID *grpc_organization_go.Organizat
 	return m.appNetClient.ListConnections(ctx, organizationID)
 }
 
-func (m *Manager) ListAvailableInboundConnections(organizationID *grpc_organization_go.OrganizationId) (*grpc_application_manager_go.AvailableInstanceInboundList, error) {
+func (m *Manager) ListAvailableInstanceInbounds(organizationID *grpc_organization_go.OrganizationId) (*grpc_application_manager_go.AvailableInstanceInboundList, error) {
 	ctx, cancel := common.GetContext()
 	defer cancel()
 
-	return m.appNetClient.ListAvailableInstanceInbounds(ctx, organizationID)
+	return m.appClient.ListAvailableInstanceInbounds(ctx, organizationID)
 }
 
-func (m *Manager) ListAvailableOutboundConnections(organizationID *grpc_organization_go.OrganizationId) (*grpc_application_manager_go.AvailableInstanceOutboundList, error) {
+func (m *Manager) ListAvailableInstanceOutbounds(organizationID *grpc_organization_go.OrganizationId) (*grpc_application_manager_go.AvailableInstanceOutboundList, error) {
 	ctx, cancel := common.GetContext()
 	defer cancel()
 
-	return m.appNetClient.ListAvailableInstanceOutbounds(ctx, organizationID)
+	return m.appClient.ListAvailableInstanceOutbounds(ctx, organizationID)
 }

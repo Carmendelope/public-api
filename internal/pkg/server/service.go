@@ -270,7 +270,7 @@ func (s *Service) LaunchGRPC(authConfig *interceptor.AuthorizationConfig) error 
 	agentManager := agent.NewManager(clients.agentClient)
 	agentHandler := agent.NewHandler(agentManager)
 
-	appNetManager := application_network.NewManager(clients.appNetClient)
+	appNetManager := application_network.NewManager(clients.appNetClient, clients.appClient)
 	appNetHandler := application_network.NewHandler(appNetManager)
 
 	grpcServer := grpc.NewServer(interceptor.WithServerAuthxInterceptor(
