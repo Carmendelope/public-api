@@ -80,7 +80,7 @@
 
 [[constraint]]
     name="github.com/nalej/grpc-public-api-go"
-    version="=v0.0.105"
+    version="=v0.0.108"
 
 [[constraint]]
     name="github.com/nalej/grpc-login-api-go"
