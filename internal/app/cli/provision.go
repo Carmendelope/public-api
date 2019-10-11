@@ -127,11 +127,14 @@ func (p *Provision) checkCall(client grpc_public_api_go.ProvisionClient, request
     cancel()
     if errCheck != nil {
         p.PrintResultOrError(nil, errCheck, "error checking cluster provision")
+        log.Info().Msgf("%+v\n",resultCheck)
         return true
     }
     p.printProgress(resultCheck)
     if resultCheck.State == grpc_provisioner_go.ProvisionProgress_FINISHED ||
         resultCheck.State == grpc_provisioner_go.ProvisionProgress_ERROR {
+        // print the final message
+        log.Info().Msgf("%+v\n",resultCheck)
         return true
     }
     // do not stop
