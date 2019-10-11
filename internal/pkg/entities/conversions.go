@@ -42,8 +42,6 @@ func ToPublicAPICluster(source *grpc_infrastructure_go.Cluster, totalNodes int64
 		Labels:             source.Labels,
 		TotalNodes:         totalNodes,
 		RunningNodes:       runningNodes,
-		// TODO to add when the connectivity manager is ready
-		// Status:
 	}
 }
 
@@ -216,18 +214,20 @@ func ToPublicAPISecurityRules(source []*grpc_application_go.SecurityRule) []*grp
 	result := make([]*grpc_public_api_go.SecurityRule, 0)
 	for _, sr := range source {
 		toAdd := &grpc_public_api_go.SecurityRule{
-			OrganizationId:         sr.OrganizationId,
-			AppDescriptorId:        sr.AppDescriptorId,
-			RuleId:                 sr.RuleId,
-			Name:                   sr.Name,
-			TargetServiceGroupName: sr.TargetServiceGroupName,
-			TargetServiceName:      sr.TargetServiceName,
-			TargetPort:             sr.TargetPort,
-			AccessName:             sr.Access.String(),
-			AuthServiceGroupName:   sr.AuthServiceGroupName,
-			AuthServices:           sr.AuthServices,
-			DeviceGroupNames:       sr.DeviceGroupNames,
-			DeviceGroupIds:         sr.DeviceGroupIds,
+			OrganizationId:           sr.OrganizationId,
+			AppDescriptorId:          sr.AppDescriptorId,
+			RuleId:                   sr.RuleId,
+			Name:                     sr.Name,
+			TargetServiceGroupName:   sr.TargetServiceGroupName,
+			TargetServiceName:        sr.TargetServiceName,
+			TargetPort:               sr.TargetPort,
+			AccessName:               sr.Access.String(),
+			AuthServiceGroupName:     sr.AuthServiceGroupName,
+			AuthServices:             sr.AuthServices,
+			DeviceGroupIds:           sr.DeviceGroupIds,
+			DeviceGroupNames:         sr.DeviceGroupNames,
+			InboundNetInterfaceName:  sr.InboundNetInterface,
+			OutboundNetInterfaceName: sr.OutboundNetInterface,
 		}
 		result = append(result, toAdd)
 	}
