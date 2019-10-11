@@ -88,6 +88,29 @@ func (p *Provision) Cluster(organizationId string, clusterName string, azureCred
 }
 
 func (p *Provision) CheckProgress(requestId string) {
+
+    // force initial check
+    stop := p.checkCall(requestId)
+    if stop {
+        return
+    }
+
+    // Check periodically
+    ticker := time.NewTicker(CliProvisionCheckSleepTime)
+
+    for {
+        select {
+        case _ = <- ticker.C:
+            stop := p.checkCall(requestId)
+            if stop {
+                return
+            }
+        }
+    }
+}
+
+func (p *Provision) checkCall(requestId string) bool{
+    // TODO revisit this method to only load credentials if and only if the authentication token has expired
     err := p.LoadCredentials()
     if err != nil {
         log.Fatal().Str("trace", err.DebugReport()).Msg("cannot load credentials, try login first")
@@ -99,29 +122,8 @@ func (p *Provision) CheckProgress(requestId string) {
     }
     defer c.Close()
 
+    client := grpc_public_api_go.NewProvisionClient(c)
 
-    provClient := grpc_public_api_go.NewProvisionClient(c)
-    // force initial check
-    stop := p.checkCall(provClient, requestId)
-    if stop {
-        return
-    }
-
-    // Check periodically
-    ticker := time.NewTicker(CliProvisionCheckSleepTime)
-
-    for {
-        select {
-        case _ = <- ticker.C:
-            stop := p.checkCall(provClient, requestId)
-            if stop {
-                return
-            }
-        }
-    }
-}
-
-func (p *Provision) checkCall(client grpc_public_api_go.ProvisionClient, requestId string) bool{
     ctx,cancel := p.GetContext()
     resultCheck, errCheck := client.CheckProgress(ctx, &grpc_common_go.RequestId{RequestId: requestId})
     cancel()
