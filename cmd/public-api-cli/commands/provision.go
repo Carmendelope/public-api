@@ -18,7 +18,6 @@ var (
 	provisionAzureDnsZoneName string
 	provisionAzureResourceGroup string
 	provisionClusterType string
-	provisionIsManagementCluster bool
 	provisionIsProductionCluster bool
 	provisionKubernetesVersion string
 	provisionNodeType string
@@ -60,7 +59,6 @@ func init() {
 	provisionClusterCmd.PersistentFlags().StringVar(&provisionAzureDnsZoneName, "azureDnsZoneName", "", "DNS zone for azure")
 	provisionClusterCmd.PersistentFlags().StringVar(&provisionAzureResourceGroup, "azureResourceGroup", "", "Azure resource group")
 	provisionClusterCmd.PersistentFlags().StringVar(&provisionClusterType, "clusterType", "kubernetes", "Cluster type")
-	provisionClusterCmd.PersistentFlags().BoolVar(&provisionIsManagementCluster, "isManagementCluster", false, "Indicate the provisioning of a management cluster")
 	provisionClusterCmd.PersistentFlags().BoolVar(&provisionIsProductionCluster, "isProductionCluster", false, "Indicate the provisioning of a cluster in a production environment")
 	provisionClusterCmd.PersistentFlags().StringVar(&provisionKubernetesVersion, "kubernetesVersion", "", "Kubernetes version to be used")
 	provisionClusterCmd.PersistentFlags().StringVar(&provisionNodeType, "nodeType", "", "Type of node to use")
@@ -123,7 +121,7 @@ var provisionClusterCmd = &cobra.Command{
 			provisionAzureDnsZoneName,
 			provisionAzureResourceGroup,
 			clusterType,
-			provisionIsManagementCluster,
+			false, // management clusters cannot be installed from the public-api
 			provisionIsProductionCluster,
 			provisionKubernetesVersion,
 			provisionNodeType,
