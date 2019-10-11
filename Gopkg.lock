@@ -171,6 +171,14 @@
   version = "v0.0.92"
 
 [[projects]]
+  digest = "1:94f368a2db0cd367bbde71ad88dcab84d5b8d78518ef3a0c235976594d304d3f"
+  name = "github.com/nalej/grpc-connectivity-manager-go"
+  packages = ["."]
+  pruneopts = ""
+  revision = "3d110b2be9a969d36cf8b26aee397b92f90d2dc4"
+  version = "v0.0.2"
+
+[[projects]]
   digest = "1:0bad099051ea5df46222752d38f98673d2ccec88ab40e30a9ec3d1473cbcd634"
   name = "github.com/nalej/grpc-device-controller-go"
   packages = ["."]
@@ -267,12 +275,20 @@
   version = "v0.0.29"
 
 [[projects]]
-  digest = "1:ae5f096312a002df7b3602c2d65e62a98e8746f523e954ff6b9d6382e1fb8fbf"
+  digest = "1:8c5421f5970b3022c57b31e7d0041b69988d4ec8762b0bec2c195ab6397f0327"
+  name = "github.com/nalej/grpc-provisioner-go"
+  packages = ["."]
+  pruneopts = ""
+  revision = "2cd6a91e5361c20c6cd137ea9ab680cd0c4a91e5"
+  version = "v0.0.4"
+
+[[projects]]
+  digest = "1:8c5c334bad2726ecc2d54ddad38e0190fdd107e896ff42d91b0c32250cf831b0"
   name = "github.com/nalej/grpc-public-api-go"
   packages = ["."]
   pruneopts = ""
-  revision = "10837fa395bc2c2004ffedf0e27f2671fda2bbc5"
-  version = "v0.0.105"
+  revision = "ec685b6e3342caffb47a2043155144646608c6c5"
+  version = "v0.0.107"
 
 [[projects]]
   digest = "1:be9b75e8734511623a81a66b4e5d578ebd3b71562429950ea3784e6200d018e8"
@@ -560,6 +576,7 @@
   input-imports = [
     "github.com/araddon/dateparse",
     "github.com/dgrijalva/jwt-go",
+    "github.com/golang/protobuf/jsonpb",
     "github.com/golang/protobuf/ptypes",
     "github.com/golang/protobuf/ptypes/timestamp",
     "github.com/google/uuid",
@@ -583,6 +600,7 @@
     "github.com/nalej/grpc-login-api-go",
     "github.com/nalej/grpc-monitoring-go",
     "github.com/nalej/grpc-organization-go",
+    "github.com/nalej/grpc-provisioner-go",
     "github.com/nalej/grpc-public-api-go",
     "github.com/nalej/grpc-unified-logging-go",
     "github.com/nalej/grpc-user-go",

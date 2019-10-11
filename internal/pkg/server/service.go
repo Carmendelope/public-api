@@ -13,6 +13,7 @@ import (
 	"github.com/nalej/grpc-inventory-manager-go"
 	"github.com/nalej/grpc-monitoring-go"
 	"github.com/nalej/grpc-organization-go"
+	"github.com/nalej/grpc-provisioner-go"
 	"github.com/nalej/grpc-public-api-go"
 	"github.com/nalej/grpc-unified-logging-go"
 	"github.com/nalej/grpc-user-manager-go"
@@ -26,6 +27,7 @@ import (
 	"github.com/nalej/public-api/internal/pkg/server/monitoring"
 	"github.com/nalej/public-api/internal/pkg/server/nodes"
 	"github.com/nalej/public-api/internal/pkg/server/organizations"
+	"github.com/nalej/public-api/internal/pkg/server/provisioner"
 	"github.com/nalej/public-api/internal/pkg/server/resources"
 	"github.com/nalej/public-api/internal/pkg/server/roles"
 	"github.com/nalej/public-api/internal/pkg/server/unified-logging"
@@ -64,6 +66,7 @@ type Clients struct {
 	invClient    grpc_inventory_manager_go.InventoryClient
 	agentClient  grpc_inventory_manager_go.AgentClient
 	appNetClient grpc_application_manager_go.ApplicationNetworkClient
+	provisionerClient grpc_provisioner_go.ProvisionClient
 }
 
 func (s *Service) GetClients() (*Clients, derrors.Error) {
@@ -99,6 +102,10 @@ func (s *Service) GetClients() (*Clients, derrors.Error) {
 	if err != nil {
 		return nil, derrors.AsError(err, "cannot create connection with inventory manager coordinator")
 	}
+	provConn, err := grpc.Dial(s.Configuration.ProvisionerManagerAddress, grpc.WithInsecure())
+	if err != nil {
+		return nil, derrors.AsError(err, "canot create connection with provisioner manager address")
+	}
 
 	oClient := grpc_organization_go.NewOrganizationsClient(smConn)
 	cClient := grpc_infrastructure_go.NewClustersClient(smConn)
@@ -114,10 +121,12 @@ func (s *Service) GetClients() (*Clients, derrors.Error) {
 	invClient := grpc_inventory_manager_go.NewInventoryClient(invManagerConn)
 	agentClient := grpc_inventory_manager_go.NewAgentClient(invManagerConn)
 	appNetClient := grpc_application_manager_go.NewApplicationNetworkClient(appConn)
+	provClient := grpc_provisioner_go.NewProvisionClient(provConn)
 
 	return &Clients{oClient, cClient, nClient, infraClient, umClient,
 		appClient, deviceClient, ulClient, mmClient, amClient,
-		eicClient, invClient, agentClient, appNetClient}, nil
+		eicClient, invClient, agentClient, appNetClient,
+		provClient}, nil
 }
 
 // Run the service, launch the REST service handler.
@@ -210,6 +219,9 @@ func (s *Service) LaunchHTTP() error {
 	if err := grpc_public_api_go.RegisterApplicationNetworkHandlerFromEndpoint(context.Background(), mux, clientAddr, opts); err != nil {
 		log.Fatal().Err(err).Msg("failed to start application-network handler")
 	}
+	if err := grpc_public_api_go.RegisterProvisionHandlerFromEndpoint(context.Background(), mux, clientAddr, opts); err != nil {
+		log.Fatal().Err(err).Msg("failed to start provision handler")
+	}
 
 	server := &http.Server{
 		Addr:    addr,
@@ -273,6 +285,9 @@ func (s *Service) LaunchGRPC(authConfig *interceptor.AuthorizationConfig) error 
 	appNetManager := application_network.NewManager(clients.appNetClient, clients.appClient)
 	appNetHandler := application_network.NewHandler(appNetManager)
 
+	provManager := provisioner.NewManager(clients.provisionerClient)
+	provHandler := provisioner.NewHandler(provManager)
+
 	grpcServer := grpc.NewServer(interceptor.WithServerAuthxInterceptor(
 		interceptor.NewConfig(authConfig, s.Configuration.AuthSecret, s.Configuration.AuthHeader)))
 	grpc_public_api_go.RegisterOrganizationsServer(grpcServer, orgHandler)
@@ -289,6 +304,7 @@ func (s *Service) LaunchGRPC(authConfig *interceptor.AuthorizationConfig) error 
 	grpc_public_api_go.RegisterInventoryMonitoringServer(grpcServer, amHandler)
 	grpc_public_api_go.RegisterAgentServer(grpcServer, agentHandler)
 	grpc_public_api_go.RegisterApplicationNetworkServer(grpcServer, appNetHandler)
+	grpc_public_api_go.RegisterProvisionServer(grpcServer, provHandler)
 
 	if s.Configuration.Debug {
 		log.Info().Msg("Enabling gRPC server reflection")

@@ -31,6 +31,8 @@ type Config struct {
 	MonitoringManagerAddress string
 	// InventoryManagerAddress with the host:port to connect to the Inventory Manager component.
 	InventoryManagerAddress string
+	// ProvisionerManagerAddress with the host:port to connect to the Provisioner Manager component.
+	ProvisionerManagerAddress string
 	// AuthSecret contains the shared authx secret.
 	AuthSecret string
 	// AuthHeader contains the name of the target header.
@@ -77,6 +79,10 @@ func (conf *Config) Validate() derrors.Error {
 		return derrors.NewInvalidArgumentError("inventoryManagerAddress must be set")
 	}
 
+	if conf.ProvisionerManagerAddress == "" {
+		return derrors.NewInvalidArgumentError("provisionerManagerAddress must be set")
+	}
+
 	if conf.AuthHeader == "" || conf.AuthSecret == "" {
 		return derrors.NewInvalidArgumentError("Authorization header and secret must be set")
 	}
@@ -106,6 +112,7 @@ func (conf *Config) Print() {
 	log.Info().Str("URL", conf.MonitoringManagerAddress).Msg("Monitoring Manager Service")
 	log.Info().Str("URL", conf.DeviceManagerAddress).Msg("Device Manager Service")
 	log.Info().Str("URL", conf.InventoryManagerAddress).Msg("Inventory Manager Service")
+	log.Info().Str("URL", conf.ProvisionerManagerAddress).Msg("Provisioner Manager service")
 	log.Info().Str("header", conf.AuthHeader).Str("secret", strings.Repeat("*", len(conf.AuthSecret))).Msg("Authorization")
 	log.Info().Str("path", conf.AuthConfigPath).Msg("Permissions file")
 

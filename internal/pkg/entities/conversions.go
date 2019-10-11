@@ -42,7 +42,8 @@ func ToPublicAPICluster(source *grpc_infrastructure_go.Cluster, totalNodes int64
 		Labels:             source.Labels,
 		TotalNodes:         totalNodes,
 		RunningNodes:       runningNodes,
-		Cordon:             source.Cordon,
+		// TODO to add when the connectivity manager is ready
+		// Status:
 	}
 }
 
