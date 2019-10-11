@@ -79,3 +79,5 @@ var sourceInstanceID string
 var targetInstanceID string
 var inbound string
 var outbound string
+
+var requestId string

@@ -576,6 +576,7 @@
   input-imports = [
     "github.com/araddon/dateparse",
     "github.com/dgrijalva/jwt-go",
+    "github.com/golang/protobuf/jsonpb",
     "github.com/golang/protobuf/ptypes",
     "github.com/golang/protobuf/ptypes/timestamp",
     "github.com/google/uuid",
@@ -599,6 +600,7 @@
     "github.com/nalej/grpc-login-api-go",
     "github.com/nalej/grpc-monitoring-go",
     "github.com/nalej/grpc-organization-go",
+    "github.com/nalej/grpc-provisioner-go",
     "github.com/nalej/grpc-public-api-go",
     "github.com/nalej/grpc-unified-logging-go",
     "github.com/nalej/grpc-user-go",

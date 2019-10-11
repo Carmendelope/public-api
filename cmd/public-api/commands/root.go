@@ -53,6 +53,6 @@ func SetupLogging() {
 	}
 
 	if consoleLogging {
-		log.Logger = log.Output(zerolog.ConsoleWriter{Out: os.Stderr})
+		log.Logger = log.Output(zerolog.ConsoleWriter{Out: os.Stdout})
 	}
 }
