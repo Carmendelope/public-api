@@ -139,12 +139,12 @@
   version = "v0.0.53"
 
 [[projects]]
-  digest = "1:e1f1a3e2ba70453678c93a2d9131a17f5b6410fda42b87a7716066b654db4ee3"
+  digest = "1:e5b76cece6e83679acaefb1e592977c276aaa4ef64e97fa893a55b73b5e5d9c5"
   name = "github.com/nalej/grpc-cluster-api-go"
   packages = ["."]
   pruneopts = ""
-  revision = "44dae4f0098f8fcf9aad073780a5aa45fb1b1049"
-  version = "v0.0.23"
+  revision = "b6afde65d08adb11af2bd63941a8e538ef3c58e0"
+  version = "v0.0.24"
 
 [[projects]]
   digest = "1:4e897954e75cb3032f468b2837db1a39dfebb75368f2df30f80271c369ab3788"
@@ -259,12 +259,12 @@
   version = "v0.0.6"
 
 [[projects]]
-  digest = "1:f0bfa5064a85d3e11622850af09822ca8bce8dd78ec09d736f248fca4db85a64"
+  digest = "1:7751fa93ba35c03d96d9845818552006fd89da4ce00d1bbf67dee694e71bb9a8"
   name = "github.com/nalej/grpc-network-go"
   packages = ["."]
   pruneopts = ""
-  revision = "c8ef9a36892b5089176a6a53cf0fdee4012d70d2"
-  version = "v0.0.43"
+  revision = "93200c50283f7a231db85ab9753e23dd736b7daf"
+  version = "v0.0.45"
 
 [[projects]]
   digest = "1:0e5100c2c9fcced5b1c0f2306742cbd44dd401cfc52a4b90678c02277fb44ac2"
@@ -283,12 +283,12 @@
   version = "v0.0.4"
 
 [[projects]]
-  digest = "1:074ed519422558f2f3bd52e4fee96724b03406cc8b00eabaaf66b75b564707c9"
+  digest = "1:f30b2ea50b8c8eee82783c3115ce72e26cfef1430c1993cb13d17b966354456a"
   name = "github.com/nalej/grpc-public-api-go"
   packages = ["."]
   pruneopts = ""
-  revision = "8f24c3a68681c6a7004bee58f9502727d4720dc8"
-  version = "v0.0.109"
+  revision = "1027b51c38e735591c713b83a743c2ac61fd25c6"
+  version = "v0.0.112"
 
 [[projects]]
   digest = "1:be9b75e8734511623a81a66b4e5d578ebd3b71562429950ea3784e6200d018e8"
@@ -326,7 +326,7 @@
   version = "v1.4.0"
 
 [[projects]]
-  digest = "1:94f6656435022d2e0eaed70a0874df6d273a7cbf29890a7e19f4261732d25a87"
+  digest = "1:9e74f6fbb11a09c042218844e2bba95a47cc468c741b80d7c2ffb4067c32b4cc"
   name = "github.com/onsi/ginkgo"
   packages = [
     ".",
@@ -349,8 +349,8 @@
     "types",
   ]
   pruneopts = ""
-  revision = "974566c482abc93ffd3df6f4626e79076c7ed290"
-  version = "v1.10.1"
+  revision = "72b6ab036f78c4bf1a9748c3941dd7c3de54917a"
+  version = "v1.10.2"
 
 [[projects]]
   digest = "1:f201278781bbc4a1c20265278c28b80712ef90123563cc0a391d836fc49e0da5"
@@ -426,7 +426,7 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:b123a95f458db7b93e65276282e352cbf195095bc2ea2ec81601949de04f7365"
+  digest = "1:9775f16f1557e5a16a0c2d6a130488ca4e595916e2d55dd7fe819e60e2fcc1a5"
   name = "golang.org/x/net"
   packages = [
     "context",
@@ -441,15 +441,15 @@
     "trace",
   ]
   pruneopts = ""
-  revision = "aa69164e4478b84860dc6769c710c699c67058a3"
+  revision = "491137f692577e390404f177a0515c9f86f79754"
 
 [[projects]]
   branch = "master"
-  digest = "1:0c3b4c65ce4849683ca607bc62d4156b3a63437627736a59b32c83ccb989cc28"
+  digest = "1:055771f25c4d6493a840af5cbdb8da461be2ec1192049dbaebd6ae1a8cbcdea0"
   name = "golang.org/x/sys"
   packages = ["unix"]
   pruneopts = ""
-  revision = "2837fb4f24fee082b8c39b1a6dc9e0ed9f3fbd4f"
+  revision = "b09406accb4736d857a32bf9444cd7edae2ffa79"
 
 [[projects]]
   digest = "1:740b51a55815493a8d0f2b1e0d0ae48fe48953bf7eaf3fcc4198823bf67768c0"
@@ -490,7 +490,7 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:6112f28261ff024a08e50da048719d3be7bd39397ec64aab2aa25aac97e668c7"
+  digest = "1:bedd0fc72fda1aa2d22cfaf0fc5ae939d77adae869f01c45f64af07f27e296bc"
   name = "google.golang.org/genproto"
   packages = [
     "googleapis/api/annotations",
@@ -498,10 +498,10 @@
     "googleapis/rpc/status",
   ]
   pruneopts = ""
-  revision = "f660b865573183437d2d868f703fe88bb8af0b55"
+  revision = "548a555dbc03994223efbaba0090152849259498"
 
 [[projects]]
-  digest = "1:7ed022f305690d5843ba3f0bb94f9890a1f9c9459f0158a28304798213326d88"
+  digest = "1:30d215704e78c21ffff90aa8e86ca1a438fec2837bad082116510fe5a862af5e"
   name = "google.golang.org/grpc"
   packages = [
     ".",
@@ -542,8 +542,8 @@
     "test/bufconn",
   ]
   pruneopts = ""
-  revision = "39e8a7b072a67ca2a75f57fa2e0d50995f5b22f6"
-  version = "v1.23.1"
+  revision = "f6d0f9ee430895e87ef1ceb5ac8f39725bafceef"
+  version = "v1.24.0"
 
 [[projects]]
   digest = "1:eb53021a8aa3f599d29c7102e65026242bdedce998a54837dc67f14b6a97c5fd"
@@ -563,12 +563,12 @@
   revision = "dd632973f1e7218eb1089048e0798ec9ae7dceb8"
 
 [[projects]]
-  digest = "1:cedccf16b71e86db87a24f8d4c70b0a855872eb967cb906a66b95de56aefbd0d"
+  digest = "1:ab9547706f32a7535bb4f25d6b58ad00436630593cd3e3ed4602f1613ed84783"
   name = "gopkg.in/yaml.v2"
   packages = ["."]
   pruneopts = ""
-  revision = "51d6538a90f86fe93ac480b35f37b2be17fef232"
-  version = "v2.2.2"
+  revision = "f221b8435cfb71e54062f6c6e99e9ade30b124d5"
+  version = "v2.2.4"
 
 [solve-meta]
   analyzer-name = "dep"
