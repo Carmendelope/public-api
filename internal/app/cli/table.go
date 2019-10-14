@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"github.com/nalej/grpc-application-go"
 	"github.com/nalej/grpc-application-manager-go"
-	"github.com/nalej/grpc-application-network-go"
 	"github.com/nalej/grpc-common-go"
 	"github.com/nalej/grpc-device-manager-go"
 	"github.com/nalej/grpc-infrastructure-manager-go"
@@ -116,8 +115,8 @@ func AsTable(result interface{}, labelLength int) *ResultTable {
 		return FromAvailableInboundList(result.(*grpc_application_manager_go.AvailableInstanceInboundList))
 	case *grpc_application_manager_go.AvailableInstanceOutboundList:
 		return FromAvailableOutboundList(result.(*grpc_application_manager_go.AvailableInstanceOutboundList))
-	case *grpc_application_network_go.ConnectionInstanceList:
-		return FromConnectionInstanceListResult(result.(*grpc_application_network_go.ConnectionInstanceList))
+	case *grpc_public_api_go.ConnectionInstanceList:
+		return FromConnectionInstanceListResult(result.(*grpc_public_api_go.ConnectionInstanceList))
 	case *grpc_public_api_go.OpResponse:
 		return FromOpResponse(result.(*grpc_public_api_go.OpResponse))
 	default:
@@ -742,12 +741,12 @@ func FromAvailableOutboundList(result *grpc_application_manager_go.AvailableInst
 	return &ResultTable{r}
 }
 
-func FromConnectionInstanceListResult(result *grpc_application_network_go.ConnectionInstanceList) *ResultTable {
+func FromConnectionInstanceListResult(result *grpc_public_api_go.ConnectionInstanceList) *ResultTable {
 	r := make([][]string, 0)
-	r = append(r, []string{"SOURCE_INSTANCE_ID", "SOURCE_INSTANCE_NAME", "OUTBOUND", "TARGET_INSTANCE_ID", "TARGET_INSTANCE_NAME", "INBOUND"})
-	for _, connection := range result.Connections {
+	r = append(r, []string{"SOURCE_INSTANCE_ID", "SOURCE_INSTANCE_NAME", "OUTBOUND", "TARGET_INSTANCE_ID", "TARGET_INSTANCE_NAME", "INBOUND", "STATUS"})
+	for _, connection := range result.List {
 		r = append(r, []string{connection.SourceInstanceId, connection.SourceInstanceName, connection.OutboundName, connection.TargetInstanceId,
-			connection.TargetInstanceName, connection.InboundName})
+			connection.TargetInstanceName, connection.InboundName, connection.StatusName})
 	}
 
 	return &ResultTable{r}
