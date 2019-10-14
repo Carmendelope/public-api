@@ -65,13 +65,14 @@ func init() {
 	deployInstanceCmd.Flags().StringVar(&name, "name", "", "Name of the application instance")
 	deployInstanceCmd.Flags().StringVar(&descriptorID, "descriptorID", "", "Application instance identifier")
 	deployInstanceCmd.Flags().StringVar(&params, "params", "", "Param values to deploy (param1=value1,...,paramN=valueN)")
-	deployInstanceCmd.Flags().StringVar(&connections, "connections", "", "Connections between instaces (outbound_1, target_id_1,inbound_1#....#∫outbound_N,target_id_N,inbound_N")
+	deployInstanceCmd.Flags().StringVar(&connections, "connections", "", "Connections between instaces (outbound_1,target_id_1,inbound_1#....#outbound_N,target_id_N,inbound_N")
 	deployInstanceCmd.Flags().MarkDeprecated("name", "Use command argument instead")
 	deployInstanceCmd.Flags().MarkDeprecated("descriptorID", "Use command argument instead")
 	instanceCmd.AddCommand(deployInstanceCmd)
 	// Undeploy
 	undeployInstanceCmd.Flags().StringVar(&instanceID, "instanceID", "", "Application instance identifier")
 	undeployInstanceCmd.Flags().MarkDeprecated("instanceID", "Use command argument instead")
+	undeployInstanceCmd.Flags().BoolVar(&force, "force", false, "User confirmation, allow undeploy instance that has inbound connections ")
 	instanceCmd.AddCommand(undeployInstanceCmd)
 	// Get
 	getInstanceCmd.Flags().StringVar(&instanceID, "instanceID", "", "Application instance identifier")
@@ -329,7 +330,7 @@ var undeployInstanceCmd = &cobra.Command{
 			fmt.Println(err.Error())
 			cmd.Help()
 		}else{
-			a.Undeploy(cliOptions.Resolve("organizationID", organizationID), targetInstanceID[0])
+			a.Undeploy(cliOptions.Resolve("organizationID", organizationID), targetInstanceID[0], force)
 		}
 	},
 }

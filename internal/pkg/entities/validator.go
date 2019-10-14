@@ -272,6 +272,16 @@ func ValidDeployRequest(request *grpc_application_manager_go.DeployRequest) derr
 	return nil
 }
 
+func ValidUndeployRequest(request *grpc_application_manager_go.UndeployRequest) derrors.Error {
+	if request.OrganizationId == "" {
+		return derrors.NewInvalidArgumentError(emptyOrganizationId)
+	}
+	if request.AppInstanceId == "" {
+		return derrors.NewInvalidArgumentError(emptyInstanceId)
+	}
+	return nil
+}
+
 func ValidInstallRequest(request *grpc_public_api_go.InstallRequest) derrors.Error {
 	if request.OrganizationId == "" {
 		return derrors.NewInvalidArgumentError(emptyOrganizationId)
