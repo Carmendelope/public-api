@@ -7,7 +7,8 @@ package entities
 import (
 	"github.com/nalej/grpc-application-go"
 	"github.com/nalej/grpc-application-manager-go"
-	grpc_common_go "github.com/nalej/grpc-common-go"
+	"github.com/nalej/grpc-application-network-go"
+	"github.com/nalej/grpc-common-go"
 	"github.com/nalej/grpc-device-manager-go"
 	"github.com/nalej/grpc-infrastructure-go"
 	"github.com/nalej/grpc-inventory-go"
@@ -471,4 +472,25 @@ func ToPublicAPIOpResponse(appNetResponse *grpc_common_go.OpResponse) *grpc_publ
 		StatusName:     appNetResponse.Status.String(),
 		Info:           appNetResponse.Info,
 	}
+}
+
+func ToPublicAPIConnectionList(connectionInstanceList *grpc_application_network_go.ConnectionInstanceList) *grpc_public_api_go.ConnectionInstanceList {
+	publicConnections := make([]*grpc_public_api_go.ConnectionInstance, len(connectionInstanceList.Connections))
+	for i, connection := range connectionInstanceList.Connections {
+		publicConnections[i] = &grpc_public_api_go.ConnectionInstance{
+			OrganizationId:     connection.OrganizationId,
+			ConnectionId:       connection.ConnectionId,
+			SourceInstanceId:   connection.SourceInstanceId,
+			SourceInstanceName: connection.SourceInstanceName,
+			TargetInstanceId:   connection.TargetInstanceId,
+			TargetInstanceName: connection.TargetInstanceName,
+			InboundName:        connection.InboundName,
+			OutboundName:       connection.OutboundName,
+			OutboundRequired:   connection.OutboundRequired,
+			StatusName:         connection.Status.String(),
+			IpRange:            connection.IpRange,
+			ZtNetworkId:        connection.ZtNetworkId,
+		}
+	}
+	return &grpc_public_api_go.ConnectionInstanceList{List: publicConnections}
 }
