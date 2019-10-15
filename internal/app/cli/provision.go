@@ -5,185 +5,198 @@
 package cli
 
 import (
-    "fmt"
-    "github.com/golang/protobuf/jsonpb"
-    "github.com/google/uuid"
-    "github.com/nalej/derrors"
-    "github.com/nalej/grpc-common-go"
-    "github.com/nalej/grpc-infrastructure-go"
-    "github.com/nalej/grpc-installer-go"
-    "github.com/nalej/grpc-provisioner-go"
-    "github.com/nalej/grpc-public-api-go"
-    "github.com/rs/zerolog/log"
-    "os"
-    "time"
+	"fmt"
+	"io/ioutil"
+	"os"
+	"path/filepath"
+	"time"
+
+	"github.com/golang/protobuf/jsonpb"
+	"github.com/google/uuid"
+	"github.com/nalej/derrors"
+	grpc_common_go "github.com/nalej/grpc-common-go"
+	grpc_infrastructure_go "github.com/nalej/grpc-infrastructure-go"
+	grpc_installer_go "github.com/nalej/grpc-installer-go"
+	grpc_provisioner_go "github.com/nalej/grpc-provisioner-go"
+	grpc_public_api_go "github.com/nalej/grpc-public-api-go"
+	"github.com/rs/zerolog/log"
 )
 
-const CliProvisionCheckSleepTime=time.Second * 20
+const CliProvisionCheckSleepTime = time.Second * 20
 
 type Provision struct {
-    Connection
-    Credentials
+	Connection
+	Credentials
+	KubeConfigOutputPath string
 }
 
 func NewProvision(address string, port int, insecure bool, useTLS bool, caCertPath string, output string,
-    labelLength int) *Provision {
-    return &Provision{
-        Connection:  *NewConnection(address, port, insecure, useTLS, caCertPath, output, labelLength),
-        Credentials: *NewEmptyCredentials(DefaultPath),
-    }
+	labelLength int, kubeConfigOutputPath string) *Provision {
+	return &Provision{
+		Connection:           *NewConnection(address, port, insecure, useTLS, caCertPath, output, labelLength),
+		Credentials:          *NewEmptyCredentials(DefaultPath),
+		KubeConfigOutputPath: kubeConfigOutputPath,
+	}
 }
 
 func (p *Provision) Cluster(organizationId string, clusterName string, azureCredentialsPath string,
-    azureDnsZoneName string, azureResourceGroup string, clusterType grpc_infrastructure_go.ClusterType, isManagementCluster bool,
-    isProduction bool, kubernetesVersion string, nodeType string, numNodes int64, targetPlatform grpc_installer_go.Platform,
-    zone string) {
-    err := p.LoadCredentials()
-    if err != nil {
-        log.Fatal().Str("trace", err.DebugReport()).Msg("cannot load credentials, try login first")
-    }
+	azureDnsZoneName string, azureResourceGroup string, clusterType grpc_infrastructure_go.ClusterType, isManagementCluster bool,
+	isProduction bool, kubernetesVersion string, nodeType string, numNodes int64, targetPlatform grpc_installer_go.Platform,
+	zone string) {
+	err := p.LoadCredentials()
+	if err != nil {
+		log.Fatal().Str("trace", err.DebugReport()).Msg("cannot load credentials, try login first")
+	}
 
-    azureCredentials, err := p.loadAzureCredentials(azureCredentialsPath)
-    if err != nil {
-        p.PrintResultOrError("", err, "error loading azure credentials")
-        return
-    }
+	azureCredentials, err := p.loadAzureCredentials(azureCredentialsPath)
+	if err != nil {
+		p.PrintResultOrError("", err, "error loading azure credentials")
+		return
+	}
 
-    c, err := p.GetConnection()
-    if err != nil {
-        log.Fatal().Str("trace", err.DebugReport()).Msg("cannot create the connection with the Nalej platform")
-    }
-    defer c.Close()
+	c, err := p.GetConnection()
+	if err != nil {
+		log.Fatal().Str("trace", err.DebugReport()).Msg("cannot create the connection with the Nalej platform")
+	}
+	defer c.Close()
 
-    provClient := grpc_public_api_go.NewProvisionClient(c)
+	provClient := grpc_public_api_go.NewProvisionClient(c)
 
+	request := grpc_provisioner_go.ProvisionClusterRequest{
+		RequestId:        uuid.New().String(),
+		OrganizationId:   organizationId,
+		ClusterId:        uuid.New().String(),
+		ClusterName:      clusterName,
+		AzureCredentials: azureCredentials,
+		AzureOptions: &grpc_provisioner_go.AzureProvisioningOptions{
+			DnsZoneName:   azureDnsZoneName,
+			ResourceGroup: azureResourceGroup,
+		},
+		ClusterType:         clusterType,
+		IsManagementCluster: isManagementCluster,
+		IsProduction:        isProduction,
+		KubernetesVersion:   kubernetesVersion,
+		NodeType:            nodeType,
+		NumNodes:            numNodes,
+		TargetPlatform:      targetPlatform,
+		Zone:                zone,
+	}
 
+	ctx, cancel := p.GetContext()
+	defer cancel()
 
-    request := grpc_provisioner_go.ProvisionClusterRequest{
-        RequestId: uuid.New().String(),
-        OrganizationId: organizationId,
-        ClusterId: uuid.New().String(),
-        ClusterName: clusterName,
-        AzureCredentials: azureCredentials,
-        AzureOptions: &grpc_provisioner_go.AzureProvisioningOptions{
-            DnsZoneName: azureDnsZoneName,
-            ResourceGroup: azureResourceGroup,
-        },
-        ClusterType: clusterType,
-        IsManagementCluster: isManagementCluster,
-        IsProduction: isProduction,
-        KubernetesVersion: kubernetesVersion,
-        NodeType: nodeType,
-        NumNodes: numNodes,
-        TargetPlatform: targetPlatform,
-        Zone: zone,
-    }
+	resp, errReq := provClient.ProvisionCluster(ctx, &request)
 
-    ctx,cancel := p.GetContext()
-    defer cancel()
-
-    resp, errReq := provClient.ProvisionCluster(ctx, &request)
-
-    p.PrintResultOrError(resp, errReq, "cannot provision cluster")
+	p.PrintResultOrError(resp, errReq, "cannot provision cluster")
 }
 
 func (p *Provision) CheckProgress(requestId string) {
 
-    // force initial check
-    stop := p.checkCall(requestId)
-    if stop {
-        return
-    }
+	// force initial check
+	stop := p.checkCall(requestId)
+	if stop {
+		return
+	}
 
-    // Check periodically
-    ticker := time.NewTicker(CliProvisionCheckSleepTime)
+	// Check periodically
+	ticker := time.NewTicker(CliProvisionCheckSleepTime)
 
-    for {
-        select {
-        case _ = <- ticker.C:
-            stop := p.checkCall(requestId)
-            if stop {
-                return
-            }
-        }
-    }
+	for {
+		select {
+		case _ = <-ticker.C:
+			stop := p.checkCall(requestId)
+			if stop {
+				return
+			}
+		}
+	}
 }
 
-func (p *Provision) checkCall(requestId string) bool{
-    // TODO revisit this method to only load credentials if and only if the authentication token has expired
-    err := p.LoadCredentials()
-    if err != nil {
-        log.Fatal().Str("trace", err.DebugReport()).Msg("cannot load credentials, try login first")
-    }
+func (p *Provision) checkCall(requestId string) bool {
+	// TODO revisit this method to only load credentials if and only if the authentication token has expired
+	err := p.LoadCredentials()
+	if err != nil {
+		log.Fatal().Str("trace", err.DebugReport()).Msg("cannot load credentials, try login first")
+	}
 
-    c, err := p.GetConnection()
-    if err != nil {
-        log.Fatal().Str("trace", err.DebugReport()).Msg("cannot create the connection with the Nalej platform")
-    }
-    defer c.Close()
+	c, err := p.GetConnection()
+	if err != nil {
+		log.Fatal().Str("trace", err.DebugReport()).Msg("cannot create the connection with the Nalej platform")
+	}
+	defer c.Close()
 
-    client := grpc_public_api_go.NewProvisionClient(c)
+	client := grpc_public_api_go.NewProvisionClient(c)
 
-    ctx,cancel := p.GetContext()
-    resultCheck, errCheck := client.CheckProgress(ctx, &grpc_common_go.RequestId{RequestId: requestId})
-    cancel()
-    if errCheck != nil {
-        p.PrintResultOrError(nil, errCheck, "error checking cluster provision")
-        log.Info().Interface("result",resultCheck).Msg("check finished")
-        return true
-    }
-    p.printProgress(resultCheck)
-    if resultCheck.State == grpc_provisioner_go.ProvisionProgress_FINISHED ||
-        resultCheck.State == grpc_provisioner_go.ProvisionProgress_ERROR {
-        // print the final message
-        log.Info().Interface("result",resultCheck).Msg("check finished")
-        return true
-    }
-    // do not stop
-    return false
+	ctx, cancel := p.GetContext()
+	resultCheck, errCheck := client.CheckProgress(ctx, &grpc_common_go.RequestId{RequestId: requestId})
+	cancel()
+	if errCheck != nil {
+		p.PrintResultOrError(nil, errCheck, "error checking cluster provision")
+		return true
+	}
+	p.printProgress(resultCheck)
+	if resultCheck.State == grpc_provisioner_go.ProvisionProgress_FINISHED ||
+		resultCheck.State == grpc_provisioner_go.ProvisionProgress_ERROR {
+		kubeConfigPath := p.writeKubeConfig(resultCheck)
+		fmt.Printf("KubeConfig Path: %s\n", kubeConfigPath)
+		p.PrintResultOrError(resultCheck, errCheck, "error checking cluster provision")
+		return true
+	}
+	// do not stop
+	return false
 }
 
 func (p *Provision) printProgress(progress *grpc_provisioner_go.ProvisionClusterResponse) {
-    date := time.Unix(progress.ElapsedTime,0)
-    strDate := date.Format("20060102-150405")
-    fmt.Printf("%s\t%s\t%s\t%s\n",strDate,progress.RequestId, progress.State, progress.Error)
+	date := time.Unix(progress.ElapsedTime, 0)
+	strDate := date.Format("20060102-150405")
+	fmt.Printf("%s\t%s\t%s\t%s\n", strDate, progress.RequestId, progress.State, progress.Error)
 }
 
 func (p *Provision) RemoveProvision(requestId string) {
-    err := p.LoadCredentials()
-    if err != nil {
-        log.Fatal().Str("trace", err.DebugReport()).Msg("cannot load credentials, try login first")
-    }
+	err := p.LoadCredentials()
+	if err != nil {
+		log.Fatal().Str("trace", err.DebugReport()).Msg("cannot load credentials, try login first")
+	}
 
-    c, err := p.GetConnection()
-    if err != nil {
-        log.Fatal().Str("trace", err.DebugReport()).Msg("cannot create the connection with the Nalej platform")
-    }
-    defer c.Close()
-    ctx,cancel := p.GetContext()
-    defer cancel()
+	c, err := p.GetConnection()
+	if err != nil {
+		log.Fatal().Str("trace", err.DebugReport()).Msg("cannot create the connection with the Nalej platform")
+	}
+	defer c.Close()
+	ctx, cancel := p.GetContext()
+	defer cancel()
 
-    provClient := grpc_public_api_go.NewProvisionClient(c)
+	provClient := grpc_public_api_go.NewProvisionClient(c)
 
-    resp, errReq := provClient.RemoveProvision(ctx, &grpc_common_go.RequestId{RequestId: requestId})
+	resp, errReq := provClient.RemoveProvision(ctx, &grpc_common_go.RequestId{RequestId: requestId})
 
-    p.PrintResultOrError(resp, errReq, "cannot provision cluster")
+	p.PrintResultOrError(resp, errReq, "cannot provision cluster")
 }
-
 
 // LoadAzureCredentials loads the content of a file into the grpc structure.
 func (p *Provision) loadAzureCredentials(credentialsPath string) (*grpc_provisioner_go.AzureCredentials, derrors.Error) {
-    credentials := &grpc_provisioner_go.AzureCredentials{}
-    file, err := os.Open(credentialsPath)
-    if err != nil {
-        return nil, derrors.AsError(err, "cannot open credentials path")
-    }
-    // The unmarshalling using jsonpb is available due to the fact that the naming of the JSON fields produced
-    // by Azure matches the ones defined in the protobuf json mapping.
-    err = jsonpb.Unmarshal(file, credentials)
-    if err != nil {
-        return nil, derrors.AsError(err, "cannot unmarshal content")
-    }
-    log.Debug().Interface("tenantId", credentials.TenantId).Msg("azure credentials have been loaded")
-    return credentials, nil
+	credentials := &grpc_provisioner_go.AzureCredentials{}
+	file, err := os.Open(credentialsPath)
+	if err != nil {
+		return nil, derrors.AsError(err, "cannot open credentials path")
+	}
+	// The unmarshalling using jsonpb is available due to the fact that the naming of the JSON fields produced
+	// by Azure matches the ones defined in the protobuf json mapping.
+	err = jsonpb.Unmarshal(file, credentials)
+	if err != nil {
+		return nil, derrors.AsError(err, "cannot unmarshal content")
+	}
+	log.Debug().Interface("tenantId", credentials.TenantId).Msg("azure credentials have been loaded")
+	return credentials, nil
+}
+
+// writeKubeConfig creates a YAML file with the resulting KubeConfig.
+func (p *Provision) writeKubeConfig(result *grpc_provisioner_go.ProvisionClusterResponse) string {
+	fileName := fmt.Sprintf("%s.yaml", result.ClusterName)
+	filePath := filepath.Join(p.KubeConfigOutputPath, fileName)
+	err := ioutil.WriteFile(filePath, []byte(result.RawKubeConfig), 0600)
+	if err != nil {
+		log.Fatal().Err(err).Msg("cannot write kubeConfig")
+	}
+	return filePath
 }
