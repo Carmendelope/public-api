@@ -5,33 +5,32 @@
 package commands
 
 import (
-	"github.com/nalej/grpc-infrastructure-go"
-	"github.com/nalej/grpc-installer-go"
+	grpc_infrastructure_go "github.com/nalej/grpc-infrastructure-go"
+	grpc_installer_go "github.com/nalej/grpc-installer-go"
 	"github.com/nalej/public-api/internal/app/cli"
 	"github.com/rs/zerolog/log"
 	"github.com/spf13/cobra"
 )
 
 var (
-	provisionClusterName string
+	provisionClusterName          string
 	provisionAzureCredentialsPath string
-	provisionAzureDnsZoneName string
-	provisionAzureResourceGroup string
-	provisionClusterType string
-	provisionIsProductionCluster bool
-	provisionKubernetesVersion string
-	provisionNodeType string
-	provisionNumNodes int
-	provisionTargetPlatform string
-	provisionZone string
-
-
+	provisionAzureDnsZoneName     string
+	provisionAzureResourceGroup   string
+	provisionClusterType          string
+	provisionIsProductionCluster  bool
+	provisionKubernetesVersion    string
+	provisionNodeType             string
+	provisionNumNodes             int
+	provisionTargetPlatform       string
+	provisionZone                 string
+	provisionKubeConfigOutputPath string
 )
 
 // Conversion map for RawClusterTypes
 var ClusterTypeFromRaw map[string]grpc_infrastructure_go.ClusterType = map[string]grpc_infrastructure_go.ClusterType{
 	"kubernetes": grpc_infrastructure_go.ClusterType_KUBERNETES,
-	"docker": grpc_infrastructure_go.ClusterType_DOCKER_NODE,
+	"docker":     grpc_infrastructure_go.ClusterType_DOCKER_NODE,
 }
 
 // Conversion map for Installation target platforms
@@ -65,6 +64,7 @@ func init() {
 	provisionClusterCmd.PersistentFlags().IntVar(&provisionNumNodes, "numNodes", 1, "Number of nodes")
 	provisionClusterCmd.PersistentFlags().StringVar(&provisionTargetPlatform, "targetPlatform", "", "Target platform")
 	provisionClusterCmd.PersistentFlags().StringVar(&provisionZone, "zone", "", "Deployment zone")
+	provisionClusterCmd.PersistentFlags().StringVar(&provisionKubeConfigOutputPath, "kubeConfigOutputPath", "/tmp", "Path where the kubeconfig will be stored")
 
 	provisionClusterCmd.MarkFlagRequired("organizationId")
 	provisionClusterCmd.MarkFlagRequired("clusterName")
@@ -87,15 +87,13 @@ func init() {
 	removeProvisionCmd.MarkFlagRequired("requestId")
 	provisionCmd.AddCommand(removeProvisionCmd)
 
-
 }
 
-
 var provisionClusterCmd = &cobra.Command{
-	Use:   "cluster",
+	Use:     "cluster",
 	Aliases: []string{"cluster"},
-	Short: "Provision a new cluster",
-	Long:  `Provision a new cluster`,
+	Short:   "Provision a new cluster",
+	Long:    `Provision a new cluster`,
 	Run: func(cmd *cobra.Command, args []string) {
 		SetupLogging()
 		p := cli.NewProvision(
@@ -103,7 +101,8 @@ var provisionClusterCmd = &cobra.Command{
 			cliOptions.ResolveAsInt("port", nalejPort),
 			insecure, useTLS,
 			cliOptions.Resolve("cacert", caCertPath), cliOptions.Resolve("output", output),
-			cliOptions.ResolveAsInt("labelLength", labelLength))
+			cliOptions.ResolveAsInt("labelLength", labelLength),
+			provisionKubeConfigOutputPath)
 
 		clusterType, found := ClusterTypeFromRaw[provisionClusterType]
 		if !found {
@@ -133,36 +132,37 @@ var provisionClusterCmd = &cobra.Command{
 }
 
 var checkProgressCmd = &cobra.Command{
-	Use: "check",
+	Use:     "check",
 	Aliases: []string{"check"},
-	Short: "Check cluster provision",
-	Long: "Check cluster provision",
-	Run: func(cmd *cobra.Command, args[] string) {
+	Short:   "Check cluster provision",
+	Long:    "Check cluster provision",
+	Run: func(cmd *cobra.Command, args []string) {
 		SetupLogging()
 		p := cli.NewProvision(
 			cliOptions.Resolve("nalejAddress", nalejAddress),
 			cliOptions.ResolveAsInt("port", nalejPort),
 			insecure, useTLS,
 			cliOptions.Resolve("cacert", caCertPath), cliOptions.Resolve("output", output),
-			cliOptions.ResolveAsInt("labelLength", labelLength))
+			cliOptions.ResolveAsInt("labelLength", labelLength),
+			provisionKubeConfigOutputPath)
 		p.CheckProgress(cliOptions.Resolve("requestId", requestId))
 	},
 }
 
 var removeProvisionCmd = &cobra.Command{
-	Use: "remove",
+	Use:     "remove",
 	Aliases: []string{"remove"},
-	Short: "Remove cluster provision request",
-	Long: "Remove cluster provision request",
-	Run: func(cmd *cobra.Command, args[] string) {
+	Short:   "Remove cluster provision request",
+	Long:    "Remove cluster provision request",
+	Run: func(cmd *cobra.Command, args []string) {
 		SetupLogging()
 		p := cli.NewProvision(
 			cliOptions.Resolve("nalejAddress", nalejAddress),
 			cliOptions.ResolveAsInt("port", nalejPort),
 			insecure, useTLS,
 			cliOptions.Resolve("cacert", caCertPath), cliOptions.Resolve("output", output),
-			cliOptions.ResolveAsInt("labelLength", labelLength))
+			cliOptions.ResolveAsInt("labelLength", labelLength),
+			provisionKubeConfigOutputPath)
 		p.RemoveProvision(cliOptions.Resolve("requestId", requestId))
 	},
 }
-
