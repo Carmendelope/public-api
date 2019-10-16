@@ -7,13 +7,14 @@ package commands
 import (
 	"encoding/json"
 	"fmt"
+	"os"
+
 	"github.com/nalej/derrors"
 	"github.com/nalej/public-api/internal/app/options"
 	"github.com/nalej/public-api/version"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 	"github.com/spf13/cobra"
-	"os"
 )
 
 var debugLevel bool
@@ -86,12 +87,12 @@ func PrintResult(result interface{}) error {
 	return err
 }
 
-func ResolveArgument(attributeName [] string, args []string, flagValue []string) ([]string, derrors.Error) {
+func ResolveArgument(attributeName []string, args []string, flagValue []string) ([]string, derrors.Error) {
 	result := make([]string, 0)
 
-	if len(args) < len(attributeName){
-		for index := 0; index < len(attributeName); index ++ {
-			if flagValue[index] == ""{
+	if len(args) < len(attributeName) {
+		for index := 0; index < len(attributeName); index++ {
+			if flagValue[index] == "" {
 				return nil, derrors.NewNotFoundError(fmt.Sprintf("argument %s or flag value --%s not found", attributeName[index], attributeName[index]))
 			}
 		}
@@ -102,17 +103,17 @@ func ResolveArgument(attributeName [] string, args []string, flagValue []string)
 		return nil, derrors.NewInternalError("length mismatch")
 	}
 
-	for index := 0; index < len(attributeName); index ++ {
+	for index := 0; index < len(attributeName); index++ {
 		found := false
-		if flagValue[index] != ""{
+		if flagValue[index] != "" {
 			result = append(result, flagValue[index])
 			found = true
 		}
-		if args[index] != ""{
+		if args[index] != "" {
 			result = append(result, args[index])
 			found = true
 		}
-		if ! found {
+		if !found {
 			return nil, derrors.NewNotFoundError(attributeName[index])
 		}
 	}
