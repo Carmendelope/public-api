@@ -1,9 +1,13 @@
 {
   "language": "golang",
+  "version": "v0.4.0",
   "application_list": [
     "public-api",
     "public-api-cli",
     "public-api-cli2"
+  ],
+  "image_list": [
+    "public-api"
   ],
   "tools": [
     "azure",
