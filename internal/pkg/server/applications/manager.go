@@ -62,10 +62,10 @@ func (m *Manager) Deploy(deployRequest *grpc_application_manager_go.DeployReques
 }
 
 // Undeploy a running application instance.
-func (m *Manager) Undeploy(appInstanceID *grpc_application_go.AppInstanceId) (*grpc_common_go.Success, error) {
+func (m *Manager) Undeploy(undeployRequest *grpc_application_manager_go.UndeployRequest) (*grpc_common_go.Success, error) {
 	ctx, cancel := common.GetContext()
 	defer cancel()
-	return m.appClient.Undeploy(ctx, appInstanceID)
+	return m.appClient.Undeploy(ctx, undeployRequest)
 }
 
 // ListAppInstances retrieves a list of application descriptors.

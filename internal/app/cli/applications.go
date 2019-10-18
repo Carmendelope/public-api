@@ -327,7 +327,7 @@ func (a *Applications) Deploy(organizationID string, appDescriptorID string, nam
 	a.PrintResultOrError(deployed, err, "cannot deploy application")
 }
 
-func (a *Applications) Undeploy(organizationID string, appInstanceID string) {
+func (a *Applications) Undeploy(organizationID string, appInstanceID string, force bool) {
 	if organizationID == "" {
 		log.Fatal().Msg("organizationID cannot be empty")
 	}
@@ -342,9 +342,10 @@ func (a *Applications) Undeploy(organizationID string, appInstanceID string) {
 		defer conn.Close()
 		defer cancel()
 
-		undeployRequest := &grpc_application_go.AppInstanceId{
+		undeployRequest := &grpc_application_manager_go.UndeployRequest{
 			OrganizationId: organizationID,
 			AppInstanceId:  toUndeploy,
+			UserConfirmation: force,
 		}
 		result, err := client.Undeploy(ctx, undeployRequest)
 		a.PrintResultOrError(result, err, "cannot undeploy application")

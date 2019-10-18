@@ -127,19 +127,19 @@ func (h *Handler) Deploy(ctx context.Context, deployRequest *grpc_application_ma
 }
 
 // Undeploy a running application instance.
-func (h *Handler) Undeploy(ctx context.Context, appInstanceID *grpc_application_go.AppInstanceId) (*grpc_common_go.Success, error) {
+func (h *Handler) Undeploy(ctx context.Context, undeployRequest *grpc_application_manager_go.UndeployRequest) (*grpc_common_go.Success, error) {
 	rm, err := authhelper.GetRequestMetadata(ctx)
 	if err != nil {
 		return nil, conversions.ToGRPCError(err)
 	}
-	if appInstanceID.OrganizationId != rm.OrganizationID {
+	if undeployRequest.OrganizationId != rm.OrganizationID {
 		return nil, derrors.NewPermissionDeniedError("cannot access requested OrganizationID")
 	}
-	err = entities.ValidAppInstanceID(appInstanceID)
+	err = entities.ValidUndeployRequest(undeployRequest)
 	if err != nil {
 		return nil, conversions.ToGRPCError(err)
 	}
-	return h.Manager.Undeploy(appInstanceID)
+	return h.Manager.Undeploy(undeployRequest)
 }
 
 // ListAppInstances retrieves a list of application descriptors.
