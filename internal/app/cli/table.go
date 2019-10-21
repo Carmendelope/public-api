@@ -345,14 +345,14 @@ func FromAppInstance(result *grpc_public_api_go.AppInstance, labelLength int) *R
 		r = append(r, []string{"", "", "", ""})
 		if (result.OutboundConnections != nil && len(result.OutboundConnections) > 0) ||
 			(result.InboundConnections != nil && len(result.InboundConnections) > 0) {
-			r = append(r, []string{"SOURCE", "OUTBOUND", "TARGET", "INBOUND", "REQUIRED"})
+			r = append(r, []string{"SOURCE", "OUTBOUND", "TARGET", "INBOUND", "REQUIRED", "STATUS"})
 			if result.OutboundConnections != nil && len(result.OutboundConnections) > 0 {
 				for _, out := range result.OutboundConnections {
 					required := "FALSE"
 					if out.OutboundRequired {
 						required = "TRUE"
 					}
-					r = append(r, []string{out.SourceInstanceName, out.OutboundName, out.TargetInstanceName, out.InboundName, required})
+					r = append(r, []string{out.SourceInstanceName, out.OutboundName, out.TargetInstanceName, out.InboundName, required, out.StatusName})
 				}
 			}
 			if result.InboundConnections != nil && len(result.InboundConnections) > 0 {
@@ -361,7 +361,7 @@ func FromAppInstance(result *grpc_public_api_go.AppInstance, labelLength int) *R
 					if in.OutboundRequired {
 						required = "TRUE"
 					}
-					r = append(r, []string{in.SourceInstanceName, in.OutboundName, in.TargetInstanceName, in.InboundName, required})
+					r = append(r, []string{in.SourceInstanceName, in.OutboundName, in.TargetInstanceName, in.InboundName, required, in.StatusName})
 				}
 			}
 		}

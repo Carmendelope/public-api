@@ -259,8 +259,12 @@ func ToPublicAPIAppInstance(source *grpc_application_manager_go.AppInstance) *gr
 		Info:                  source.Info,
 		InboundNetInterfaces:  source.InboundNetInterfaces,
 		OutboundNetInterfaces: source.OutboundNetInterfaces,
-		InboundConnections:    source.InboundConnections,
-		OutboundConnections:   source.OutboundConnections,
+		InboundConnections:    ToPublicAPIConnectionList(&grpc_application_network_go.ConnectionInstanceList{
+			Connections: source.InboundConnections,
+		}).List,
+		OutboundConnections:   ToPublicAPIConnectionList(&grpc_application_network_go.ConnectionInstanceList{
+			Connections: source.OutboundConnections,
+		}).List,
 	}
 }
 
