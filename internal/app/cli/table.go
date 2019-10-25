@@ -223,12 +223,12 @@ func FromUserList(user *grpc_public_api_go.UserList) *ResultTable {
 
 func FromCluster(result *grpc_public_api_go.Cluster, labelLength int) *ResultTable {
 	r := make([][]string, 0)
-	r = append(r, []string{"NAME", "ID", "STATUS", "SEEN"})
+	r = append(r, []string{"NAME", "ID", "STATE", "STATUS", "SEEN"})
 	seen := "never"
 	if result.LastAliveTimestamp != 0 {
 		seen = time.Unix(result.LastAliveTimestamp, 0).String()
 	}
-	r = append(r, []string{result.Name, result.ClusterId, result.Status.String(), seen})
+	r = append(r, []string{result.Name, result.ClusterId, result.State.String(), result.Status.String(), seen})
 	r = append(r, []string{"NODES", "LABELS"})
 	r = append(r, []string{fmt.Sprintf("%d", result.TotalNodes), TransformLabels(result.Labels, labelLength)})
 	return &ResultTable{r}
@@ -236,9 +236,9 @@ func FromCluster(result *grpc_public_api_go.Cluster, labelLength int) *ResultTab
 
 func FromClusterList(result *grpc_public_api_go.ClusterList, labelLength int) *ResultTable {
 	r := make([][]string, 0)
-	r = append(r, []string{"NAME", "ID", "NODES", "LABELS", "STATUS"})
+	r = append(r, []string{"NAME", "ID", "NODES", "LABELS", "STATE", "STATUS"})
 	for _, c := range result.Clusters {
-		r = append(r, []string{c.Name, c.ClusterId, fmt.Sprintf("%d", c.TotalNodes), TransformLabels(c.Labels, labelLength), c.Status.String()})
+		r = append(r, []string{c.Name, c.ClusterId, fmt.Sprintf("%d", c.TotalNodes), TransformLabels(c.Labels, labelLength), c.State.String(), c.Status.String()})
 	}
 	return &ResultTable{r}
 }

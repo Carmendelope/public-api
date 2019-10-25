@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"github.com/nalej/public-api/internal/app/options"
 	"github.com/spf13/cobra"
+	"strings"
 )
 
 var key string
@@ -32,6 +33,8 @@ func init() {
 	optionsCmd.AddCommand(getOptionCmd)
 	optionsCmd.AddCommand(deleteOptionCmd)
 	optionsCmd.AddCommand(listOptionsCmd)
+	optionsCmd.AddCommand(updateOptionCmd)
+	updateOptionCmd.AddCommand(updatePlatformAddressOptionCmd)
 }
 
 var setOptionCmd = &cobra.Command{
@@ -80,5 +83,30 @@ var deleteOptionCmd = &cobra.Command{
 		opts := options.NewOptions()
 		opts.Delete(key)
 		fmt.Printf("Key: %s has been deleted\n", key)
+	},
+}
+
+var updateOptionCmd = &cobra.Command{
+	Use:     "update",
+	Short:   "Update a specific set of keys",
+	Long:    `Update a specific set of keys`,
+	Run: func(cmd *cobra.Command, args []string) {
+		SetupLogging()
+		cmd.Help()
+	},
+}
+
+var updatePlatformAddressOptionCmd = &cobra.Command{
+	Use:     "address [new address]",
+	Aliases: []string{"platform-address", "platform"},
+	Short:   "Update the target platform address for login and public API",
+	Long:    `Update the target platform address for login and public API.
+Do not include the login. or api. prefix in the new address`,
+Args:cobra.ExactArgs(1),
+	Run: func(cmd *cobra.Command, args []string) {
+		SetupLogging()
+		opts := options.NewOptions()
+		newAddresses:= opts.UpdatePlatformAddress(args[0])
+		fmt.Printf("Address updated: %s", strings.Join(newAddresses, ", "))
 	},
 }
