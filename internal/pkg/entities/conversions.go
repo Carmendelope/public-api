@@ -34,17 +34,19 @@ func ToInfraClusterUpdate(update grpc_public_api_go.UpdateClusterRequest) *grpc_
 
 func ToPublicAPICluster(source *grpc_infrastructure_go.Cluster, totalNodes int64, runningNodes int64) *grpc_public_api_go.Cluster {
 	return &grpc_public_api_go.Cluster{
-		OrganizationId:       source.OrganizationId,
-		ClusterId:            source.ClusterId,
-		Name:                 source.Name,
-		ClusterTypeName:      source.ClusterType.String(),
-		MultitenantSupport:   source.Multitenant.String(),
-		StatusName:           source.ClusterStatus.String(),
-		Status:               source.ClusterStatus,
-		Labels:               source.Labels,
-		TotalNodes:           totalNodes,
-		RunningNodes:         runningNodes,
-		LastAliveTimestamp:   source.LastAliveTimestamp,
+		OrganizationId:     source.OrganizationId,
+		ClusterId:          source.ClusterId,
+		Name:               source.Name,
+		ClusterTypeName:    source.ClusterType.String(),
+		MultitenantSupport: source.Multitenant.String(),
+		StatusName:         source.ClusterStatus.String(),
+		Status:             source.ClusterStatus,
+		Labels:             source.Labels,
+		TotalNodes:         totalNodes,
+		RunningNodes:       runningNodes,
+		LastAliveTimestamp: source.LastAliveTimestamp,
+		State:              source.State,
+		StateName:          source.State.String(),
 	}
 }
 
@@ -259,10 +261,10 @@ func ToPublicAPIAppInstance(source *grpc_application_manager_go.AppInstance) *gr
 		Info:                  source.Info,
 		InboundNetInterfaces:  source.InboundNetInterfaces,
 		OutboundNetInterfaces: source.OutboundNetInterfaces,
-		InboundConnections:    ToPublicAPIConnectionList(&grpc_application_network_go.ConnectionInstanceList{
+		InboundConnections: ToPublicAPIConnectionList(&grpc_application_network_go.ConnectionInstanceList{
 			Connections: source.InboundConnections,
 		}).List,
-		OutboundConnections:   ToPublicAPIConnectionList(&grpc_application_network_go.ConnectionInstanceList{
+		OutboundConnections: ToPublicAPIConnectionList(&grpc_application_network_go.ConnectionInstanceList{
 			Connections: source.OutboundConnections,
 		}).List,
 	}

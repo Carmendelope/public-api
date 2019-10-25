@@ -5,6 +5,7 @@
 package options
 
 import (
+	"fmt"
 	"github.com/nalej/public-api/internal/app/output"
 	"github.com/rs/zerolog/log"
 	"io/ioutil"
@@ -20,6 +21,15 @@ const DefaultPath = "~/.nalej/"
 
 // OptionsPath with the path inside DefaultPath where options are stored.
 const OptionsPath = "options"
+
+// APIAddressKey with the name of the key that points to the API address
+const APIAddressKey= "nalejAddress"
+// APIAddressPrefix with the prefix for API address.
+const APIAddressPrefix = "api."
+// LoginAddressKey with the name of the key that points to the Login API address
+const LoginAddressKey = "loginAddress"
+// LoginAddressPrefix with the prefix for the login API address.
+const LoginAddressPrefix = "login."
 
 type Options struct {
 	// TODO Refactor and store the options in a single map that is serialized.
@@ -130,6 +140,21 @@ func (o *Options) ResolveAsInt(key string, paramValue int) int {
 	}
 	return value
 }
+
+// UpdatePlatformAddress updates both the api endpoints for the login and the public api.
+func (o *Options) UpdatePlatformAddress(newBaseAddress string) []string {
+	if strings.HasPrefix(newBaseAddress, APIAddressPrefix) || strings.HasPrefix(newBaseAddress, LoginAddressPrefix){
+		log.Fatal().Msg("expecting new base address without login. or api. prefixes")
+	}
+	apiAddress := fmt.Sprintf("%s%s",APIAddressPrefix, newBaseAddress)
+	loginAddress := fmt.Sprintf("%s%s",LoginAddressPrefix, newBaseAddress)
+
+	o.Set(APIAddressKey, apiAddress)
+	o.Set(LoginAddressKey, loginAddress)
+
+	return []string{apiAddress, loginAddress}
+}
+
 
 // GetPath resolves a given path by adding support for relative paths.
 func GetPath(path string) string {
