@@ -726,7 +726,7 @@ func FromInventorySummary(result *grpc_inventory_manager_go.InventorySummary) *R
 // Application Network
 // ----
 func FromAvailableInboundList(result *grpc_application_manager_go.AvailableInstanceInboundList) *ResultTable {
-	r := make([][]string, len(result.InstanceInbounds))
+	r := make([][]string, 0)
 	r = append(r, []string{"INSTANCE_ID", "INSTANCE_NAME", "INBOUND_NAME"})
 
 	for _, inbound := range result.InstanceInbounds {
@@ -737,7 +737,7 @@ func FromAvailableInboundList(result *grpc_application_manager_go.AvailableInsta
 }
 
 func FromAvailableOutboundList(result *grpc_application_manager_go.AvailableInstanceOutboundList) *ResultTable {
-	r := make([][]string, len(result.InstanceOutbounds))
+	r := make([][]string, 0)
 	r = append(r, []string{"INSTANCE_ID", "INSTANCE_NAME", "OUTBOUND_NAME"})
 
 	for _, outbound := range result.InstanceOutbounds {
