@@ -74,10 +74,22 @@ var force bool
 var agentTypeRaw string
 var sudoer bool
 
-
 var sourceInstanceID string
 var targetInstanceID string
 var inbound string
 var outbound string
 
 var requestId string
+
+var provisionClusterName string
+var provisionAzureCredentialsPath string
+var provisionAzureDnsZoneName string
+var provisionAzureResourceGroup string
+var provisionClusterType string
+var provisionIsProductionCluster bool
+var provisionKubernetesVersion string
+var provisionNodeType string
+var provisionNumNodes int
+var provisionTargetPlatform string
+var provisionZone string
+var provisionKubeConfigOutputPath string
