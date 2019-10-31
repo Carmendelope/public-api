@@ -16,6 +16,7 @@ import (
 	"github.com/nalej/public-api/internal/pkg/entities"
 	"github.com/nalej/public-api/internal/pkg/server/common"
 	"github.com/rs/zerolog/log"
+	"github.com/satori/go.uuid"
 )
 
 // Manager structure with the required clients for cluster operations.
@@ -81,6 +82,7 @@ func (m *Manager) Install(request *grpc_public_api_go.InstallRequest) (*grpc_inf
 
 // Provision and install a new cluster adding it to the system.
 func (m *Manager) ProvisionAndInstall(request *grpc_provisioner_go.ProvisionClusterRequest) (*grpc_infrastructure_manager_go.ProvisionerResponse, error) {
+	request.RequestId = uuid.NewV4().String()
 	ctx, cancel := common.GetContext()
 	defer cancel()
 	return m.infraClient.ProvisionAndInstallCluster(ctx, request)
