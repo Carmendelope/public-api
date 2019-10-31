@@ -32,7 +32,7 @@
 
 [[constraint]]
     name="github.com/nalej/grpc-provisioner-go"
-    version="=v0.0.5"
+    version="=v0.0.6"
 
 [[constraint]]
     name="github.com/nalej/grpc-organization-go"
@@ -40,7 +40,11 @@
 
 [[constraint]]
     name="github.com/nalej/grpc-infrastructure-go"
-    version="=v0.0.45"
+    version="=v0.0.47"
+
+[[constraint]]
+    name="github.com/nalej/grpc-infrastructure-manager-go"
+    version="=v0.0.36"
 
 [[constraint]]
     name="github.com/nalej/grpc-application-manager-go"

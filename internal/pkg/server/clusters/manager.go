@@ -11,6 +11,7 @@ import (
 	"github.com/nalej/grpc-installer-go"
 	"github.com/nalej/grpc-monitoring-go"
 	"github.com/nalej/grpc-organization-go"
+	"github.com/nalej/grpc-provisioner-go"
 	"github.com/nalej/grpc-public-api-go"
 	"github.com/nalej/public-api/internal/pkg/entities"
 	"github.com/nalej/public-api/internal/pkg/server/common"
@@ -23,7 +24,6 @@ type Manager struct {
 	nodeClient  grpc_infrastructure_go.NodesClient
 	infraClient grpc_infrastructure_manager_go.InfrastructureManagerClient
 	mmClient    grpc_monitoring_go.MonitoringManagerClient
-
 }
 
 // NewManager creates a Manager using a set of clients.
@@ -79,6 +79,13 @@ func (m *Manager) Install(request *grpc_public_api_go.InstallRequest) (*grpc_inf
 	return m.infraClient.InstallCluster(ctx, installRequest)
 }
 
+// Provision and install a new cluster adding it to the system.
+func (m *Manager) ProvisionAndInstall(request *grpc_provisioner_go.ProvisionClusterRequest) (*grpc_infrastructure_manager_go.ProvisionerResponse, error) {
+	ctx, cancel := common.GetContext()
+	defer cancel()
+	return m.infraClient.ProvisionAndInstallCluster(ctx, request)
+}
+
 func (m *Manager) extendInfo(source *grpc_infrastructure_go.Cluster) (*grpc_public_api_go.Cluster, error) {
 	totalNodes, runningNodes, err := m.clusterNodesStats(source.OrganizationId, source.ClusterId)
 	if err != nil {
@@ -124,12 +131,12 @@ func (m *Manager) Update(updateClusterRequest *grpc_public_api_go.UpdateClusterR
 	toSend := entities.ToInfraClusterUpdate(*updateClusterRequest)
 	ctx, cancel := common.GetContext()
 	defer cancel()
-	updated, err := m.infraClient.UpdateCluster(ctx,toSend)
+	updated, err := m.infraClient.UpdateCluster(ctx, toSend)
 	if err != nil {
 		return nil, err
 	}
 	result, err := m.extendInfo(updated)
-	if err != nil{
+	if err != nil {
 		return nil, err
 	}
 	return result, nil
@@ -146,7 +153,6 @@ func (m *Manager) Cordon(clusterID *grpc_infrastructure_go.ClusterId) (*grpc_com
 	defer cancel()
 	return m.infraClient.CordonCluster(ctx, clusterID)
 }
-
 
 func (m *Manager) Uncordon(clusterID *grpc_infrastructure_go.ClusterId) (*grpc_common_go.Success, error) {
 	ctx, cancel := common.GetContext()

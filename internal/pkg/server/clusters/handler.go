@@ -12,6 +12,7 @@ import (
 	"github.com/nalej/grpc-infrastructure-manager-go"
 	"github.com/nalej/grpc-monitoring-go"
 	"github.com/nalej/grpc-organization-go"
+	"github.com/nalej/grpc-provisioner-go"
 	"github.com/nalej/grpc-public-api-go"
 	"github.com/nalej/grpc-utils/pkg/conversions"
 	"github.com/nalej/public-api/internal/pkg/authhelper"
@@ -44,6 +45,19 @@ func (h *Handler) Install(ctx context.Context, request *grpc_public_api_go.Insta
 		return nil, conversions.ToGRPCError(err)
 	}
 	return h.Manager.Install(request)
+}
+
+// Install a new cluster adding it to the system.
+func (h *Handler) ProvisionAndInstall(ctx context.Context, request *grpc_provisioner_go.ProvisionClusterRequest) (*grpc_infrastructure_manager_go.ProvisionerResponse, error) {
+	log.Debug().Interface("request", request).Msg("Provision and Install")
+	rm, err := authhelper.GetRequestMetadata(ctx)
+	if err != nil {
+		return nil, conversions.ToGRPCError(err)
+	}
+	if request.OrganizationId != rm.OrganizationID {
+		return nil, derrors.NewPermissionDeniedError("cannot access requested OrganizationID")
+	}
+	return h.Manager.ProvisionAndInstall(request)
 }
 
 // List all the clusters in an organization.
@@ -94,8 +108,7 @@ func (h *Handler) Update(ctx context.Context, updateClusterRequest *grpc_public_
 	return h.Manager.Update(updateClusterRequest)
 }
 
-
-func (h *Handler) Monitor(ctx context.Context, request *grpc_monitoring_go.ClusterSummaryRequest) (*grpc_monitoring_go.ClusterSummary, error){
+func (h *Handler) Monitor(ctx context.Context, request *grpc_monitoring_go.ClusterSummaryRequest) (*grpc_monitoring_go.ClusterSummary, error) {
 	rm, err := authhelper.GetRequestMetadata(ctx)
 	if err != nil {
 		return nil, conversions.ToGRPCError(err)

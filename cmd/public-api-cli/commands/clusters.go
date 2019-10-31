@@ -6,6 +6,7 @@ package commands
 
 import (
 	"fmt"
+	"github.com/nalej/grpc-infrastructure-go"
 	"github.com/nalej/grpc-public-api-go"
 	"github.com/nalej/public-api/internal/app/cli"
 	"github.com/rs/zerolog/log"
@@ -58,6 +59,20 @@ func init() {
 
 	clustersCmd.AddCommand(drainClusterCmd)
 
+	provAndInstCmd.PersistentFlags().StringVar(&organizationID, "organizationId", "", "Organization Id")
+	provAndInstCmd.PersistentFlags().StringVar(&provisionClusterName, "clusterName", "", "Cluster name")
+	provAndInstCmd.PersistentFlags().StringVar(&provisionAzureCredentialsPath, "azureCredentialsPath", "", "Path for the azure credentials file")
+	provAndInstCmd.PersistentFlags().StringVar(&provisionAzureDnsZoneName, "azureDnsZoneName", "", "DNS zone for azure")
+	provAndInstCmd.PersistentFlags().StringVar(&provisionAzureResourceGroup, "azureResourceGroup", "", "Azure resource group")
+	provAndInstCmd.PersistentFlags().StringVar(&provisionClusterType, "clusterType", "kubernetes", "Cluster type")
+	provAndInstCmd.PersistentFlags().BoolVar(&provisionIsProductionCluster, "isProductionCluster", false, "Indicate the provisioning of a cluster in a production environment")
+	provAndInstCmd.PersistentFlags().StringVar(&provisionKubernetesVersion, "kubernetesVersion", "", "Kubernetes version to be used")
+	provAndInstCmd.PersistentFlags().StringVar(&provisionNodeType, "nodeType", "", "Type of node to use")
+	provAndInstCmd.PersistentFlags().IntVar(&provisionNumNodes, "numNodes", 1, "Number of nodes")
+	provAndInstCmd.PersistentFlags().StringVar(&provisionTargetPlatform, "targetPlatform", "", "Target platform")
+	provAndInstCmd.PersistentFlags().StringVar(&provisionZone, "zone", "", "Deployment zone")
+	provAndInstCmd.PersistentFlags().StringVar(&provisionKubeConfigOutputPath, "kubeConfigOutputPath", "/tmp", "Path where the kubeconfig will be stored")
+	clustersCmd.AddCommand(provAndInstCmd)
 }
 
 var installClustersCmd = &cobra.Command{
@@ -85,11 +100,11 @@ var installClustersCmd = &cobra.Command{
 }
 
 var infoClusterCmd = &cobra.Command{
-	Use:   "info [clusterID]",
+	Use:     "info [clusterID]",
 	Aliases: []string{"get"},
-	Short: "Get the cluster information",
-	Long:  `Get the cluster information`,
-	Args: cobra.MaximumNArgs(1),
+	Short:   "Get the cluster information",
+	Long:    `Get the cluster information`,
+	Args:    cobra.MaximumNArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		SetupLogging()
 		c := cli.NewClusters(
@@ -102,18 +117,18 @@ var infoClusterCmd = &cobra.Command{
 		if err != nil {
 			fmt.Println(err.Error())
 			cmd.Help()
-		}else{
-		c.Info(cliOptions.Resolve("organizationID", organizationID), cliOptions.Resolve("clusterID", targetValues[0]))
+		} else {
+			c.Info(cliOptions.Resolve("organizationID", organizationID), cliOptions.Resolve("clusterID", targetValues[0]))
 		}
 
 	},
 }
 
 var listClustersCmd = &cobra.Command{
-	Use:   "list",
+	Use:     "list",
 	Aliases: []string{"ls"},
-	Short: "List clusters",
-	Long:  `List clusters`,
+	Short:   "List clusters",
+	Long:    `List clusters`,
 	Run: func(cmd *cobra.Command, args []string) {
 		SetupLogging()
 		c := cli.NewClusters(
@@ -126,11 +141,11 @@ var listClustersCmd = &cobra.Command{
 }
 
 var monitorClusterCmd = &cobra.Command{
-	Use:   "monitor [clusterID]",
+	Use:     "monitor [clusterID]",
 	Aliases: []string{"mon"},
-	Short: "Monitor cluster",
-	Long:  `Get summarized monitoring information for a single cluster`,
-	Args: cobra.MaximumNArgs(1),
+	Short:   "Monitor cluster",
+	Long:    `Get summarized monitoring information for a single cluster`,
+	Args:    cobra.MaximumNArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		SetupLogging()
 		c := cli.NewClusters(
@@ -143,7 +158,7 @@ var monitorClusterCmd = &cobra.Command{
 		if err != nil {
 			fmt.Println(err.Error())
 			cmd.Help()
-		}else{
+		} else {
 			c.Monitor(
 				cliOptions.Resolve("organizationID", organizationID),
 				cliOptions.Resolve("clusterID", targetValues[0]),
@@ -168,11 +183,26 @@ func stringToTargetPlatform(p string) grpc_public_api_go.Platform {
 	return result
 }
 
+// Convert a string to the corresponding cluster type
+func stringToClusterType(ct string) grpc_infrastructure_go.ClusterType {
+	var result grpc_infrastructure_go.ClusterType
+	switch ct {
+	case grpc_infrastructure_go.ClusterType_KUBERNETES.String():
+		result = grpc_infrastructure_go.ClusterType_KUBERNETES
+	case grpc_infrastructure_go.ClusterType_DOCKER_NODE.String():
+		result = grpc_infrastructure_go.ClusterType_DOCKER_NODE
+	default:
+		log.Fatal().Str("cluster_type", ct).Msg("unknown cluster type")
+	}
+
+	return result
+}
+
 var clusterLabelsCmd = &cobra.Command{
-	Use:   "label",
+	Use:     "label",
 	Aliases: []string{"labels", "l"},
-	Short: "Manage cluster labels",
-	Long:  `Manage cluster labels`,
+	Short:   "Manage cluster labels",
+	Long:    `Manage cluster labels`,
 	Run: func(cmd *cobra.Command, args []string) {
 		SetupLogging()
 		cmd.Help()
@@ -183,7 +213,7 @@ var addLabelToClusterCmd = &cobra.Command{
 	Use:   "add [clusterID] [labels]",
 	Short: "Add a set of labels to a cluster",
 	Long:  `Add a set of labels to a cluster`,
-	Args: cobra.MaximumNArgs(2),
+	Args:  cobra.MaximumNArgs(2),
 	Run: func(cmd *cobra.Command, args []string) {
 		SetupLogging()
 		c := cli.NewClusters(
@@ -192,10 +222,10 @@ var addLabelToClusterCmd = &cobra.Command{
 			insecure, useTLS,
 			cliOptions.Resolve("cacert", caCertPath), cliOptions.Resolve("output", output), cliOptions.ResolveAsInt("labelLength", labelLength))
 
-		if len(args) > 0 && len(args) < 2{
+		if len(args) > 0 && len(args) < 2 {
 			fmt.Println("[clusterID] and [labels] must be flags or arguments, both the same type")
 			cmd.Help()
-		}else {
+		} else {
 
 			targetValues, err := ResolveArgument([]string{"clusterID", "labels"}, args, []string{clusterID, rawLabels})
 			if err != nil {
@@ -210,11 +240,11 @@ var addLabelToClusterCmd = &cobra.Command{
 }
 
 var removeLabelFromClusterCmd = &cobra.Command{
-	Use:   "delete [clusterID] [labels]",
+	Use:     "delete [clusterID] [labels]",
 	Aliases: []string{"remove", "del", "rm"},
-	Short: "Remove a set of labels from a cluster",
-	Long:  `Remove a set of labels from a cluster`,
-	Args: cobra.MaximumNArgs(2),
+	Short:   "Remove a set of labels from a cluster",
+	Long:    `Remove a set of labels from a cluster`,
+	Args:    cobra.MaximumNArgs(2),
 	Run: func(cmd *cobra.Command, args []string) {
 		SetupLogging()
 		c := cli.NewClusters(
@@ -223,10 +253,10 @@ var removeLabelFromClusterCmd = &cobra.Command{
 			insecure, useTLS,
 			cliOptions.Resolve("cacert", caCertPath), cliOptions.Resolve("output", output), cliOptions.ResolveAsInt("labelLength", labelLength))
 
-		if len(args) > 0 && len(args) < 2{
+		if len(args) > 0 && len(args) < 2 {
 			fmt.Println("[clusterID] and [labels] must be flags or arguments, both the same type")
 			cmd.Help()
-		}else {
+		} else {
 
 			targetValues, err := ResolveArgument([]string{"clusterID", "labels"}, args, []string{clusterID, rawLabels})
 			if err != nil {
@@ -241,10 +271,10 @@ var removeLabelFromClusterCmd = &cobra.Command{
 }
 
 var cordonClusterCmd = &cobra.Command{
-	Use: "cordon [clusterID]",
+	Use:   "cordon [clusterID]",
 	Short: "cordon a cluster ignoring new application deployments",
-	Long: `cordon a cluster ignoring new application deployments`,
-	Args: cobra.MinimumNArgs(1),
+	Long:  `cordon a cluster ignoring new application deployments`,
+	Args:  cobra.MinimumNArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		SetupLogging()
 		c := cli.NewClusters(
@@ -252,15 +282,15 @@ var cordonClusterCmd = &cobra.Command{
 			cliOptions.ResolveAsInt("port", nalejPort),
 			insecure, useTLS,
 			cliOptions.Resolve("cacert", caCertPath), cliOptions.Resolve("output", output), cliOptions.ResolveAsInt("labelLength", labelLength))
-		c.CordonCluster(cliOptions.Resolve("organizationID", organizationID),args[0])
+		c.CordonCluster(cliOptions.Resolve("organizationID", organizationID), args[0])
 	},
 }
 
 var uncordonClusterCmd = &cobra.Command{
-	Use: "uncordon [clusterID]",
+	Use:   "uncordon [clusterID]",
 	Short: "uncordon a cluster making possible new application deployments",
-	Long: `uncordon a cluster making possible new application deployments`,
-	Args: cobra.MinimumNArgs(1),
+	Long:  `uncordon a cluster making possible new application deployments`,
+	Args:  cobra.MinimumNArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		SetupLogging()
 		c := cli.NewClusters(
@@ -268,15 +298,15 @@ var uncordonClusterCmd = &cobra.Command{
 			cliOptions.ResolveAsInt("port", nalejPort),
 			insecure, useTLS,
 			cliOptions.Resolve("cacert", caCertPath), cliOptions.Resolve("output", output), cliOptions.ResolveAsInt("labelLength", labelLength))
-		c.UncordonCluster(cliOptions.Resolve("organizationID", organizationID),args[0])
+		c.UncordonCluster(cliOptions.Resolve("organizationID", organizationID), args[0])
 	},
 }
 
 var drainClusterCmd = &cobra.Command{
-	Use: "drain [clusterID]",
+	Use:   "drain [clusterID]",
 	Short: "drain a cluster",
-	Long: `drain a cordoned cluster and force current applications to be re-scheduled`,
-	Args: cobra.MinimumNArgs(1),
+	Long:  `drain a cordoned cluster and force current applications to be re-scheduled`,
+	Args:  cobra.MinimumNArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		SetupLogging()
 		c := cli.NewClusters(
@@ -284,7 +314,41 @@ var drainClusterCmd = &cobra.Command{
 			cliOptions.ResolveAsInt("port", nalejPort),
 			insecure, useTLS,
 			cliOptions.Resolve("cacert", caCertPath), cliOptions.Resolve("output", output), cliOptions.ResolveAsInt("labelLength", labelLength))
-		c.DrainCluster(cliOptions.Resolve("organizationID", organizationID),args[0])
+		c.DrainCluster(cliOptions.Resolve("organizationID", organizationID), args[0])
 	},
 }
 
+var provAndInstCmd = &cobra.Command{
+	Use:     "provision-and-install",
+	Aliases: []string{"pai"},
+	Short:   "Provision and install a new cluster",
+	Long:    `Provision and install a new cluster`,
+	Run: func(cmd *cobra.Command, args []string) {
+		SetupLogging()
+		p := cli.NewProvision(
+			cliOptions.Resolve("nalejAddress", nalejAddress),
+			cliOptions.ResolveAsInt("port", nalejPort),
+			insecure, useTLS,
+			cliOptions.Resolve("cacert", caCertPath), cliOptions.Resolve("output", output),
+			cliOptions.ResolveAsInt("labelLength", labelLength),
+			provisionKubeConfigOutputPath)
+
+		clusterType := stringToClusterType(provisionClusterType)
+		targetPlatform := stringToTargetPlatform(provisionTargetPlatform)
+
+		p.Cluster(cliOptions.Resolve("organizationId", organizationID),
+			provisionClusterName,
+			provisionAzureCredentialsPath,
+			provisionAzureDnsZoneName,
+			provisionAzureResourceGroup,
+			clusterType,
+			false, // management clusters cannot be installed from the public-api
+			provisionIsProductionCluster,
+			provisionKubernetesVersion,
+			provisionNodeType,
+			int64(provisionNumNodes),
+			targetPlatform,
+			provisionZone,
+		)
+	},
+}

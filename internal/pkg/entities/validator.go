@@ -53,8 +53,6 @@ const emptyTargetInstanceId = "target_instance_id cannot be empty"
 const emptyInboundName = "inbound_name cannot be empty"
 const emptyOutboundName = "outbound_name cannot be empty"
 
-
-
 // --------- Application descriptor JSON Schema
 type AppJSONSchema struct {
 	// Singleton object used to validate application descriptors
@@ -68,11 +66,10 @@ type AppJSONSchema struct {
 // Local instance for the application descriptor validator
 var AppDescValidator AppJSONSchema = AppJSONSchema{}
 
-
 // Initialize the local AppDescValidator reading the schema from the filePath. This is a single run operation.
-func InitializeJSON () derrors.Error {
+func InitializeJSON() derrors.Error {
 	var err error
-	AppDescValidator.singletonValidator.Do(func(){
+	AppDescValidator.singletonValidator.Do(func() {
 		log.Debug().Msg("loading application descriptor validator schema...")
 		compiler := jsonschema.NewCompiler()
 		schemaURL := "http://nalej.com/app_descriptor.json"
@@ -96,7 +93,6 @@ func InitializeJSON () derrors.Error {
 	}
 	return nil
 }
-
 
 func ValidOrganizationId(organizationID *grpc_organization_go.OrganizationId) derrors.Error {
 	if organizationID.OrganizationId == "" {
@@ -135,7 +131,6 @@ func ValidAppInstanceID(appInstanceID *grpc_application_go.AppInstanceId) derror
 	return nil
 }
 
-
 // Validate that the JSON descriptor for the application follows the current JSONSchema
 func ValidAppDescriptorFormat(jsonContent []byte) derrors.Error {
 
@@ -161,7 +156,7 @@ func ValidAppDescriptorID(appDescriptorID *grpc_application_go.AppDescriptorId) 
 	return nil
 }
 
-func ValidUpdateAppDescriptor(request *grpc_application_go.UpdateAppDescriptorRequest) derrors.Error{
+func ValidUpdateAppDescriptor(request *grpc_application_go.UpdateAppDescriptorRequest) derrors.Error {
 	if request.OrganizationId == "" {
 		return derrors.NewInvalidArgumentError(emptyOrganizationId)
 	}
@@ -171,7 +166,7 @@ func ValidUpdateAppDescriptor(request *grpc_application_go.UpdateAppDescriptorRe
 	if request.AddLabels && request.RemoveLabels {
 		return derrors.NewInvalidArgumentError("add_labels and remove_labels cannot be set at the same time")
 	}
-	if (request.AddLabels || request.RemoveLabels) && (len(request.Labels) == 0){
+	if (request.AddLabels || request.RemoveLabels) && (len(request.Labels) == 0) {
 		return derrors.NewInvalidArgumentError(emptyLabels)
 	}
 	return nil
@@ -187,13 +182,13 @@ func ValidUpdateClusterRequest(request *grpc_public_api_go.UpdateClusterRequest)
 	if request.AddLabels && request.RemoveLabels {
 		return derrors.NewInvalidArgumentError("add_labels and remove_labels cannot be set at the same time")
 	}
-	if (request.AddLabels || request.RemoveLabels) && (len(request.Labels) == 0){
+	if (request.AddLabels || request.RemoveLabels) && (len(request.Labels) == 0) {
 		return derrors.NewInvalidArgumentError(emptyLabels)
 	}
 	return nil
 }
 
-func ValidUpdateNodeRequest(request *grpc_public_api_go.UpdateNodeRequest) derrors.Error{
+func ValidUpdateNodeRequest(request *grpc_public_api_go.UpdateNodeRequest) derrors.Error {
 	if request.OrganizationId == "" {
 		return derrors.NewInvalidArgumentError(emptyOrganizationId)
 	}
@@ -203,7 +198,7 @@ func ValidUpdateNodeRequest(request *grpc_public_api_go.UpdateNodeRequest) derro
 	if request.AddLabels && request.RemoveLabels {
 		return derrors.NewInvalidArgumentError("add_labels and remove_labels cannot be set at the same time")
 	}
-	if (request.AddLabels || request.RemoveLabels) && (len(request.Labels) == 0){
+	if (request.AddLabels || request.RemoveLabels) && (len(request.Labels) == 0) {
 		return derrors.NewInvalidArgumentError(emptyLabels)
 	}
 	return nil
@@ -247,7 +242,7 @@ func ValidAddAppDescriptor(request *grpc_application_go.AddAppDescriptorRequest)
 	}
 	for _, g := range request.Groups {
 		if len(g.Services) == 0 {
-			return derrors.NewInvalidArgumentError(fmt.Sprintf("group %s has no services",g.Name))
+			return derrors.NewInvalidArgumentError(fmt.Sprintf("group %s has no services", g.Name))
 		}
 
 	}
@@ -255,7 +250,7 @@ func ValidAddAppDescriptor(request *grpc_application_go.AddAppDescriptorRequest)
 	// NP-872. Check the device_ids is empty
 	for _, rule := range request.Rules {
 		if len(rule.DeviceGroupIds) > 0 {
-			return derrors.NewInvalidArgumentError(fmt.Sprintf("rule %s cannot have device_group_ids",rule.Name))
+			return derrors.NewInvalidArgumentError(fmt.Sprintf("rule %s cannot have device_group_ids", rule.Name))
 		}
 	}
 
@@ -438,7 +433,7 @@ func ValidMonitorRequest(request *grpc_monitoring_go.ClusterSummaryRequest) derr
 	return nil
 }
 
-func ValidEdgeControllerID(edgeControllerID * grpc_inventory_go.EdgeControllerId) derrors.Error{
+func ValidEdgeControllerID(edgeControllerID *grpc_inventory_go.EdgeControllerId) derrors.Error {
 	if edgeControllerID.OrganizationId == "" {
 		return derrors.NewInvalidArgumentError(emptyOrganizationId)
 	}
@@ -458,20 +453,20 @@ func ValidUnlinkECRequest(request *grpc_inventory_manager_go.UnlinkECRequest) de
 	return nil
 }
 
-func ValidInstallAgentRequest(request *grpc_inventory_manager_go.InstallAgentRequest) derrors.Error{
-	if request.OrganizationId == ""{
+func ValidInstallAgentRequest(request *grpc_inventory_manager_go.InstallAgentRequest) derrors.Error {
+	if request.OrganizationId == "" {
 		return derrors.NewInvalidArgumentError("organization_id cannot be empty")
 	}
-	if request.EdgeControllerId == ""{
+	if request.EdgeControllerId == "" {
 		return derrors.NewInvalidArgumentError("edge_controller_id cannot be empty")
 	}
-	if request.TargetHost == ""{
+	if request.TargetHost == "" {
 		return derrors.NewInvalidArgumentError("target_host cannot be empty")
 	}
 	return nil
 }
 
-func ValidAssetID(assetID *grpc_inventory_go.AssetId) derrors.Error{
+func ValidAssetID(assetID *grpc_inventory_go.AssetId) derrors.Error {
 	if assetID.OrganizationId == "" {
 		return derrors.NewInvalidArgumentError(emptyOrganizationId)
 	}
@@ -481,7 +476,7 @@ func ValidAssetID(assetID *grpc_inventory_go.AssetId) derrors.Error{
 	return nil
 }
 
-func ValidUninstallAgentRequest(request *grpc_inventory_manager_go.UninstallAgentRequest) derrors.Error{
+func ValidUninstallAgentRequest(request *grpc_inventory_manager_go.UninstallAgentRequest) derrors.Error {
 	if request.OrganizationId == "" {
 		return derrors.NewInvalidArgumentError(emptyOrganizationId)
 	}
@@ -491,7 +486,7 @@ func ValidUninstallAgentRequest(request *grpc_inventory_manager_go.UninstallAgen
 	return nil
 }
 
-func ValidAssetMonitoringRequest (request *grpc_public_api_go.AssetMonitoringRequest) derrors.Error {
+func ValidAssetMonitoringRequest(request *grpc_public_api_go.AssetMonitoringRequest) derrors.Error {
 	if request.OrganizationId == "" {
 		return derrors.NewInvalidArgumentError(emptyOrganizationId)
 	}
@@ -504,7 +499,7 @@ func ValidAssetMonitoringRequest (request *grpc_public_api_go.AssetMonitoringReq
 	return nil
 }
 
-func ValidUpdateGeolocationRequest (request *grpc_inventory_manager_go.UpdateGeolocationRequest) derrors.Error {
+func ValidUpdateGeolocationRequest(request *grpc_inventory_manager_go.UpdateGeolocationRequest) derrors.Error {
 	if request.OrganizationId == "" {
 		return derrors.NewInvalidArgumentError(emptyOrganizationId)
 	}
@@ -515,8 +510,7 @@ func ValidUpdateGeolocationRequest (request *grpc_inventory_manager_go.UpdateGeo
 	return nil
 }
 
-
-func ValidUpdateDeviceLocationRequest (request *grpc_inventory_manager_go.UpdateDeviceLocationRequest) derrors.Error {
+func ValidUpdateDeviceLocationRequest(request *grpc_inventory_manager_go.UpdateDeviceLocationRequest) derrors.Error {
 	if request.OrganizationId == "" {
 		return derrors.NewInvalidArgumentError(emptyOrganizationId)
 	}
@@ -544,13 +538,13 @@ func ValidTimeRange(timeRange *grpc_monitoring_go.QueryMetricsRequest_TimeRange)
 		if timeRange.GetTimeStart() != 0 || timeRange.GetTimeEnd() != 0 || timeRange.GetResolution() != 0 {
 			return derrors.NewInvalidArgumentError("timestamp is set; start, end and resolution should be 0").
 				WithParams(timeRange.GetTimestamp(), timeRange.GetTimeStart(),
-				timeRange.GetTimeEnd(), timeRange.GetResolution())
+					timeRange.GetTimeEnd(), timeRange.GetResolution())
 		}
 	} else {
 		if timeRange.GetTimeStart() == 0 && timeRange.GetTimeEnd() == 0 {
 			return derrors.NewInvalidArgumentError("timestamp is not set; either start, end or both should be set").
 				WithParams(timeRange.GetTimestamp(), timeRange.GetTimeStart(),
-				timeRange.GetTimeEnd(), timeRange.GetResolution())
+					timeRange.GetTimeEnd(), timeRange.GetResolution())
 		}
 	}
 
@@ -577,7 +571,7 @@ func ValidQueryMetricsRequest(request *grpc_monitoring_go.QueryMetricsRequest) d
 	return nil
 }
 
-func ValidDeviceId (request  *grpc_inventory_manager_go.DeviceId) derrors.Error {
+func ValidDeviceId(request *grpc_inventory_manager_go.DeviceId) derrors.Error {
 	if request.OrganizationId == "" {
 		return derrors.NewInvalidArgumentError(emptyOrganizationId)
 	}
@@ -587,7 +581,7 @@ func ValidDeviceId (request  *grpc_inventory_manager_go.DeviceId) derrors.Error 
 	return nil
 }
 
-func ValidUpdateAssetRequest (request *grpc_inventory_go.UpdateAssetRequest) derrors.Error {
+func ValidUpdateAssetRequest(request *grpc_inventory_go.UpdateAssetRequest) derrors.Error {
 	if request.OrganizationId == "" {
 		return derrors.NewInvalidArgumentError(emptyOrganizationId)
 	}
@@ -598,7 +592,7 @@ func ValidUpdateAssetRequest (request *grpc_inventory_go.UpdateAssetRequest) der
 	return nil
 }
 
-func ValidUpdateEdgeControllerRequest (request *grpc_inventory_go.UpdateEdgeControllerRequest) derrors.Error {
+func ValidUpdateEdgeControllerRequest(request *grpc_inventory_go.UpdateEdgeControllerRequest) derrors.Error {
 	if request.OrganizationId == "" {
 		return derrors.NewInvalidArgumentError(emptyOrganizationId)
 	}
@@ -609,7 +603,7 @@ func ValidUpdateEdgeControllerRequest (request *grpc_inventory_go.UpdateEdgeCont
 	return nil
 }
 
-func ValidAddConnectionRequest (conn *grpc_application_network_go.AddConnectionRequest) derrors.Error {
+func ValidAddConnectionRequest(conn *grpc_application_network_go.AddConnectionRequest) derrors.Error {
 	if conn.OrganizationId == "" {
 		return derrors.NewInvalidArgumentError(emptyOrganizationId)
 	}
@@ -629,7 +623,7 @@ func ValidAddConnectionRequest (conn *grpc_application_network_go.AddConnectionR
 	return nil
 }
 
-func ValidRemoveConnectionRequest (conn *grpc_application_network_go.RemoveConnectionRequest) derrors.Error {
+func ValidRemoveConnectionRequest(conn *grpc_application_network_go.RemoveConnectionRequest) derrors.Error {
 	if conn.OrganizationId == "" {
 		return derrors.NewInvalidArgumentError(emptyOrganizationId)
 	}
