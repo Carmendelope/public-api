@@ -9,7 +9,6 @@ import (
 	"time"
 
 	"github.com/golang/protobuf/jsonpb"
-	"github.com/google/uuid"
 	"github.com/nalej/derrors"
 	"github.com/nalej/grpc-infrastructure-go"
 	"github.com/nalej/grpc-installer-go"
@@ -56,14 +55,12 @@ func (p *Provision) Cluster(organizationId string, clusterName string, azureCred
 	}
 	defer c.Close()
 
-	provClient := grpc_public_api_go.NewProvisionClient(c)
+	provClient := grpc_public_api_go.NewClustersClient(c)
 
 	installerPlatform := p.convertTargetPlatform(targetPlatform)
 
 	request := grpc_provisioner_go.ProvisionClusterRequest{
-		RequestId:        uuid.New().String(),
 		OrganizationId:   organizationId,
-		ClusterId:        uuid.New().String(),
 		ClusterName:      clusterName,
 		AzureCredentials: azureCredentials,
 		AzureOptions: &grpc_provisioner_go.AzureProvisioningOptions{
@@ -83,7 +80,7 @@ func (p *Provision) Cluster(organizationId string, clusterName string, azureCred
 	ctx, cancel := p.GetContext()
 	defer cancel()
 
-	resp, errReq := provClient.ProvisionCluster(ctx, &request)
+	resp, errReq := provClient.ProvisionAndInstall(ctx, &request)
 
 	p.PrintResultOrError(resp, errReq, "cannot provision cluster")
 }

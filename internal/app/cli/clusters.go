@@ -5,12 +5,14 @@
 package cli
 
 import (
+	"fmt"
 	"io/ioutil"
+	"reflect"
 	"time"
 
 	"github.com/nalej/grpc-infrastructure-go"
-	"github.com/nalej/grpc-monitoring-go"
 	"github.com/nalej/grpc-installer-go"
+	"github.com/nalej/grpc-monitoring-go"
 	"github.com/nalej/grpc-organization-go"
 	"github.com/nalej/grpc-public-api-go"
 	"github.com/rs/zerolog/log"
@@ -144,7 +146,7 @@ func (c *Clusters) Monitor(organizationID string, clusterID string, rangeMinutes
 	c.PrintResultOrError(retrieved, err, "cannot obtain cluster monitoring information")
 }
 
-func (c *Clusters) List(organizationID string) {
+func (c *Clusters) List(organizationID string, watch bool) {
 	if organizationID == "" {
 		log.Fatal().Msg("organizationID cannot be empty")
 	}
@@ -157,11 +159,26 @@ func (c *Clusters) List(organizationID string) {
 	orgID := &grpc_organization_go.OrganizationId{
 		OrganizationId: organizationID,
 	}
-	clusters, err := client.List(ctx, orgID)
-	c.PrintResultOrError(clusters, err, "cannot obtain cluster list")
+	previous, err := client.List(ctx, orgID)
+	c.PrintResultOrError(previous, err, "cannot obtain cluster list")
+
+	for watch {
+		watchCtx, watchCancel := c.GetContext()
+		clusters, err := client.List(watchCtx, orgID)
+		if err != nil {
+			c.PrintResultOrError(clusters, err, "cannot obtain cluster list information")
+		}
+		if !reflect.DeepEqual(previous, clusters) {
+			fmt.Println("")
+			c.PrintResultOrError(clusters, err, "cannot obtain cluster list information")
+		}
+		previous = clusters
+		watchCancel()
+		time.Sleep(WatchSleep)
+	}
 }
 
-func (c* Clusters) ModifyClusterLabels(organizationID string, clusterID string, add bool, rawLabels string){
+func (c *Clusters) ModifyClusterLabels(organizationID string, clusterID string, add bool, rawLabels string) {
 	if organizationID == "" {
 		log.Fatal().Msg("organizationID cannot be empty")
 	}
@@ -179,9 +196,9 @@ func (c* Clusters) ModifyClusterLabels(organizationID string, clusterID string, 
 	updateRequest := &grpc_public_api_go.UpdateClusterRequest{
 		OrganizationId: organizationID,
 		ClusterId:      clusterID,
-		AddLabels: add,
-		RemoveLabels: !add,
-		Labels: GetLabels(rawLabels),
+		AddLabels:      add,
+		RemoveLabels:   !add,
+		Labels:         GetLabels(rawLabels),
 	}
 	updated, err := client.Update(ctx, updateRequest)
 	c.PrintResultOrError(updated, err, "cannot update cluster labels")
@@ -203,7 +220,7 @@ func (c *Clusters) Update(organizationID string, clusterID string, newName strin
 	updateRequest := &grpc_public_api_go.UpdateClusterRequest{
 		OrganizationId: organizationID,
 		ClusterId:      clusterID,
-		UpdateName: true,
+		UpdateName:     true,
 		Name:           newName,
 	}
 	success, err := client.Update(ctx, updateRequest)
@@ -223,7 +240,7 @@ func (c *Clusters) CordonCluster(organizationID string, clusterID string) {
 	defer conn.Close()
 	defer cancel()
 	clusterIDReq := &grpc_infrastructure_go.ClusterId{
-		ClusterId: clusterID,
+		ClusterId:      clusterID,
 		OrganizationId: organizationID,
 	}
 	success, err := client.Cordon(ctx, clusterIDReq)
@@ -243,7 +260,7 @@ func (c *Clusters) UncordonCluster(organizationID string, clusterID string) {
 	defer conn.Close()
 	defer cancel()
 	clusterIDReq := &grpc_infrastructure_go.ClusterId{
-		ClusterId: clusterID,
+		ClusterId:      clusterID,
 		OrganizationId: organizationID,
 	}
 	success, err := client.Uncordon(ctx, clusterIDReq)
@@ -263,10 +280,9 @@ func (c *Clusters) DrainCluster(organizationID string, clusterID string) {
 	defer conn.Close()
 	defer cancel()
 	clusterIDReq := &grpc_infrastructure_go.ClusterId{
-		ClusterId: clusterID,
+		ClusterId:      clusterID,
 		OrganizationId: organizationID,
 	}
 	success, err := client.Drain(ctx, clusterIDReq)
 	c.PrintResultOrError(success, err, "cannot drain cluster")
 }
-

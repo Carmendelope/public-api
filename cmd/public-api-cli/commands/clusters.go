@@ -37,6 +37,8 @@ func init() {
 	installClustersCmd.Flags().StringVar(&ipAddressIngress, "ipAddressIngress", "",
 		"Public IP Address assigned to the public ingress service")
 	clustersCmd.AddCommand(installClustersCmd)
+
+	listClustersCmd.Flags().BoolVarP(&watch, "watch", "w", false, "Watch for changes")
 	clustersCmd.AddCommand(listClustersCmd)
 
 	clusterLabelsCmd.PersistentFlags().StringVar(&clusterID, "clusterID", "", "Cluster identifier")
@@ -136,7 +138,7 @@ var listClustersCmd = &cobra.Command{
 			cliOptions.ResolveAsInt("port", nalejPort),
 			insecure, useTLS,
 			cliOptions.Resolve("cacert", caCertPath), cliOptions.Resolve("output", output), cliOptions.ResolveAsInt("labelLength", labelLength))
-		c.List(cliOptions.Resolve("organizationID", organizationID))
+		c.List(cliOptions.Resolve("organizationID", organizationID), watch)
 	},
 }
 
