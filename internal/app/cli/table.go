@@ -10,6 +10,7 @@ import (
 	"github.com/nalej/grpc-inventory-go"
 	"github.com/nalej/grpc-inventory-manager-go"
 	"github.com/nalej/grpc-monitoring-go"
+	grpc_provisioner_go "github.com/nalej/grpc-provisioner-go"
 	"github.com/nalej/grpc-public-api-go"
 	"github.com/nalej/grpc-unified-logging-go"
 	"github.com/nalej/grpc-user-manager-go"
@@ -119,6 +120,8 @@ func AsTable(result interface{}, labelLength int) *ResultTable {
 		return FromConnectionInstanceListResult(result.(*grpc_public_api_go.ConnectionInstanceList))
 	case *grpc_public_api_go.OpResponse:
 		return FromOpResponse(result.(*grpc_public_api_go.OpResponse))
+	case *grpc_infrastructure_manager_go.ProvisionerResponse:
+		return FromProvisionerResponse(result.(*grpc_infrastructure_manager_go.ProvisionerResponse))
 	default:
 		log.Fatal().Str("type", fmt.Sprintf("%T", result)).Msg("unsupported")
 	}
@@ -896,6 +899,20 @@ func FromAgentOpResponse(result *grpc_public_api_go.AgentOpResponse) *ResultTabl
 	r = append(r, []string{result.OperationId, time.Unix(result.Timestamp, 0).String(), result.Status, result.Info})
 	return &ResultTable{r}
 }
+
+func FromProvisionerResponse(result *grpc_infrastructure_manager_go.ProvisionerResponse) *ResultTable {
+	r := make([][]string, 0)
+	if result.State != grpc_provisioner_go.ProvisionProgress_ERROR {
+		r = append(r, []string{"REQUEST_ID", "CLUSTER_ID", "STATE"})
+		r = append(r, []string{result.RequestId, result.ClusterId, result.State.String()})
+	}else{
+		r = append(r, []string{"REQUEST_ID", "CLUSTER_ID", "STATE", "ERROR"})
+		r = append(r, []string{result.RequestId, result.ClusterId, result.State.String(), result.Error})
+	}
+	return &ResultTable{r}
+}
+
+
 
 // ----
 // Common
