@@ -326,7 +326,7 @@ func FromAppInstance(result *grpc_public_api_go.AppInstance, labelLength int) *R
 	r = append(r, []string{result.Name, TransformLabels(result.Labels, labelLength)})
 	r = append(r, []string{""})
 
-	if result.StatusName == grpc_application_go.ApplicationStatus_DEPLOYMENT_ERROR.String() {
+	if result.StatusName == grpc_application_go.ApplicationStatus_DEPLOYMENT_ERROR.String() || result.StatusName == grpc_application_go.ApplicationStatus_PLANNING_ERROR.String(){
 		r = append(r, []string{"STATUS", "INFO"})
 		r = append(r, []string{result.StatusName, result.Info})
 	} else {
