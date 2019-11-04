@@ -107,12 +107,12 @@
   version = "v2.0.0"
 
 [[projects]]
-  digest = "1:b6844eec3faae47051ba88f4c003264e94833a3cc74de0f7e6bd936ccf7ca19b"
+  digest = "1:fa2362b0a1a12ad0ad660d8e7970665ff93f645c37b77e9022aa9915356e46b5"
   name = "github.com/nalej/grpc-application-go"
   packages = ["."]
   pruneopts = ""
-  revision = "27d9d79c7f2d3967057c0934355660d6615d1c45"
-  version = "v0.0.86"
+  revision = "7346d806549d851b7fc6174937f30ba189fe8bbf"
+  version = "v0.0.87"
 
 [[projects]]
   digest = "1:402cfed9bfef7b5f6469fdd045b974f64ae11cd75e1851bf0941901f8841c7b6"
@@ -147,12 +147,12 @@
   version = "v0.0.24"
 
 [[projects]]
-  digest = "1:bfd0870c38704b5e43be3fd36c0b2726ffcfc0f232244a18f26db515deac754b"
+  digest = "1:c96717a83498637ef49ea903eaa07c20a1dc9511043b06da8ac8099dffa58b68"
   name = "github.com/nalej/grpc-cluster-watcher-go"
   packages = ["."]
   pruneopts = ""
-  revision = "4f84f9d97050aac4b73c5c0fc45031081237b518"
-  version = "v0.0.5"
+  revision = "dab36160f6c422effd58b50582485154d5eae6b6"
+  version = "v0.0.7"
 
 [[projects]]
   digest = "1:4d9aa384a7b493425344b4d2642ca890b21d09ddbf9f4b993038c8f1b82e642d"
@@ -326,7 +326,7 @@
   version = "v1.4.0"
 
 [[projects]]
-  digest = "1:9e74f6fbb11a09c042218844e2bba95a47cc468c741b80d7c2ffb4067c32b4cc"
+  digest = "1:10d0f0b6be91698ca098ef472bfce7effe5eebedb411f8910f72d406cd19e309"
   name = "github.com/onsi/ginkgo"
   packages = [
     ".",
@@ -349,11 +349,11 @@
     "types",
   ]
   pruneopts = ""
-  revision = "72b6ab036f78c4bf1a9748c3941dd7c3de54917a"
-  version = "v1.10.2"
+  revision = "ce5d301e555bb672c693c099ba6ca5087b06c0b4"
+  version = "v1.10.3"
 
 [[projects]]
-  digest = "1:f201278781bbc4a1c20265278c28b80712ef90123563cc0a391d836fc49e0da5"
+  digest = "1:b7aa33bc4ef1beabadce97668b6e32fda21bdc81434704e3480b27a293833789"
   name = "github.com/onsi/gomega"
   packages = [
     ".",
@@ -370,11 +370,11 @@
     "types",
   ]
   pruneopts = ""
-  revision = "bdebf9e0ece900259084cfa4121b97ce1a540939"
-  version = "v1.7.0"
+  revision = "f9a52764bd5a0fd2d201bcca584351d03b72f8da"
+  version = "v1.7.1"
 
 [[projects]]
-  digest = "1:8921255ee16213d31b57649d57425d515c3b81709f8468500ffbf18fab74c299"
+  digest = "1:349884fbc84da0cc04726aacc98616d2a229cbb4139d96b5def6a6b7016e354b"
   name = "github.com/rs/zerolog"
   packages = [
     ".",
@@ -383,8 +383,8 @@
     "log",
   ]
   pruneopts = ""
-  revision = "b806a5ecbe5347ad9ef05121fea8f4acc65fa5fc"
-  version = "v1.15.0"
+  revision = "7592fcbe604741a8d6044390c09d70c01569e1b3"
+  version = "v1.16.0"
 
 [[projects]]
   digest = "1:4b73a0659a08dd32fb042bfee9e62f4481bddf18cfc4dbff7dc68084e6ea4460"
@@ -426,7 +426,7 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:acd465770451fe2dd4c15565afc8244859dbcf490bde15cc3447741181e10f29"
+  digest = "1:196c20449a0cc94113029193d7ce9e36e46e676c27a2fe06522243f57ced19c5"
   name = "golang.org/x/net"
   packages = [
     "context",
@@ -441,15 +441,15 @@
     "trace",
   ]
   pruneopts = ""
-  revision = "ec77196f6094c3492a8b61f2c11cf937f78992ae"
+  revision = "fe3aa8a4527195a6057b3fad46619d7d090e99b5"
 
 [[projects]]
   branch = "master"
-  digest = "1:19c0f90f7eff54a72fb07c6b783bbdd92a89d58966d891d7382583a00b98d719"
+  digest = "1:a155b7400cb9270dda3f63651160c0349a9e16855975956c79e618e9f30c160c"
   name = "golang.org/x/sys"
   packages = ["unix"]
   pruneopts = ""
-  revision = "742c48ecaeb7c624c475e02f3eb0827ebb4970d4"
+  revision = "f43be2a4598cf3a47be9f94f0c28197ed9eae611"
 
 [[projects]]
   digest = "1:740b51a55815493a8d0f2b1e0d0ae48fe48953bf7eaf3fcc4198823bf67768c0"
@@ -490,7 +490,7 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:bedd0fc72fda1aa2d22cfaf0fc5ae939d77adae869f01c45f64af07f27e296bc"
+  digest = "1:b29336aebd5fb26d3f6b8e776969db4e4e29765ff7313eb43d4593961a64e438"
   name = "google.golang.org/genproto"
   packages = [
     "googleapis/api/annotations",
@@ -498,7 +498,7 @@
     "googleapis/rpc/status",
   ]
   pruneopts = ""
-  revision = "548a555dbc03994223efbaba0090152849259498"
+  revision = "919d9bdd9fe6f1a5dd95ce5d5e4cdb8fd3c516d0"
 
 [[projects]]
   digest = "1:30d215704e78c21ffff90aa8e86ca1a438fec2837bad082116510fe5a862af5e"
