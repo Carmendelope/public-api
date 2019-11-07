@@ -41,10 +41,8 @@ spec:
           - name: authx-config
             mountPath: "/nalej/config"
             readOnly: true
-        # TODO link secret, file, etc.
         args:
         - "run"
-        - "--debug"
         - "--systemModelAddress=system-model.__NPH_NAMESPACE:8800"
         - "--infrastructureManagerAddress=infrastructure-manager.__NPH_NAMESPACE:8081"
         - "--applicationsManagerAddress=application-manager.__NPH_NAMESPACE:8910"
