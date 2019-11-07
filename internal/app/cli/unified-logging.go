@@ -1,16 +1,29 @@
 /*
- * Copyright (C) 2019 Nalej - All Rights Reserved
+ * Copyright 2019 Nalej
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
  */
 
 package cli
 
 import (
 	"fmt"
-	"github.com/nalej/grpc-unified-logging-go"
-	"github.com/nalej/grpc-public-api-go"
-        "github.com/golang/protobuf/ptypes"
-        "github.com/golang/protobuf/ptypes/timestamp"
 	"github.com/araddon/dateparse"
+	"github.com/golang/protobuf/ptypes"
+	"github.com/golang/protobuf/ptypes/timestamp"
+	"github.com/nalej/grpc-public-api-go"
+	"github.com/nalej/grpc-unified-logging-go"
 	"github.com/nalej/grpc-utils/pkg/conversions"
 	"github.com/rs/zerolog/log"
 	"google.golang.org/grpc"
@@ -95,26 +108,26 @@ func (u *UnifiedLogging) Search(organizationId, instanceId, sgInstanceId, msgFil
 	}
 
 	searchRequest := &grpc_unified_logging_go.SearchRequest{
-		OrganizationId: organizationId,
-		AppInstanceId: instanceId,
+		OrganizationId:         organizationId,
+		AppInstanceId:          instanceId,
 		ServiceGroupInstanceId: sgInstanceId,
-		MsgQueryFilter: msgFilter,
-		From: fromTime,
-		To: toTime,
-		Order: order,
+		MsgQueryFilter:         msgFilter,
+		From:                   fromTime,
+		To:                     toTime,
+		Order:                  order,
 	}
 
 	result, err := client.Search(ctx, searchRequest)
-	if redirectLog{
+	if redirectLog {
 		if err != nil {
 			log.Fatal().Str("trace", conversions.ToDerror(err).DebugReport()).Msg("cannot search logs")
 		} else {
 			log.Info().Str("AppInstanceId", result.AppInstanceId).Str("from", result.From.String()).Str("to", result.To.String()).Msg("app log")
-			for _, le := range result.Entries{
+			for _, le := range result.Entries {
 				log.Info().Msg(fmt.Sprintf("[%s] %s", le.Timestamp.String(), le.Msg))
 			}
 		}
-	}else{
+	} else {
 		u.PrintResultOrError(result, err, "cannot search logs")
 	}
 

@@ -1,5 +1,18 @@
 /*
- * Copyright (C) 2018 Nalej - All Rights Reserved
+ * Copyright 2019 Nalej
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
  */
 
 // TODO Remove descriptor NP-338
@@ -56,7 +69,6 @@ func init() {
 	// List descriptor Parameters
 	descriptorCmd.AddCommand(getDescriptorParamsCmd)
 
-
 	// Instances
 	appsCmd.AddCommand(instanceCmd)
 	// List
@@ -98,7 +110,7 @@ var addDescriptorCmd = &cobra.Command{
 	Use:   "add [descriptorPath]",
 	Short: "Add a new application descriptor",
 	Long:  `Add a new application descriptor`,
-	Args: cobra.MaximumNArgs(1),
+	Args:  cobra.MaximumNArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		SetupLogging()
 		a := cli.NewApplications(
@@ -110,7 +122,7 @@ var addDescriptorCmd = &cobra.Command{
 		if err != nil {
 			fmt.Println(err.Error())
 			cmd.Help()
-		}else {
+		} else {
 			a.AddDescriptor(cliOptions.Resolve("organizationID", organizationID), targetDescriptorPath[0])
 		}
 
@@ -133,10 +145,10 @@ var addDescriptorHelpCmd = &cobra.Command{
 }
 
 var listDescriptorsCmd = &cobra.Command{
-	Use:   "list",
+	Use:     "list",
 	Aliases: []string{"ls"},
-	Short: "List the application descriptors",
-	Long:  `List the application descriptors`,
+	Short:   "List the application descriptors",
+	Long:    `List the application descriptors`,
 	Run: func(cmd *cobra.Command, args []string) {
 		SetupLogging()
 		a := cli.NewApplications(
@@ -149,11 +161,11 @@ var listDescriptorsCmd = &cobra.Command{
 }
 
 var getDescriptorCmd = &cobra.Command{
-	Use:   "info [descriptorID]",
+	Use:     "info [descriptorID]",
 	Aliases: []string{"get"},
-	Short: "Get an application descriptor",
-	Long:  `Get an application descriptor`,
-	Args: cobra.MaximumNArgs(1),
+	Short:   "Get an application descriptor",
+	Long:    `Get an application descriptor`,
+	Args:    cobra.MaximumNArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		SetupLogging()
 		a := cli.NewApplications(
@@ -165,17 +177,17 @@ var getDescriptorCmd = &cobra.Command{
 		if err != nil {
 			fmt.Println(err.Error())
 			cmd.Help()
-		}else{
+		} else {
 			a.GetDescriptor(cliOptions.Resolve("organizationID", organizationID), targetValues[0])
 		}
 	},
 }
 
 var appDescLabelsCmd = &cobra.Command{
-	Use:   "label",
+	Use:     "label",
 	Aliases: []string{"labels", "l"},
-	Short: "Manage application descriptor labels",
-	Long:  `Manage application descriptor labels`,
+	Short:   "Manage application descriptor labels",
+	Long:    `Manage application descriptor labels`,
 	Run: func(cmd *cobra.Command, args []string) {
 		SetupLogging()
 		cmd.Help()
@@ -186,7 +198,7 @@ var addLabelToAppDescriptorCmd = &cobra.Command{
 	Use:   "add [descriptorID] [labels]",
 	Short: "Add a set of labels to an application descriptor",
 	Long:  `Add a set of labels to an application descriptor`,
-	Args: cobra.MaximumNArgs(2),
+	Args:  cobra.MaximumNArgs(2),
 	Run: func(cmd *cobra.Command, args []string) {
 		SetupLogging()
 		a := cli.NewApplications(
@@ -199,7 +211,7 @@ var addLabelToAppDescriptorCmd = &cobra.Command{
 		if err != nil {
 			fmt.Println(err.Error())
 			cmd.Help()
-		}else{
+		} else {
 			a.ModifyAppDescriptorLabels(cliOptions.Resolve("organizationID", organizationID),
 				targetValues[0], true, targetValues[1])
 		}
@@ -207,11 +219,11 @@ var addLabelToAppDescriptorCmd = &cobra.Command{
 }
 
 var removeLabelFromAppDescriptorCmd = &cobra.Command{
-	Use:   "delete [descriptorID] [labels]",
+	Use:     "delete [descriptorID] [labels]",
 	Aliases: []string{"remove", "del", "rm"},
-	Short: "Remove a set of labels from an application descriptor",
-	Long:  `Remove a set of labels from an application descriptor`,
-	Args: cobra.MaximumNArgs(2),
+	Short:   "Remove a set of labels from an application descriptor",
+	Long:    `Remove a set of labels from an application descriptor`,
+	Args:    cobra.MaximumNArgs(2),
 	Run: func(cmd *cobra.Command, args []string) {
 		SetupLogging()
 		a := cli.NewApplications(
@@ -224,7 +236,7 @@ var removeLabelFromAppDescriptorCmd = &cobra.Command{
 		if err != nil {
 			fmt.Println(err.Error())
 			cmd.Help()
-		}else{
+		} else {
 			a.ModifyAppDescriptorLabels(cliOptions.Resolve("organizationID", organizationID),
 				targetValues[0], false, targetValues[1])
 		}
@@ -232,11 +244,11 @@ var removeLabelFromAppDescriptorCmd = &cobra.Command{
 }
 
 var deleteDescriptorCmd = &cobra.Command{
-	Use:   "delete [descriptorID]",
+	Use:     "delete [descriptorID]",
 	Aliases: []string{"remove", "del", "rm"},
-	Short: "Delete an application descriptor",
-	Long:  `Delete an application descriptor`,
-	Args: cobra.MaximumNArgs(1),
+	Short:   "Delete an application descriptor",
+	Long:    `Delete an application descriptor`,
+	Args:    cobra.MaximumNArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		SetupLogging()
 		a := cli.NewApplications(
@@ -248,7 +260,7 @@ var deleteDescriptorCmd = &cobra.Command{
 		if err != nil {
 			fmt.Println(err.Error())
 			cmd.Help()
-		}else{
+		} else {
 			a.DeleteDescriptor(cliOptions.Resolve("organizationID", organizationID), targetValues[0])
 		}
 
@@ -256,11 +268,11 @@ var deleteDescriptorCmd = &cobra.Command{
 }
 
 var getDescriptorParamsCmd = &cobra.Command{
-	Use:   "parameters [descriptorID]",
+	Use:     "parameters [descriptorID]",
 	Aliases: []string{"params", "param", "parameter"},
-	Short: "list parameters of a descriptor",
-	Long:  "list parameters of a descriptor",
-	Args: cobra.MaximumNArgs(1),
+	Short:   "list parameters of a descriptor",
+	Long:    "list parameters of a descriptor",
+	Args:    cobra.MaximumNArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		SetupLogging()
 		a := cli.NewApplications(
@@ -272,8 +284,8 @@ var getDescriptorParamsCmd = &cobra.Command{
 		if err != nil {
 			fmt.Println(err.Error())
 			cmd.Help()
-		}else{
-			a.GetDescriptorParameters(cliOptions.Resolve("organizationID", organizationID),targetDescriptorID[0])
+		} else {
+			a.GetDescriptorParameters(cliOptions.Resolve("organizationID", organizationID), targetDescriptorID[0])
 		}
 	},
 }
@@ -293,7 +305,7 @@ var deployInstanceCmd = &cobra.Command{
 	Use:   "deploy [descriptorID] [name]",
 	Short: "Deploy an application instance",
 	Long:  `Deploy an application instance`,
-	Args: cobra.MaximumNArgs(2),
+	Args:  cobra.MaximumNArgs(2),
 	Run: func(cmd *cobra.Command, args []string) {
 		SetupLogging()
 		a := cli.NewApplications(
@@ -306,7 +318,7 @@ var deployInstanceCmd = &cobra.Command{
 		if err != nil {
 			fmt.Println(err.Error())
 			cmd.Help()
-		}else{
+		} else {
 			a.Deploy(cliOptions.Resolve("organizationID", organizationID), targetValues[0], targetValues[1], params, connections)
 		}
 
@@ -317,7 +329,7 @@ var undeployInstanceCmd = &cobra.Command{
 	Use:   "undeploy [instanceID]",
 	Short: "Undeploy an application instance",
 	Long:  `Undeploy an application instance`,
-	Args: cobra.MaximumNArgs(1),
+	Args:  cobra.MaximumNArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		SetupLogging()
 		a := cli.NewApplications(
@@ -329,17 +341,17 @@ var undeployInstanceCmd = &cobra.Command{
 		if err != nil {
 			fmt.Println(err.Error())
 			cmd.Help()
-		}else{
+		} else {
 			a.Undeploy(cliOptions.Resolve("organizationID", organizationID), targetInstanceID[0], force)
 		}
 	},
 }
 
 var listInstancesCmd = &cobra.Command{
-	Use:   "list",
+	Use:     "list",
 	Aliases: []string{"ls"},
-	Short: "List application instances",
-	Long:  `List application intances`,
+	Short:   "List application instances",
+	Long:    `List application intances`,
 	Run: func(cmd *cobra.Command, args []string) {
 		SetupLogging()
 		a := cli.NewApplications(
@@ -352,11 +364,11 @@ var listInstancesCmd = &cobra.Command{
 }
 
 var getInstanceCmd = &cobra.Command{
-	Use:   "info [instanceID]",
+	Use:     "info [instanceID]",
 	Aliases: []string{"get"},
-	Short: "Get an application instance info",
-	Long:  `Get and application instance info`,
-	Args: cobra.MaximumNArgs(1),
+	Short:   "Get an application instance info",
+	Long:    `Get and application instance info`,
+	Args:    cobra.MaximumNArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		SetupLogging()
 		a := cli.NewApplications(
@@ -368,18 +380,18 @@ var getInstanceCmd = &cobra.Command{
 		if err != nil {
 			fmt.Println(err.Error())
 			cmd.Help()
-		}else{
+		} else {
 			a.GetInstance(cliOptions.Resolve("organizationID", organizationID), targetInstanceID[0], watch)
 		}
 	},
 }
 
 var getInstanceParamsCmd = &cobra.Command{
-	Use:   "parameters [instanceID]",
+	Use:     "parameters [instanceID]",
 	Aliases: []string{"params", "param", "parameter"},
-	Short: "list parameters of an instance",
-	Long:  "list parameters of an instance",
-	Args: cobra.MaximumNArgs(1),
+	Short:   "list parameters of an instance",
+	Long:    "list parameters of an instance",
+	Args:    cobra.MaximumNArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		SetupLogging()
 		a := cli.NewApplications(
@@ -391,8 +403,8 @@ var getInstanceParamsCmd = &cobra.Command{
 		if err != nil {
 			fmt.Println(err.Error())
 			cmd.Help()
-		}else{
-			a.GetInstanceParameters(cliOptions.Resolve("organizationID", organizationID),targetInstanceID[0])
+		} else {
+			a.GetInstanceParameters(cliOptions.Resolve("organizationID", organizationID), targetInstanceID[0])
 		}
 	},
 }

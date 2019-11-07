@@ -1,5 +1,18 @@
 /*
- * Copyright (C)  2019 Nalej - All Rights Reserved
+ * Copyright 2019 Nalej
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
  */
 
 package commands
@@ -45,12 +58,11 @@ func init() {
 	edgeControllerCmd.AddCommand(installAgentCmd)
 }
 
-
 var createJoinTokenECCmd = &cobra.Command{
 	Use:   "create-join-token",
 	Short: "Create a join token to attach new edge controllers to the platform",
 	Long:  `Create a join token for being able to attach new edge controllers to the platform`,
-	Args: cobra.ExactArgs(0),
+	Args:  cobra.ExactArgs(0),
 	Run: func(cmd *cobra.Command, args []string) {
 		SetupLogging()
 		ec := cli.NewEdgeController(
@@ -58,7 +70,7 @@ var createJoinTokenECCmd = &cobra.Command{
 			cliOptions.ResolveAsInt("port", nalejPort),
 			insecure, useTLS,
 			cliOptions.Resolve("cacert", caCertPath), cliOptions.Resolve("output", output), cliOptions.ResolveAsInt("labelLength", labelLength))
-			ec.CreateJoinToken(cliOptions.Resolve("organizationID", organizationID), outputPath)
+		ec.CreateJoinToken(cliOptions.Resolve("organizationID", organizationID), outputPath)
 	},
 }
 
@@ -66,7 +78,7 @@ var unlinkECCmd = &cobra.Command{
 	Use:   "unlink [edgeControllerID]",
 	Short: "Unlink an EIC",
 	Long:  `Unlink an EIC from the platform`,
-	Args: cobra.ExactArgs(1),
+	Args:  cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		SetupLogging()
 		ec := cli.NewEdgeController(
@@ -74,7 +86,7 @@ var unlinkECCmd = &cobra.Command{
 			cliOptions.ResolveAsInt("port", nalejPort),
 			insecure, useTLS,
 			cliOptions.Resolve("cacert", caCertPath), cliOptions.Resolve("output", output), cliOptions.ResolveAsInt("labelLength", labelLength))
-		if len(args) > 0{
+		if len(args) > 0 {
 			edgeControllerID = args[0]
 		}
 		ec.Unlink(cliOptions.Resolve("organizationID", organizationID), edgeControllerID, force)
@@ -85,7 +97,7 @@ var updateGeoCmd = &cobra.Command{
 	Use:   "update-location [edgeControllerID]",
 	Short: "update edge-controller location",
 	Long:  `update edge-controller location`,
-	Args: cobra.ExactArgs(1),
+	Args:  cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		SetupLogging()
 		ec := cli.NewEdgeController(
@@ -93,7 +105,7 @@ var updateGeoCmd = &cobra.Command{
 			cliOptions.ResolveAsInt("port", nalejPort),
 			insecure, useTLS,
 			cliOptions.Resolve("cacert", caCertPath), cliOptions.Resolve("output", output), cliOptions.ResolveAsInt("labelLength", labelLength))
-		if len(args) > 0{
+		if len(args) > 0 {
 			edgeControllerID = args[0]
 		}
 		ec.UpdateGeolocation(cliOptions.Resolve("organizationID", organizationID), edgeControllerID, geolocation)
@@ -112,18 +124,18 @@ var updateGeoCmd = &cobra.Command{
 	AgentType_WINDOWS_AMD64 AgentType = 3
 	// Darwin on 64 bits
 	AgentType_DARWIN_AMD64 AgentType = 4
- */
-func getAgentType(agentTypeRaw string) (*grpc_inventory_manager_go.AgentType, derrors.Error){
+*/
+func getAgentType(agentTypeRaw string) (*grpc_inventory_manager_go.AgentType, derrors.Error) {
 	types := map[string]grpc_inventory_manager_go.AgentType{
-		"linux_amd64":grpc_inventory_manager_go.AgentType_LINUX_AMD64,
-		"linux_arm32":grpc_inventory_manager_go.AgentType_LINUX_ARM32,
-		"linux_arm64":grpc_inventory_manager_go.AgentType_LINUX_ARM64,
-		"windows_amd64":grpc_inventory_manager_go.AgentType_WINDOWS_AMD64,
-		"darwin_amd64":grpc_inventory_manager_go.AgentType_DARWIN_AMD64,
+		"linux_amd64":   grpc_inventory_manager_go.AgentType_LINUX_AMD64,
+		"linux_arm32":   grpc_inventory_manager_go.AgentType_LINUX_ARM32,
+		"linux_arm64":   grpc_inventory_manager_go.AgentType_LINUX_ARM64,
+		"windows_amd64": grpc_inventory_manager_go.AgentType_WINDOWS_AMD64,
+		"darwin_amd64":  grpc_inventory_manager_go.AgentType_DARWIN_AMD64,
 	}
 
 	agentType, exists := types[strings.ToLower(agentTypeRaw)]
-	if !exists{
+	if !exists {
 		return nil, derrors.NewInvalidArgumentError("specified agent type not suppoted").WithParams(agentTypeRaw)
 	}
 	return &agentType, nil
@@ -133,7 +145,7 @@ var installAgentCmd = &cobra.Command{
 	Use:   "install-agent [edgeControllerID] [targetHost] [username]",
 	Short: "Install an agent on a given host",
 	Long:  `Install an agent through an edge controller on a given host`,
-	Args: cobra.ExactArgs(3),
+	Args:  cobra.ExactArgs(3),
 	Run: func(cmd *cobra.Command, args []string) {
 		SetupLogging()
 		ec := cli.NewEdgeController(
@@ -142,13 +154,13 @@ var installAgentCmd = &cobra.Command{
 			insecure, useTLS,
 			cliOptions.Resolve("cacert", caCertPath), cliOptions.Resolve("output", output), cliOptions.ResolveAsInt("labelLength", labelLength))
 
-			edgeControllerID = args[0]
-			targetHost := args[1]
-			username = args[2]
-			agentType, err := getAgentType(agentTypeRaw)
-			if err != nil{
-				log.Fatal().Err(err).Msg("invalid agent type")
-			}
+		edgeControllerID = args[0]
+		targetHost := args[1]
+		username = args[2]
+		agentType, err := getAgentType(agentTypeRaw)
+		if err != nil {
+			log.Fatal().Err(err).Msg("invalid agent type")
+		}
 
 		ec.InstallAgent(cliOptions.Resolve("organizationID", organizationID), edgeControllerID, *agentType, targetHost, username, password, publicKeyPath, sudoer)
 	},

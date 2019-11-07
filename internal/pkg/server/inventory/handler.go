@@ -1,5 +1,18 @@
 /*
- * Copyright (C)  2019 Nalej - All Rights Reserved
+ * Copyright 2019 Nalej
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
  */
 
 package inventory
@@ -86,7 +99,6 @@ func (h *Handler) GetDeviceInfo(ctx context.Context, deviceID *grpc_inventory_ma
 	return h.Manager.GetDeviceInfo(deviceID)
 }
 
-
 func (h *Handler) UpdateAsset(ctx context.Context, updateRequest *grpc_inventory_go.UpdateAssetRequest) (*grpc_inventory_go.Asset, error) {
 
 	rm, err := authhelper.GetRequestMetadata(ctx)
@@ -104,7 +116,7 @@ func (h *Handler) UpdateAsset(ctx context.Context, updateRequest *grpc_inventory
 
 }
 
-func (h*Handler) UpdateDeviceLocation (ctx context.Context, request *grpc_inventory_manager_go.UpdateDeviceLocationRequest) (*grpc_public_api_go.Device, error){
+func (h *Handler) UpdateDeviceLocation(ctx context.Context, request *grpc_inventory_manager_go.UpdateDeviceLocationRequest) (*grpc_public_api_go.Device, error) {
 	rm, err := authhelper.GetRequestMetadata(ctx)
 	if err != nil {
 		return nil, conversions.ToGRPCError(err)
@@ -114,7 +126,7 @@ func (h*Handler) UpdateDeviceLocation (ctx context.Context, request *grpc_invent
 	}
 
 	// Validation
-	vErr := entities.ValidUpdateDeviceLocationRequest (request)
+	vErr := entities.ValidUpdateDeviceLocationRequest(request)
 
 	if vErr != nil {
 		return nil, conversions.ToGRPCError(vErr)
@@ -122,7 +134,7 @@ func (h*Handler) UpdateDeviceLocation (ctx context.Context, request *grpc_invent
 	return h.Manager.UpdateDeviceLocation(request)
 }
 
-func (h*Handler) UpdateEdgeController (ctx context.Context, request *grpc_inventory_go.UpdateEdgeControllerRequest) (*grpc_inventory_go.EdgeController, error){
+func (h *Handler) UpdateEdgeController(ctx context.Context, request *grpc_inventory_go.UpdateEdgeControllerRequest) (*grpc_inventory_go.EdgeController, error) {
 	rm, err := authhelper.GetRequestMetadata(ctx)
 	if err != nil {
 		return nil, conversions.ToGRPCError(err)
@@ -137,7 +149,7 @@ func (h*Handler) UpdateEdgeController (ctx context.Context, request *grpc_invent
 	return h.Manager.UpdateEdgeController(request)
 }
 
-func (h*Handler) Summary (ctx context.Context, orgId *grpc_organization_go.OrganizationId) (*grpc_inventory_manager_go.InventorySummary, error){
+func (h *Handler) Summary(ctx context.Context, orgId *grpc_organization_go.OrganizationId) (*grpc_inventory_manager_go.InventorySummary, error) {
 	rm, err := authhelper.GetRequestMetadata(ctx)
 	if err != nil {
 		return nil, conversions.ToGRPCError(err)

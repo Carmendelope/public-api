@@ -1,5 +1,18 @@
 /*
- * Copyright (C)  2018 Nalej - All Rights Reserved
+ * Copyright 2019 Nalej
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
  */
 
 package ithelpers
@@ -112,7 +125,7 @@ func GetAddDescriptorRequest(organizationID string) *grpc_application_go.AddAppD
 		Type:           grpc_application_go.ServiceType_DOCKER,
 		Image:          "mysql:5.6",
 		Specs:          &grpc_application_go.DeploySpecs{Replicas: 1},
-		Credentials:    &grpc_application_go.ImageCredentials{Username:"user_name", Password:"password", Email:"email@email.es"},
+		Credentials:    &grpc_application_go.ImageCredentials{Username: "user_name", Password: "password", Email: "email@email.es"},
 		Storage:        []*grpc_application_go.Storage{&grpc_application_go.Storage{MountPath: "/tmp"}},
 		ExposedPorts: []*grpc_application_go.Port{&grpc_application_go.Port{
 			Name: "mysqlport", InternalPort: 3306, ExposedPort: 3306,
@@ -123,16 +136,16 @@ func GetAddDescriptorRequest(organizationID string) *grpc_application_go.AddAppD
 	}
 
 	group1 := &grpc_application_go.ServiceGroup{
-		Name: "g1",
+		Name:     "g1",
 		Services: []*grpc_application_go.Service{service},
-		Specs: &grpc_application_go.ServiceGroupDeploymentSpecs{Replicas:1,MultiClusterReplica:false},
+		Specs:    &grpc_application_go.ServiceGroupDeploymentSpecs{Replicas: 1, MultiClusterReplica: false},
 	}
 	secRule := grpc_application_go.SecurityRule{
-		Name:            "allow access to mysql",
-		Access:          grpc_application_go.PortAccess_PUBLIC,
-		RuleId:          "001",
-		TargetPort:      3306,
-		TargetServiceName: "1",
+		Name:                   "allow access to mysql",
+		Access:                 grpc_application_go.PortAccess_PUBLIC,
+		RuleId:                 "001",
+		TargetPort:             3306,
+		TargetServiceName:      "1",
 		TargetServiceGroupName: "g1",
 	}
 
@@ -142,7 +155,7 @@ func GetAddDescriptorRequest(organizationID string) *grpc_application_go.AddAppD
 		Name:           "Sample application",
 		Labels:         map[string]string{"app": "simple-app"},
 		Rules:          []*grpc_application_go.SecurityRule{&secRule},
-		Groups:      []*grpc_application_go.ServiceGroup{group1},
+		Groups:         []*grpc_application_go.ServiceGroup{group1},
 	}
 }
 
@@ -322,7 +335,7 @@ func GetAllAuthConfig() *interceptor.AuthorizationConfig {
 
 }
 
-func CreateDeviceGroup(organizationID string, name string, dmClient grpc_device_manager_go.DevicesClient) *grpc_device_manager_go.DeviceGroup{
+func CreateDeviceGroup(organizationID string, name string, dmClient grpc_device_manager_go.DevicesClient) *grpc_device_manager_go.DeviceGroup {
 	request := &grpc_device_manager_go.AddDeviceGroupRequest{
 		OrganizationId:            organizationID,
 		Name:                      name,
@@ -334,22 +347,22 @@ func CreateDeviceGroup(organizationID string, name string, dmClient grpc_device_
 	return added
 }
 
-func CreateDevice (organizationID string, deviceGroupID string, groupApiKey string,
+func CreateDevice(organizationID string, deviceGroupID string, groupApiKey string,
 	devClient grpc_device_manager_go.DevicesClient) *grpc_device_manager_go.RegisterResponse {
 	request := &grpc_device_manager_go.RegisterDeviceRequest{
-		OrganizationId: organizationID,
-		DeviceGroupId: deviceGroupID,
+		OrganizationId:    organizationID,
+		DeviceGroupId:     deviceGroupID,
 		DeviceGroupApiKey: groupApiKey,
-		DeviceId: GenerateUUID(),
+		DeviceId:          GenerateUUID(),
 	}
 	added, err := devClient.RegisterDevice(context.Background(), request)
 	gomega.Expect(err).To(gomega.Succeed())
 	return added
 }
 
-func GenerateLabels (tam int) map[string]string {
-	labels := make (map[string]string, tam)
-	for i:= 0; i< tam; i ++ {
+func GenerateLabels(tam int) map[string]string {
+	labels := make(map[string]string, tam)
+	for i := 0; i < tam; i++ {
 		labels[fmt.Sprintf("label_%d", i)] = fmt.Sprintf("value_%d", i)
 	}
 	return labels

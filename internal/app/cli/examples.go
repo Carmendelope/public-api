@@ -1,3 +1,20 @@
+/*
+ * Copyright 2019 Nalej
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
+
 package cli
 
 import (
@@ -19,11 +36,11 @@ output.elasticsearch:
 func (a *Applications) getBasicDescriptor(sType grpc_application_go.StorageType) *grpc_application_go.AddAppDescriptorRequest {
 
 	service1 := &grpc_application_go.Service{
-		Name:        "simple-mysql",
-		Type:        grpc_application_go.ServiceType_DOCKER,
-		Image:       "mysql:5.6",
-		Specs:       &grpc_application_go.DeploySpecs{Replicas: 1},
-		Storage:     []*grpc_application_go.Storage{&grpc_application_go.Storage{MountPath: "/tmp", Type: grpc_application_go.StorageType_EPHEMERAL, Size: int64(100 * 1024 * 1024)}},
+		Name:    "simple-mysql",
+		Type:    grpc_application_go.ServiceType_DOCKER,
+		Image:   "mysql:5.6",
+		Specs:   &grpc_application_go.DeploySpecs{Replicas: 1},
+		Storage: []*grpc_application_go.Storage{&grpc_application_go.Storage{MountPath: "/tmp", Type: grpc_application_go.StorageType_EPHEMERAL, Size: int64(100 * 1024 * 1024)}},
 		ExposedPorts: []*grpc_application_go.Port{&grpc_application_go.Port{
 			Name: "mysqlport", InternalPort: 3306, ExposedPort: 3306,
 		}},
@@ -52,9 +69,9 @@ func (a *Applications) getBasicDescriptor(sType grpc_application_go.StorageType)
 	}
 
 	group1 := &grpc_application_go.ServiceGroup{
-		Name: "application",
+		Name:     "application",
 		Services: []*grpc_application_go.Service{service1, service2},
-		Specs: &grpc_application_go.ServiceGroupDeploymentSpecs{Replicas:1,MultiClusterReplica:false},
+		Specs:    &grpc_application_go.ServiceGroupDeploymentSpecs{Replicas: 1, MultiClusterReplica: false},
 	}
 
 	// add additional storage for persistence example
@@ -64,29 +81,29 @@ func (a *Applications) getBasicDescriptor(sType grpc_application_go.StorageType)
 		service2.Storage = append(service2.Storage, &grpc_application_go.Storage{MountPath: "/var/www/html", Type: sType, Size: int64(512 * 1024 * 1024)})
 	}
 	secRule := grpc_application_go.SecurityRule{
-		Name:            "allow access to wordpress",
-		Access:          grpc_application_go.PortAccess_PUBLIC,
-		TargetPort:      80,
-		TargetServiceName: "simple-wordpress",
+		Name:                   "allow access to wordpress",
+		Access:                 grpc_application_go.PortAccess_PUBLIC,
+		TargetPort:             80,
+		TargetServiceName:      "simple-wordpress",
 		TargetServiceGroupName: "application",
 	}
 
 	return &grpc_application_go.AddAppDescriptorRequest{
-		Name:        "Sample application",
-		Labels:      map[string]string{"app": "simple-app"},
-		Rules:       []*grpc_application_go.SecurityRule{&secRule},
-		Groups:      []*grpc_application_go.ServiceGroup{group1},
+		Name:   "Sample application",
+		Labels: map[string]string{"app": "simple-app"},
+		Rules:  []*grpc_application_go.SecurityRule{&secRule},
+		Groups: []*grpc_application_go.ServiceGroup{group1},
 	}
 }
 
 func (a *Applications) getComplexDescriptor(sType grpc_application_go.StorageType) *grpc_application_go.AddAppDescriptorRequest {
 
 	service1 := &grpc_application_go.Service{
-		Name:        "simple-mysql",
-		Type:        grpc_application_go.ServiceType_DOCKER,
-		Image:       "mysql:5.6",
-		Specs:       &grpc_application_go.DeploySpecs{Replicas: 1},
-		Storage:     []*grpc_application_go.Storage{&grpc_application_go.Storage{MountPath: "/tmp", Type: grpc_application_go.StorageType_EPHEMERAL, Size: int64(100 * 1024 * 1024)}},
+		Name:    "simple-mysql",
+		Type:    grpc_application_go.ServiceType_DOCKER,
+		Image:   "mysql:5.6",
+		Specs:   &grpc_application_go.DeploySpecs{Replicas: 1},
+		Storage: []*grpc_application_go.Storage{&grpc_application_go.Storage{MountPath: "/tmp", Type: grpc_application_go.StorageType_EPHEMERAL, Size: int64(100 * 1024 * 1024)}},
 		ExposedPorts: []*grpc_application_go.Port{&grpc_application_go.Port{
 			Name: "mysqlport", InternalPort: 3306, ExposedPort: 3306,
 		}},
@@ -95,11 +112,11 @@ func (a *Applications) getComplexDescriptor(sType grpc_application_go.StorageTyp
 	}
 
 	service2 := &grpc_application_go.Service{
-		Name:        "simple-wordpress",
-		Type:        grpc_application_go.ServiceType_DOCKER,
-		Image:       "wordpress:5.0.0",
-		Specs:       &grpc_application_go.DeploySpecs{Replicas: 1},
-		Storage:     []*grpc_application_go.Storage{&grpc_application_go.Storage{MountPath: "/tmp", Type: grpc_application_go.StorageType_EPHEMERAL, Size: int64(100 * 1024 * 1024)}},
+		Name:    "simple-wordpress",
+		Type:    grpc_application_go.ServiceType_DOCKER,
+		Image:   "wordpress:5.0.0",
+		Specs:   &grpc_application_go.DeploySpecs{Replicas: 1},
+		Storage: []*grpc_application_go.Storage{&grpc_application_go.Storage{MountPath: "/tmp", Type: grpc_application_go.StorageType_EPHEMERAL, Size: int64(100 * 1024 * 1024)}},
 		ExposedPorts: []*grpc_application_go.Port{&grpc_application_go.Port{
 			Name: "wordpressport", InternalPort: 80, ExposedPort: 80,
 			Endpoints: []*grpc_application_go.Endpoint{
@@ -121,10 +138,10 @@ func (a *Applications) getComplexDescriptor(sType grpc_application_go.StorageTyp
 	}
 
 	service3 := &grpc_application_go.Service{
-		Name:        "kibana",
-		Type:        grpc_application_go.ServiceType_DOCKER,
-		Image:       "docker.elastic.co/kibana/kibana:6.4.2",
-		Specs:       &grpc_application_go.DeploySpecs{Replicas: 1},
+		Name:  "kibana",
+		Type:  grpc_application_go.ServiceType_DOCKER,
+		Image: "docker.elastic.co/kibana/kibana:6.4.2",
+		Specs: &grpc_application_go.DeploySpecs{Replicas: 1},
 		ExposedPorts: []*grpc_application_go.Port{&grpc_application_go.Port{
 			Name: "kibanaport", InternalPort: 5601, ExposedPort: 5601,
 			Endpoints: []*grpc_application_go.Endpoint{
@@ -139,11 +156,11 @@ func (a *Applications) getComplexDescriptor(sType grpc_application_go.StorageTyp
 	}
 
 	service4 := &grpc_application_go.Service{
-		Name:        "elastic",
-		Type:        grpc_application_go.ServiceType_DOCKER,
-		Image:       "docker.elastic.co/elasticsearch/elasticsearch:6.4.2",
-		Specs:       &grpc_application_go.DeploySpecs{Replicas: 1},
-		Storage:     []*grpc_application_go.Storage{&grpc_application_go.Storage{MountPath: "/usr/share/elasticsearch/data", Type: sType}},
+		Name:    "elastic",
+		Type:    grpc_application_go.ServiceType_DOCKER,
+		Image:   "docker.elastic.co/elasticsearch/elasticsearch:6.4.2",
+		Specs:   &grpc_application_go.DeploySpecs{Replicas: 1},
+		Storage: []*grpc_application_go.Storage{&grpc_application_go.Storage{MountPath: "/usr/share/elasticsearch/data", Type: sType}},
 		ExposedPorts: []*grpc_application_go.Port{&grpc_application_go.Port{
 			Name: "elasticport", InternalPort: 9200, ExposedPort: 9200,
 		}},
@@ -157,91 +174,89 @@ func (a *Applications) getComplexDescriptor(sType grpc_application_go.StorageTyp
 	}
 
 	service5 := &grpc_application_go.Service{
-		Name:        "heartbeat",
-		Type:        grpc_application_go.ServiceType_DOCKER,
-		Image:       "docker.elastic.co/beats/heartbeat:6.4.2",
+		Name:  "heartbeat",
+		Type:  grpc_application_go.ServiceType_DOCKER,
+		Image: "docker.elastic.co/beats/heartbeat:6.4.2",
 		Specs: &grpc_application_go.DeploySpecs{Replicas: 1},
-			Configs:              []*grpc_application_go.ConfigFile{
-				&grpc_application_go.ConfigFile{
-					Content:              []byte(HeartBeatConfigContent),
-					MountPath:            "/conf/heartbeat.yml",
-				},
+		Configs: []*grpc_application_go.ConfigFile{
+			&grpc_application_go.ConfigFile{
+				Content:   []byte(HeartBeatConfigContent),
+				MountPath: "/conf/heartbeat.yml",
 			},
-		Labels: map[string]string{"app": "heartbeat"},
+		},
+		Labels:       map[string]string{"app": "heartbeat"},
 		RunArguments: []string{"--path.config=/conf/"},
 	}
 
 	secRuleWP := grpc_application_go.SecurityRule{
-		Name:            "allow access to wordpress",
-		Access:          grpc_application_go.PortAccess_PUBLIC,
-		TargetPort:      80,
-		TargetServiceName: "simple-wordpress",
+		Name:                   "allow access to wordpress",
+		Access:                 grpc_application_go.PortAccess_PUBLIC,
+		TargetPort:             80,
+		TargetServiceName:      "simple-wordpress",
 		TargetServiceGroupName: "application",
 	}
 
 	secRuleWP2 := grpc_application_go.SecurityRule{
-		Name:            "allow access to wordpress to heartbeat",
-		Access:          grpc_application_go.PortAccess_APP_SERVICES,
-		TargetPort:      80,
-		TargetServiceName: "simple-wordpress",
+		Name:                   "allow access to wordpress to heartbeat",
+		Access:                 grpc_application_go.PortAccess_APP_SERVICES,
+		TargetPort:             80,
+		TargetServiceName:      "simple-wordpress",
 		TargetServiceGroupName: "application",
-		AuthServiceGroupName: "application",
-		AuthServices:    []string{"heartbeat"},
+		AuthServiceGroupName:   "application",
+		AuthServices:           []string{"heartbeat"},
 	}
 
 	secRuleMysql := grpc_application_go.SecurityRule{
-		Name:            "allow access to mysql",
-		TargetPort:      3306,
-		TargetServiceName: "simple-mysql",
+		Name:                   "allow access to mysql",
+		TargetPort:             3306,
+		TargetServiceName:      "simple-mysql",
 		TargetServiceGroupName: "application",
-		Access:          grpc_application_go.PortAccess_APP_SERVICES,
-		AuthServiceGroupName: "application",
-		AuthServices:    []string{"simple-wordpress"},
+		Access:                 grpc_application_go.PortAccess_APP_SERVICES,
+		AuthServiceGroupName:   "application",
+		AuthServices:           []string{"simple-wordpress"},
 	}
 	secRuleElastic := grpc_application_go.SecurityRule{
-		Name:            "allow access to elastic",
-		TargetPort:      9200,
-		TargetServiceName: "elastic",
+		Name:                   "allow access to elastic",
+		TargetPort:             9200,
+		TargetServiceName:      "elastic",
 		TargetServiceGroupName: "application",
-		Access:          grpc_application_go.PortAccess_APP_SERVICES,
-		AuthServiceGroupName: "application",
-		AuthServices:    []string{"kibana", "heartbeat"},
+		Access:                 grpc_application_go.PortAccess_APP_SERVICES,
+		AuthServiceGroupName:   "application",
+		AuthServices:           []string{"kibana", "heartbeat"},
 	}
 
 	secRuleK := grpc_application_go.SecurityRule{
-		Name:            "allow access to kibana",
-		TargetPort:      5601,
-		TargetServiceName: "kibana",
+		Name:                   "allow access to kibana",
+		TargetPort:             5601,
+		TargetServiceName:      "kibana",
 		TargetServiceGroupName: "application",
-		Access:          grpc_application_go.PortAccess_PUBLIC,
+		Access:                 grpc_application_go.PortAccess_PUBLIC,
 	}
-
-
 
 	group1 := &grpc_application_go.ServiceGroup{
 		Name: "application",
 		Services: []*grpc_application_go.Service{
 			service1, service2, service3, service4, service5,
 		},
-		Specs: &grpc_application_go.ServiceGroupDeploymentSpecs{Replicas:1,MultiClusterReplica:false},
+		Specs: &grpc_application_go.ServiceGroupDeploymentSpecs{Replicas: 1, MultiClusterReplica: false},
 	}
 
 	return &grpc_application_go.AddAppDescriptorRequest{
-		Name:        "Sample application with 5 elements",
-		Labels:      map[string]string{"app": "simple-app"},
-		Rules:       []*grpc_application_go.SecurityRule{&secRuleWP, &secRuleK, &secRuleMysql, &secRuleElastic, &secRuleWP2},
-		Groups:      []*grpc_application_go.ServiceGroup{group1},
+		Name:   "Sample application with 5 elements",
+		Labels: map[string]string{"app": "simple-app"},
+		Rules:  []*grpc_application_go.SecurityRule{&secRuleWP, &secRuleK, &secRuleMysql, &secRuleElastic, &secRuleWP2},
+		Groups: []*grpc_application_go.ServiceGroup{group1},
 	}
 }
 
 func (a *Applications) getMultiReplicaDescriptor(sType grpc_application_go.StorageType) *grpc_application_go.AddAppDescriptorRequest {
 
 	service1 := &grpc_application_go.Service{
-		Name:        "simple-mysql",
-		Type:        grpc_application_go.ServiceType_DOCKER,
-		Image:       "mysql:5.6",
-		Specs:       &grpc_application_go.DeploySpecs{Replicas: 1},
-		Storage:     []*grpc_application_go.Storage{{MountPath: "/tmp", Type: grpc_application_go.StorageType_EPHEMERAL, Size: int64(100 * 1024 * 1024)}},
+		Name:    "simple-mysql",
+		Type:    grpc_application_go.ServiceType_DOCKER,
+		Image:   "mysql:5.6",
+		Specs:   &grpc_application_go.DeploySpecs{Replicas: 1},
+		Storage: []*grpc_application_go.Storage{{MountPath: "/tmp", Type: grpc_application_go.StorageType_EPHEMERAL, Size: int64(100 * 1024 * 1024)}},
 		ExposedPorts: []*grpc_application_go.Port{&grpc_application_go.Port{
 			Name: "mysqlport", InternalPort: 3306, ExposedPort: 3306,
 		}},
@@ -249,11 +264,10 @@ func (a *Applications) getMultiReplicaDescriptor(sType grpc_application_go.Stora
 		Labels:               map[string]string{"app": "simple-mysql", "component": "simple-app"},
 	}
 
-
 	group1 := &grpc_application_go.ServiceGroup{
-		Name: "database",
+		Name:     "database",
 		Services: []*grpc_application_go.Service{service1},
-		Specs: &grpc_application_go.ServiceGroupDeploymentSpecs{Replicas:1,MultiClusterReplica:false},
+		Specs:    &grpc_application_go.ServiceGroupDeploymentSpecs{Replicas: 1, MultiClusterReplica: false},
 	}
 
 	service2 := &grpc_application_go.Service{
@@ -277,9 +291,9 @@ func (a *Applications) getMultiReplicaDescriptor(sType grpc_application_go.Stora
 	}
 
 	group2 := &grpc_application_go.ServiceGroup{
-		Name: "front",
+		Name:     "front",
 		Services: []*grpc_application_go.Service{service2},
-		Specs: &grpc_application_go.ServiceGroupDeploymentSpecs{Replicas:0,MultiClusterReplica:true},
+		Specs:    &grpc_application_go.ServiceGroupDeploymentSpecs{Replicas: 0, MultiClusterReplica: true},
 	}
 
 	// add additional storage for persistence example
@@ -289,17 +303,17 @@ func (a *Applications) getMultiReplicaDescriptor(sType grpc_application_go.Stora
 		service2.Storage = append(service2.Storage, &grpc_application_go.Storage{MountPath: "/var/www/html", Type: sType, Size: int64(512 * 1024 * 1024)})
 	}
 	secRule := grpc_application_go.SecurityRule{
-		Name:            "allow access to wordpress",
-		Access:          grpc_application_go.PortAccess_PUBLIC,
-		TargetPort:      80,
-		TargetServiceName: "simple-wordpress",
+		Name:                   "allow access to wordpress",
+		Access:                 grpc_application_go.PortAccess_PUBLIC,
+		TargetPort:             80,
+		TargetServiceName:      "simple-wordpress",
 		TargetServiceGroupName: "front",
 	}
 
 	return &grpc_application_go.AddAppDescriptorRequest{
-		Name:        "Multireplica Sample application",
-		Labels:      map[string]string{"app": "simple-app"},
-		Rules:       []*grpc_application_go.SecurityRule{&secRule},
-		Groups:      []*grpc_application_go.ServiceGroup{group1, group2},
+		Name:   "Multireplica Sample application",
+		Labels: map[string]string{"app": "simple-app"},
+		Rules:  []*grpc_application_go.SecurityRule{&secRule},
+		Groups: []*grpc_application_go.ServiceGroup{group1, group2},
 	}
 }

@@ -1,5 +1,18 @@
 /*
- * Copyright (C)  2019 Nalej - All Rights Reserved
+ * Copyright 2019 Nalej
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
  */
 
 package commands
@@ -23,10 +36,10 @@ var inventoryCmd = &cobra.Command{
 
 var (
 	queryAssetSelector = &cli.AssetSelector{}
-	queryTimeRange = &cli.TimeRange{}
-	queryMetrics = []string{}
-	queryAggr = ""
-	listAssetSelector = &cli.AssetSelector{}
+	queryTimeRange     = &cli.TimeRange{}
+	queryMetrics       = []string{}
+	queryAggr          = ""
+	listAssetSelector  = &cli.AssetSelector{}
 )
 
 func addAssetSelector(cmd *cobra.Command, selector *cli.AssetSelector) {
@@ -82,10 +95,10 @@ func init() {
 }
 
 var inventoryListCmd = &cobra.Command{
-	Use:   "list",
+	Use:     "list",
 	Aliases: []string{"ls"},
-	Short: "List the inventory",
-	Long:  `List the inventory in a given organization`,
+	Short:   "List the inventory",
+	Long:    `List the inventory in a given organization`,
 	Run: func(cmd *cobra.Command, args []string) {
 		SetupLogging()
 		ec := cli.NewInventory(
@@ -109,10 +122,10 @@ var invControllerCommand = &cobra.Command{
 }
 
 var invAssetCommand = &cobra.Command{
-	Use:   "asset",
+	Use:     "asset",
 	Aliases: []string{"ass"},
-	Short: "Asset commands",
-	Long:  `Asset commands`,
+	Short:   "Asset commands",
+	Long:    `Asset commands`,
 	Run: func(cmd *cobra.Command, args []string) {
 		SetupLogging()
 		cmd.Help()
@@ -131,10 +144,10 @@ var invDeviceCommand = &cobra.Command{
 }
 
 var invDeviceLabelsCmd = &cobra.Command{
-	Use:   "label",
+	Use:     "label",
 	Aliases: []string{"labels", "l"},
-	Short: "Manage device labels",
-	Long:  `Manage device labels`,
+	Short:   "Manage device labels",
+	Long:    `Manage device labels`,
 	Run: func(cmd *cobra.Command, args []string) {
 		SetupLogging()
 		cmd.Help()
@@ -142,11 +155,11 @@ var invDeviceLabelsCmd = &cobra.Command{
 }
 
 var invControllerExtInfoCmd = &cobra.Command{
-	Use:   "info [edgeControllerID]",
+	Use:     "info [edgeControllerID]",
 	Aliases: []string{"get"},
-	Short: "Get extended information on an edge controller",
-	Long:  `Get extended information on an edge controller`,
-	Args:  cobra.ExactArgs(1),
+	Short:   "Get extended information on an edge controller",
+	Long:    `Get extended information on an edge controller`,
+	Args:    cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		SetupLogging()
 		ec := cli.NewInventory(
@@ -159,11 +172,11 @@ var invControllerExtInfoCmd = &cobra.Command{
 }
 
 var invAssetInfoCmd = &cobra.Command{
-	Use:   "info [assetID]",
+	Use:     "info [assetID]",
 	Aliases: []string{"get"},
-	Short: "Get extended information on an asset",
-	Long:  `Get extended information on an asset`,
-	Args:  cobra.ExactArgs(1),
+	Short:   "Get extended information on an asset",
+	Long:    `Get extended information on an asset`,
+	Args:    cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		SetupLogging()
 		ec := cli.NewInventory(
@@ -193,17 +206,17 @@ var invAssetUpdateLocationCmd = &cobra.Command{
 			cliOptions.Resolve("cacert", caCertPath),
 			cliOptions.Resolve("output", output), cliOptions.ResolveAsInt("labelLength", labelLength))
 
-			assetID = args[0]
-			newLocation := args[1]
+		assetID = args[0]
+		newLocation := args[1]
 		a.UpdateLocation(cliOptions.Resolve("organizationID", organizationID), assetID, newLocation)
 	},
 }
 
 var assetLabelsCmd = &cobra.Command{
-	Use:   "label",
+	Use:     "label",
 	Aliases: []string{"labels", "l"},
-	Short: "Manage asset labels",
-	Long:  `Manage asset labels`,
+	Short:   "Manage asset labels",
+	Long:    `Manage asset labels`,
 	Run: func(cmd *cobra.Command, args []string) {
 		SetupLogging()
 		cmd.Help()
@@ -211,11 +224,11 @@ var assetLabelsCmd = &cobra.Command{
 }
 
 var invDeviceInfoCmd = &cobra.Command{
-	Use:   "info [deviceID]",
+	Use:     "info [deviceID]",
 	Aliases: []string{"get"},
-	Short: "Get extended information of a device",
-	Long:  `Get extended information of a device`,
-	Args:  cobra.ExactArgs(1),
+	Short:   "Get extended information of a device",
+	Long:    `Get extended information of a device`,
+	Args:    cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		SetupLogging()
 		ec := cli.NewInventory(
@@ -244,8 +257,8 @@ var invDeviceUpdateLocationCmd = &cobra.Command{
 			cliOptions.Resolve("cacert", caCertPath),
 			cliOptions.Resolve("output", output), cliOptions.ResolveAsInt("labelLength", labelLength))
 
-			assetDeviceId = args[0]
-			newLocation := args[1]
+		assetDeviceId = args[0]
+		newLocation := args[1]
 		device.UpdateDeviceLocation(cliOptions.Resolve("organizationID", organizationID), assetDeviceId, newLocation)
 	},
 }
@@ -263,8 +276,8 @@ var invEdgeControllerUpdateLocationCmd = &cobra.Command{
 			insecure, useTLS,
 			cliOptions.Resolve("cacert", caCertPath), cliOptions.Resolve("output", output), cliOptions.ResolveAsInt("labelLength", labelLength))
 
-			edgeControllerID = args[0]
-			newLocation := args[1]
+		edgeControllerID = args[0]
+		newLocation := args[1]
 
 		ec.UpdateGeolocation(cliOptions.Resolve("organizationID", organizationID), edgeControllerID, newLocation)
 	},
@@ -287,10 +300,10 @@ var invMonitoringCmd = &cobra.Command{
 }
 
 var invMonitoringListCmd = &cobra.Command{
-	Use:   "list",
+	Use:     "list",
 	Aliases: []string{"ls"},
-	Short: "List available metrics for assets",
-	Long:  `List available metrics for assets`,
+	Short:   "List available metrics for assets",
+	Long:    `List available metrics for assets`,
 	Run: func(cmd *cobra.Command, args []string) {
 		SetupLogging()
 		inv := cli.NewInventoryMonitoring(
@@ -304,10 +317,10 @@ var invMonitoringListCmd = &cobra.Command{
 }
 
 var edgeControllerLabelsCmd = &cobra.Command{
-	Use:   "label",
+	Use:     "label",
 	Aliases: []string{"labels", "l"},
-	Short: "Manage ec labels",
-	Long:  `Manage ec labels`,
+	Short:   "Manage ec labels",
+	Long:    `Manage ec labels`,
 	Run: func(cmd *cobra.Command, args []string) {
 		SetupLogging()
 		cmd.Help()
@@ -318,7 +331,7 @@ var addLabelToAssetCmd = &cobra.Command{
 	Use:   "add [assetID] [labels]",
 	Short: "Add a set of labels to an asset",
 	Long:  `Add a set of labels to an asset`,
-	Args: cobra.MaximumNArgs(2),
+	Args:  cobra.MaximumNArgs(2),
 	Run: func(cmd *cobra.Command, args []string) {
 		SetupLogging()
 		n := cli.NewAsset(
@@ -332,11 +345,11 @@ var addLabelToAssetCmd = &cobra.Command{
 }
 
 var removeLabelFromAssetCmd = &cobra.Command{
-	Use:   "delete [assetID] [labels]",
+	Use:     "delete [assetID] [labels]",
 	Aliases: []string{"remove", "del", "rm"},
-	Short: "Remove a set of labels from an asset",
-	Long:  `Remove a set of labels from an asset`,
-	Args: cobra.MaximumNArgs(2),
+	Short:   "Remove a set of labels from an asset",
+	Long:    `Remove a set of labels from an asset`,
+	Args:    cobra.MaximumNArgs(2),
 	Run: func(cmd *cobra.Command, args []string) {
 		SetupLogging()
 		n := cli.NewAsset(
@@ -353,7 +366,7 @@ var addLabelToECCmd = &cobra.Command{
 	Use:   "add [edgeControllerID] [labels]",
 	Short: "Add a set of labels to an EC",
 	Long:  `Add a set of labels to an EC`,
-	Args: cobra.MaximumNArgs(2),
+	Args:  cobra.MaximumNArgs(2),
 	Run: func(cmd *cobra.Command, args []string) {
 		SetupLogging()
 		n := cli.NewEdgeController(
@@ -367,11 +380,11 @@ var addLabelToECCmd = &cobra.Command{
 }
 
 var removeLabelFromECCmd = &cobra.Command{
-	Use:   "delete [edgeControllerID] [labels]",
+	Use:     "delete [edgeControllerID] [labels]",
 	Aliases: []string{"remove", "del", "rm"},
-	Short: "Remove a set of labels from an EC",
-	Long:  `Remove a set of labels from an EC`,
-	Args: cobra.MaximumNArgs(2),
+	Short:   "Remove a set of labels from an EC",
+	Long:    `Remove a set of labels from an EC`,
+	Args:    cobra.MaximumNArgs(2),
 	Run: func(cmd *cobra.Command, args []string) {
 		SetupLogging()
 		n := cli.NewEdgeController(
@@ -380,7 +393,7 @@ var removeLabelFromECCmd = &cobra.Command{
 			insecure, useTLS,
 			cliOptions.Resolve("cacert", caCertPath), cliOptions.Resolve("output", output), cliOptions.ResolveAsInt("labelLength", labelLength))
 
-		n.RemoveLabelFromEC(cliOptions.Resolve("organizationID", organizationID),	args[0], args[1])
+		n.RemoveLabelFromEC(cliOptions.Resolve("organizationID", organizationID), args[0], args[1])
 	},
 }
 
@@ -388,7 +401,7 @@ var addLabelToInvDeviceCmd = &cobra.Command{
 	Use:   "add [assetDeviceID] [labels]",
 	Short: "Add a set of labels to a device",
 	Long:  `Add a set of labels to a device`,
-	Args: cobra.MaximumNArgs(2),
+	Args:  cobra.MaximumNArgs(2),
 	Run: func(cmd *cobra.Command, args []string) {
 		SetupLogging()
 		n := cli.NewDevices(
@@ -397,7 +410,7 @@ var addLabelToInvDeviceCmd = &cobra.Command{
 			insecure, useTLS,
 			cliOptions.Resolve("cacert", caCertPath), cliOptions.Resolve("output", output), cliOptions.ResolveAsInt("labelLength", labelLength))
 
-		device := strings.Split(args[0],"#")
+		device := strings.Split(args[0], "#")
 		deviceGroupID := device[0]
 		deviceID := device[1]
 
@@ -406,11 +419,11 @@ var addLabelToInvDeviceCmd = &cobra.Command{
 }
 
 var removeLabelFromInvDeviceCmd = &cobra.Command{
-	Use:   "delete [assetDeviceID] [labels]",
+	Use:     "delete [assetDeviceID] [labels]",
 	Aliases: []string{"remove", "del", "rm"},
-	Short: "Remove a set of labels from a device",
-	Long:  `Remove a set of labels from a device`,
-	Args: cobra.MaximumNArgs(2),
+	Short:   "Remove a set of labels from a device",
+	Long:    `Remove a set of labels from a device`,
+	Args:    cobra.MaximumNArgs(2),
 	Run: func(cmd *cobra.Command, args []string) {
 		SetupLogging()
 		n := cli.NewDevices(
@@ -419,19 +432,19 @@ var removeLabelFromInvDeviceCmd = &cobra.Command{
 			insecure, useTLS,
 			cliOptions.Resolve("cacert", caCertPath), cliOptions.Resolve("output", output), cliOptions.ResolveAsInt("labelLength", labelLength))
 
-		device := strings.Split(args[0],"#")
+		device := strings.Split(args[0], "#")
 		deviceGroupID := device[0]
 		deviceID := device[1]
 
-		n.RemoveLabelFromDevice(cliOptions.Resolve("organizationID", organizationID),	deviceGroupID, deviceID, args[1])
+		n.RemoveLabelFromDevice(cliOptions.Resolve("organizationID", organizationID), deviceGroupID, deviceID, args[1])
 	},
 }
 
 var inventorySummaryCmd = &cobra.Command{
-	Use:   "summary",
+	Use:     "summary",
 	Aliases: []string{"sum"},
-	Short: "Provides a summary of the inventory elements",
-	Long:  `Provides a summary of the inventory elements`,
+	Short:   "Provides a summary of the inventory elements",
+	Long:    `Provides a summary of the inventory elements`,
 	Run: func(cmd *cobra.Command, args []string) {
 		SetupLogging()
 		inv := cli.NewInventory(

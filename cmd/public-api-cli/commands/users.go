@@ -1,5 +1,18 @@
 /*
- * Copyright (C) 2018 Nalej - All Rights Reserved
+ * Copyright 2019 Nalej
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
  */
 
 package commands
@@ -24,36 +37,36 @@ func init() {
 	rootCmd.AddCommand(usersCmd)
 	usersCmd.PersistentFlags().StringVar(&email, "email", "", "User email")
 	usersCmd.AddCommand(userInfoCmd)
-	userInfoCmd.MarkPersistentFlagRequired("email")
+	_ = userInfoCmd.MarkPersistentFlagRequired("email")
 	usersCmd.AddCommand(userListCmd)
 	usersCmd.AddCommand(deleteUserCmd)
 
 	resetPasswordCmd.Flags().StringVar(&password, "password", "", "Password")
 	resetPasswordCmd.Flags().StringVar(&newPassword, "newPassword", "", "New password")
-	resetPasswordCmd.MarkPersistentFlagRequired("email")
-	resetPasswordCmd.MarkFlagRequired("password")
-	resetPasswordCmd.MarkFlagRequired("newPassword")
+	_ = resetPasswordCmd.MarkPersistentFlagRequired("email")
+	_ = resetPasswordCmd.MarkFlagRequired("password")
+	_ = resetPasswordCmd.MarkFlagRequired("newPassword")
 	usersCmd.AddCommand(resetPasswordCmd)
 
 	updateUserCmd.Flags().StringVar(&name, "name", "", "New name for the user")
-	updateUserCmd.MarkFlagRequired("name")
+	_ = updateUserCmd.MarkFlagRequired("name")
 	usersCmd.AddCommand(updateUserCmd)
 
 	addUserCmd.Flags().StringVar(&name, "name", "", "Full name")
 	addUserCmd.Flags().StringVar(&roleName, "role", "", "Rol name")
 	addUserCmd.Flags().StringVar(&password, "password", "", "Password")
-	addUserCmd.MarkPersistentFlagRequired("email")
-	addUserCmd.MarkFlagRequired("name")
-	addUserCmd.MarkFlagRequired("role")
-	addUserCmd.MarkFlagRequired("password")
+	_ = addUserCmd.MarkPersistentFlagRequired("email")
+	_ = addUserCmd.MarkFlagRequired("name")
+	_ = addUserCmd.MarkFlagRequired("role")
+	_ = addUserCmd.MarkFlagRequired("password")
 	usersCmd.AddCommand(addUserCmd)
 }
 
 var userInfoCmd = &cobra.Command{
-	Use:   "info",
+	Use:     "info",
 	Aliases: []string{"get"},
-	Short: "Get user info",
-	Long:  `Get user info`,
+	Short:   "Get user info",
+	Long:    `Get user info`,
 	Run: func(cmd *cobra.Command, args []string) {
 		SetupLogging()
 		u := cli.NewUsers(
@@ -66,10 +79,10 @@ var userInfoCmd = &cobra.Command{
 }
 
 var userListCmd = &cobra.Command{
-	Use:   "list",
+	Use:     "list",
 	Aliases: []string{"ls"},
-	Short: "List users",
-	Long:  `List users`,
+	Short:   "List users",
+	Long:    `List users`,
 	Run: func(cmd *cobra.Command, args []string) {
 		SetupLogging()
 		u := cli.NewUsers(

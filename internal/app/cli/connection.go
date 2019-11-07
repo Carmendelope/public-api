@@ -1,3 +1,20 @@
+/*
+ * Copyright 2019 Nalej
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
+
 package cli
 
 import (
@@ -20,11 +37,11 @@ import (
 // Connection structure for the public API
 type Connection struct {
 	// Address to connect to.
-	Address    string
+	Address string
 	// Port where the public API is listening
-	Port       int
+	Port int
 	// Insecure accepts any CA.
-	Insecure   bool
+	Insecure bool
 	// UseTLS specifies whether the target address uses TLS connections
 	UseTLS bool
 	// CACertPath contains the path of the CA that will be used for verifications.
@@ -37,7 +54,7 @@ type Connection struct {
 
 // NewConnection creates a new connection object that will establish the communication with the public API.
 func NewConnection(address string, port int, insecure bool, useTLS bool, caCertPath string, output string, labelLength int) *Connection {
-	return &Connection{address, port, insecure, useTLS,caCertPath, output, labelLength}
+	return &Connection{address, port, insecure, useTLS, caCertPath, output, labelLength}
 }
 
 // GetPath resolves a given path by adding support for relative paths.
@@ -46,11 +63,11 @@ func GetPath(path string) string {
 		usr, _ := user.Current()
 		return strings.Replace(path, "~", usr.HomeDir, 1)
 	}
-	if strings.HasPrefix(path, "../"){
+	if strings.HasPrefix(path, "../") {
 		abs, _ := filepath.Abs("../")
 		return strings.Replace(path, "..", abs, 1)
 	}
-	if strings.HasPrefix(path, "."){
+	if strings.HasPrefix(path, ".") {
 		abs, _ := filepath.Abs("./")
 		return strings.Replace(path, ".", abs, 1)
 	}
@@ -66,7 +83,7 @@ func (c *Connection) GetSecureConnection() (*grpc.ClientConn, derrors.Error) {
 		cfg := &tls.Config{ServerName: "", InsecureSkipVerify: true}
 		creds = credentials.NewTLS(cfg)
 		log.Warn().Msg("CA validation will be skipped")
-	}else{
+	} else {
 		rootCAs := x509.NewCertPool()
 		caPath := GetPath(c.CACertPath)
 		log.Debug().Str("caCertPath", caPath).Msg("loading CA cert")
@@ -107,10 +124,10 @@ func (c *Connection) GetNoTLSConnection() (*grpc.ClientConn, derrors.Error) {
 
 // GetConnection creates the appropriate connection type based on the established preferences.
 func (c *Connection) GetConnection() (*grpc.ClientConn, derrors.Error) {
-	if c.UseTLS{
+	if c.UseTLS {
 		if c.Insecure || c.CACertPath != "" {
 			return c.GetSecureConnection()
-		}else{
+		} else {
 			return nil, derrors.NewInvalidArgumentError("expecting CA certificate path or insecure connection")
 		}
 	}
@@ -120,15 +137,15 @@ func (c *Connection) GetConnection() (*grpc.ClientConn, derrors.Error) {
 func (c *Connection) PrintResultOrError(result interface{}, err error, errMsg string) {
 	if err != nil {
 		converted := conversions.ToDerror(err)
-		if zerolog.GlobalLevel() == zerolog.DebugLevel{
+		if zerolog.GlobalLevel() == zerolog.DebugLevel {
 			log.Fatal().Str("trace", conversions.ToDerror(err).DebugReport()).Msg(errMsg)
-		}else{
+		} else {
 			log.Fatal().Str("err", converted.Error()).Msg(errMsg)
 		}
 	} else {
-		if c.asText(){
+		if c.asText() {
 			c.PrintResultAsTable(result)
-		}else{
+		} else {
 			c.PrintResult(result)
 		}
 	}
@@ -137,9 +154,9 @@ func (c *Connection) PrintResultOrError(result interface{}, err error, errMsg st
 func (c *Connection) ExitOnError(err error, errMsg string) {
 	if err != nil {
 		converted := conversions.ToDerror(err)
-		if zerolog.GlobalLevel() == zerolog.DebugLevel{
+		if zerolog.GlobalLevel() == zerolog.DebugLevel {
 			log.Fatal().Str("trace", conversions.ToDerror(err).DebugReport()).Msg(errMsg)
-		}else{
+		} else {
 			log.Fatal().Str("err", converted.Error()).Msg(errMsg)
 		}
 	}
@@ -163,11 +180,11 @@ func (c *Connection) PrintResult(result interface{}) error {
 	return err
 }
 
-func (c * Connection) asText() bool {
+func (c *Connection) asText() bool {
 	return strings.ToLower(c.output) == "text"
 }
 
-func (c * Connection) PrintResultAsTable(result interface{}) {
+func (c *Connection) PrintResultAsTable(result interface{}) {
 	table := AsTable(result, c.labelLength)
 	table.Print()
 }

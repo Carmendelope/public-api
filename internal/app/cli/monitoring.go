@@ -1,5 +1,18 @@
 /*
- * Copyright (C)  2019 Nalej - All Rights Reserved
+ * Copyright 2019 Nalej
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
  */
 
 package cli
@@ -19,20 +32,20 @@ import (
 )
 
 type AssetSelector struct {
-	OrganizationId string
+	OrganizationId   string
 	EdgeControllerId string
-	AssetIds []string
-	GroupIds []string
-	Labels map[string]string
+	AssetIds         []string
+	GroupIds         []string
+	Labels           map[string]string
 }
 
 func (a *AssetSelector) ToGRPC() *grpc_inventory_go.AssetSelector {
 	selector := &grpc_inventory_go.AssetSelector{
-		OrganizationId: a.OrganizationId,
+		OrganizationId:   a.OrganizationId,
 		EdgeControllerId: a.EdgeControllerId,
-		AssetIds: a.AssetIds,
-		GroupIds: a.GroupIds,
-		Labels: a.Labels,
+		AssetIds:         a.AssetIds,
+		GroupIds:         a.GroupIds,
+		Labels:           a.Labels,
 	}
 
 	return selector
@@ -40,9 +53,9 @@ func (a *AssetSelector) ToGRPC() *grpc_inventory_go.AssetSelector {
 
 type TimeRange struct {
 	// Timestamps are strings to be parsed
-	Timestamp string
-	Start string
-	End string
+	Timestamp  string
+	Start      string
+	End        string
 	Resolution time.Duration
 }
 
@@ -61,9 +74,9 @@ func dateParse(in string) int64 {
 
 func (t *TimeRange) ToGRPC() *grpc_monitoring_go.QueryMetricsRequest_TimeRange {
 	timeRange := &grpc_monitoring_go.QueryMetricsRequest_TimeRange{
-		Timestamp: dateParse(t.Timestamp),
-		TimeStart: dateParse(t.Start),
-		TimeEnd: dateParse(t.End),
+		Timestamp:  dateParse(t.Timestamp),
+		TimeStart:  dateParse(t.Start),
+		TimeEnd:    dateParse(t.End),
 		Resolution: int64(t.Resolution.Seconds()),
 	}
 
@@ -108,16 +121,16 @@ func (i *InventoryMonitoring) QueryMetrics(selector *AssetSelector, metrics []st
 	aggrType, found := grpc_monitoring_go.AggregationType_value[aggr]
 	if !found {
 		methods := []string{}
-		for method := range(grpc_monitoring_go.AggregationType_value) {
+		for method := range grpc_monitoring_go.AggregationType_value {
 			methods = append(methods, method)
 		}
 		log.Fatal().Str("aggregation", aggr).Msg("Aggregation method not available. Available methods: " + strings.Join(methods, ", "))
 	}
 
 	query := &grpc_monitoring_go.QueryMetricsRequest{
-		Assets: selector.ToGRPC(),
-		Metrics: metrics,
-		TimeRange: timeRange.ToGRPC(),
+		Assets:      selector.ToGRPC(),
+		Metrics:     metrics,
+		TimeRange:   timeRange.ToGRPC(),
 		Aggregation: grpc_monitoring_go.AggregationType(aggrType),
 	}
 

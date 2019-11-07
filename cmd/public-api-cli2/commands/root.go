@@ -1,5 +1,18 @@
 /*
- * Copyright (C) 2018 Nalej - All Rights Reserved
+ * Copyright 2019 Nalej
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
  */
 
 package commands
@@ -87,12 +100,12 @@ func PrintResult(result interface{}) error {
 	return err
 }
 
-func ResolveArgument(attributeName [] string, args []string, flagValue []string) ([]string, derrors.Error) {
+func ResolveArgument(attributeName []string, args []string, flagValue []string) ([]string, derrors.Error) {
 	result := make([]string, 0)
 
-	if len(args) < len(attributeName){
-		for index := 0; index < len(attributeName); index ++ {
-			if flagValue[index] == ""{
+	if len(args) < len(attributeName) {
+		for index := 0; index < len(attributeName); index++ {
+			if flagValue[index] == "" {
 				return nil, derrors.NewNotFoundError(fmt.Sprintf("argument %s or flag value --%s not found", attributeName[index], attributeName[index]))
 			}
 		}
@@ -103,17 +116,17 @@ func ResolveArgument(attributeName [] string, args []string, flagValue []string)
 		return nil, derrors.NewInternalError("length mismatch")
 	}
 
-	for index := 0; index < len(attributeName); index ++ {
+	for index := 0; index < len(attributeName); index++ {
 		found := false
-		if flagValue[index] != ""{
+		if flagValue[index] != "" {
 			result = append(result, flagValue[index])
 			found = true
 		}
-		if args[index] != ""{
+		if args[index] != "" {
 			result = append(result, args[index])
 			found = true
 		}
-		if ! found {
+		if !found {
 			return nil, derrors.NewNotFoundError(attributeName[index])
 		}
 	}
