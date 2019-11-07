@@ -1,5 +1,18 @@
 /*
- * Copyright (C)  2019 Nalej - All Rights Reserved
+ * Copyright 2019 Nalej
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
  */
 
 package ec
@@ -27,7 +40,7 @@ func NewHandler(manager Manager) *Handler {
 	return &Handler{manager}
 }
 
-func (h*Handler) CreateEICToken(ctx context.Context, organizationID *grpc_organization_go.OrganizationId) (*grpc_inventory_manager_go.EICJoinToken, error) {
+func (h *Handler) CreateEICToken(ctx context.Context, organizationID *grpc_organization_go.OrganizationId) (*grpc_inventory_manager_go.EICJoinToken, error) {
 	rm, err := authhelper.GetRequestMetadata(ctx)
 	if err != nil {
 		return nil, conversions.ToGRPCError(err)
@@ -42,7 +55,7 @@ func (h*Handler) CreateEICToken(ctx context.Context, organizationID *grpc_organi
 	return h.Manager.CreateEICToken(organizationID)
 }
 
-func (h*Handler) UnlinkEIC(ctx context.Context, request *grpc_inventory_manager_go.UnlinkECRequest) (*grpc_common_go.Success, error) {
+func (h *Handler) UnlinkEIC(ctx context.Context, request *grpc_inventory_manager_go.UnlinkECRequest) (*grpc_common_go.Success, error) {
 	rm, err := authhelper.GetRequestMetadata(ctx)
 	if err != nil {
 		return nil, conversions.ToGRPCError(err)
@@ -56,7 +69,6 @@ func (h*Handler) UnlinkEIC(ctx context.Context, request *grpc_inventory_manager_
 	}
 	return h.Manager.UnlinkEIC(request)
 }
-
 
 func (h *Handler) InstallAgent(ctx context.Context, request *grpc_inventory_manager_go.InstallAgentRequest) (*grpc_public_api_go.ECOpResponse, error) {
 	rm, err := authhelper.GetRequestMetadata(ctx)
@@ -73,7 +85,7 @@ func (h *Handler) InstallAgent(ctx context.Context, request *grpc_inventory_mana
 	return h.Manager.InstallAgent(request)
 }
 
-func (h *Handler) UpdateGeolocation(ctx context.Context, updateRequest *grpc_inventory_manager_go.UpdateGeolocationRequest) (*grpc_inventory_go.EdgeController, error){
+func (h *Handler) UpdateGeolocation(ctx context.Context, updateRequest *grpc_inventory_manager_go.UpdateGeolocationRequest) (*grpc_inventory_go.EdgeController, error) {
 
 	rm, err := authhelper.GetRequestMetadata(ctx)
 	if err != nil {
@@ -89,5 +101,3 @@ func (h *Handler) UpdateGeolocation(ctx context.Context, updateRequest *grpc_inv
 	return h.Manager.UpdateGeolocation(updateRequest)
 
 }
-
-

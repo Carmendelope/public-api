@@ -1,3 +1,20 @@
+/*
+ * Copyright 2019 Nalej
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
+
 package cli2
 
 import (
@@ -15,11 +32,11 @@ import (
 // Connection structure for the public API
 type Connection struct {
 	// Address to connect to.
-	Address    string
+	Address string
 	// Port where the public API is listening
-	Port       int
+	Port int
 	// Insecure accepts any CA.
-	Insecure   bool
+	Insecure bool
 	// UseTLS specifies whether the target address uses TLS connections
 	UseTLS bool
 	// CACertPath contains the path of the CA that will be used for verifications.
@@ -28,7 +45,7 @@ type Connection struct {
 
 // NewConnection creates a new connection object that will establish the communication with the public API.
 func NewConnection(address string, port int, insecure bool, useTLS bool, caCertPath string) *Connection {
-	return &Connection{address, port, insecure, useTLS,caCertPath}
+	return &Connection{address, port, insecure, useTLS, caCertPath}
 }
 
 // GetSecureConnection returns a secure connection.
@@ -40,7 +57,7 @@ func (c *Connection) GetSecureConnection() (*grpc.ClientConn, derrors.Error) {
 		cfg := &tls.Config{ServerName: "", InsecureSkipVerify: true}
 		creds = credentials.NewTLS(cfg)
 		log.Warn().Msg("CA validation will be skipped")
-	}else{
+	} else {
 		rootCAs := x509.NewCertPool()
 		caPath := options.GetPath(c.CACertPath)
 		log.Debug().Str("caCertPath", caPath).Msg("loading CA cert")
@@ -81,10 +98,10 @@ func (c *Connection) GetNoTLSConnection() (*grpc.ClientConn, derrors.Error) {
 
 // GetConnection creates the appropriate connection type based on the established preferences.
 func (c *Connection) GetConnection() (*grpc.ClientConn, derrors.Error) {
-	if c.UseTLS{
+	if c.UseTLS {
 		if c.Insecure || c.CACertPath != "" {
 			return c.GetSecureConnection()
-		}else{
+		} else {
 			return nil, derrors.NewInvalidArgumentError("expecting CA certificate path or insecure connection")
 		}
 	}

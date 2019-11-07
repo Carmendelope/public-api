@@ -1,5 +1,18 @@
 /*
- * Copyright (C)  2019 Nalej - All Rights Reserved
+ * Copyright 2019 Nalej
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
  */
 
 package commands
@@ -82,7 +95,7 @@ var addDeviceGroupCmd = &cobra.Command{
 	Use:   "add [name]",
 	Short: "Add a new device group",
 	Long:  `Add a new device group to an organization`,
-	Args: cobra.MaximumNArgs(1),
+	Args:  cobra.MaximumNArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		SetupLogging()
 		n := cli.NewDevices(
@@ -95,7 +108,7 @@ var addDeviceGroupCmd = &cobra.Command{
 		if err != nil {
 			fmt.Println(err.Error())
 			cmd.Help()
-		}else{
+		} else {
 			n.AddDeviceGroup(cliOptions.Resolve("organizationID", organizationID),
 				targetValues[0], enabled, disabled, enabledDefaultConnectivity, disabledDefaultConnectivity)
 		}
@@ -106,7 +119,7 @@ var updateDeviceGroupCmd = &cobra.Command{
 	Use:   "update [deviceGroupID]",
 	Short: "Update a device group",
 	Long:  `Update the options of a device group`,
-	Args: cobra.MaximumNArgs(1),
+	Args:  cobra.MaximumNArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		SetupLogging()
 		n := cli.NewDevices(
@@ -119,7 +132,7 @@ var updateDeviceGroupCmd = &cobra.Command{
 		if err != nil {
 			fmt.Println(err.Error())
 			cmd.Help()
-		}else{
+		} else {
 			n.UpdateDeviceGroup(cliOptions.Resolve("organizationID", organizationID),
 				targetValues[0], enabled, disabled, enabledDefaultConnectivity, disabledDefaultConnectivity)
 		}
@@ -127,11 +140,11 @@ var updateDeviceGroupCmd = &cobra.Command{
 }
 
 var removeDeviceGroupCmd = &cobra.Command{
-	Use:   "delete [deviceGroupID]",
+	Use:     "delete [deviceGroupID]",
 	Aliases: []string{"remove", "del", "rm"},
-	Short: "Remove a device group",
-	Long:  `Remove a device group`,
-	Args: cobra.MaximumNArgs(1),
+	Short:   "Remove a device group",
+	Long:    `Remove a device group`,
+	Args:    cobra.MaximumNArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		SetupLogging()
 		n := cli.NewDevices(
@@ -144,7 +157,7 @@ var removeDeviceGroupCmd = &cobra.Command{
 		if err != nil {
 			fmt.Println(err.Error())
 			cmd.Help()
-		}else{
+		} else {
 			n.RemoveDeviceGroup(cliOptions.Resolve("organizationID", organizationID),
 				targetValues[0])
 		}
@@ -152,10 +165,10 @@ var removeDeviceGroupCmd = &cobra.Command{
 }
 
 var listDeviceGroupsCmd = &cobra.Command{
-	Use:   "list",
+	Use:     "list",
 	Aliases: []string{"ls"},
-	Short: "List the device groups in an organization",
-	Long:  `List the device groups in an organization`,
+	Short:   "List the device groups in an organization",
+	Long:    `List the device groups in an organization`,
 	Run: func(cmd *cobra.Command, args []string) {
 		SetupLogging()
 		n := cli.NewDevices(
@@ -168,11 +181,11 @@ var listDeviceGroupsCmd = &cobra.Command{
 }
 
 var listDevicesCmd = &cobra.Command{
-	Use:   "list",
+	Use:     "list",
 	Aliases: []string{"ls"},
-	Short: "List the devices in a device group",
-	Long:  `List the devices in a device group`,
-	Args: cobra.MaximumNArgs(1),
+	Short:   "List the devices in a device group",
+	Long:    `List the devices in a device group`,
+	Args:    cobra.MaximumNArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		SetupLogging()
 		n := cli.NewDevices(
@@ -185,7 +198,7 @@ var listDevicesCmd = &cobra.Command{
 		if err != nil {
 			fmt.Println(err.Error())
 			cmd.Help()
-		}else{
+		} else {
 			n.ListDevices(cliOptions.Resolve("organizationID", organizationID),
 				targetValues[0])
 		}
@@ -194,10 +207,10 @@ var listDevicesCmd = &cobra.Command{
 }
 
 var deviceLabelsCmd = &cobra.Command{
-	Use:   "label",
+	Use:     "label",
 	Aliases: []string{"labels", "l"},
-	Short: "Manage device labels",
-	Long:  `Manage device labels`,
+	Short:   "Manage device labels",
+	Long:    `Manage device labels`,
 	Run: func(cmd *cobra.Command, args []string) {
 		SetupLogging()
 		cmd.Help()
@@ -208,7 +221,7 @@ var addLabelToDeviceCmd = &cobra.Command{
 	Use:   "add [deviceGroupID] [deviceID] [labels]",
 	Short: "Add a set of labels to a device",
 	Long:  `Add a set of labels to a device`,
-	Args: cobra.MaximumNArgs(3),
+	Args:  cobra.MaximumNArgs(3),
 	Run: func(cmd *cobra.Command, args []string) {
 		SetupLogging()
 		n := cli.NewDevices(
@@ -221,7 +234,7 @@ var addLabelToDeviceCmd = &cobra.Command{
 		if err != nil {
 			fmt.Println(err.Error())
 			cmd.Help()
-		}else{
+		} else {
 			n.AddLabelToDevice(cliOptions.Resolve("organizationID", organizationID),
 				targetValues[0], targetValues[1], targetValues[2])
 		}
@@ -229,11 +242,11 @@ var addLabelToDeviceCmd = &cobra.Command{
 }
 
 var removeLabelFromDeviceCmd = &cobra.Command{
-	Use:   "delete [deviceGroupID] [deviceID] [labels]",
+	Use:     "delete [deviceGroupID] [deviceID] [labels]",
 	Aliases: []string{"remove", "del", "rm"},
-	Short: "Remove a set of labels from a device",
-	Long:  `Remove a set of labels from a device`,
-	Args: cobra.MaximumNArgs(3),
+	Short:   "Remove a set of labels from a device",
+	Long:    `Remove a set of labels from a device`,
+	Args:    cobra.MaximumNArgs(3),
 	Run: func(cmd *cobra.Command, args []string) {
 		SetupLogging()
 		n := cli.NewDevices(
@@ -246,7 +259,7 @@ var removeLabelFromDeviceCmd = &cobra.Command{
 		if err != nil {
 			fmt.Println(err.Error())
 			cmd.Help()
-		}else{
+		} else {
 			n.RemoveLabelFromDevice(cliOptions.Resolve("organizationID", organizationID),
 				targetValues[0], targetValues[1], targetValues[2])
 		}
@@ -257,7 +270,7 @@ var updateDeviceCmd = &cobra.Command{
 	Use:   "update [deviceGroupID] [deviceID]",
 	Short: "Update the information of a device",
 	Long:  `Update the information of a device`,
-	Args: cobra.MaximumNArgs(2),
+	Args:  cobra.MaximumNArgs(2),
 	Run: func(cmd *cobra.Command, args []string) {
 		SetupLogging()
 		n := cli.NewDevices(
@@ -270,7 +283,7 @@ var updateDeviceCmd = &cobra.Command{
 		if err != nil {
 			fmt.Println(err.Error())
 			cmd.Help()
-		}else{
+		} else {
 			n.UpdateDevice(cliOptions.Resolve("organizationID", organizationID),
 				targetValues[0], targetValues[1], enabled, disabled)
 		}
@@ -278,11 +291,11 @@ var updateDeviceCmd = &cobra.Command{
 }
 
 var removeDeviceCmd = &cobra.Command{
-	Use:   "delete [deviceGroupID] [deviceID]",
+	Use:     "delete [deviceGroupID] [deviceID]",
 	Aliases: []string{"remove", "del", "rm"},
-	Short: "Remove a device",
-	Long:  `Remove a device`,
-	Args: cobra.MaximumNArgs(2),
+	Short:   "Remove a device",
+	Long:    `Remove a device`,
+	Args:    cobra.MaximumNArgs(2),
 	Run: func(cmd *cobra.Command, args []string) {
 		SetupLogging()
 		n := cli.NewDevices(
@@ -295,7 +308,7 @@ var removeDeviceCmd = &cobra.Command{
 		if err != nil {
 			fmt.Println(err.Error())
 			cmd.Help()
-		}else{
+		} else {
 			n.RemoveDevice(cliOptions.Resolve("organizationID", organizationID),
 				targetValues[0], targetValues[1])
 		}
@@ -303,11 +316,11 @@ var removeDeviceCmd = &cobra.Command{
 }
 
 var deviceInfoCmd = &cobra.Command{
-	Use: "info [deviceGroupID] [deviceID]",
+	Use:     "info [deviceGroupID] [deviceID]",
 	Aliases: []string{"get"},
-	Short: "Show device info",
-	Long:  `Show device info`,
-	Args: cobra.MaximumNArgs(2),
+	Short:   "Show device info",
+	Long:    `Show device info`,
+	Args:    cobra.MaximumNArgs(2),
 	Run: func(cmd *cobra.Command, args []string) {
 		SetupLogging()
 		n := cli.NewDevices(
@@ -321,7 +334,7 @@ var deviceInfoCmd = &cobra.Command{
 		if err != nil {
 			fmt.Println(err.Error())
 			cmd.Help()
-		}else{
+		} else {
 			n.GetDeviceInfo(cliOptions.Resolve("organizationID", organizationID), targetValues[0], targetValues[1])
 		}
 	},

@@ -1,3 +1,20 @@
+/*
+ * Copyright 2019 Nalej
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
+
 package server
 
 import (
@@ -52,20 +69,20 @@ func NewService(conf Config) *Service {
 }
 
 type Clients struct {
-	orgClient    grpc_organization_go.OrganizationsClient
-	clusClient   grpc_infrastructure_go.ClustersClient
-	nodeClient   grpc_infrastructure_go.NodesClient
-	infraClient  grpc_infrastructure_manager_go.InfrastructureManagerClient
-	umClient     grpc_user_manager_go.UserManagerClient
-	appClient    grpc_application_manager_go.ApplicationManagerClient
-	deviceClient grpc_device_manager_go.DevicesClient
-	ulClient     grpc_unified_logging_go.CoordinatorClient
-	mmClient     grpc_monitoring_go.MonitoringManagerClient
-	amClient     grpc_monitoring_go.AssetMonitoringClient
-	eicClient    grpc_inventory_manager_go.EICClient
-	invClient    grpc_inventory_manager_go.InventoryClient
-	agentClient  grpc_inventory_manager_go.AgentClient
-	appNetClient grpc_application_manager_go.ApplicationNetworkClient
+	orgClient         grpc_organization_go.OrganizationsClient
+	clusClient        grpc_infrastructure_go.ClustersClient
+	nodeClient        grpc_infrastructure_go.NodesClient
+	infraClient       grpc_infrastructure_manager_go.InfrastructureManagerClient
+	umClient          grpc_user_manager_go.UserManagerClient
+	appClient         grpc_application_manager_go.ApplicationManagerClient
+	deviceClient      grpc_device_manager_go.DevicesClient
+	ulClient          grpc_unified_logging_go.CoordinatorClient
+	mmClient          grpc_monitoring_go.MonitoringManagerClient
+	amClient          grpc_monitoring_go.AssetMonitoringClient
+	eicClient         grpc_inventory_manager_go.EICClient
+	invClient         grpc_inventory_manager_go.InventoryClient
+	agentClient       grpc_inventory_manager_go.AgentClient
+	appNetClient      grpc_application_manager_go.ApplicationNetworkClient
 	provisionerClient grpc_provisioner_go.ProvisionClient
 }
 

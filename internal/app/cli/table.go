@@ -1,3 +1,20 @@
+/*
+ * Copyright 2019 Nalej
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
+
 package cli
 
 import (
@@ -37,91 +54,91 @@ type ResultTable struct {
 
 func AsTable(result interface{}, labelLength int) *ResultTable {
 	log.Debug().Int("labelLength", labelLength).Msg("Label length")
-	switch result.(type) {
+	switch result := result.(type) {
 	case *grpc_public_api_go.OrganizationInfo:
-		return FromOrganizationInfo(result.(*grpc_public_api_go.OrganizationInfo))
+		return FromOrganizationInfo(result)
 	case *grpc_public_api_go.User:
-		return FromUser(result.(*grpc_public_api_go.User))
+		return FromUser(result)
 	case *grpc_user_manager_go.User:
-		return FromUserManagerUser(result.(*grpc_user_manager_go.User))
+		return FromUserManagerUser(result)
 	case *grpc_public_api_go.UserList:
-		return FromUserList(result.(*grpc_public_api_go.UserList))
+		return FromUserList(result)
 	case *grpc_public_api_go.Cluster:
-		return FromCluster(result.(*grpc_public_api_go.Cluster), labelLength)
+		return FromCluster(result, labelLength)
 	case *grpc_monitoring_go.ClusterSummary:
-		return FromClusterSummary(result.(*grpc_monitoring_go.ClusterSummary))
+		return FromClusterSummary(result)
 	case *grpc_public_api_go.ClusterList:
-		return FromClusterList(result.(*grpc_public_api_go.ClusterList), labelLength)
+		return FromClusterList(result, labelLength)
 	case *grpc_infrastructure_manager_go.InstallResponse:
-		return FromInstallResponse(result.(*grpc_infrastructure_manager_go.InstallResponse))
+		return FromInstallResponse(result)
 	case *grpc_public_api_go.AppInstanceList:
-		return FromAppInstanceList(result.(*grpc_public_api_go.AppInstanceList), labelLength)
+		return FromAppInstanceList(result, labelLength)
 	case *grpc_public_api_go.AppInstance:
-		return FromAppInstance(result.(*grpc_public_api_go.AppInstance), labelLength)
+		return FromAppInstance(result, labelLength)
 	case *grpc_application_go.InstanceParameterList:
-		return FromInstanceParameterList(result.(*grpc_application_go.InstanceParameterList))
+		return FromInstanceParameterList(result)
 	case *grpc_application_manager_go.DeploymentResponse:
-		return FromDeploymentResponse(result.(*grpc_application_manager_go.DeploymentResponse))
+		return FromDeploymentResponse(result)
 	case *grpc_application_go.AppDescriptorList:
-		return FromAppDescriptorList(result.(*grpc_application_go.AppDescriptorList), labelLength)
+		return FromAppDescriptorList(result, labelLength)
 	case *grpc_application_go.AppDescriptor:
-		return FromAppDescriptor(result.(*grpc_application_go.AppDescriptor), labelLength)
+		return FromAppDescriptor(result, labelLength)
 	case *grpc_public_api_go.AppParameterList:
-		return FromAppParameterList(result.(*grpc_public_api_go.AppParameterList))
+		return FromAppParameterList(result)
 	case *grpc_device_manager_go.DeviceGroup:
-		return FromDeviceGroup(result.(*grpc_device_manager_go.DeviceGroup))
+		return FromDeviceGroup(result)
 	case *grpc_device_manager_go.DeviceGroupList:
-		return FromDeviceGroupList(result.(*grpc_device_manager_go.DeviceGroupList))
+		return FromDeviceGroupList(result)
 	case *grpc_public_api_go.Device:
-		return FromDevice(result.(*grpc_public_api_go.Device), labelLength)
+		return FromDevice(result, labelLength)
 	case *grpc_public_api_go.DeviceList:
-		return FromDeviceList(result.(*grpc_public_api_go.DeviceList), labelLength)
+		return FromDeviceList(result, labelLength)
 	case *grpc_unified_logging_go.LogResponse:
-		return FromLogResponse(result.(*grpc_unified_logging_go.LogResponse))
+		return FromLogResponse(result)
 	case *grpc_public_api_go.Node:
-		return FromNode(result.(*grpc_public_api_go.Node), labelLength)
+		return FromNode(result, labelLength)
 	case *grpc_public_api_go.NodeList:
-		return FromNodeList(result.(*grpc_public_api_go.NodeList), labelLength)
+		return FromNodeList(result, labelLength)
 	case *grpc_public_api_go.Role:
-		return FromRole(result.(*grpc_public_api_go.Role))
+		return FromRole(result)
 	case *grpc_public_api_go.RoleList:
-		return FromRoleList(result.(*grpc_public_api_go.RoleList))
+		return FromRoleList(result)
 	case *grpc_inventory_manager_go.EICJoinToken:
-		return FromEICJoinToken(result.(*grpc_inventory_manager_go.EICJoinToken))
+		return FromEICJoinToken(result)
 	case *grpc_public_api_go.InventoryList:
-		return FromInventoryList(result.(*grpc_public_api_go.InventoryList), labelLength)
+		return FromInventoryList(result, labelLength)
 	case *grpc_inventory_manager_go.AgentJoinToken:
-		return FromAgentJoinToken(result.(*grpc_inventory_manager_go.AgentJoinToken))
+		return FromAgentJoinToken(result)
 	case *grpc_public_api_go.EdgeControllerExtendedInfo:
-		return FromEdgeControllerExtendedInfo(result.(*grpc_public_api_go.EdgeControllerExtendedInfo), labelLength)
+		return FromEdgeControllerExtendedInfo(result, labelLength)
 	case *grpc_public_api_go.Asset:
-		return FromAsset(result.(*grpc_public_api_go.Asset))
+		return FromAsset(result)
 	case *grpc_public_api_go.AgentOpResponse:
-		return FromAgentOpResponse(result.(*grpc_public_api_go.AgentOpResponse))
+		return FromAgentOpResponse(result)
 	case *grpc_public_api_go.ECOpResponse:
-		return FromECOpResponse(result.(*grpc_public_api_go.ECOpResponse))
+		return FromECOpResponse(result)
 	case *grpc_common_go.Success:
-		return FromSuccess(result.(*grpc_common_go.Success))
+		return FromSuccess(result)
 	case *grpc_inventory_go.Asset:
-		return FromIAsset(result.(*grpc_inventory_go.Asset), labelLength)
+		return FromIAsset(result, labelLength)
 	case *grpc_inventory_go.EdgeController:
-		return FromIEdgeController(result.(*grpc_inventory_go.EdgeController), labelLength)
+		return FromIEdgeController(result, labelLength)
 	case *grpc_inventory_manager_go.InventorySummary:
-		return FromInventorySummary(result.(*grpc_inventory_manager_go.InventorySummary))
+		return FromInventorySummary(result)
 	case *grpc_monitoring_go.QueryMetricsResult:
-		return FromQueryMetricsResult(result.(*grpc_monitoring_go.QueryMetricsResult))
+		return FromQueryMetricsResult(result)
 	case *grpc_monitoring_go.MetricsList:
-		return FromMetricsList(result.(*grpc_monitoring_go.MetricsList))
+		return FromMetricsList(result)
 	case *grpc_application_manager_go.AvailableInstanceInboundList:
-		return FromAvailableInboundList(result.(*grpc_application_manager_go.AvailableInstanceInboundList))
+		return FromAvailableInboundList(result)
 	case *grpc_application_manager_go.AvailableInstanceOutboundList:
-		return FromAvailableOutboundList(result.(*grpc_application_manager_go.AvailableInstanceOutboundList))
+		return FromAvailableOutboundList(result)
 	case *grpc_public_api_go.ConnectionInstanceList:
-		return FromConnectionInstanceListResult(result.(*grpc_public_api_go.ConnectionInstanceList))
+		return FromConnectionInstanceListResult(result)
 	case *grpc_public_api_go.OpResponse:
-		return FromOpResponse(result.(*grpc_public_api_go.OpResponse))
+		return FromOpResponse(result)
 	case *grpc_infrastructure_manager_go.ProvisionerResponse:
-		return FromProvisionerResponse(result.(*grpc_infrastructure_manager_go.ProvisionerResponse))
+		return FromProvisionerResponse(result)
 	default:
 		log.Fatal().Str("type", fmt.Sprintf("%T", result)).Msg("unsupported")
 	}
@@ -326,7 +343,7 @@ func FromAppInstance(result *grpc_public_api_go.AppInstance, labelLength int) *R
 	r = append(r, []string{result.Name, TransformLabels(result.Labels, labelLength)})
 	r = append(r, []string{""})
 
-	if result.StatusName == grpc_application_go.ApplicationStatus_DEPLOYMENT_ERROR.String() || result.StatusName == grpc_application_go.ApplicationStatus_PLANNING_ERROR.String(){
+	if result.StatusName == grpc_application_go.ApplicationStatus_DEPLOYMENT_ERROR.String() || result.StatusName == grpc_application_go.ApplicationStatus_PLANNING_ERROR.String() {
 		r = append(r, []string{"STATUS", "INFO"})
 		r = append(r, []string{result.StatusName, result.Info})
 	} else {
@@ -905,14 +922,12 @@ func FromProvisionerResponse(result *grpc_infrastructure_manager_go.ProvisionerR
 	if result.State != grpc_provisioner_go.ProvisionProgress_ERROR {
 		r = append(r, []string{"REQUEST_ID", "CLUSTER_ID", "STATE"})
 		r = append(r, []string{result.RequestId, result.ClusterId, result.State.String()})
-	}else{
+	} else {
 		r = append(r, []string{"REQUEST_ID", "CLUSTER_ID", "STATE", "ERROR"})
 		r = append(r, []string{result.RequestId, result.ClusterId, result.State.String(), result.Error})
 	}
 	return &ResultTable{r}
 }
-
-
 
 // ----
 // Common

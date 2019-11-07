@@ -1,5 +1,18 @@
 /*
- * Copyright (C) 2018 Nalej - All Rights Reserved
+ * Copyright 2019 Nalej
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
  */
 
 package commands
@@ -34,10 +47,10 @@ func init() {
 }
 
 var listNodesCmd = &cobra.Command{
-	Use:   "list [clusterID]",
+	Use:     "list [clusterID]",
 	Aliases: []string{"ls"},
-	Short: "List nodes",
-	Long:  `List nodes`,
+	Short:   "List nodes",
+	Long:    `List nodes`,
 	Run: func(cmd *cobra.Command, args []string) {
 		SetupLogging()
 		n := cli.NewNodes(
@@ -50,7 +63,7 @@ var listNodesCmd = &cobra.Command{
 		if err != nil {
 			fmt.Println(err.Error())
 			cmd.Help()
-		}else{
+		} else {
 			n.List(cliOptions.Resolve("organizationID", organizationID),
 				cliOptions.Resolve("clusterID", targetValues[0]))
 		}
@@ -58,10 +71,10 @@ var listNodesCmd = &cobra.Command{
 }
 
 var nodeLabelsCmd = &cobra.Command{
-	Use:   "label",
+	Use:     "label",
 	Aliases: []string{"labels", "l"},
-	Short: "Manage node labels",
-	Long:  `Manage node labels`,
+	Short:   "Manage node labels",
+	Long:    `Manage node labels`,
 	Run: func(cmd *cobra.Command, args []string) {
 		SetupLogging()
 		cmd.Help()
@@ -72,7 +85,7 @@ var addLabelToNodeCmd = &cobra.Command{
 	Use:   "add [nodeID] [labels]",
 	Short: "Add a set of labels to a node",
 	Long:  `Add a set of labels to a node`,
-	Args: cobra.MaximumNArgs(2),
+	Args:  cobra.MaximumNArgs(2),
 	Run: func(cmd *cobra.Command, args []string) {
 		SetupLogging()
 		n := cli.NewNodes(
@@ -85,7 +98,7 @@ var addLabelToNodeCmd = &cobra.Command{
 		if err != nil {
 			fmt.Println(err.Error())
 			cmd.Help()
-		}else{
+		} else {
 			n.ModifyNodeLabels(cliOptions.Resolve("organizationID", organizationID),
 				targetValues[0], true, targetValues[1])
 		}
@@ -93,11 +106,11 @@ var addLabelToNodeCmd = &cobra.Command{
 }
 
 var removeLabelFromNodeCmd = &cobra.Command{
-	Use:   "delete [nodeID] [labels]",
+	Use:     "delete [nodeID] [labels]",
 	Aliases: []string{"remove", "del", "rm"},
-	Short: "Remove a set of labels from a cluster",
-	Long:  `Remove a set of labels from a cluster`,
-	Args: cobra.MaximumNArgs(2),
+	Short:   "Remove a set of labels from a cluster",
+	Long:    `Remove a set of labels from a cluster`,
+	Args:    cobra.MaximumNArgs(2),
 	Run: func(cmd *cobra.Command, args []string) {
 		SetupLogging()
 		n := cli.NewNodes(
@@ -110,7 +123,7 @@ var removeLabelFromNodeCmd = &cobra.Command{
 		if err != nil {
 			fmt.Println(err.Error())
 			cmd.Help()
-		}else{
+		} else {
 			n.ModifyNodeLabels(cliOptions.Resolve("organizationID", organizationID),
 				targetValues[0], false, targetValues[1])
 		}

@@ -1,5 +1,18 @@
 /*
- * Copyright (C)  2018 Nalej - All Rights Reserved
+ * Copyright 2019 Nalej
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
  */
 
 package options
@@ -23,11 +36,14 @@ const DefaultPath = "~/.nalej/"
 const OptionsPath = "options"
 
 // APIAddressKey with the name of the key that points to the API address
-const APIAddressKey= "nalejAddress"
+const APIAddressKey = "nalejAddress"
+
 // APIAddressPrefix with the prefix for API address.
 const APIAddressPrefix = "api."
+
 // LoginAddressKey with the name of the key that points to the Login API address
 const LoginAddressKey = "loginAddress"
+
 // LoginAddressPrefix with the prefix for the login API address.
 const LoginAddressPrefix = "login."
 
@@ -143,11 +159,11 @@ func (o *Options) ResolveAsInt(key string, paramValue int) int {
 
 // UpdatePlatformAddress updates both the api endpoints for the login and the public api.
 func (o *Options) UpdatePlatformAddress(newBaseAddress string) []string {
-	if strings.HasPrefix(newBaseAddress, APIAddressPrefix) || strings.HasPrefix(newBaseAddress, LoginAddressPrefix){
+	if strings.HasPrefix(newBaseAddress, APIAddressPrefix) || strings.HasPrefix(newBaseAddress, LoginAddressPrefix) {
 		log.Fatal().Msg("expecting new base address without login. or api. prefixes")
 	}
-	apiAddress := fmt.Sprintf("%s%s",APIAddressPrefix, newBaseAddress)
-	loginAddress := fmt.Sprintf("%s%s",LoginAddressPrefix, newBaseAddress)
+	apiAddress := fmt.Sprintf("%s%s", APIAddressPrefix, newBaseAddress)
+	loginAddress := fmt.Sprintf("%s%s", LoginAddressPrefix, newBaseAddress)
 
 	o.Set(APIAddressKey, apiAddress)
 	o.Set(LoginAddressKey, loginAddress)
@@ -155,18 +171,17 @@ func (o *Options) UpdatePlatformAddress(newBaseAddress string) []string {
 	return []string{apiAddress, loginAddress}
 }
 
-
 // GetPath resolves a given path by adding support for relative paths.
 func GetPath(path string) string {
 	if strings.HasPrefix(path, "~") {
 		usr, _ := user.Current()
 		return strings.Replace(path, "~", usr.HomeDir, 1)
 	}
-	if strings.HasPrefix(path, "../"){
+	if strings.HasPrefix(path, "../") {
 		abs, _ := filepath.Abs("../")
 		return strings.Replace(path, "..", abs, 1)
 	}
-	if strings.HasPrefix(path, "."){
+	if strings.HasPrefix(path, ".") {
 		abs, _ := filepath.Abs("./")
 		return strings.Replace(path, ".", abs, 1)
 	}

@@ -1,5 +1,18 @@
 /*
- * Copyright (C)  2019 Nalej - All Rights Reserved
+ * Copyright 2019 Nalej
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
  */
 
 package devices
@@ -34,16 +47,14 @@ IT_DEVICE_MANAGER_ADDRESS=localhost:6010
 
 var _ = ginkgo.Describe("Devices", func() {
 
-	const NumDevices= 10
-
 	if !utils.RunIntegrationTests() {
 		log.Warn().Msg("Integration tests are skipped")
 		return
 	}
 
 	var (
-		systemModelAddress= os.Getenv("IT_SM_ADDRESS")
-		deviceManagerAddress= os.Getenv("IT_DEVICE_MANAGER_ADDRESS")
+		systemModelAddress   = os.Getenv("IT_SM_ADDRESS")
+		deviceManagerAddress = os.Getenv("IT_DEVICE_MANAGER_ADDRESS")
 	)
 
 	if systemModelAddress == "" || deviceManagerAddress == "" {
@@ -117,7 +128,7 @@ var _ = ginkgo.Describe("Devices", func() {
 	})
 	ginkgo.Context("Device Groups", func() {
 
-		ginkgo.It("should be able to add a device group", func(){
+		ginkgo.It("should be able to add a device group", func() {
 			tests := make([]utils.TestResult, 0)
 			tests = append(tests, utils.TestResult{Token: ownerToken, Success: true, Msg: "Owner should be able to create a device group"})
 			tests = append(tests, utils.TestResult{Token: devManagerToken, Success: true, Msg: "Device Manager should be able to create a device group"})
@@ -144,7 +155,7 @@ var _ = ginkgo.Describe("Devices", func() {
 			}
 		})
 
-		ginkgo.It("should be able to remove a device group", func(){
+		ginkgo.It("should be able to remove a device group", func() {
 			tests := make([]utils.TestResult, 0)
 			tests = append(tests, utils.TestResult{Token: ownerToken, Success: true, Msg: "Owner should be able to remove a device group"})
 			tests = append(tests, utils.TestResult{Token: devManagerToken, Success: true, Msg: "Device Manager should be able to remove a device group"})
@@ -173,7 +184,7 @@ var _ = ginkgo.Describe("Devices", func() {
 
 				removeGroup := &grpc_device_go.DeviceGroupId{
 					OrganizationId: added.OrganizationId,
-					DeviceGroupId: added.DeviceGroupId,
+					DeviceGroupId:  added.DeviceGroupId,
 				}
 				success, err := client.RemoveDeviceGroup(ctx, removeGroup)
 
@@ -188,7 +199,7 @@ var _ = ginkgo.Describe("Devices", func() {
 			}
 		})
 
-		ginkgo.It("should be able to update a device group", func(){
+		ginkgo.It("should be able to update a device group", func() {
 			tests := make([]utils.TestResult, 0)
 			tests = append(tests, utils.TestResult{Token: ownerToken, Success: true, Msg: "Owner should be able to update a device group"})
 			tests = append(tests, utils.TestResult{Token: devManagerToken, Success: true, Msg: "Device Manager should be able to update a device group"})
@@ -217,9 +228,9 @@ var _ = ginkgo.Describe("Devices", func() {
 
 				updateGroup := &grpc_device_manager_go.UpdateDeviceGroupRequest{
 					OrganizationId: added.OrganizationId,
-					DeviceGroupId: added.DeviceGroupId,
-					UpdateEnabled: true,
-					Enabled: true,
+					DeviceGroupId:  added.DeviceGroupId,
+					UpdateEnabled:  true,
+					Enabled:        true,
 				}
 				updated, err := client.UpdateDeviceGroup(ctx, updateGroup)
 
@@ -235,7 +246,7 @@ var _ = ginkgo.Describe("Devices", func() {
 			}
 		})
 
-		ginkgo.It("should be able to list a device groups on an organization", func(){
+		ginkgo.It("should be able to list a device groups on an organization", func() {
 			tests := make([]utils.TestResult, 0)
 			tests = append(tests, utils.TestResult{Token: ownerToken, Success: true, Msg: "Owner should be able to list a device groups on an organization"})
 			tests = append(tests, utils.TestResult{Token: devManagerToken, Success: true, Msg: "Device Manager should be able to list a device groups on an organization"})
@@ -293,15 +304,15 @@ var _ = ginkgo.Describe("Devices", func() {
 				dmClient)
 		})
 
-		ginkgo.It("should be able to list devices on a group", func(){
+		ginkgo.It("should be able to list devices on a group", func() {
 			tests := make([]utils.TestResult, 0)
 			tests = append(tests, utils.TestResult{Token: ownerToken, Success: true, Msg: "Owner should be able to list devices on a group"})
 			tests = append(tests, utils.TestResult{Token: devManagerToken, Success: true, Msg: "Device Manager should be able to list devices on a group"})
 			tests = append(tests, utils.TestResult{Token: profileToken, Success: false, Msg: "Profile user should NOT be able to list devices on a group"})
 
-			request:= &grpc_device_go.DeviceGroupId{
+			request := &grpc_device_go.DeviceGroupId{
 				OrganizationId: targetOrganization.OrganizationId,
-				DeviceGroupId: targetDeviceGroup.DeviceGroupId,
+				DeviceGroupId:  targetDeviceGroup.DeviceGroupId,
 			}
 
 			for _, test := range tests {
@@ -317,23 +328,21 @@ var _ = ginkgo.Describe("Devices", func() {
 			}
 		})
 
-		ginkgo.PIt("should be able to add labels in a device (pending until device-manager implements this)", func(){
+		ginkgo.PIt("should be able to add labels in a device (pending until device-manager implements this)", func() {
 			tests := make([]utils.TestResult, 0)
 			tests = append(tests, utils.TestResult{Token: ownerToken, Success: true, Msg: "Owner should be able to add labels in a device"})
 			tests = append(tests, utils.TestResult{Token: devManagerToken, Success: true, Msg: "Device Manager should be able to add labels in a device"})
 			tests = append(tests, utils.TestResult{Token: profileToken, Success: false, Msg: "Profile user should NOT be able to add labels in a device"})
 
-
 			for _, test := range tests {
 
 				tam := rand.Intn(5) + 1
 
-				request:= &grpc_device_manager_go.DeviceLabelRequest{
+				request := &grpc_device_manager_go.DeviceLabelRequest{
 					OrganizationId: targetOrganization.OrganizationId,
-					DeviceGroupId: targetDeviceGroup.DeviceGroupId,
-					DeviceId: targetDevice.DeviceId,
-					Labels: ithelpers.GenerateLabels(tam),
-
+					DeviceGroupId:  targetDeviceGroup.DeviceGroupId,
+					DeviceId:       targetDevice.DeviceId,
+					Labels:         ithelpers.GenerateLabels(tam),
 				}
 				ctx, cancel := ithelpers.GetContext(test.Token)
 				defer cancel()
@@ -347,10 +356,10 @@ var _ = ginkgo.Describe("Devices", func() {
 				}
 			}
 		})
-		ginkgo.PIt("should be able to remove labels in a device (pending until device-manager implements this)", func(){
+		ginkgo.PIt("should be able to remove labels in a device (pending until device-manager implements this)", func() {
 		})
 
-		ginkgo.It("should be able to update a device", func(){
+		ginkgo.It("should be able to update a device", func() {
 			tests := make([]utils.TestResult, 0)
 			tests = append(tests, utils.TestResult{Token: ownerToken, Success: true, Msg: "Owner should be able to add labels in a device"})
 			tests = append(tests, utils.TestResult{Token: devManagerToken, Success: true, Msg: "Device Manager should be able to add labels in a device"})
@@ -359,13 +368,12 @@ var _ = ginkgo.Describe("Devices", func() {
 			enabled := !targetDeviceGroup.DefaultDeviceConnectivity
 
 			for _, test := range tests {
-				request := &grpc_device_manager_go.UpdateDeviceRequest {
+				request := &grpc_device_manager_go.UpdateDeviceRequest{
 					OrganizationId: targetOrganization.OrganizationId,
-				    DeviceGroupId: targetDeviceGroup.DeviceGroupId,
-					DeviceId:targetDevice.DeviceId,
-					Enabled: enabled,
+					DeviceGroupId:  targetDeviceGroup.DeviceGroupId,
+					DeviceId:       targetDevice.DeviceId,
+					Enabled:        enabled,
 				}
-
 
 				ctx, cancel := ithelpers.GetContext(test.Token)
 				defer cancel()
@@ -375,7 +383,7 @@ var _ = ginkgo.Describe("Devices", func() {
 					gomega.Expect(device).NotTo(gomega.BeNil())
 					if enabled {
 						gomega.Expect(device.Enabled).To(gomega.BeTrue())
-					}else{
+					} else {
 						gomega.Expect(device.Enabled).NotTo(gomega.BeTrue())
 					}
 					// change the value
@@ -387,22 +395,22 @@ var _ = ginkgo.Describe("Devices", func() {
 			}
 		})
 
-		ginkgo.It("should be able to get the device status", func(){
+		ginkgo.It("should be able to get the device status", func() {
 
 			ping := &grpc_device_controller_go.RegisterLatencyRequest{
-				OrganizationId:targetOrganization.OrganizationId,
-				DeviceGroupId: targetDeviceGroup.DeviceGroupId,
-				DeviceId: targetDevice.DeviceId,
-				Latency: 20,
+				OrganizationId: targetOrganization.OrganizationId,
+				DeviceGroupId:  targetDeviceGroup.DeviceGroupId,
+				DeviceId:       targetDevice.DeviceId,
+				Latency:        20,
 			}
 
 			success, err := latClient.RegisterLatency(context.Background(), ping)
 			gomega.Expect(err).To(gomega.BeNil())
 			gomega.Expect(success).NotTo(gomega.BeNil())
 
-			request:= &grpc_device_go.DeviceGroupId{
+			request := &grpc_device_go.DeviceGroupId{
 				OrganizationId: targetOrganization.OrganizationId,
-				DeviceGroupId: targetDeviceGroup.DeviceGroupId,
+				DeviceGroupId:  targetDeviceGroup.DeviceGroupId,
 			}
 
 			ctx, cancel := ithelpers.GetContext(ownerToken)
@@ -414,6 +422,5 @@ var _ = ginkgo.Describe("Devices", func() {
 
 		})
 	})
-
 
 })

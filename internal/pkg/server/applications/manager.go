@@ -1,3 +1,20 @@
+/*
+ * Copyright 2019 Nalej
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
+
 package applications
 
 import (
@@ -96,16 +113,15 @@ func (m *Manager) GetAppInstance(appInstanceID *grpc_application_go.AppInstanceI
 	return entities.ToPublicAPIAppInstance(inst), nil
 }
 
-
 // ListInstanceParameters retrieves a list of instance parameters
-func (m *Manager) ListInstanceParameters(appInstanceID *grpc_application_go.AppInstanceId) (*grpc_application_go.InstanceParameterList, error)  {
+func (m *Manager) ListInstanceParameters(appInstanceID *grpc_application_go.AppInstanceId) (*grpc_application_go.InstanceParameterList, error) {
 	ctx, cancel := common.GetContext()
 	defer cancel()
 	return m.appClient.ListInstanceParameters(ctx, appInstanceID)
 }
 
 // ListDescriptorAppParameters retrieves a list of parameters of an application
-func (m *Manager) ListDescriptorAppParameters (appDescriptorID *grpc_application_go.AppDescriptorId) (*grpc_public_api_go.AppParameterList, error) {
+func (m *Manager) ListDescriptorAppParameters(appDescriptorID *grpc_application_go.AppDescriptorId) (*grpc_public_api_go.AppParameterList, error) {
 	ctx, cancel := common.GetContext()
 	defer cancel()
 	params, err := m.appClient.ListDescriptorAppParameters(ctx, appDescriptorID)

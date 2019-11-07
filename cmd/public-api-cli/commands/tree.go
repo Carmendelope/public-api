@@ -1,5 +1,18 @@
 /*
- * Copyright (C) 2019 Nalej - All Rights Reserved
+ * Copyright 2019 Nalej
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
  */
 
 package commands
@@ -13,9 +26,9 @@ import (
 )
 
 var treeCmd = &cobra.Command{
-	Use:   "tree",
-	Short: "Show command tree",
-	Long:  `Show a tree with the existing commands in public-api-cli`,
+	Use:    "tree",
+	Short:  "Show command tree",
+	Long:   `Show a tree with the existing commands in public-api-cli`,
 	Hidden: true,
 	Run: func(cmd *cobra.Command, args []string) {
 		SetupLogging()
@@ -31,18 +44,17 @@ func init() {
 func generateTree() {
 	result := ""
 	for i, level0 := range rootCmd.Commands() {
-		aux := recursiveTreeGenerator(level0,1, (i+1)==len(rootCmd.Commands()))
+		aux := recursiveTreeGenerator(level0, 1, (i+1) == len(rootCmd.Commands()))
 		result = result + "\n" + aux
 	}
-	fmt.Print(result+"\n")
+	fmt.Print(result + "\n")
 }
 
 func recursiveTreeGenerator(c *cobra.Command, level int, last bool) string {
 	prefix := ""
 	numLevels := level
 
-
-	for i:=1;i<numLevels;i++{
+	for i := 1; i < numLevels; i++ {
 		prefix = prefix + "│    "
 	}
 
@@ -60,14 +72,14 @@ func recursiveTreeGenerator(c *cobra.Command, level int, last bool) string {
 	}
 
 	for i, subCommand := range c.Commands() {
-		aux := recursiveTreeGenerator(subCommand, level + 1, (i+1)==len(c.Commands()))
+		aux := recursiveTreeGenerator(subCommand, level+1, (i+1) == len(c.Commands()))
 		result = result + "\n" + aux
 	}
 
 	return prefix + result
 }
 
-func printLine (command *cobra.Command, connector string, cmdName string) string {
+func printLine(command *cobra.Command, connector string, cmdName string) string {
 	flags := ""
 	pFlags := ""
 	result := ""

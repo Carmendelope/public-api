@@ -1,3 +1,20 @@
+/*
+ * Copyright 2019 Nalej
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
+
 package cli
 
 import (
@@ -81,7 +98,7 @@ func (a *Applications) ShowDescriptorHelp(exampleName string, storageType string
 		a.ShowComplexDescriptorExample(sType)
 	} else if exampleName == "multireplica" {
 		a.ShowMultiReplicaDescriptorExample(sType)
-	}else {
+	} else {
 		fmt.Println("Supported examples: simple, complex, multireplica")
 	}
 }
@@ -180,7 +197,7 @@ func (a *Applications) DeleteDescriptor(organizationID string, descriptorID stri
 	defer cancel()
 
 	descriptors := strings.Split(descriptorID, ",")
-	for _, toRemove := range descriptors{
+	for _, toRemove := range descriptors {
 		appDescriptorID := &grpc_application_go.AppDescriptorId{
 			OrganizationId:  organizationID,
 			AppDescriptorId: toRemove,
@@ -230,7 +247,7 @@ func (a *Applications) ListDescriptors(organizationID string) {
 	a.PrintResultOrError(list, err, "cannot obtain descriptor list")
 }
 
-func (a *Applications) ModifyAppDescriptorLabels(organizationID string, descriptorID string, add bool, rawLabels string){
+func (a *Applications) ModifyAppDescriptorLabels(organizationID string, descriptorID string, add bool, rawLabels string) {
 	if organizationID == "" {
 		log.Fatal().Msg("organizationID cannot be empty")
 	}
@@ -246,20 +263,20 @@ func (a *Applications) ModifyAppDescriptorLabels(organizationID string, descript
 	defer conn.Close()
 	defer cancel()
 	updateRequest := &grpc_application_go.UpdateAppDescriptorRequest{
-		OrganizationId: organizationID,
-		AppDescriptorId:      descriptorID,
-		AddLabels: add,
-		RemoveLabels: !add,
-		Labels: GetLabels(rawLabels),
+		OrganizationId:  organizationID,
+		AppDescriptorId: descriptorID,
+		AddLabels:       add,
+		RemoveLabels:    !add,
+		Labels:          GetLabels(rawLabels),
 	}
 	updated, err := client.UpdateAppDescriptor(ctx, updateRequest)
 	a.PrintResultOrError(updated, err, "cannot update application descriptor labels")
 }
 
 // getParams convert param (param1=value1,...,paramN=valueN) to InstanceParameterList
-func (a *Applications) getParams (params string) *grpc_application_go.InstanceParameterList {
+func (a *Applications) getParams(params string) *grpc_application_go.InstanceParameterList {
 
-	instParams := make ([]*grpc_application_go.InstanceParameter, 0)
+	instParams := make([]*grpc_application_go.InstanceParameter, 0)
 
 	if params != "" {
 		paramList := strings.Split(params, ",")
@@ -276,11 +293,11 @@ func (a *Applications) getParams (params string) *grpc_application_go.InstancePa
 	}
 
 	return &grpc_application_go.InstanceParameterList{
-		Parameters:instParams,
+		Parameters: instParams,
 	}
 }
 
-func (a *Applications) getConnectionRequest (connections string) []*grpc_application_manager_go.ConnectionRequest {
+func (a *Applications) getConnectionRequest(connections string) []*grpc_application_manager_go.ConnectionRequest {
 
 	connectionList := make([]*grpc_application_manager_go.ConnectionRequest, 0)
 
@@ -291,10 +308,10 @@ func (a *Applications) getConnectionRequest (connections string) []*grpc_applica
 			if len(connValues) != 3 {
 				log.Fatal().Msg("connection format error (soure_instance_id, outboundName, target_instance_id")
 			}
-			connectionList = append(connectionList,&grpc_application_manager_go.ConnectionRequest{
+			connectionList = append(connectionList, &grpc_application_manager_go.ConnectionRequest{
 				SourceOutboundName: connValues[0],
-				TargetInstanceId: connValues[1],
-				TargetInboundName: connValues[2],
+				TargetInstanceId:   connValues[1],
+				TargetInboundName:  connValues[2],
 			})
 		}
 	}
@@ -317,10 +334,10 @@ func (a *Applications) Deploy(organizationID string, appDescriptorID string, nam
 	defer cancel()
 
 	deployRequest := &grpc_application_manager_go.DeployRequest{
-		OrganizationId:  organizationID,
-		AppDescriptorId: appDescriptorID,
-		Name:            name,
-		Parameters:		 paramList,
+		OrganizationId:      organizationID,
+		AppDescriptorId:     appDescriptorID,
+		Name:                name,
+		Parameters:          paramList,
 		OutboundConnections: a.getConnectionRequest(connections),
 	}
 	deployed, err := client.Deploy(ctx, deployRequest)
@@ -335,7 +352,7 @@ func (a *Applications) Undeploy(organizationID string, appInstanceID string, for
 		log.Fatal().Msg("instanceID cannot be empty")
 	}
 	instances := strings.Split(appInstanceID, ",")
-	for _, toUndeploy := range instances{
+	for _, toUndeploy := range instances {
 		a.load()
 		ctx, cancel := a.GetContext()
 		client, conn := a.getClient()
@@ -343,8 +360,8 @@ func (a *Applications) Undeploy(organizationID string, appInstanceID string, for
 		defer cancel()
 
 		undeployRequest := &grpc_application_manager_go.UndeployRequest{
-			OrganizationId: organizationID,
-			AppInstanceId:  toUndeploy,
+			OrganizationId:   organizationID,
+			AppInstanceId:    toUndeploy,
 			UserConfirmation: force,
 		}
 		result, err := client.Undeploy(ctx, undeployRequest)
@@ -391,7 +408,7 @@ func (a *Applications) GetInstance(organizationID string, appInstanceID string, 
 	previous, err := client.GetAppInstance(ctx, instID)
 	a.PrintResultOrError(previous, err, "cannot obtain application instance information")
 
-	for ; watch; {
+	for watch {
 		watchCtx, watchCancel := a.GetContext()
 		inst, err := client.GetAppInstance(watchCtx, instID)
 		if err != nil {
@@ -407,7 +424,6 @@ func (a *Applications) GetInstance(organizationID string, appInstanceID string, 
 	}
 
 }
-
 
 func (a *Applications) GetInstanceParameters(organizationID string, appInstanceID string) {
 	if organizationID == "" {
@@ -425,8 +441,8 @@ func (a *Applications) GetInstanceParameters(organizationID string, appInstanceI
 	defer cancel()
 
 	appDescriptorID := &grpc_application_go.AppInstanceId{
-		OrganizationId:  organizationID,
-		AppInstanceId: appInstanceID,
+		OrganizationId: organizationID,
+		AppInstanceId:  appInstanceID,
 	}
 	descriptor, err := client.ListInstanceParameters(ctx, appDescriptorID)
 	a.PrintResultOrError(descriptor, err, "cannot obtain instance parameters")

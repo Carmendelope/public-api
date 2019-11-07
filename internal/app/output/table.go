@@ -1,3 +1,20 @@
+/*
+ * Copyright 2019 Nalej
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
+
 package output
 
 import (
@@ -12,8 +29,10 @@ import (
 
 // MinWidth with the minimum column width.
 const MinWidth = 5
+
 // TabWidth with the tabulator length.
 const TabWidth = 2
+
 // Padding with the length of the padding element.
 const Padding = 3
 
@@ -69,7 +88,7 @@ func TransformLabels(labels map[string]string, labelLength int) string {
 }
 
 // GetSortedKeys get the map of labels sorted by key name.
-func GetSortedKeys (labels map[string]string) []string {
+func GetSortedKeys(labels map[string]string) []string {
 	sortedKeys := make([]string, len(labels))
 	i := 0
 	for k, _ := range labels {
@@ -81,7 +100,7 @@ func GetSortedKeys (labels map[string]string) []string {
 }
 
 // TruncateString truncates a string to a given length depending on the user options.
-func TruncateString (text string, length int) string {
+func TruncateString(text string, length int) string {
 	if length <= 0 {
 		return text
 	}
@@ -94,7 +113,6 @@ func TruncateString (text string, length int) string {
 	}
 	return truncatedString
 }
-
 
 // ----
 // Users

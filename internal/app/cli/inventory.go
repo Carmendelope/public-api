@@ -1,5 +1,18 @@
 /*
- * Copyright (C)  2019 Nalej - All Rights Reserved
+ * Copyright 2019 Nalej
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
  */
 
 package cli
@@ -61,7 +74,7 @@ func (i *Inventory) List(organizationID string) {
 
 }
 
-func (i *Inventory) Summary (organizationID string) {
+func (i *Inventory) Summary(organizationID string) {
 	if organizationID == "" {
 		log.Fatal().Msg("organizationID cannot be empty")
 	}
@@ -134,14 +147,14 @@ func (i *Inventory) GetDeviceInfo(organizationID string, deviceID string) {
 	defer conn.Close()
 	defer cancel()
 	id := &grpc_inventory_manager_go.DeviceId{
-		OrganizationId:	organizationID,
-		AssetDeviceId:	deviceID,
+		OrganizationId: organizationID,
+		AssetDeviceId:  deviceID,
 	}
 	info, err := client.GetDeviceInfo(ctx, id)
 	i.PrintResultOrError(info, err, "cannot get device information")
 }
 
-func (i * Inventory) UpdateDeviceLocation (organizationID string, assetDeviceID string, location string) {
+func (i *Inventory) UpdateDeviceLocation(organizationID string, assetDeviceID string, location string) {
 	if organizationID == "" {
 		log.Fatal().Msg("organizationID cannot be empty")
 	}
@@ -158,8 +171,8 @@ func (i * Inventory) UpdateDeviceLocation (organizationID string, assetDeviceID 
 	defer cancel()
 
 	request := &grpc_inventory_manager_go.UpdateDeviceLocationRequest{
-		OrganizationId:	organizationID,
-		AssetDeviceId:	assetDeviceID,
+		OrganizationId: organizationID,
+		AssetDeviceId:  assetDeviceID,
 		UpdateLocation: true,
 		Location: &grpc_inventory_go.InventoryLocation{
 			Geolocation: location,

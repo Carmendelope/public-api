@@ -1,5 +1,18 @@
 /*
- * Copyright (C)  2019 Nalej - All Rights Reserved
+ * Copyright 2019 Nalej
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
  */
 
 package cli
@@ -14,7 +27,7 @@ import (
 	"strings"
 )
 
-type Devices struct{
+type Devices struct {
 	Connection
 	Credentials
 }
@@ -26,14 +39,14 @@ func NewDevices(address string, port int, insecure bool, useTLS bool, caCertPath
 	}
 }
 
-func (d*Devices) load() {
+func (d *Devices) load() {
 	err := d.LoadCredentials()
 	if err != nil {
 		log.Fatal().Str("trace", err.DebugReport()).Msg("cannot load credentials, try login first")
 	}
 }
 
-func (d*Devices) getClient() (grpc_public_api_go.DevicesClient, *grpc.ClientConn) {
+func (d *Devices) getClient() (grpc_public_api_go.DevicesClient, *grpc.ClientConn) {
 	conn, err := d.GetConnection()
 	if err != nil {
 		log.Fatal().Str("trace", err.DebugReport()).Msg("cannot create the connection with the Nalej platform")
@@ -42,14 +55,14 @@ func (d*Devices) getClient() (grpc_public_api_go.DevicesClient, *grpc.ClientConn
 	return client, conn
 }
 
-func (d*Devices) AddDeviceGroup(organizationID string, name string, enabled bool, disabled bool,  enabledDefaultConnectivity bool, disabledDefaultConnectivity bool) {
+func (d *Devices) AddDeviceGroup(organizationID string, name string, enabled bool, disabled bool, enabledDefaultConnectivity bool, disabledDefaultConnectivity bool) {
 	if organizationID == "" {
 		log.Fatal().Msg("organizationID cannot be empty")
 	}
 	if name == "" {
 		log.Fatal().Msg("name cannot be empty")
 	}
-	if enabled && disabled{
+	if enabled && disabled {
 		log.Fatal().Msg("impossible to apply enabled and disabled flag at the same time")
 	}
 	if enabledDefaultConnectivity && disabledDefaultConnectivity {
@@ -58,7 +71,7 @@ func (d*Devices) AddDeviceGroup(organizationID string, name string, enabled bool
 	if !enabled && !disabled {
 		log.Fatal().Msg("Either enabled or disabled must be set")
 	}
-	if !enabledDefaultConnectivity && !disabledDefaultConnectivity{
+	if !enabledDefaultConnectivity && !disabledDefaultConnectivity {
 		log.Fatal().Msg("Either enabledDefaultConnectivity or disabledDefaultConnectivity must be set")
 	}
 
@@ -78,7 +91,7 @@ func (d*Devices) AddDeviceGroup(organizationID string, name string, enabled bool
 	d.PrintResultOrError(added, err, "cannot add device group")
 }
 
-func (d*Devices) UpdateDeviceGroup(organizationID string, deviceGroupID string, enabled bool, disabled bool, enabledDefaultConnectivity bool, disabledDefaultConnectivity bool) {
+func (d *Devices) UpdateDeviceGroup(organizationID string, deviceGroupID string, enabled bool, disabled bool, enabledDefaultConnectivity bool, disabledDefaultConnectivity bool) {
 
 	if organizationID == "" {
 		log.Fatal().Msg("organizationID cannot be empty")
@@ -86,22 +99,22 @@ func (d*Devices) UpdateDeviceGroup(organizationID string, deviceGroupID string, 
 	if deviceGroupID == "" {
 		log.Fatal().Msg("deviceGroupID cannot be empty")
 	}
-	if enabled && disabled{
+	if enabled && disabled {
 		log.Fatal().Msg("impossible to apply enabled and disabled flag at the same time")
 	}
 
 	/*
-	I have verified that one of the four flags is informed (at least one)
-	1) If enabled is informed, disabled is not -> enable = true and updateEnable = true
-	2) If disabled is informed, enabled is not -> enabled = false and updateEnable = true
-	3) neither enabled nor disabled are informed -> updateEnable = false
-	The same as defaultEnableConnectivity
+		I have verified that one of the four flags is informed (at least one)
+		1) If enabled is informed, disabled is not -> enable = true and updateEnable = true
+		2) If disabled is informed, enabled is not -> enabled = false and updateEnable = true
+		3) neither enabled nor disabled are informed -> updateEnable = false
+		The same as defaultEnableConnectivity
 	*/
 
 	if enabledDefaultConnectivity && disabledDefaultConnectivity {
 		log.Fatal().Msg("impossible to apply enabledDefaultConnectivity and disabledDefaultConnectivity flag at the same time")
 	}
-	if !enabled && !disabled && !enabledDefaultConnectivity && !disabledDefaultConnectivity{
+	if !enabled && !disabled && !enabledDefaultConnectivity && !disabledDefaultConnectivity {
 		log.Fatal().Msg("Either enabled, disabled, enabledDefaultConnectivity or disabledDefaultConnectivity must be set")
 	}
 	d.load()
@@ -125,7 +138,7 @@ func (d*Devices) UpdateDeviceGroup(organizationID string, deviceGroupID string, 
 	d.PrintResultOrError(updated, err, "cannot update device group")
 }
 
-func (d*Devices) RemoveDeviceGroup(organizationID string, deviceGroupID string) {
+func (d *Devices) RemoveDeviceGroup(organizationID string, deviceGroupID string) {
 	if organizationID == "" {
 		log.Fatal().Msg("organizationID cannot be empty")
 	}
@@ -140,14 +153,14 @@ func (d*Devices) RemoveDeviceGroup(organizationID string, deviceGroupID string) 
 	defer cancel()
 
 	dgID := &grpc_device_go.DeviceGroupId{
-		OrganizationId:       organizationID,
-		DeviceGroupId:        deviceGroupID,
+		OrganizationId: organizationID,
+		DeviceGroupId:  deviceGroupID,
 	}
 	result, err := client.RemoveDeviceGroup(ctx, dgID)
 	d.PrintResultOrError(result, err, "cannot remove device group")
 }
 
-func (d*Devices) ListDeviceGroups(organizationID string) {
+func (d *Devices) ListDeviceGroups(organizationID string) {
 	if organizationID == "" {
 		log.Fatal().Msg("organizationID cannot be empty")
 	}
@@ -158,13 +171,13 @@ func (d*Devices) ListDeviceGroups(organizationID string) {
 	defer cancel()
 
 	oID := &grpc_organization_go.OrganizationId{
-		OrganizationId:       organizationID,
+		OrganizationId: organizationID,
 	}
 	dgs, err := client.ListDeviceGroups(ctx, oID)
 	d.PrintResultOrError(dgs, err, "cannot list device groups")
 }
 
-func (d*Devices) ListDevices(organizationID string, deviceGroupID string) {
+func (d *Devices) ListDevices(organizationID string, deviceGroupID string) {
 	if organizationID == "" {
 		log.Fatal().Msg("organizationID cannot be empty")
 	}
@@ -179,24 +192,24 @@ func (d*Devices) ListDevices(organizationID string, deviceGroupID string) {
 	defer cancel()
 
 	dgID := &grpc_device_go.DeviceGroupId{
-		OrganizationId:       organizationID,
-		DeviceGroupId:        deviceGroupID,
+		OrganizationId: organizationID,
+		DeviceGroupId:  deviceGroupID,
 	}
 	devices, err := client.ListDevices(ctx, dgID)
 	d.PrintResultOrError(devices, err, "cannot list devices")
 }
 
-func (d*Devices) getDeviceLabelRequest(organizationID string, deviceGroupID string, deviceID string, rawLabels string) *grpc_device_manager_go.DeviceLabelRequest{
+func (d *Devices) getDeviceLabelRequest(organizationID string, deviceGroupID string, deviceID string, rawLabels string) *grpc_device_manager_go.DeviceLabelRequest {
 	labels := GetLabels(rawLabels)
 	return &grpc_device_manager_go.DeviceLabelRequest{
-		OrganizationId:       organizationID,
-		DeviceGroupId:        deviceGroupID,
-		DeviceId:             deviceID,
-		Labels:               labels,
+		OrganizationId: organizationID,
+		DeviceGroupId:  deviceGroupID,
+		DeviceId:       deviceID,
+		Labels:         labels,
 	}
 }
 
-func (d*Devices) AddLabelToDevice(organizationID string, deviceGroupID string, deviceID string, rawLabels string) {
+func (d *Devices) AddLabelToDevice(organizationID string, deviceGroupID string, deviceID string, rawLabels string) {
 	if organizationID == "" {
 		log.Fatal().Msg("organizationID cannot be empty")
 	}
@@ -223,7 +236,7 @@ func (d*Devices) AddLabelToDevice(organizationID string, deviceGroupID string, d
 
 }
 
-func (d*Devices) RemoveLabelFromDevice(organizationID string, deviceGroupID string, deviceID string, rawLabels string) {
+func (d *Devices) RemoveLabelFromDevice(organizationID string, deviceGroupID string, deviceID string, rawLabels string) {
 	if organizationID == "" {
 		log.Fatal().Msg("organizationID cannot be empty")
 	}
@@ -249,7 +262,7 @@ func (d*Devices) RemoveLabelFromDevice(organizationID string, deviceGroupID stri
 	d.PrintResultOrError(success, err, "cannot remove labels from device")
 }
 
-func (d*Devices) UpdateDevice(organizationID string, deviceGroupID string, deviceID string, enabled bool, disabled bool) {
+func (d *Devices) UpdateDevice(organizationID string, deviceGroupID string, deviceID string, enabled bool, disabled bool) {
 	if organizationID == "" {
 		log.Fatal().Msg("organizationID cannot be empty")
 	}
@@ -262,7 +275,7 @@ func (d*Devices) UpdateDevice(organizationID string, deviceGroupID string, devic
 	if !enabled && !disabled {
 		log.Fatal().Msg("Either enabled or disabled must be set")
 	}
-	if enabled && disabled{
+	if enabled && disabled {
 		log.Fatal().Msg("impossible to apply enabled and disabled flag at the same time")
 	}
 
@@ -273,10 +286,10 @@ func (d*Devices) UpdateDevice(organizationID string, deviceGroupID string, devic
 	defer cancel()
 
 	request := &grpc_device_manager_go.UpdateDeviceRequest{
-		OrganizationId:       organizationID,
-		DeviceGroupId:        deviceGroupID,
-		DeviceId:             deviceID,
-		Enabled:              enabled,
+		OrganizationId: organizationID,
+		DeviceGroupId:  deviceGroupID,
+		DeviceId:       deviceID,
+		Enabled:        enabled,
 	}
 
 	updated, err := client.UpdateDevice(ctx, request)
@@ -284,7 +297,7 @@ func (d*Devices) UpdateDevice(organizationID string, deviceGroupID string, devic
 
 }
 
-func (d* Devices) RemoveDevice(organizationID string, deviceGroupID string, deviceID string){
+func (d *Devices) RemoveDevice(organizationID string, deviceGroupID string, deviceID string) {
 	if organizationID == "" {
 		log.Fatal().Msg("organizationID cannot be empty")
 	}
@@ -300,11 +313,11 @@ func (d* Devices) RemoveDevice(organizationID string, deviceGroupID string, devi
 	defer conn.Close()
 	defer cancel()
 	devices := strings.Split(deviceID, ",")
-	for _, dev := range devices{
+	for _, dev := range devices {
 		request := &grpc_device_go.DeviceId{
-			OrganizationId:       organizationID,
-			DeviceGroupId:        deviceGroupID,
-			DeviceId:             dev,
+			OrganizationId: organizationID,
+			DeviceGroupId:  deviceGroupID,
+			DeviceId:       dev,
 		}
 		success, err := client.RemoveDevice(ctx, request)
 		d.PrintResultOrError(success, err, "cannot remove device")
@@ -312,7 +325,7 @@ func (d* Devices) RemoveDevice(organizationID string, deviceGroupID string, devi
 
 }
 
-func (d*Devices) GetDeviceInfo (organizationID string, deviceGroupID string, deviceID string) {
+func (d *Devices) GetDeviceInfo(organizationID string, deviceGroupID string, deviceID string) {
 	if organizationID == "" {
 		log.Fatal().Msg("organizationID cannot be empty")
 	}
@@ -328,9 +341,9 @@ func (d*Devices) GetDeviceInfo (organizationID string, deviceGroupID string, dev
 	defer conn.Close()
 	defer cancel()
 	request := &grpc_device_go.DeviceId{
-		OrganizationId:       organizationID,
-		DeviceGroupId:        deviceGroupID,
-		DeviceId:             deviceID,
+		OrganizationId: organizationID,
+		DeviceGroupId:  deviceGroupID,
+		DeviceId:       deviceID,
 	}
 
 	success, err := client.GetDevice(ctx, request)

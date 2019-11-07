@@ -1,5 +1,18 @@
 /*
- * Copyright (C) 2018 Nalej - All Rights Reserved
+ * Copyright 2019 Nalej
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
  */
 
 package commands
@@ -15,10 +28,10 @@ var key string
 var value string
 
 var optionsCmd = &cobra.Command{
-	Use:   "option",
+	Use:     "option",
 	Aliases: []string{"options", "opt"},
-	Short: "Manage default options",
-	Long:  `Manage default values for the commands parameters`,
+	Short:   "Manage default options",
+	Long:    `Manage default values for the commands parameters`,
 	Run: func(cmd *cobra.Command, args []string) {
 		SetupLogging()
 		cmd.Help()
@@ -49,10 +62,10 @@ var setOptionCmd = &cobra.Command{
 }
 
 var getOptionCmd = &cobra.Command{
-	Use:   "info",
+	Use:     "info",
 	Aliases: []string{"get"},
-	Short: "Get the value for a given key",
-	Long:  `Get the value for a given key`,
+	Short:   "Get the value for a given key",
+	Long:    `Get the value for a given key`,
 	Run: func(cmd *cobra.Command, args []string) {
 		SetupLogging()
 		opts := options.NewOptions()
@@ -62,10 +75,10 @@ var getOptionCmd = &cobra.Command{
 }
 
 var listOptionsCmd = &cobra.Command{
-	Use:   "list",
+	Use:     "list",
 	Aliases: []string{"ls"},
-	Short: "List the stored values",
-	Long:  `List the stored values`,
+	Short:   "List the stored values",
+	Long:    `List the stored values`,
 	Run: func(cmd *cobra.Command, args []string) {
 		SetupLogging()
 		opts := options.NewOptions()
@@ -87,9 +100,9 @@ var deleteOptionCmd = &cobra.Command{
 }
 
 var updateOptionCmd = &cobra.Command{
-	Use:     "update",
-	Short:   "Update a specific set of keys",
-	Long:    `Update a specific set of keys`,
+	Use:   "update",
+	Short: "Update a specific set of keys",
+	Long:  `Update a specific set of keys`,
 	Run: func(cmd *cobra.Command, args []string) {
 		SetupLogging()
 		cmd.Help()
@@ -100,13 +113,13 @@ var updatePlatformAddressOptionCmd = &cobra.Command{
 	Use:     "address [new address]",
 	Aliases: []string{"platform-address", "platform"},
 	Short:   "Update the target platform address for login and public API",
-	Long:    `Update the target platform address for login and public API.
+	Long: `Update the target platform address for login and public API.
 Do not include the login. or api. prefix in the new address`,
-Args:cobra.ExactArgs(1),
+	Args: cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		SetupLogging()
 		opts := options.NewOptions()
-		newAddresses:= opts.UpdatePlatformAddress(args[0])
+		newAddresses := opts.UpdatePlatformAddress(args[0])
 		fmt.Printf("Address updated: %s", strings.Join(newAddresses, ", "))
 	},
 }
