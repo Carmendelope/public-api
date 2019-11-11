@@ -10,7 +10,6 @@
     "public-api"
   ],
   "tools": [
-    "azure",
     "docker",
     "k8s"
   ]
