@@ -101,6 +101,13 @@ func (m *Manager) ProvisionAndInstall(request *grpc_provisioner_go.ProvisionClus
 	return m.infraClient.ProvisionAndInstallCluster(ctx, request)
 }
 
+// Scale the number of nodes in the cluster.
+func (m *Manager) Scale(request *grpc_provisioner_go.ScaleClusterRequest) (*grpc_infrastructure_manager_go.ProvisionerResponse, error) {
+	ctx, cancel := common.GetContext()
+	defer cancel()
+	return m.infraClient.Scale(ctx, request)
+}
+
 func (m *Manager) extendInfo(source *grpc_infrastructure_go.Cluster) (*grpc_public_api_go.Cluster, error) {
 	totalNodes, runningNodes, err := m.clusterNodesStats(source.OrganizationId, source.ClusterId)
 	if err != nil {
