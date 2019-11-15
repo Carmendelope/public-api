@@ -36,7 +36,6 @@ type DecoratorResponse struct {
 	Error             derrors.Error
 }
 
-
 // ApplyDecorator function in which the 'decorator apply' is called depending on the type of the input argument
 // if more structures are added to which a decorator can be applied, the switch will have to be extended to include them
 func ApplyDecorator(result interface{}, decorator Decorator) *DecoratorResponse {

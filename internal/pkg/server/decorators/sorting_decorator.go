@@ -60,7 +60,7 @@ func (od *OrderDecorator) Validate(result interface{}) derrors.Error {
 
 }
 
-func (od *OrderDecorator) ValidateSortingDecorator(allowedFields []string) derrors.Error{
+func (od *OrderDecorator) ValidateSortingDecorator(allowedFields []string) derrors.Error {
 	found := false
 
 	for _, allowed := range AppDescriptorListAllowedFields {
@@ -76,10 +76,9 @@ func (od *OrderDecorator) ValidateSortingDecorator(allowedFields []string) derro
 	return nil
 }
 
-
 func (od *OrderDecorator) Apply(elements []interface{}) ([]interface{}, derrors.Error) {
 
-	if len(elements) == 0{
+	if len(elements) == 0 {
 		return elements, nil
 	}
 
@@ -88,7 +87,6 @@ func (od *OrderDecorator) Apply(elements []interface{}) ([]interface{}, derrors.
 	if targetName == "" {
 		return nil, derrors.NewInvalidArgumentError("unable to apply decorator, field not found").WithParams(od.Options.Field)
 	}
-
 
 	sort.SliceStable(elements, func(i, j int) bool {
 

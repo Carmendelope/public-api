@@ -18,9 +18,15 @@
 
 package utils
 
-func tagMatches(fieldName string, jsonTag string) bool{
-	for _, s := range strings.Split(jsonTag, ","){
-		if s == fieldName{
+import (
+	"github.com/rs/zerolog/log"
+	"reflect"
+	"strings"
+)
+
+func tagMatches(fieldName string, jsonTag string) bool {
+	for _, s := range strings.Split(jsonTag, ",") {
+		if s == fieldName {
 			return true
 		}
 	}
@@ -28,7 +34,7 @@ func tagMatches(fieldName string, jsonTag string) bool{
 }
 
 // GetFieldName returns the name of a field from the name it has in the json structure
-func GetFieldName(jsonName string, element interface{}) string{
+func GetFieldName(jsonName string, element interface{}) string {
 
 	e0 := reflect.ValueOf(element)
 	targetField := ""
