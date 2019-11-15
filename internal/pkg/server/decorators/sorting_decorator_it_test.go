@@ -39,6 +39,17 @@ func CreateApplicationDescriptor(name string) *grpc_application_go.AppDescriptor
 
 	return &descriptor
 }
+func CreateApplicationInstance(name string) *grpc_application_go.AppInstance {
+
+	instance := grpc_application_go.AppInstance{
+		OrganizationId:  uuid.New().String(),
+		AppDescriptorId: uuid.New().String(),
+		AppInstanceId:   uuid.New().String(),
+		Name:            name,
+	}
+
+	return &instance
+}
 
 var _ = ginkgo.Describe("Helper", func() {
 
@@ -51,7 +62,7 @@ var _ = ginkgo.Describe("Helper", func() {
 				list = append(list, CreateApplicationDescriptor(uuid.New().String()))
 			}
 
-			decorator := NewOrderDecorator(OrderOptions{Field: "Name", Asc: true})
+			decorator := NewOrderDecorator(OrderOptions{Field: "name", Asc: true})
 			AppDescList := &grpc_application_go.AppDescriptorList{
 				Descriptors: list,
 			}
@@ -83,6 +94,24 @@ var _ = ginkgo.Describe("Helper", func() {
 			}
 
 			res := ApplyDecorator(AppDescList, decorator)
+			gomega.Expect(res.Error).ShouldNot(gomega.BeNil())
+			fmt.Println(res.Error.Error())
+
+		})
+		ginkgo.It("should not be able to order a list of appInstance by any field", func() {
+
+			num := 1
+			list := make([]*grpc_application_go.AppInstance, 0)
+			for i := 0; i < num; i++ {
+				list = append(list, CreateApplicationInstance(uuid.New().String()))
+			}
+
+			decorator := NewOrderDecorator(OrderOptions{Field: "OrganizationId", Asc: true})
+			AppInstList := &grpc_application_go.AppInstanceList{
+				Instances: list,
+			}
+
+			res := ApplyDecorator(AppInstList, decorator)
 			gomega.Expect(res.Error).ShouldNot(gomega.BeNil())
 			fmt.Println(res.Error.Error())
 

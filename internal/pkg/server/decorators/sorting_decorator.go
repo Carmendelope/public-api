@@ -20,12 +20,16 @@ package decorators
 
 import (
 	"github.com/nalej/derrors"
+	"github.com/nalej/grpc-application-go"
+	"github.com/nalej/public-api/internal/pkg/utils"
 	"github.com/rs/zerolog/log"
 	"reflect"
 	"sort"
 )
 
-var AppDescriptorListAllowedFields = []string{"Name"}
+// AppDescriptorListAllowedFields: name of the fields by which a list of descriptors can be sorted
+// Keep in mind that the names are those defined in the json structure
+var AppDescriptorListAllowedFields = []string{"name"}
 
 // OrderOptions represents the ordering to be applied
 type OrderOptions struct {
@@ -46,8 +50,17 @@ func NewOrderDecorator(options OrderOptions) Decorator {
 }
 
 // Validate checks if the field is a field to which decorators can be applied
-func (od *OrderDecorator) Validate() derrors.Error {
+func (od *OrderDecorator) Validate(result interface{}) derrors.Error {
 
+	switch result.(type) {
+	case *grpc_application_go.AppDescriptorList:
+		return od.ValidateSortingDecorator(AppDescriptorListAllowedFields)
+	}
+	return derrors.NewInvalidArgumentError("sorting decorator not allowed")
+
+}
+
+func (od *OrderDecorator) ValidateSortingDecorator(allowedFields []string) derrors.Error{
 	found := false
 
 	for _, allowed := range AppDescriptorListAllowedFields {
@@ -63,31 +76,41 @@ func (od *OrderDecorator) Validate() derrors.Error {
 	return nil
 }
 
-func (od *OrderDecorator) Apply(elements []interface{}) []interface{} {
+
+func (od *OrderDecorator) Apply(elements []interface{}) ([]interface{}, derrors.Error) {
+
+	if len(elements) == 0{
+		return elements, nil
+	}
+
+	targetName := utils.GetFieldName(od.Options.Field, elements[0])
+	// if targetName is not found
+	if targetName == "" {
+		return nil, derrors.NewInvalidArgumentError("unable to apply decorator, field not found").WithParams(od.Options.Field)
+	}
+
 
 	sort.SliceStable(elements, func(i, j int) bool {
 
 		e1 := reflect.ValueOf(elements[i])
 		e2 := reflect.ValueOf(elements[j])
 
-		switch e1.FieldByName(od.Options.Field).Kind() {
+		switch e1.FieldByName(targetName).Kind() {
 		case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
 			if od.Options.Asc {
-				return e1.FieldByName(od.Options.Field).Int() < e2.FieldByName(od.Options.Field).Int()
+				return e1.FieldByName(targetName).Int() < e2.FieldByName(targetName).Int()
 			}
-			return e1.FieldByName(od.Options.Field).Int() > e2.FieldByName(od.Options.Field).Int()
+			return e1.FieldByName(targetName).Int() > e2.FieldByName(targetName).Int()
 
 		case reflect.String:
 			if od.Options.Asc {
-				return e1.FieldByName(od.Options.Field).String() < e2.FieldByName(od.Options.Field).String()
+				return e1.FieldByName(targetName).String() < e2.FieldByName(targetName).String()
 			}
-			return e1.FieldByName(od.Options.Field).String() > e2.FieldByName(od.Options.Field).String()
+			return e1.FieldByName(targetName).String() > e2.FieldByName(targetName).String()
 		}
-		log.Warn().Interface("Field", e1.FieldByName(od.Options.Field).Kind()).Msg("not supported")
+		log.Warn().Interface("Field", e1.FieldByName(targetName).Kind()).Msg("not supported")
 		return false
 	})
 
-	log.Debug().Interface("elements", elements).Msg("elements returned")
-
-	return elements
+	return elements, nil
 }

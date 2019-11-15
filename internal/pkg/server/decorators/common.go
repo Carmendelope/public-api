@@ -36,13 +36,19 @@ type DecoratorResponse struct {
 	Error             derrors.Error
 }
 
-type Decorator interface {
-	Apply(elements []interface{}) []interface{}
-	Validate() derrors.Error
-}
 
 // ApplyDecorator function in which the 'decorator apply' is called depending on the type of the input argument
+// if more structures are added to which a decorator can be applied, the switch will have to be extended to include them
 func ApplyDecorator(result interface{}, decorator Decorator) *DecoratorResponse {
+
+	// validate if the decorator can be applied
+	vErr := decorator.Validate(result)
+	if vErr != nil {
+		return &DecoratorResponse{
+			Error: vErr,
+		}
+	}
+
 	switch result := result.(type) {
 	case *grpc_application_go.AppDescriptorList:
 		return FromAppDescriptorList(result.Descriptors, decorator)
@@ -61,15 +67,6 @@ func FromAppInstanceList(result []*grpc_public_api_go.AppInstance, decorator Dec
 
 // FromAppDescriptorList applies decorator to a AppDescriptorList
 func FromAppDescriptorList(result []*grpc_application_go.AppDescriptor, decorator Decorator) *DecoratorResponse {
-
-	// Validate the decorator
-	vErr := decorator.Validate()
-	if vErr != nil {
-		return &DecoratorResponse{
-			Error: vErr,
-		}
-	}
-
 	// convert to []interface{}
 	toGenericList := make([]interface{}, len(result))
 	for i, d := range result {
@@ -77,7 +74,12 @@ func FromAppDescriptorList(result []*grpc_application_go.AppDescriptor, decorato
 	}
 
 	// call to apply
-	ordered := decorator.Apply(toGenericList)
+	ordered, err := decorator.Apply(toGenericList)
+	if err != nil {
+		return &DecoratorResponse{
+			Error: err,
+		}
+	}
 
 	// reconvert to grpc_application_go.AppDescriptor
 	orderedResult := make([]*grpc_application_go.AppDescriptor, len(result))
