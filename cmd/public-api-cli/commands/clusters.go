@@ -24,6 +24,7 @@ import (
 	"github.com/nalej/public-api/internal/app/cli"
 	"github.com/rs/zerolog/log"
 	"github.com/spf13/cobra"
+	"strconv"
 )
 
 var clustersCmd = &cobra.Command{
@@ -69,9 +70,7 @@ func init() {
 	monitorClusterCmd.Flags().Int32Var(&rangeMinutes, "rangeMinutes", 0, "Return average values over the past <rangeMinutes> minutes")
 
 	clustersCmd.AddCommand(cordonClusterCmd)
-
 	clustersCmd.AddCommand(uncordonClusterCmd)
-
 	clustersCmd.AddCommand(drainClusterCmd)
 
 	provAndInstCmd.PersistentFlags().StringVar(&organizationID, "organizationId", "", "Organization Id")
@@ -88,6 +87,12 @@ func init() {
 	provAndInstCmd.PersistentFlags().StringVar(&provisionZone, "zone", "", "Deployment zone")
 	provAndInstCmd.PersistentFlags().StringVar(&provisionKubeConfigOutputPath, "kubeConfigOutputPath", "/tmp", "Path where the kubeconfig will be stored")
 	clustersCmd.AddCommand(provAndInstCmd)
+
+	scaleClusterCmd.PersistentFlags().StringVar(&provisionClusterType, "clusterType", "kubernetes", "Cluster type")
+	scaleClusterCmd.PersistentFlags().StringVar(&provisionAzureCredentialsPath, "azureCredentialsPath", "", "Path for the azure credentials file")
+	scaleClusterCmd.PersistentFlags().StringVar(&provisionAzureResourceGroup, "azureResourceGroup", "", "Azure resource group")
+	scaleClusterCmd.PersistentFlags().StringVar(&provisionTargetPlatform, "targetPlatform", "", "Target platform")
+	clustersCmd.AddCommand(scaleClusterCmd)
 }
 
 var installClustersCmd = &cobra.Command{
@@ -351,7 +356,7 @@ var provAndInstCmd = &cobra.Command{
 		clusterType := stringToClusterType(provisionClusterType)
 		targetPlatform := stringToTargetPlatform(provisionTargetPlatform)
 
-		p.Cluster(cliOptions.Resolve("organizationId", organizationID),
+		p.ProvisionAndInstall(cliOptions.Resolve("organizationId", organizationID),
 			provisionClusterName,
 			provisionAzureCredentialsPath,
 			provisionAzureDnsZoneName,
@@ -364,6 +369,41 @@ var provAndInstCmd = &cobra.Command{
 			int64(provisionNumNodes),
 			targetPlatform,
 			provisionZone,
+		)
+	},
+}
+
+// scaleClusterCmd with the cmd definition of a scale cluster operation.
+var scaleClusterCmd = &cobra.Command{
+	Use:   "scale [clusterID] [numNodes]",
+	Short: "Scale an application cluster",
+	Long:  `Scale an application cluster`,
+	Args:  cobra.ExactArgs(2),
+	Run: func(cmd *cobra.Command, args []string) {
+		SetupLogging()
+		p := cli.NewProvision(
+			cliOptions.Resolve("nalejAddress", nalejAddress),
+			cliOptions.ResolveAsInt("port", nalejPort),
+			insecure, useTLS,
+			cliOptions.Resolve("cacert", caCertPath), cliOptions.Resolve("output", output),
+			cliOptions.ResolveAsInt("labelLength", labelLength),
+			provisionKubeConfigOutputPath)
+
+		clusterType := stringToClusterType(provisionClusterType)
+		targetPlatform := stringToTargetPlatform(provisionTargetPlatform)
+
+		numNodes, err := strconv.Atoi(args[1])
+		if err != nil {
+			log.Fatal().Msg("numNodes must be a number")
+		}
+
+		p.Scale(cliOptions.Resolve("organizationId", organizationID),
+			args[0],
+			clusterType,
+			int64(numNodes),
+			targetPlatform,
+			provisionAzureCredentialsPath,
+			provisionAzureResourceGroup,
 		)
 	},
 }

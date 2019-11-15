@@ -38,6 +38,7 @@ type Handler struct {
 	Manager Manager
 }
 
+
 // NewHandler creates a new Handler with a linked manager.
 func NewHandler(manager Manager) *Handler {
 	return &Handler{manager}
@@ -71,6 +72,23 @@ func (h *Handler) ProvisionAndInstall(ctx context.Context, request *grpc_provisi
 		return nil, derrors.NewPermissionDeniedError("cannot access requested OrganizationID")
 	}
 	return h.Manager.ProvisionAndInstall(request)
+}
+
+// Scale the number of nodes in the cluster.
+func (h *Handler) Scale(ctx context.Context, request *grpc_provisioner_go.ScaleClusterRequest) (*grpc_infrastructure_manager_go.ProvisionerResponse, error) {
+	log.Debug().Interface("request", request).Msg("Scale cluster")
+	rm, err := authhelper.GetRequestMetadata(ctx)
+	if err != nil {
+		return nil, conversions.ToGRPCError(err)
+	}
+	if request.OrganizationId != rm.OrganizationID {
+		return nil, derrors.NewPermissionDeniedError("cannot access requested OrganizationID")
+	}
+	err = entities.ValidScaleClusterRequest(request)
+	if err != nil{
+		return nil, conversions.ToGRPCError(err)
+	}
+	return h.Manager.Scale(request)
 }
 
 // List all the clusters in an organization.
