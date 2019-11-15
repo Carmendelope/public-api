@@ -29,7 +29,7 @@ var appNetCmd = &cobra.Command{
 	Long:    `Application Network related operations`,
 	Run: func(cmd *cobra.Command, args []string) {
 		SetupLogging()
-		cmd.Help()
+		_ = cmd.Help()
 	},
 }
 
@@ -110,7 +110,7 @@ var inboundCmd = &cobra.Command{
 	Long:  `Inbound Interfaces related operations`,
 	Run: func(cmd *cobra.Command, args []string) {
 		SetupLogging()
-		cmd.Help()
+		_ = cmd.Help()
 	},
 }
 
@@ -136,7 +136,7 @@ var outboundCmd = &cobra.Command{
 	Long:  `Outbound Interfaces related operations`,
 	Run: func(cmd *cobra.Command, args []string) {
 		SetupLogging()
-		cmd.Help()
+		_ = cmd.Help()
 	},
 }
 
