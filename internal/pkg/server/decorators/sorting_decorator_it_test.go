@@ -26,34 +26,32 @@ import (
 	"github.com/onsi/gomega"
 )
 
-
 func CreateApplicationDescriptor(name string) *grpc_application_go.AppDescriptor {
 
 	descriptor := grpc_application_go.AppDescriptor{
-		OrganizationId:       uuid.New().String(),
-		AppDescriptorId:      uuid.New().String(),
-		Name:                 name,
-		Rules:				  []*grpc_application_go.SecurityRule{
-			{Name: uuid.New().String(),},
+		OrganizationId:  uuid.New().String(),
+		AppDescriptorId: uuid.New().String(),
+		Name:            name,
+		Rules: []*grpc_application_go.SecurityRule{
+			{Name: uuid.New().String()},
 		},
 	}
 
 	return &descriptor
 }
 
-
 var _ = ginkgo.Describe("Helper", func() {
 
 	ginkgo.Context("Order decorator", func() {
-		ginkgo.It("should be able to order a list of appDescriptor by Name", func (){
+		ginkgo.It("should be able to order a list of appDescriptor by Name", func() {
 
-			num:=10
+			num := 10
 			list := make([]*grpc_application_go.AppDescriptor, 0)
-			for i:=0;i<num;i++ {
+			for i := 0; i < num; i++ {
 				list = append(list, CreateApplicationDescriptor(uuid.New().String()))
 			}
 
-			decorator := NewOrderDecorator(OrderOptions{Field: "Name", Asc:true})
+			decorator := NewOrderDecorator(OrderOptions{Field: "Name", Asc: true})
 			AppDescList := &grpc_application_go.AppDescriptorList{
 				Descriptors: list,
 			}
@@ -63,7 +61,7 @@ var _ = ginkgo.Describe("Helper", func() {
 			gomega.Expect(res.AppDescriptorList).ShouldNot(gomega.BeNil())
 			gomega.Expect(len(res.AppDescriptorList.Descriptors)).Should(gomega.Equal(num))
 
-			for i:=0; i<=len(res.AppDescriptorList.Descriptors)-2; i++{
+			for i := 0; i <= len(res.AppDescriptorList.Descriptors)-2; i++ {
 				aux := res.AppDescriptorList.Descriptors[i]
 				aux2 := res.AppDescriptorList.Descriptors[i+1]
 				fmt.Println(aux.Name, " < ", aux2.Name)
@@ -71,15 +69,15 @@ var _ = ginkgo.Describe("Helper", func() {
 				gomega.Expect(minor).Should(gomega.BeTrue())
 			}
 		})
-		ginkgo.It("should not be able to order a list of appDescriptor by OrganizationId", func (){
+		ginkgo.It("should not be able to order a list of appDescriptor by OrganizationId", func() {
 
-			num:=10
+			num := 10
 			list := make([]*grpc_application_go.AppDescriptor, 0)
-			for i:=0;i<num;i++ {
+			for i := 0; i < num; i++ {
 				list = append(list, CreateApplicationDescriptor(uuid.New().String()))
 			}
 
-			decorator := NewOrderDecorator(OrderOptions{Field: "OrganizationId", Asc:true})
+			decorator := NewOrderDecorator(OrderOptions{Field: "OrganizationId", Asc: true})
 			AppDescList := &grpc_application_go.AppDescriptorList{
 				Descriptors: list,
 			}

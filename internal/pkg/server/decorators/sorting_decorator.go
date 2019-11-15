@@ -27,7 +27,6 @@ import (
 
 var AppDescriptorListAllowedFields = []string{"Name"}
 
-
 // OrderOptions represents the ordering to be applied
 type OrderOptions struct {
 	// Field to be ordered by
@@ -47,7 +46,7 @@ func NewOrderDecorator(options OrderOptions) Decorator {
 }
 
 // Validate checks if the field is a field to which decorators can be applied
-func (od *OrderDecorator) Validate() derrors.Error{
+func (od *OrderDecorator) Validate() derrors.Error {
 
 	found := false
 
