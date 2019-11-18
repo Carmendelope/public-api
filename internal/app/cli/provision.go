@@ -47,7 +47,7 @@ func NewProvision(address string, port int, insecure bool, useTLS bool, caCertPa
 	}
 }
 
-func (p *Provision) Cluster(organizationId string, clusterName string, azureCredentialsPath string,
+func (p *Provision) ProvisionAndInstall(organizationId string, clusterName string, azureCredentialsPath string,
 	azureDnsZoneName string, azureResourceGroup string, clusterType grpc_infrastructure_go.ClusterType, isManagementCluster bool,
 	isProduction bool, kubernetesVersion string, nodeType string, numNodes int64, targetPlatform grpc_public_api_go.Platform,
 	zone string) {
@@ -96,6 +96,49 @@ func (p *Provision) Cluster(organizationId string, clusterName string, azureCred
 	resp, errReq := provClient.ProvisionAndInstall(ctx, &request)
 
 	p.PrintResultOrError(resp, errReq, "cannot provision cluster")
+}
+
+// Scale sends the ScaleClusterRequest to the public-api.
+func (p *Provision) Scale(organizationID string, clusterID string, clusterType grpc_infrastructure_go.ClusterType,
+	numNodes int64, targetPlatform grpc_public_api_go.Platform, azureCredentialsPath string,
+	 azureResourceGroup string ) {
+	err := p.LoadCredentials()
+	if err != nil {
+		log.Fatal().Str("trace", err.DebugReport()).Msg("cannot load credentials, try login first")
+	}
+	azureCredentials, err := p.loadAzureCredentials(azureCredentialsPath)
+	if err != nil {
+		p.PrintResultOrError("", err, "error loading azure credentials")
+		return
+	}
+
+	c, err := p.GetConnection()
+	if err != nil {
+		log.Fatal().Str("trace", err.DebugReport()).Msg("cannot create the connection with the Nalej platform")
+	}
+	defer c.Close()
+
+	provClient := grpc_public_api_go.NewClustersClient(c)
+	installerPlatform := p.convertTargetPlatform(targetPlatform)
+
+	request := grpc_provisioner_go.ScaleClusterRequest{
+		OrganizationId:   organizationID,
+		ClusterId: clusterID,
+		ClusterType:         clusterType,
+		NumNodes:            numNodes,
+		// The user may only scale application clusters through public-api-cli
+		IsManagementCluster: false,
+		TargetPlatform:      installerPlatform,
+		AzureCredentials: azureCredentials,
+		AzureOptions: &grpc_provisioner_go.AzureProvisioningOptions{
+			ResourceGroup: azureResourceGroup,
+		},
+	}
+
+	ctx, cancel := p.GetContext()
+	defer cancel()
+	resp, errReq := provClient.Scale(ctx, &request)
+	p.PrintResultOrError(resp, errReq, "cannot scale cluster")
 }
 
 func (p *Provision) convertTargetPlatform(pbPlatform grpc_public_api_go.Platform) grpc_installer_go.Platform {
