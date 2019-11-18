@@ -30,6 +30,7 @@ import (
 	"github.com/nalej/grpc-inventory-manager-go"
 	"github.com/nalej/grpc-monitoring-go"
 	"github.com/nalej/grpc-organization-go"
+	grpc_provisioner_go "github.com/nalej/grpc-provisioner-go"
 	"github.com/nalej/grpc-public-api-go"
 	"github.com/nalej/grpc-unified-logging-go"
 	"github.com/nalej/grpc-user-go"
@@ -294,6 +295,26 @@ func ValidInstallRequest(request *grpc_public_api_go.InstallRequest) derrors.Err
 	if request.OrganizationId == "" {
 		return derrors.NewInvalidArgumentError(emptyOrganizationId)
 	}
+	return nil
+}
+
+func ValidScaleClusterRequest(request *grpc_provisioner_go.ScaleClusterRequest) derrors.Error{
+	if request.RequestId != "" {
+		return derrors.NewInvalidArgumentError("request_id is set by infrastructure-manager")
+	}
+	if request.OrganizationId == "" {
+		return derrors.NewInvalidArgumentError(emptyOrganizationId)
+	}
+	if request.ClusterId == "" {
+		return derrors.NewInvalidArgumentError(emptyClusterId)
+	}
+	if request.AzureCredentials == nil{
+		return derrors.NewInvalidArgumentError("azure_credentials cannot be empty")
+	}
+	if request.AzureOptions == nil || request.AzureOptions.ResourceGroup == "" {
+		return derrors.NewInvalidArgumentError("azure_options.resource_group cannot be empty")
+	}
+
 	return nil
 }
 
