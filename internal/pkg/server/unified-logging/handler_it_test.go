@@ -148,7 +148,6 @@ var _ = ginkgo.Describe("Unified Logging", func() {
 				if test.Success {
 					gomega.Expect(err).To(gomega.Succeed())
 					gomega.Expect(result.OrganizationId).Should(gomega.Equal(organization))
-					//gomega.Expect(result.AppInstanceId).Should(gomega.Equal(appInstance))
 					gomega.Expect(result.From).Should(gomega.BeNil())
 					gomega.Expect(result.To).Should(gomega.BeNil())
 				} else {
@@ -176,7 +175,6 @@ var _ = ginkgo.Describe("Unified Logging", func() {
 				if test.Success {
 					gomega.Expect(err).To(gomega.Succeed())
 					gomega.Expect(result.OrganizationId).Should(gomega.Equal(organization))
-					//gomega.Expect(result.AppInstanceId).Should(gomega.Equal(appInstance))
 					gomega.Expect(result.From).Should(gomega.BeNil())
 					gomega.Expect(result.To).Should(gomega.BeNil())
 				} else {
@@ -205,7 +203,6 @@ var _ = ginkgo.Describe("Unified Logging", func() {
 				if test.Success {
 					gomega.Expect(err).To(gomega.Succeed())
 					gomega.Expect(result.OrganizationId).Should(gomega.Equal(organization))
-					//gomega.Expect(result.AppInstanceId).Should(gomega.Equal(appInstance))
 					gomega.Expect(result.From).Should(gomega.BeNil())
 					gomega.Expect(result.To).Should(gomega.BeNil())
 				} else {
@@ -234,7 +231,6 @@ var _ = ginkgo.Describe("Unified Logging", func() {
 				if test.Success {
 					gomega.Expect(err).To(gomega.Succeed())
 					gomega.Expect(result.OrganizationId).Should(gomega.Equal(organization))
-					//gomega.Expect(result.AppInstanceId).Should(gomega.Equal(appInstance))
 					// We don't check from/to, as we're dealing with empty data in this
 					// test. This means there are no real minimum and maximum timestamps
 					// and from/to are nil.
@@ -255,7 +251,7 @@ var _ = ginkgo.Describe("Unified Logging", func() {
 			request := &grpc_public_api_go.SearchRequest{
 				OrganizationId: organization,
 				AppInstanceId:  appInstance,
-				//Order:          grpc_unified_logging_go.SortOrder_DESC,
+				Order:          &grpc_public_api_go.OrderOptions{Order:grpc_public_api_go.Order_ASC, Field:"timestamp",},
 			}
 			for _, test := range tests {
 				ginkgo.By(test.Msg)
@@ -265,7 +261,6 @@ var _ = ginkgo.Describe("Unified Logging", func() {
 				if test.Success {
 					gomega.Expect(err).To(gomega.Succeed())
 					gomega.Expect(result.OrganizationId).Should(gomega.Equal(organization))
-					//gomega.Expect(result.AppInstanceId).Should(gomega.Equal(appInstance))
 				} else {
 					gomega.Expect(err).NotTo(gomega.Succeed())
 				}
