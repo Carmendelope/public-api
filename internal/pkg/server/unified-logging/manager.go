@@ -20,8 +20,10 @@ package unified_logging
 import (
 	"github.com/nalej/grpc-application-manager-go"
 	"github.com/nalej/grpc-public-api-go"
+	"github.com/nalej/grpc-utils/pkg/conversions"
 	"github.com/nalej/public-api/internal/pkg/entities"
 	"github.com/nalej/public-api/internal/pkg/server/common"
+	"github.com/nalej/public-api/internal/pkg/server/decorators"
 )
 
 type Manager struct {
@@ -41,6 +43,18 @@ func (m *Manager) Search(request *grpc_public_api_go.SearchRequest) (*grpc_publi
 		return nil, err
 	}
 
-	// TODO: add the order decorator
-	return entities.ToPublicAPILogResponse(response), nil
+	// convert grpc_application_manager_go.LogResponse to grpc_public_api_go.LogResponse
+	convertedLog :=  entities.ToPublicAPILogResponse(response)
+
+	// if sorting requested -> apply the decorator
+	if request.Order != nil {
+		sortOptions := decorators.OrderOptions{Field:request.Order.Field, Asc:request.Order.Order == grpc_public_api_go.Order_ASC}
+		sortingResponse := decorators.ApplyDecorator(convertedLog.Entries, decorators.NewOrderDecorator(sortOptions))
+		if sortingResponse.Error != nil {
+			return nil, conversions.ToGRPCError(sortingResponse.Error)
+		}else{
+			convertedLog.Entries = sortingResponse.LogResponseList
+		}
+	}
+	return convertedLog, nil
 }

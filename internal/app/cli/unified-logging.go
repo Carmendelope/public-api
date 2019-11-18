@@ -79,10 +79,6 @@ func (u *UnifiedLogging) Search(organizationId, descriptorId, instanceId, sgId, 
 		log.Fatal().Msg("organizationID cannot be empty")
 	}
 
-	//if instanceId == "" {
-	//	log.Fatal().Msg("instanceID cannot be empty")
-	//}
-
 	// Parse and validate timestamps
 	var fromTime, toTime time.Time
 	var err error
