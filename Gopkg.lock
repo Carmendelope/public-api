@@ -283,12 +283,12 @@
   version = "v0.0.8"
 
 [[projects]]
-  digest = "1:63ef64c7fc518981c4e0bf3b9979df5ee9e017076c21274e00d75f7936ee6cc8"
+  digest = "1:2ce435f4efb2cade4a38ca9878006b934f1ced58be64c27b6201eb125965c258"
   name = "github.com/nalej/grpc-public-api-go"
   packages = ["."]
   pruneopts = ""
-  revision = "352990baa5205b0323f0a9d24886e193ac6ecec6"
-  version = "v0.0.118"
+  revision = "905387b3e4891394759d0d4a57e8c46ac0546835"
+  version = "v0.0.119"
 
 [[projects]]
   digest = "1:e049f948cdf5d67aa53278a9dd779c4516871e3b4168f8d52d6c7d745101ea98"
@@ -426,7 +426,7 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:1651cb5f6e928b0073a6116fe754a0c5016e6580436088af6003543c2c9ba65c"
+  digest = "1:8e651b343c0f5aaf26364983b87406bde30dcfb659d30499c5380e8acfb487fd"
   name = "golang.org/x/net"
   packages = [
     "context",
@@ -441,15 +441,15 @@
     "trace",
   ]
   pruneopts = ""
-  revision = "2180aed2234323691e9fd264fb1d32d20ff04b27"
+  revision = "f9c8255933865a6f8452ccf0cc47ac980da5ac56"
 
 [[projects]]
   branch = "master"
-  digest = "1:169340c5da3079d22d1163e5f41bcf4479e46caca413fd947f711b56673c7c56"
+  digest = "1:aea68add58d7e7b922db36ac88fb0b336a3e6113fb40a4a1c16e57ab652df366"
   name = "golang.org/x/sys"
   packages = ["unix"]
   pruneopts = ""
-  revision = "4c7a9d0fe056d9d1de37e1409ca8a5c17accb46a"
+  revision = "2f86c98f3482ca877df5933731c2cdd38007a776"
 
 [[projects]]
   digest = "1:740b51a55815493a8d0f2b1e0d0ae48fe48953bf7eaf3fcc4198823bf67768c0"
@@ -490,7 +490,7 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:514650c6597af21f737d0325f75b43fe644d2de64bddd157fa52184e62d5f9ef"
+  digest = "1:a51a58f22fcdcf4238ee8b2a3a9637cbdb73320183038ce20c104f682563c640"
   name = "google.golang.org/genproto"
   packages = [
     "googleapis/api/annotations",
@@ -498,7 +498,7 @@
     "googleapis/rpc/status",
   ]
   pruneopts = ""
-  revision = "6bbd007550de91f00332b51032ea2cd88b87e799"
+  revision = "83cc0476cb11ea0da33dacd4c6354ab192de6fe6"
 
 [[projects]]
   digest = "1:ec89356e95f2a8983928a7872f71f0f934f97932353af4fe1a76d322db5eaf7b"
