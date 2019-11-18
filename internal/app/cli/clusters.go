@@ -25,7 +25,6 @@ import (
 
 	"github.com/nalej/grpc-infrastructure-go"
 	"github.com/nalej/grpc-installer-go"
-	"github.com/nalej/grpc-monitoring-go"
 	"github.com/nalej/grpc-organization-go"
 	"github.com/nalej/grpc-public-api-go"
 	"github.com/rs/zerolog/log"
@@ -136,11 +135,12 @@ func (c *Clusters) Info(organizationID string, clusterID string) {
 }
 
 func (c *Clusters) Monitor(organizationID string, clusterID string, rangeMinutes int32) {
+	/*
 	if organizationID == "" {
 		log.Fatal().Msg("organizationID cannot be empty")
 	}
 	if clusterID == "" {
-		log.Fatal().Msg("clusterID cannot be empty")
+		log.Fatal().Msg("clusterID 1cannot be empty")
 	}
 	if rangeMinutes < 0 {
 		log.Fatal().Int32("range", rangeMinutes).Msg("range should be positive")
@@ -157,6 +157,7 @@ func (c *Clusters) Monitor(organizationID string, clusterID string, rangeMinutes
 	}
 	retrieved, err := client.Monitor(ctx, request)
 	c.PrintResultOrError(retrieved, err, "cannot obtain cluster monitoring information")
+	*/
 }
 
 func (c *Clusters) List(organizationID string, watch bool) {

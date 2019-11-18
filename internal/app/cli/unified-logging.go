@@ -23,11 +23,13 @@ import (
 	"github.com/golang/protobuf/ptypes"
 	"github.com/golang/protobuf/ptypes/timestamp"
 	"github.com/nalej/grpc-public-api-go"
-	"github.com/nalej/grpc-unified-logging-go"
 	"github.com/nalej/grpc-utils/pkg/conversions"
 	"github.com/rs/zerolog/log"
 	"google.golang.org/grpc"
+	"time"
 )
+
+const OrderByField = "timestamp"
 
 type UnifiedLogging struct {
 	Connection
@@ -70,27 +72,28 @@ func parseTime(timeString string) (*timestamp.Timestamp, error) {
 	return timeProto, nil
 }
 
-func (u *UnifiedLogging) Search(organizationId, instanceId, sgInstanceId, msgFilter, from, to string, desc bool, redirectLog bool) {
+//l.Search(cliOptions.Resolve("organizationID", organizationID), descriptorID, instanceID, sgID, sgInstanceID, serviceID, serviceInstanceID, message, from, to, desc, redirectLog)
+func (u *UnifiedLogging) Search(organizationId, descriptorId, instanceId, sgId, sgInstanceId, serviceId, serviceInstanceId, msgFilter, from, to string, desc bool, redirectLog bool) {
 	// Validate options
 	if organizationId == "" {
 		log.Fatal().Msg("organizationID cannot be empty")
 	}
 
-	if instanceId == "" {
-		log.Fatal().Msg("instanceID cannot be empty")
-	}
+	//if instanceId == "" {
+	//	log.Fatal().Msg("instanceID cannot be empty")
+	//}
 
 	// Parse and validate timestamps
-	var fromTime, toTime *timestamp.Timestamp
+	var fromTime, toTime time.Time
 	var err error
 	if from != "" {
-		fromTime, err = parseTime(from)
+		fromTime, err = dateparse.ParseLocal(from)
 		if err != nil {
 			log.Fatal().Err(err).Msg("invalid from time")
 		}
 	}
 	if to != "" {
-		toTime, err = parseTime(to)
+		toTime, err = dateparse.ParseLocal(to)
 		if err != nil {
 			log.Fatal().Err(err).Msg("invalid to time")
 		}
@@ -102,19 +105,23 @@ func (u *UnifiedLogging) Search(organizationId, instanceId, sgInstanceId, msgFil
 	defer conn.Close()
 	defer cancel()
 
-	var order = grpc_unified_logging_go.SortOrder_ASC
+	var order = grpc_public_api_go.OrderOptions{Order: grpc_public_api_go.Order_ASC, Field:OrderByField}
 	if desc {
-		order = grpc_unified_logging_go.SortOrder_DESC
+		order.Order = grpc_public_api_go.Order_DESC
 	}
 
-	searchRequest := &grpc_unified_logging_go.SearchRequest{
+	searchRequest := &grpc_public_api_go.SearchRequest{
 		OrganizationId:         organizationId,
+		AppDescriptorId:        descriptorId,
 		AppInstanceId:          instanceId,
+		ServiceGroupId:         sgId,
 		ServiceGroupInstanceId: sgInstanceId,
+		ServiceId:              serviceId,
+		ServiceInstanceId:      serviceInstanceId,
 		MsgQueryFilter:         msgFilter,
-		From:                   fromTime,
-		To:                     toTime,
-		Order:                  order,
+		From:                   fromTime.Unix(),
+		To:                     toTime.Unix(),
+		Order: 					&order,
 	}
 
 	result, err := client.Search(ctx, searchRequest)
@@ -122,9 +129,10 @@ func (u *UnifiedLogging) Search(organizationId, instanceId, sgInstanceId, msgFil
 		if err != nil {
 			log.Fatal().Str("trace", conversions.ToDerror(err).DebugReport()).Msg("cannot search logs")
 		} else {
-			log.Info().Str("AppInstanceId", result.AppInstanceId).Str("from", result.From.String()).Str("to", result.To.String()).Msg("app log")
+			log.Info().Str("OrganizationId", result.OrganizationId).Str("from", time.Unix(result.From, 0).String()).
+				Str("to", time.Unix(result.To, 0).String()).Msg("app log")
 			for _, le := range result.Entries {
-				log.Info().Msg(fmt.Sprintf("[%s] %s", le.Timestamp.String(), le.Msg))
+				log.Info().Msg(fmt.Sprintf("[%s] %s", time.Unix(le.Timestamp, 0).String(), le.Msg))
 			}
 		}
 	} else {
