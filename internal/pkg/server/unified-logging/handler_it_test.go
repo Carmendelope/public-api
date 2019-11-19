@@ -251,7 +251,7 @@ var _ = ginkgo.Describe("Unified Logging", func() {
 			request := &grpc_public_api_go.SearchRequest{
 				OrganizationId: organization,
 				AppInstanceId:  appInstance,
-				Order:          &grpc_public_api_go.OrderOptions{Order:grpc_public_api_go.Order_ASC, Field:"timestamp",},
+				Order:          &grpc_public_api_go.OrderOptions{Order: grpc_public_api_go.Order_ASC, Field: "timestamp"},
 			}
 			for _, test := range tests {
 				ginkgo.By(test.Msg)

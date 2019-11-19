@@ -519,37 +519,37 @@ func ToPublicAPIConnectionList(connectionInstanceList *grpc_application_network_
 func NewSearchRequest(request *grpc_public_api_go.SearchRequest) *grpc_application_manager_go.SearchRequest {
 
 	return &grpc_application_manager_go.SearchRequest{
-		OrganizationId: request.OrganizationId,
-		AppDescriptorId: request.AppDescriptorId,
-		AppInstanceId: request.AppInstanceId,
-		ServiceGroupId: request.ServiceGroupId,
+		OrganizationId:         request.OrganizationId,
+		AppDescriptorId:        request.AppDescriptorId,
+		AppInstanceId:          request.AppInstanceId,
+		ServiceGroupId:         request.ServiceGroupId,
 		ServiceGroupInstanceId: request.ServiceInstanceId,
-		ServiceId: request.ServiceId,
-		ServiceInstanceId: request.ServiceInstanceId,
-		MsgQueryFilter:request.MsgQueryFilter,
-		From: request.From,
-		To: request.To,
+		ServiceId:              request.ServiceId,
+		ServiceInstanceId:      request.ServiceInstanceId,
+		MsgQueryFilter:         request.MsgQueryFilter,
+		From:                   request.From,
+		To:                     request.To,
 	}
 }
 
-func ToPublicAPILogEntryResponse (entry *grpc_application_manager_go.LogEntryResponse) *grpc_public_api_go.LogEntryResponse {
+func ToPublicAPILogEntryResponse(entry *grpc_application_manager_go.LogEntryResponse) *grpc_public_api_go.LogEntryResponse {
 	if entry == nil {
 		return nil
 	}
 	return &grpc_public_api_go.LogEntryResponse{
-		AppDescriptorId: entry.AppDescriptorId,
-		AppDescriptorName: entry.AppDescriptorName,
-		AppInstanceId: entry.AppInstanceId,
-		AppInstanceName: entry.AppInstanceName,
-		ServiceGroupId: entry.ServiceGroupId,
+		AppDescriptorId:        entry.AppDescriptorId,
+		AppDescriptorName:      entry.AppDescriptorName,
+		AppInstanceId:          entry.AppInstanceId,
+		AppInstanceName:        entry.AppInstanceName,
+		ServiceGroupId:         entry.ServiceGroupId,
 		ServiceGroupInstanceId: entry.ServiceGroupInstanceId,
-		ServiceGroupName: entry.ServiceGroupName,
-		ServiceId: entry.ServiceId,
-		ServiceInstanceId: entry.ServiceInstanceId,
-		ServiceName: entry.ServiceName,
-		Timestamp: entry.Timestamp,
-		Msg: entry.Msg,
-		IsDead: entry.IsDead,
+		ServiceGroupName:       entry.ServiceGroupName,
+		ServiceId:              entry.ServiceId,
+		ServiceInstanceId:      entry.ServiceInstanceId,
+		ServiceName:            entry.ServiceName,
+		Timestamp:              entry.Timestamp,
+		Msg:                    entry.Msg,
+		IsDead:                 entry.IsDead,
 	}
 }
 
@@ -558,15 +558,15 @@ func ToPublicAPILogResponse(response *grpc_application_manager_go.LogResponse) *
 	if response == nil {
 		return nil
 	}
-	entries := make ([]*grpc_public_api_go.LogEntryResponse, 0)
+	entries := make([]*grpc_public_api_go.LogEntryResponse, 0)
 	for _, entry := range response.Entries {
 		entries = append(entries, ToPublicAPILogEntryResponse(entry))
 	}
 
 	return &grpc_public_api_go.LogResponse{
 		OrganizationId: response.OrganizationId,
-		From: response.From,
-		To: response.To,
-		Entries: entries,
+		From:           response.From,
+		To:             response.To,
+		Entries:        entries,
 	}
 }

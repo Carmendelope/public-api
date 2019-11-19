@@ -44,15 +44,15 @@ func (m *Manager) Search(request *grpc_public_api_go.SearchRequest) (*grpc_publi
 	}
 
 	// convert grpc_application_manager_go.LogResponse to grpc_public_api_go.LogResponse
-	convertedLog :=  entities.ToPublicAPILogResponse(response)
+	convertedLog := entities.ToPublicAPILogResponse(response)
 
 	// if sorting requested -> apply the decorator
 	if request.Order != nil {
-		sortOptions := decorators.OrderOptions{Field:request.Order.Field, Asc:request.Order.Order == grpc_public_api_go.Order_ASC}
+		sortOptions := decorators.OrderOptions{Field: request.Order.Field, Asc: request.Order.Order == grpc_public_api_go.Order_ASC}
 		sortingResponse := decorators.ApplyDecorator(convertedLog.Entries, decorators.NewOrderDecorator(sortOptions))
 		if sortingResponse.Error != nil {
 			return nil, conversions.ToGRPCError(sortingResponse.Error)
-		}else{
+		} else {
 			convertedLog.Entries = sortingResponse.LogResponseList
 		}
 	}

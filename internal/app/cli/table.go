@@ -520,7 +520,7 @@ func FromLogResponse(result *grpc_public_api_go.LogResponse) *ResultTable {
 	r = append(r, []string{"TIMESTAMP", "MSG"})
 
 	for _, e := range result.Entries {
-		r = append(r, []string{time.Unix(e.Timestamp,0).String(), e.Msg})
+		r = append(r, []string{time.Unix(e.Timestamp, 0).String(), e.Msg})
 	}
 
 	return &ResultTable{r}

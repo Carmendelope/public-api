@@ -300,7 +300,7 @@ func ValidInstallRequest(request *grpc_public_api_go.InstallRequest) derrors.Err
 	return nil
 }
 
-func ValidScaleClusterRequest(request *grpc_provisioner_go.ScaleClusterRequest) derrors.Error{
+func ValidScaleClusterRequest(request *grpc_provisioner_go.ScaleClusterRequest) derrors.Error {
 	if request.RequestId != "" {
 		return derrors.NewInvalidArgumentError("request_id is set by infrastructure-manager")
 	}
@@ -310,7 +310,7 @@ func ValidScaleClusterRequest(request *grpc_provisioner_go.ScaleClusterRequest) 
 	if request.ClusterId == "" {
 		return derrors.NewInvalidArgumentError(emptyClusterId)
 	}
-	if request.AzureCredentials == nil{
+	if request.AzureCredentials == nil {
 		return derrors.NewInvalidArgumentError("azure_credentials cannot be empty")
 	}
 	if request.AzureOptions == nil || request.AzureOptions.ResourceGroup == "" {
@@ -449,33 +449,33 @@ func ValidSearchRequest(request *grpc_public_api_go.SearchRequest) derrors.Error
 	}
 
 	// validate the field dependencies,
-	if request.ServiceGroupId != "" && request.AppInstanceId == ""{
+	if request.ServiceGroupId != "" && request.AppInstanceId == "" {
 		return derrors.NewInvalidArgumentError(emptyInstanceId)
 	}
 	if request.ServiceGroupInstanceId != "" {
 		if request.AppInstanceId == "" {
 			return derrors.NewInvalidArgumentError(emptyInstanceId)
-		}else if request.ServiceGroupId == "" {
+		} else if request.ServiceGroupId == "" {
 			return derrors.NewInvalidArgumentError(emptyServiceGroupId)
 		}
 	}
 	if request.ServiceId != "" {
 		if request.AppInstanceId == "" {
 			return derrors.NewInvalidArgumentError(emptyInstanceId)
-		}else if request.ServiceGroupId == "" {
+		} else if request.ServiceGroupId == "" {
 			return derrors.NewInvalidArgumentError(emptyServiceGroupId)
-		}else if request.ServiceGroupInstanceId == "" {
+		} else if request.ServiceGroupInstanceId == "" {
 			return derrors.NewInvalidArgumentError(emptyServiceGroupInstanceId)
 		}
 	}
 	if request.ServiceInstanceId != "" {
 		if request.AppInstanceId == "" {
 			return derrors.NewInvalidArgumentError(emptyInstanceId)
-		}else if request.ServiceGroupId == "" {
+		} else if request.ServiceGroupId == "" {
 			return derrors.NewInvalidArgumentError(emptyServiceGroupId)
-		}else if request.ServiceGroupInstanceId == "" {
+		} else if request.ServiceGroupInstanceId == "" {
 			return derrors.NewInvalidArgumentError(emptyServiceGroupInstanceId)
-		}else if request.ServiceId == "" {
+		} else if request.ServiceId == "" {
 			return derrors.NewInvalidArgumentError(emptyServiceId)
 		}
 	}

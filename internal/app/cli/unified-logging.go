@@ -101,7 +101,7 @@ func (u *UnifiedLogging) Search(organizationId, descriptorId, instanceId, sgId, 
 	defer conn.Close()
 	defer cancel()
 
-	var order = grpc_public_api_go.OrderOptions{Order: grpc_public_api_go.Order_ASC, Field:OrderByField}
+	var order = grpc_public_api_go.OrderOptions{Order: grpc_public_api_go.Order_ASC, Field: OrderByField}
 	if desc {
 		order.Order = grpc_public_api_go.Order_DESC
 	}
@@ -117,7 +117,7 @@ func (u *UnifiedLogging) Search(organizationId, descriptorId, instanceId, sgId, 
 		MsgQueryFilter:         msgFilter,
 		From:                   fromTime.Unix(),
 		To:                     toTime.Unix(),
-		Order: 					&order,
+		Order:                  &order,
 	}
 
 	result, err := client.Search(ctx, searchRequest)

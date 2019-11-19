@@ -38,7 +38,6 @@ type Handler struct {
 	Manager Manager
 }
 
-
 // NewHandler creates a new Handler with a linked manager.
 func NewHandler(manager Manager) *Handler {
 	return &Handler{manager}
@@ -85,7 +84,7 @@ func (h *Handler) Scale(ctx context.Context, request *grpc_provisioner_go.ScaleC
 		return nil, derrors.NewPermissionDeniedError("cannot access requested OrganizationID")
 	}
 	err = entities.ValidScaleClusterRequest(request)
-	if err != nil{
+	if err != nil {
 		return nil, conversions.ToGRPCError(err)
 	}
 	return h.Manager.Scale(request)
