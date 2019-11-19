@@ -12,7 +12,6 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *
  */
 
 package cli
@@ -27,7 +26,7 @@ import (
 	"github.com/nalej/grpc-inventory-go"
 	"github.com/nalej/grpc-inventory-manager-go"
 	"github.com/nalej/grpc-monitoring-go"
-	grpc_provisioner_go "github.com/nalej/grpc-provisioner-go"
+	"github.com/nalej/grpc-provisioner-go"
 	"github.com/nalej/grpc-public-api-go"
 	"github.com/nalej/grpc-unified-logging-go"
 	"github.com/nalej/grpc-user-manager-go"
@@ -67,6 +66,8 @@ func AsTable(result interface{}, labelLength int) *ResultTable {
 		return FromCluster(result, labelLength)
 	case *grpc_monitoring_go.ClusterSummary:
 		return FromClusterSummary(result)
+	case *grpc_monitoring_go.ClusterStats:
+		return FromClusterStats(result)
 	case *grpc_public_api_go.ClusterList:
 		return FromClusterList(result, labelLength)
 	case *grpc_infrastructure_manager_go.InstallResponse:
@@ -149,19 +150,19 @@ func (t *ResultTable) Print() {
 	w := tabwriter.NewWriter(os.Stdout, MinWidth, TabWidth, Padding, ' ', 0)
 	for _, d := range t.data {
 		toPrint := strings.Join(d, "\t")
-		fmt.Fprintln(w, toPrint)
+		_, _ = fmt.Fprintln(w, toPrint)
 	}
-	w.Flush()
+	_ = w.Flush()
 }
 
 func PrintFromValues(header []string, values [][]string) {
 	w := tabwriter.NewWriter(os.Stdout, MinWidth, TabWidth, Padding, ' ', 0)
-	fmt.Fprintln(w, strings.Join(header, "\t"))
+	_, _ = fmt.Fprintln(w, strings.Join(header, "\t"))
 	for _, d := range values {
 		toPrint := strings.Join(d, "\t")
-		fmt.Fprintln(w, toPrint)
+		_, _ = fmt.Fprintln(w, toPrint)
 	}
-	w.Flush()
+	_ = w.Flush()
 }
 
 func TransformLabels(labels map[string]string, labelLength int) string {
@@ -260,21 +261,6 @@ func FromClusterList(result *grpc_public_api_go.ClusterList, labelLength int) *R
 	for _, c := range result.Clusters {
 		r = append(r, []string{c.Name, c.ClusterId, fmt.Sprintf("%d", c.TotalNodes), TransformLabels(c.Labels, labelLength), c.State.String(), c.Status.String()})
 	}
-	return &ResultTable{r}
-}
-
-func FromClusterSummary(result *grpc_monitoring_go.ClusterSummary) *ResultTable {
-	r := make([][]string, 0)
-	r = append(r, []string{"CPU", "MEM", "STORAGE"})
-
-	cpuPercentage := int((float64(result.CpuMillicores.Available) / float64(result.CpuMillicores.Total)) * 100)
-	cpu := fmt.Sprintf("%d/%d (%d%%)", result.CpuMillicores.Available, result.CpuMillicores.Total, cpuPercentage)
-	memPercentage := int((float64(result.MemoryBytes.Available) / float64(result.MemoryBytes.Total)) * 100)
-	mem := fmt.Sprintf("%d/%d (%d%%)", result.MemoryBytes.Available, result.MemoryBytes.Total, memPercentage)
-	storagePercentage := int((float64(result.StorageBytes.Available) / float64(result.StorageBytes.Total)) * 100)
-	storage := fmt.Sprintf("%d/%d (%d%%)", result.StorageBytes.Available, result.StorageBytes.Total, storagePercentage)
-
-	r = append(r, []string{cpu, mem, storage})
 	return &ResultTable{r}
 }
 
@@ -925,6 +911,36 @@ func FromProvisionerResponse(result *grpc_infrastructure_manager_go.ProvisionerR
 	} else {
 		r = append(r, []string{"REQUEST_ID", "CLUSTER_ID", "STATE", "ERROR"})
 		r = append(r, []string{result.RequestId, result.ClusterId, result.State.String(), result.Error})
+	}
+	return &ResultTable{r}
+}
+
+// ----
+// Monitoring
+// ----
+
+func FromClusterSummary(result *grpc_monitoring_go.ClusterSummary) *ResultTable {
+	r := make([][]string, 0)
+	r = append(r, []string{"CPU", "MEM", "STORAGE"})
+
+	cpuPercentage := int((float64(result.CpuMillicores.Available) / float64(result.CpuMillicores.Total)) * 100)
+	cpu := fmt.Sprintf("%d/%d (%d%%)", result.CpuMillicores.Available, result.CpuMillicores.Total, cpuPercentage)
+	memPercentage := int((float64(result.MemoryBytes.Available) / float64(result.MemoryBytes.Total)) * 100)
+	mem := fmt.Sprintf("%d/%d (%d%%)", result.MemoryBytes.Available, result.MemoryBytes.Total, memPercentage)
+	storagePercentage := int((float64(result.StorageBytes.Available) / float64(result.StorageBytes.Total)) * 100)
+	storage := fmt.Sprintf("%d/%d (%d%%)", result.StorageBytes.Available, result.StorageBytes.Total, storagePercentage)
+
+	r = append(r, []string{cpu, mem, storage})
+	return &ResultTable{r}
+}
+
+func FromClusterStats(result *grpc_monitoring_go.ClusterStats) *ResultTable {
+	r := make([][]string, 0)
+	r = append(r, []string{"TYPE", "CREATED", "RUNNING", "DELETED", "ERRORS"})
+
+	for statCode, stat := range result.Stats {
+		statName := grpc_monitoring_go.PlatformStatsField_name[statCode]
+		r = append(r, []string{statName, fmt.Sprint(stat.Created), fmt.Sprint(stat.Running), fmt.Sprint(stat.Deleted), fmt.Sprint(stat.Errors)})
 	}
 	return &ResultTable{r}
 }

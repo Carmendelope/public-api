@@ -12,39 +12,34 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *
  */
 
 package monitoring
 
 import (
-	"github.com/nalej/grpc-inventory-go"
 	"github.com/nalej/grpc-monitoring-go"
-
 	"github.com/nalej/public-api/internal/pkg/server/common"
 )
 
 // Manager structure with the required clients for monitoring operations.
 type Manager struct {
-	client grpc_monitoring_go.AssetMonitoringClient
+	client grpc_monitoring_go.MetricsCollectorClient
 }
 
-func NewManager(client grpc_monitoring_go.AssetMonitoringClient) Manager {
-	return Manager{
-		client: client,
-	}
+func NewManager(client grpc_monitoring_go.MetricsCollectorClient) Manager {
+	return Manager{client: client}
 }
 
-func (m *Manager) ListMetrics(selector *grpc_inventory_go.AssetSelector) (*grpc_monitoring_go.MetricsList, error) {
+func (m *Manager) GetClusterStats(request *grpc_monitoring_go.ClusterStatsRequest) (*grpc_monitoring_go.ClusterStats, error) {
 	ctx, cancel := common.GetContext()
 	defer cancel()
 
-	return m.client.ListMetrics(ctx, selector)
+	return m.client.GetClusterStats(ctx, request)
 }
 
-func (m *Manager) QueryMetrics(request *grpc_monitoring_go.QueryMetricsRequest) (*grpc_monitoring_go.QueryMetricsResult, error) {
+func (m *Manager) GetClusterSummary(request *grpc_monitoring_go.ClusterSummaryRequest) (*grpc_monitoring_go.ClusterSummary, error) {
 	ctx, cancel := common.GetContext()
 	defer cancel()
 
-	return m.client.QueryMetrics(ctx, request)
+	return m.client.GetClusterSummary(ctx, request)
 }

@@ -12,7 +12,6 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *
  */
 
 package entities
@@ -298,7 +297,7 @@ func ValidInstallRequest(request *grpc_public_api_go.InstallRequest) derrors.Err
 	return nil
 }
 
-func ValidScaleClusterRequest(request *grpc_provisioner_go.ScaleClusterRequest) derrors.Error{
+func ValidScaleClusterRequest(request *grpc_provisioner_go.ScaleClusterRequest) derrors.Error {
 	if request.RequestId != "" {
 		return derrors.NewInvalidArgumentError("request_id is set by infrastructure-manager")
 	}
@@ -308,7 +307,7 @@ func ValidScaleClusterRequest(request *grpc_provisioner_go.ScaleClusterRequest) 
 	if request.ClusterId == "" {
 		return derrors.NewInvalidArgumentError(emptyClusterId)
 	}
-	if request.AzureCredentials == nil{
+	if request.AzureCredentials == nil {
 		return derrors.NewInvalidArgumentError("azure_credentials cannot be empty")
 	}
 	if request.AzureOptions == nil || request.AzureOptions.ResourceGroup == "" {
@@ -456,7 +455,18 @@ func ValidSearchRequest(request *grpc_unified_logging_go.SearchRequest) derrors.
 	return nil
 }
 
-func ValidMonitorRequest(request *grpc_monitoring_go.ClusterSummaryRequest) derrors.Error {
+func ValidClusterStatsRequest(request *grpc_monitoring_go.ClusterStatsRequest) derrors.Error {
+	if request.OrganizationId == "" {
+		return derrors.NewInvalidArgumentError(emptyOrganizationId)
+	}
+	if request.ClusterId == "" {
+		return derrors.NewInvalidArgumentError(emptyInstanceId)
+	}
+
+	return nil
+}
+
+func ValidClusterSummaryRequest(request *grpc_monitoring_go.ClusterSummaryRequest) derrors.Error {
 	if request.OrganizationId == "" {
 		return derrors.NewInvalidArgumentError(emptyOrganizationId)
 	}
