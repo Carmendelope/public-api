@@ -39,9 +39,12 @@ func init() {
 	_ = logCmd.MarkFlagRequired("organizationID")
 
 	logCmd.AddCommand(searchCmd)
+	searchCmd.Flags().StringVar(&descriptorID, "descriptorID", "", "Application descriptor identifier")
 	searchCmd.Flags().StringVar(&instanceID, "instanceID", "", "Application instance identifier")
-	_ = searchCmd.MarkFlagRequired("instanceID")
+	searchCmd.Flags().StringVar(&sgID, "sgID", "", "Service group identifier")
 	searchCmd.Flags().StringVar(&sgInstanceID, "sgInstanceID", "", "Service group instance identifier")
+	searchCmd.Flags().StringVar(&serviceID, "serviceID", "", "Service identifier")
+	searchCmd.Flags().StringVar(&serviceInstanceID, "serviceInstanceID", "", "Service instance identifier")
 	searchCmd.Flags().StringVar(&from, "from", "", "Start time of logs")
 	searchCmd.Flags().StringVar(&to, "to", "", "End time of logs")
 	searchCmd.Flags().BoolVar(&asc, "asc", false, "Sort results in ascending time order")
@@ -74,6 +77,6 @@ var searchCmd = &cobra.Command{
 			cliOptions.ResolveAsInt("port", nalejPort),
 			insecure, useTLS,
 			cliOptions.Resolve("cacert", caCertPath), cliOptions.Resolve("output", output), cliOptions.ResolveAsInt("labelLength", labelLength))
-		l.Search(cliOptions.Resolve("organizationID", organizationID), instanceID, sgInstanceID, message, from, to, desc, redirectLog)
+		l.Search(cliOptions.Resolve("organizationID", organizationID), descriptorID, instanceID, sgID, sgInstanceID, serviceID, serviceInstanceID, message, from, to, desc, redirectLog)
 	},
 }

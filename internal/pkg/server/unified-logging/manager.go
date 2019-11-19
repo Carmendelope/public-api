@@ -18,20 +18,43 @@
 package unified_logging
 
 import (
-	"github.com/nalej/grpc-unified-logging-go"
+	"github.com/nalej/grpc-application-manager-go"
+	"github.com/nalej/grpc-public-api-go"
+	"github.com/nalej/grpc-utils/pkg/conversions"
+	"github.com/nalej/public-api/internal/pkg/entities"
 	"github.com/nalej/public-api/internal/pkg/server/common"
+	"github.com/nalej/public-api/internal/pkg/server/decorators"
 )
 
 type Manager struct {
-	unifiedLoggingClient grpc_unified_logging_go.CoordinatorClient
+	unifiedLoggingClient grpc_application_manager_go.UnifiedLoggingClient
 }
 
-func NewManager(unifiedLoggingClient grpc_unified_logging_go.CoordinatorClient) Manager {
+func NewManager(unifiedLoggingClient grpc_application_manager_go.UnifiedLoggingClient) Manager {
 	return Manager{unifiedLoggingClient}
 }
 
-func (m *Manager) Search(request *grpc_unified_logging_go.SearchRequest) (*grpc_unified_logging_go.LogResponse, error) {
+func (m *Manager) Search(request *grpc_public_api_go.SearchRequest) (*grpc_public_api_go.LogResponse, error) {
 	ctx, cancel := common.GetContext()
 	defer cancel()
-	return m.unifiedLoggingClient.Search(ctx, request)
+	response, err := m.unifiedLoggingClient.Search(ctx, entities.NewSearchRequest(request))
+
+	if err != nil {
+		return nil, err
+	}
+
+	// convert grpc_application_manager_go.LogResponse to grpc_public_api_go.LogResponse
+	convertedLog := entities.ToPublicAPILogResponse(response)
+
+	// if sorting requested -> apply the decorator
+	if request.Order != nil {
+		sortOptions := decorators.OrderOptions{Field: request.Order.Field, Asc: request.Order.Order == grpc_public_api_go.Order_ASC}
+		sortingResponse := decorators.ApplyDecorator(convertedLog.Entries, decorators.NewOrderDecorator(sortOptions))
+		if sortingResponse.Error != nil {
+			return nil, conversions.ToGRPCError(sortingResponse.Error)
+		} else {
+			convertedLog.Entries = sortingResponse.LogResponseList
+		}
+	}
+	return convertedLog, nil
 }

@@ -28,7 +28,6 @@ import (
 	"github.com/nalej/grpc-monitoring-go"
 	"github.com/nalej/grpc-provisioner-go"
 	"github.com/nalej/grpc-public-api-go"
-	"github.com/nalej/grpc-unified-logging-go"
 	"github.com/nalej/grpc-user-manager-go"
 	"github.com/rs/zerolog/log"
 	"os"
@@ -94,7 +93,7 @@ func AsTable(result interface{}, labelLength int) *ResultTable {
 		return FromDevice(result, labelLength)
 	case *grpc_public_api_go.DeviceList:
 		return FromDeviceList(result, labelLength)
-	case *grpc_unified_logging_go.LogResponse:
+	case *grpc_public_api_go.LogResponse:
 		return FromLogResponse(result)
 	case *grpc_public_api_go.Node:
 		return FromNode(result, labelLength)
@@ -502,12 +501,12 @@ func FromDeviceList(result *grpc_public_api_go.DeviceList, labelLength int) *Res
 // Log
 // ----
 
-func FromLogResponse(result *grpc_unified_logging_go.LogResponse) *ResultTable {
+func FromLogResponse(result *grpc_public_api_go.LogResponse) *ResultTable {
 	r := make([][]string, 0)
 	r = append(r, []string{"TIMESTAMP", "MSG"})
 
 	for _, e := range result.Entries {
-		r = append(r, []string{time.Unix(e.Timestamp.Seconds, int64(e.Timestamp.Nanos)).String(), e.Msg})
+		r = append(r, []string{time.Unix(e.Timestamp, 0).String(), e.Msg})
 	}
 
 	return &ResultTable{r}
