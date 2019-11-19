@@ -12,7 +12,6 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *
  */
 
 package clusters
@@ -23,7 +22,6 @@ import (
 	"github.com/nalej/grpc-common-go"
 	"github.com/nalej/grpc-infrastructure-go"
 	"github.com/nalej/grpc-infrastructure-manager-go"
-	"github.com/nalej/grpc-monitoring-go"
 	"github.com/nalej/grpc-organization-go"
 	"github.com/nalej/grpc-provisioner-go"
 	"github.com/nalej/grpc-public-api-go"
@@ -37,7 +35,6 @@ import (
 type Handler struct {
 	Manager Manager
 }
-
 
 // NewHandler creates a new Handler with a linked manager.
 func NewHandler(manager Manager) *Handler {
@@ -85,7 +82,7 @@ func (h *Handler) Scale(ctx context.Context, request *grpc_provisioner_go.ScaleC
 		return nil, derrors.NewPermissionDeniedError("cannot access requested OrganizationID")
 	}
 	err = entities.ValidScaleClusterRequest(request)
-	if err != nil{
+	if err != nil {
 		return nil, conversions.ToGRPCError(err)
 	}
 	return h.Manager.Scale(request)
@@ -137,21 +134,6 @@ func (h *Handler) Update(ctx context.Context, updateClusterRequest *grpc_public_
 		return nil, conversions.ToGRPCError(err)
 	}
 	return h.Manager.Update(updateClusterRequest)
-}
-
-func (h *Handler) Monitor(ctx context.Context, request *grpc_monitoring_go.ClusterSummaryRequest) (*grpc_monitoring_go.ClusterSummary, error) {
-	rm, err := authhelper.GetRequestMetadata(ctx)
-	if err != nil {
-		return nil, conversions.ToGRPCError(err)
-	}
-	if request.OrganizationId != rm.OrganizationID {
-		return nil, derrors.NewPermissionDeniedError("cannot access requested OrganizationID")
-	}
-	err = entities.ValidMonitorRequest(request)
-	if err != nil {
-		return nil, conversions.ToGRPCError(err)
-	}
-	return h.Manager.Monitor(request)
 }
 
 func (h *Handler) Cordon(ctx context.Context, clusterID *grpc_infrastructure_go.ClusterId) (*grpc_common_go.Success, error) {
