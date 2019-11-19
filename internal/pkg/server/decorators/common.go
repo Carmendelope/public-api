@@ -22,7 +22,6 @@ import (
 	"github.com/nalej/derrors"
 	"github.com/nalej/grpc-application-go"
 	"github.com/nalej/grpc-public-api-go"
-	"github.com/rs/zerolog/log"
 )
 
 // DecoratorResponse is a structure returned when applying decorator.
@@ -118,8 +117,6 @@ func FromLogEntryResponse(result []*grpc_public_api_go.LogEntryResponse, decorat
 		aux := d.(grpc_public_api_go.LogEntryResponse)
 		orderedResult[i] = &aux
 	}
-
-	log.Debug().Interface("orderedResult", orderedResult).Msg("FromLogEntryResponse")
 
 	return &DecoratorResponse{
 		LogResponseList: orderedResult,

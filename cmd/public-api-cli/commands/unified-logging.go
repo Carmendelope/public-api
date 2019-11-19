@@ -41,7 +41,6 @@ func init() {
 	logCmd.AddCommand(searchCmd)
 	searchCmd.Flags().StringVar(&descriptorID, "descriptorID", "", "Application descriptor identifier")
 	searchCmd.Flags().StringVar(&instanceID, "instanceID", "", "Application instance identifier")
-	//_ = searchCmd.MarkFlagRequired("instanceID")
 	searchCmd.Flags().StringVar(&sgID, "sgID", "", "Service group identifier")
 	searchCmd.Flags().StringVar(&sgInstanceID, "sgInstanceID", "", "Service group instance identifier")
 	searchCmd.Flags().StringVar(&serviceID, "serviceID", "", "Service identifier")
