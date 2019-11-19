@@ -80,20 +80,22 @@ func (m *Monitoring) GetClusterStats(organizationId string, clusterId string, ra
 func toPlatformStatusFields(fields []string) []grpc_monitoring_go.PlatformStatsField {
 	platformStatFields := make([]grpc_monitoring_go.PlatformStatsField, 0)
 	for _, fieldName := range fields {
-		platformStatField, exists := grpc_monitoring_go.PlatformStatsField_value[strings.ToUpper(fieldName)]
-		if exists {
-			switch platformStatField {
-			case 0:
-				platformStatFields = append(platformStatFields, grpc_monitoring_go.PlatformStatsField_SERVICES)
-			case 1:
-				platformStatFields = append(platformStatFields, grpc_monitoring_go.PlatformStatsField_VOLUMES)
-			case 2:
-				platformStatFields = append(platformStatFields, grpc_monitoring_go.PlatformStatsField_FRAGMENTS)
-			case 3:
-				platformStatFields = append(platformStatFields, grpc_monitoring_go.PlatformStatsField_ENDPOINTS)
+		if fieldName != "" {
+			platformStatField, exists := grpc_monitoring_go.PlatformStatsField_value[strings.ToUpper(fieldName)]
+			if exists {
+				switch platformStatField {
+				case 0:
+					platformStatFields = append(platformStatFields, grpc_monitoring_go.PlatformStatsField_SERVICES)
+				case 1:
+					platformStatFields = append(platformStatFields, grpc_monitoring_go.PlatformStatsField_VOLUMES)
+				case 2:
+					platformStatFields = append(platformStatFields, grpc_monitoring_go.PlatformStatsField_FRAGMENTS)
+				case 3:
+					platformStatFields = append(platformStatFields, grpc_monitoring_go.PlatformStatsField_ENDPOINTS)
+				}
+			} else {
+				log.Warn().Str("field", fieldName).Msg("Field name does not exist and will be ignored.")
 			}
-		} else {
-			log.Warn().Str("field", fieldName).Msg("Field name does not exist and will be ignored.")
 		}
 	}
 	return platformStatFields
