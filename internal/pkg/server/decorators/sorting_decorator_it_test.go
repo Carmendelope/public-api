@@ -63,18 +63,15 @@ var _ = ginkgo.Describe("Helper", func() {
 			}
 
 			decorator := NewOrderDecorator(OrderOptions{Field: "name", Asc: true})
-			AppDescList := &grpc_application_go.AppDescriptorList{
-				Descriptors: list,
-			}
 
-			res := ApplyDecorator(AppDescList, decorator)
+			res := ApplyDecorator(list, decorator)
 			gomega.Expect(res.Error).Should(gomega.BeNil())
 			gomega.Expect(res.AppDescriptorList).ShouldNot(gomega.BeNil())
-			gomega.Expect(len(res.AppDescriptorList.Descriptors)).Should(gomega.Equal(num))
+			gomega.Expect(len(res.AppDescriptorList)).Should(gomega.Equal(num))
 
-			for i := 0; i <= len(res.AppDescriptorList.Descriptors)-2; i++ {
-				aux := res.AppDescriptorList.Descriptors[i]
-				aux2 := res.AppDescriptorList.Descriptors[i+1]
+			for i := 0; i <= len(res.AppDescriptorList)-2; i++ {
+				aux := res.AppDescriptorList[i]
+				aux2 := res.AppDescriptorList[i+1]
 				fmt.Println(aux.Name, " < ", aux2.Name)
 				minor := aux.Name < aux2.Name
 				gomega.Expect(minor).Should(gomega.BeTrue())
@@ -89,11 +86,8 @@ var _ = ginkgo.Describe("Helper", func() {
 			}
 
 			decorator := NewOrderDecorator(OrderOptions{Field: "OrganizationId", Asc: true})
-			AppDescList := &grpc_application_go.AppDescriptorList{
-				Descriptors: list,
-			}
 
-			res := ApplyDecorator(AppDescList, decorator)
+			res := ApplyDecorator(list, decorator)
 			gomega.Expect(res.Error).ShouldNot(gomega.BeNil())
 			fmt.Println(res.Error.Error())
 
@@ -107,11 +101,8 @@ var _ = ginkgo.Describe("Helper", func() {
 			}
 
 			decorator := NewOrderDecorator(OrderOptions{Field: "OrganizationId", Asc: true})
-			AppInstList := &grpc_application_go.AppInstanceList{
-				Instances: list,
-			}
 
-			res := ApplyDecorator(AppInstList, decorator)
+			res := ApplyDecorator(list, decorator)
 			gomega.Expect(res.Error).ShouldNot(gomega.BeNil())
 			fmt.Println(res.Error.Error())
 

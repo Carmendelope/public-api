@@ -77,6 +77,7 @@ type Clients struct {
 	appClient         grpc_application_manager_go.ApplicationManagerClient
 	deviceClient      grpc_device_manager_go.DevicesClient
 	ulClient          grpc_unified_logging_go.CoordinatorClient
+	unifLoggClient    grpc_application_manager_go.UnifiedLoggingClient
 	mmClient          grpc_monitoring_go.MonitoringManagerClient
 	amClient          grpc_monitoring_go.AssetMonitoringClient
 	eicClient         grpc_inventory_manager_go.EICClient
@@ -139,9 +140,10 @@ func (s *Service) GetClients() (*Clients, derrors.Error) {
 	agentClient := grpc_inventory_manager_go.NewAgentClient(invManagerConn)
 	appNetClient := grpc_application_manager_go.NewApplicationNetworkClient(appConn)
 	provClient := grpc_provisioner_go.NewProvisionClient(provConn)
+	unifLoggClient := grpc_application_manager_go.NewUnifiedLoggingClient(appConn)
 
 	return &Clients{oClient, cClient, nClient, infraClient, umClient,
-		appClient, deviceClient, ulClient, mmClient, amClient,
+		appClient, deviceClient, ulClient, unifLoggClient, mmClient, amClient,
 		eicClient, invClient, agentClient, appNetClient,
 		provClient}, nil
 }
@@ -284,7 +286,7 @@ func (s *Service) LaunchGRPC(authConfig *interceptor.AuthorizationConfig) error 
 	devManager := devices.NewManager(clients.deviceClient)
 	devHandler := devices.NewHandler(devManager)
 
-	ulManager := unified_logging.NewManager(clients.ulClient)
+	ulManager := unified_logging.NewManager(clients.unifLoggClient)
 	ulHandler := unified_logging.NewHandler(ulManager)
 
 	ecManager := ec.NewManager(clients.eicClient, clients.agentClient)

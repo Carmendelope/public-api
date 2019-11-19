@@ -48,6 +48,9 @@ var connections string
 
 var instanceID string
 var sgInstanceID string
+var sgID string
+var serviceID string
+var serviceInstanceID string
 
 var internal bool
 

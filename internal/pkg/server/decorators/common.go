@@ -22,7 +22,6 @@ import (
 	"github.com/nalej/derrors"
 	"github.com/nalej/grpc-application-go"
 	"github.com/nalej/grpc-public-api-go"
-	"github.com/nalej/grpc-unified-logging-go"
 )
 
 // DecoratorResponse is a structure returned when applying decorator.
@@ -30,9 +29,9 @@ import (
 // Keep in mind that the decorator could return an error
 // and that the field wondered about could be nil
 type DecoratorResponse struct {
-	AppDescriptorList *grpc_application_go.AppDescriptorList
-	AppInstanceList   *grpc_public_api_go.AppInstanceList
-	LogResponse       *grpc_unified_logging_go.LogResponse
+	AppDescriptorList []*grpc_application_go.AppDescriptor
+	AppInstanceList   []*grpc_public_api_go.AppInstance
+	LogResponseList   []*grpc_public_api_go.LogEntryResponse
 	Error             derrors.Error
 }
 
@@ -49,12 +48,16 @@ func ApplyDecorator(result interface{}, decorator Decorator) *DecoratorResponse 
 	}
 
 	switch result := result.(type) {
-	case *grpc_application_go.AppDescriptorList:
-		return FromAppDescriptorList(result.Descriptors, decorator)
-	case *grpc_public_api_go.AppInstanceList:
-		return FromAppInstanceList(result.Instances, decorator)
+	case []*grpc_application_go.AppDescriptor:
+		return FromAppDescriptorList(result, decorator)
+	case []*grpc_public_api_go.AppInstance:
+		return FromAppInstanceList(result, decorator)
+	case []*grpc_public_api_go.LogEntryResponse:
+		return FromLogEntryResponse(result, decorator)
 	}
-	return nil
+	return &DecoratorResponse{
+		Error: derrors.NewInvalidArgumentError("unable to apply decorator"),
+	}
 }
 
 // FromAppInstanceList not implemented yet
@@ -87,11 +90,35 @@ func FromAppDescriptorList(result []*grpc_application_go.AppDescriptor, decorato
 		orderedResult[i] = &aux
 	}
 
-	appDescriptorList := &grpc_application_go.AppDescriptorList{
-		Descriptors: orderedResult,
+	return &DecoratorResponse{
+		AppDescriptorList: orderedResult,
+	}
+}
+
+// FromLogEntryResponse applies decorator to a FromLogEntryResponse
+func FromLogEntryResponse(result []*grpc_public_api_go.LogEntryResponse, decorator Decorator) *DecoratorResponse {
+	// convert to []interface{}
+	toGenericList := make([]interface{}, len(result))
+	for i, d := range result {
+		toGenericList[i] = *d
+	}
+
+	// call to apply
+	ordered, err := decorator.Apply(toGenericList)
+	if err != nil {
+		return &DecoratorResponse{
+			Error: err,
+		}
+	}
+
+	// reconvert to grpc_public_api_go.LogEntryResponse
+	orderedResult := make([]*grpc_public_api_go.LogEntryResponse, len(result))
+	for i, d := range ordered {
+		aux := d.(grpc_public_api_go.LogEntryResponse)
+		orderedResult[i] = &aux
 	}
 
 	return &DecoratorResponse{
-		AppDescriptorList: appDescriptorList,
+		LogResponseList: orderedResult,
 	}
 }

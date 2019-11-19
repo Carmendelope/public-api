@@ -101,7 +101,7 @@ func (p *Provision) ProvisionAndInstall(organizationId string, clusterName strin
 // Scale sends the ScaleClusterRequest to the public-api.
 func (p *Provision) Scale(organizationID string, clusterID string, clusterType grpc_infrastructure_go.ClusterType,
 	numNodes int64, targetPlatform grpc_public_api_go.Platform, azureCredentialsPath string,
-	 azureResourceGroup string ) {
+	azureResourceGroup string) {
 	err := p.LoadCredentials()
 	if err != nil {
 		log.Fatal().Str("trace", err.DebugReport()).Msg("cannot load credentials, try login first")
@@ -122,14 +122,14 @@ func (p *Provision) Scale(organizationID string, clusterID string, clusterType g
 	installerPlatform := p.convertTargetPlatform(targetPlatform)
 
 	request := grpc_provisioner_go.ScaleClusterRequest{
-		OrganizationId:   organizationID,
-		ClusterId: clusterID,
-		ClusterType:         clusterType,
-		NumNodes:            numNodes,
+		OrganizationId: organizationID,
+		ClusterId:      clusterID,
+		ClusterType:    clusterType,
+		NumNodes:       numNodes,
 		// The user may only scale application clusters through public-api-cli
 		IsManagementCluster: false,
 		TargetPlatform:      installerPlatform,
-		AzureCredentials: azureCredentials,
+		AzureCredentials:    azureCredentials,
 		AzureOptions: &grpc_provisioner_go.AzureProvisioningOptions{
 			ResourceGroup: azureResourceGroup,
 		},

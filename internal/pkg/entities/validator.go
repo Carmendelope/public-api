@@ -30,9 +30,8 @@ import (
 	"github.com/nalej/grpc-inventory-manager-go"
 	"github.com/nalej/grpc-monitoring-go"
 	"github.com/nalej/grpc-organization-go"
-	grpc_provisioner_go "github.com/nalej/grpc-provisioner-go"
+	"github.com/nalej/grpc-provisioner-go"
 	"github.com/nalej/grpc-public-api-go"
-	"github.com/nalej/grpc-unified-logging-go"
 	"github.com/nalej/grpc-user-go"
 	"github.com/nalej/grpc-user-manager-go"
 	"github.com/rs/zerolog/log"
@@ -44,6 +43,9 @@ import (
 const emptyOrganizationId = "organization_id cannot be empty"
 const emptyInstanceId = "app_instance_id cannot be empty"
 const emptyDescriptorId = "app_descriptor_id cannot be empty"
+const emptyServiceGroupId = "service_group_id cannot be empty"
+const emptyServiceGroupInstanceId = "service_group_instance_id cannot be empty"
+const emptyServiceId = "service_id cannot be empty"
 const emptyClusterId = "cluster_id cannot be empty"
 const emptyNodeId = "node_id cannot be empty"
 const emptyEmail = "email cannot be empty"
@@ -298,7 +300,7 @@ func ValidInstallRequest(request *grpc_public_api_go.InstallRequest) derrors.Err
 	return nil
 }
 
-func ValidScaleClusterRequest(request *grpc_provisioner_go.ScaleClusterRequest) derrors.Error{
+func ValidScaleClusterRequest(request *grpc_provisioner_go.ScaleClusterRequest) derrors.Error {
 	if request.RequestId != "" {
 		return derrors.NewInvalidArgumentError("request_id is set by infrastructure-manager")
 	}
@@ -308,7 +310,7 @@ func ValidScaleClusterRequest(request *grpc_provisioner_go.ScaleClusterRequest) 
 	if request.ClusterId == "" {
 		return derrors.NewInvalidArgumentError(emptyClusterId)
 	}
-	if request.AzureCredentials == nil{
+	if request.AzureCredentials == nil {
 		return derrors.NewInvalidArgumentError("azure_credentials cannot be empty")
 	}
 	if request.AzureOptions == nil || request.AzureOptions.ResourceGroup == "" {
@@ -441,18 +443,49 @@ func ValidUpdateDeviceRequest(request *grpc_device_manager_go.UpdateDeviceReques
 	return nil
 }
 
-func ValidSearchRequest(request *grpc_unified_logging_go.SearchRequest) derrors.Error {
+func ValidSearchRequest(request *grpc_public_api_go.SearchRequest) derrors.Error {
 	if request.OrganizationId == "" {
 		return derrors.NewInvalidArgumentError(emptyOrganizationId)
 	}
-	if request.AppInstanceId == "" {
+
+	// validate the field dependencies,
+	if request.ServiceGroupId != "" && request.AppInstanceId == "" {
 		return derrors.NewInvalidArgumentError(emptyInstanceId)
 	}
-	if request.Order != grpc_unified_logging_go.SortOrder_ASC &&
-		request.Order != grpc_unified_logging_go.SortOrder_DESC {
-		return derrors.NewInvalidArgumentError(invalidSortOrder)
+	if request.ServiceGroupInstanceId != "" {
+		if request.AppInstanceId == "" {
+			return derrors.NewInvalidArgumentError(emptyInstanceId)
+		} else if request.ServiceGroupId == "" {
+			return derrors.NewInvalidArgumentError(emptyServiceGroupId)
+		}
+	}
+	if request.ServiceId != "" {
+		if request.AppInstanceId == "" {
+			return derrors.NewInvalidArgumentError(emptyInstanceId)
+		} else if request.ServiceGroupId == "" {
+			return derrors.NewInvalidArgumentError(emptyServiceGroupId)
+		} else if request.ServiceGroupInstanceId == "" {
+			return derrors.NewInvalidArgumentError(emptyServiceGroupInstanceId)
+		}
+	}
+	if request.ServiceInstanceId != "" {
+		if request.AppInstanceId == "" {
+			return derrors.NewInvalidArgumentError(emptyInstanceId)
+		} else if request.ServiceGroupId == "" {
+			return derrors.NewInvalidArgumentError(emptyServiceGroupId)
+		} else if request.ServiceGroupInstanceId == "" {
+			return derrors.NewInvalidArgumentError(emptyServiceGroupInstanceId)
+		} else if request.ServiceId == "" {
+			return derrors.NewInvalidArgumentError(emptyServiceId)
+		}
 	}
 
+	if request.Order != nil {
+		if request.Order.Order != grpc_public_api_go.Order_ASC &&
+			request.Order.Order != grpc_public_api_go.Order_DESC {
+			return derrors.NewInvalidArgumentError(invalidSortOrder)
+		}
+	}
 	return nil
 }
 
