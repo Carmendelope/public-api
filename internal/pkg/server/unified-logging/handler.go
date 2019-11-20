@@ -20,6 +20,7 @@ package unified_logging
 import (
 	"context"
 	"github.com/nalej/derrors"
+	"github.com/nalej/grpc-application-manager-go"
 	"github.com/nalej/grpc-public-api-go"
 	"github.com/nalej/grpc-utils/pkg/conversions"
 	"github.com/nalej/public-api/internal/pkg/authhelper"
@@ -36,7 +37,7 @@ func NewHandler(manager Manager) *Handler {
 	return &Handler{manager}
 }
 
-// Undeploy a running application instance.
+// Search for log entries matching a query.
 func (h *Handler) Search(ctx context.Context, request *grpc_public_api_go.SearchRequest) (*grpc_public_api_go.LogResponse, error) {
 	rm, err := authhelper.GetRequestMetadata(ctx)
 	if err != nil {
@@ -50,4 +51,8 @@ func (h *Handler) Search(ctx context.Context, request *grpc_public_api_go.Search
 		return nil, conversions.ToGRPCError(err)
 	}
 	return h.Manager.Search(request)
+}
+
+func (h *Handler) Catalog(_ context.Context, in *grpc_application_manager_go.AvailableLogRequest) (*grpc_application_manager_go.AvailableLogResponse, error) {
+	return nil, conversions.ToGRPCError(derrors.NewUnimplementedError("not implemented yet"))
 }
