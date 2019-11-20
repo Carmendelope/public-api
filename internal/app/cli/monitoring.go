@@ -81,18 +81,9 @@ func toPlatformStatusFields(fields []string) []grpc_monitoring_go.PlatformStatsF
 	platformStatFields := make([]grpc_monitoring_go.PlatformStatsField, 0)
 	for _, fieldName := range fields {
 		if fieldName != "" {
-			platformStatField, exists := grpc_monitoring_go.PlatformStatsField_value[strings.ToUpper(fieldName)]
+			platformStatFieldValue, exists := grpc_monitoring_go.PlatformStatsField_value[strings.ToUpper(fieldName)]
 			if exists {
-				switch platformStatField {
-				case 0:
-					platformStatFields = append(platformStatFields, grpc_monitoring_go.PlatformStatsField_SERVICES)
-				case 1:
-					platformStatFields = append(platformStatFields, grpc_monitoring_go.PlatformStatsField_VOLUMES)
-				case 2:
-					platformStatFields = append(platformStatFields, grpc_monitoring_go.PlatformStatsField_FRAGMENTS)
-				case 3:
-					platformStatFields = append(platformStatFields, grpc_monitoring_go.PlatformStatsField_ENDPOINTS)
-				}
+				platformStatFields = append(platformStatFields, grpc_monitoring_go.PlatformStatsField(platformStatFieldValue))
 			} else {
 				log.Warn().Str("field", fieldName).Msg("Field name does not exist and will be ignored.")
 			}
