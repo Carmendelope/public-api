@@ -12,7 +12,6 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *
  */
 
 /*
@@ -30,7 +29,6 @@ import (
 	"github.com/nalej/grpc-authx-go"
 	"github.com/nalej/grpc-infrastructure-go"
 	"github.com/nalej/grpc-infrastructure-manager-go"
-	"github.com/nalej/grpc-monitoring-go"
 	"github.com/nalej/grpc-organization-go"
 	"github.com/nalej/grpc-public-api-go"
 	"github.com/nalej/grpc-utils/pkg/test"
@@ -72,10 +70,8 @@ var _ = ginkgo.Describe("Clusters", func() {
 	var clustClient grpc_infrastructure_go.ClustersClient
 	var nodeClient grpc_infrastructure_go.NodesClient
 	var infraClient grpc_infrastructure_manager_go.InfrastructureManagerClient
-	var mmClient grpc_monitoring_go.MonitoringManagerClient
 	var smConn *grpc.ClientConn
 	var infraConn *grpc.ClientConn
-	var mmConn *grpc.ClientConn
 	var client grpc_public_api_go.ClustersClient
 
 	// Target organization.
@@ -96,13 +92,11 @@ var _ = ginkgo.Describe("Clusters", func() {
 		nodeClient = grpc_infrastructure_go.NewNodesClient(smConn)
 		infraConn = utils.GetConnection(infraManagerAddress)
 		infraClient = grpc_infrastructure_manager_go.NewInfrastructureManagerClient(infraConn)
-		mmConn = utils.GetConnection(monitorManagerAddress)
-		mmClient = grpc_monitoring_go.NewMonitoringManagerClient(mmConn)
 
 		conn, err := test.GetConn(*listener)
 		gomega.Expect(err).To(gomega.Succeed())
 
-		manager := NewManager(clustClient, nodeClient, infraClient, mmClient)
+		manager := NewManager(clustClient, nodeClient, infraClient)
 		handler := NewHandler(manager)
 		grpc_public_api_go.RegisterClustersServer(server, handler)
 		test.LaunchServer(server, listener)

@@ -12,7 +12,6 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *
  */
 
 package server
@@ -40,6 +39,7 @@ import (
 	"github.com/nalej/public-api/internal/pkg/server/clusters"
 	"github.com/nalej/public-api/internal/pkg/server/devices"
 	"github.com/nalej/public-api/internal/pkg/server/ec"
+	"github.com/nalej/public-api/internal/pkg/server/edge-monitoring"
 	"github.com/nalej/public-api/internal/pkg/server/inventory"
 	"github.com/nalej/public-api/internal/pkg/server/monitoring"
 	"github.com/nalej/public-api/internal/pkg/server/nodes"
@@ -232,6 +232,9 @@ func (s *Service) LaunchHTTP() error {
 	if err := grpc_public_api_go.RegisterInventoryMonitoringHandlerFromEndpoint(context.Background(), mux, clientAddr, opts); err != nil {
 		log.Fatal().Err(err).Msg("failed to start inventory monitoring handler")
 	}
+	if err := grpc_public_api_go.RegisterMonitoringHandlerFromEndpoint(context.Background(), mux, clientAddr, opts); err != nil {
+		log.Fatal().Err(err).Msg("failed to start monitoring handler")
+	}
 	if err := grpc_public_api_go.RegisterAgentHandlerFromEndpoint(context.Background(), mux, clientAddr, opts); err != nil {
 		log.Fatal().Err(err).Msg("failed to start agent handler")
 	}
@@ -265,7 +268,7 @@ func (s *Service) LaunchGRPC(authConfig *interceptor.AuthorizationConfig) error 
 	orgManager := organizations.NewManager(clients.orgClient)
 	orgHandler := organizations.NewHandler(orgManager)
 
-	clusManager := clusters.NewManager(clients.clusClient, clients.nodeClient, clients.infraClient, clients.mmClient)
+	clusManager := clusters.NewManager(clients.clusClient, clients.nodeClient, clients.infraClient)
 	clusHandler := clusters.NewHandler(clusManager)
 
 	nodesManager := nodes.NewManager(clients.nodeClient)
@@ -295,8 +298,11 @@ func (s *Service) LaunchGRPC(authConfig *interceptor.AuthorizationConfig) error 
 	invManager := inventory.NewManager(clients.invClient, clients.eicClient)
 	invHandler := inventory.NewHandler(invManager)
 
-	amManager := monitoring.NewManager(clients.amClient)
-	amHandler := monitoring.NewHandler(amManager)
+	amManager := edge_monitoring.NewManager(clients.amClient)
+	amHandler := edge_monitoring.NewHandler(amManager)
+
+	mmManager := monitoring.NewManager(clients.mmClient)
+	mmHandler := monitoring.NewHandler(mmManager)
 
 	agentManager := agent.NewManager(clients.agentClient)
 	agentHandler := agent.NewHandler(agentManager)
@@ -321,6 +327,7 @@ func (s *Service) LaunchGRPC(authConfig *interceptor.AuthorizationConfig) error 
 	grpc_public_api_go.RegisterEdgeControllersServer(grpcServer, ecHandler)
 	grpc_public_api_go.RegisterInventoryServer(grpcServer, invHandler)
 	grpc_public_api_go.RegisterInventoryMonitoringServer(grpcServer, amHandler)
+	grpc_public_api_go.RegisterMonitoringServer(grpcServer, mmHandler)
 	grpc_public_api_go.RegisterAgentServer(grpcServer, agentHandler)
 	grpc_public_api_go.RegisterApplicationNetworkServer(grpcServer, appNetHandler)
 	grpc_public_api_go.RegisterProvisionServer(grpcServer, provHandler)

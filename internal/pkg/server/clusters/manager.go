@@ -12,7 +12,6 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *
  */
 
 package clusters
@@ -22,7 +21,6 @@ import (
 	"github.com/nalej/grpc-infrastructure-go"
 	"github.com/nalej/grpc-infrastructure-manager-go"
 	"github.com/nalej/grpc-installer-go"
-	"github.com/nalej/grpc-monitoring-go"
 	"github.com/nalej/grpc-organization-go"
 	"github.com/nalej/grpc-provisioner-go"
 	"github.com/nalej/grpc-public-api-go"
@@ -37,16 +35,16 @@ type Manager struct {
 	clustClient grpc_infrastructure_go.ClustersClient
 	nodeClient  grpc_infrastructure_go.NodesClient
 	infraClient grpc_infrastructure_manager_go.InfrastructureManagerClient
-	mmClient    grpc_monitoring_go.MonitoringManagerClient
 }
 
 // NewManager creates a Manager using a set of clients.
 func NewManager(clustClient grpc_infrastructure_go.ClustersClient,
 	nodeClient grpc_infrastructure_go.NodesClient,
-	infraClient grpc_infrastructure_manager_go.InfrastructureManagerClient,
-	mmClient grpc_monitoring_go.MonitoringManagerClient) Manager {
+	infraClient grpc_infrastructure_manager_go.InfrastructureManagerClient) Manager {
 	return Manager{
-		clustClient: clustClient, nodeClient: nodeClient, infraClient: infraClient, mmClient: mmClient,
+		clustClient: clustClient,
+		nodeClient:  nodeClient,
+		infraClient: infraClient,
 	}
 }
 
@@ -162,12 +160,6 @@ func (m *Manager) Update(updateClusterRequest *grpc_public_api_go.UpdateClusterR
 		return nil, err
 	}
 	return result, nil
-}
-
-func (m *Manager) Monitor(request *grpc_monitoring_go.ClusterSummaryRequest) (*grpc_monitoring_go.ClusterSummary, error) {
-	ctx, cancel := common.GetContext()
-	defer cancel()
-	return m.mmClient.GetClusterSummary(ctx, request)
 }
 
 func (m *Manager) Cordon(clusterID *grpc_infrastructure_go.ClusterId) (*grpc_common_go.Success, error) {

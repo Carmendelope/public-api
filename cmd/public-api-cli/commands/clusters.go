@@ -12,7 +12,6 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *
  */
 
 package commands
@@ -34,7 +33,7 @@ var clustersCmd = &cobra.Command{
 	Long:    `Manage clusters`,
 	Run: func(cmd *cobra.Command, args []string) {
 		SetupLogging()
-		cmd.Help()
+		_ = cmd.Help()
 	},
 }
 
@@ -64,10 +63,6 @@ func init() {
 
 	clustersCmd.AddCommand(infoClusterCmd)
 	infoClusterCmd.Flags().StringVar(&clusterID, "clusterID", "", "Cluster identifier")
-
-	clustersCmd.AddCommand(monitorClusterCmd)
-	monitorClusterCmd.Flags().StringVar(&clusterID, "clusterID", "", "Cluster identifier")
-	monitorClusterCmd.Flags().Int32Var(&rangeMinutes, "rangeMinutes", 0, "Return average values over the past <rangeMinutes> minutes")
 
 	clustersCmd.AddCommand(cordonClusterCmd)
 	clustersCmd.AddCommand(uncordonClusterCmd)
@@ -136,7 +131,7 @@ var infoClusterCmd = &cobra.Command{
 		targetValues, err := ResolveArgument([]string{"clusterID"}, args, []string{clusterID})
 		if err != nil {
 			fmt.Println(err.Error())
-			cmd.Help()
+			_ = cmd.Help()
 		} else {
 			c.Info(cliOptions.Resolve("organizationID", organizationID), cliOptions.Resolve("clusterID", targetValues[0]))
 		}
@@ -157,34 +152,6 @@ var listClustersCmd = &cobra.Command{
 			insecure, useTLS,
 			cliOptions.Resolve("cacert", caCertPath), cliOptions.Resolve("output", output), cliOptions.ResolveAsInt("labelLength", labelLength))
 		c.List(cliOptions.Resolve("organizationID", organizationID), watch)
-	},
-}
-
-var monitorClusterCmd = &cobra.Command{
-	Use:     "monitor [clusterID]",
-	Aliases: []string{"mon"},
-	Short:   "Monitor cluster",
-	Long:    `Get summarized monitoring information for a single cluster`,
-	Args:    cobra.MaximumNArgs(1),
-	Run: func(cmd *cobra.Command, args []string) {
-		SetupLogging()
-		c := cli.NewClusters(
-			cliOptions.Resolve("nalejAddress", nalejAddress),
-			cliOptions.ResolveAsInt("port", nalejPort),
-			insecure, useTLS,
-			cliOptions.Resolve("cacert", caCertPath), cliOptions.Resolve("output", output), cliOptions.ResolveAsInt("labelLength", labelLength))
-
-		targetValues, err := ResolveArgument([]string{"clusterID"}, args, []string{clusterID})
-		if err != nil {
-			fmt.Println(err.Error())
-			cmd.Help()
-		} else {
-			c.Monitor(
-				cliOptions.Resolve("organizationID", organizationID),
-				cliOptions.Resolve("clusterID", targetValues[0]),
-				rangeMinutes,
-			)
-		}
 	},
 }
 
@@ -225,7 +192,7 @@ var clusterLabelsCmd = &cobra.Command{
 	Long:    `Manage cluster labels`,
 	Run: func(cmd *cobra.Command, args []string) {
 		SetupLogging()
-		cmd.Help()
+		_ = cmd.Help()
 	},
 }
 
@@ -244,13 +211,13 @@ var addLabelToClusterCmd = &cobra.Command{
 
 		if len(args) > 0 && len(args) < 2 {
 			fmt.Println("[clusterID] and [labels] must be flags or arguments, both the same type")
-			cmd.Help()
+			_ = cmd.Help()
 		} else {
 
 			targetValues, err := ResolveArgument([]string{"clusterID", "labels"}, args, []string{clusterID, rawLabels})
 			if err != nil {
 				fmt.Println(err.Error())
-				cmd.Help()
+				_ = cmd.Help()
 			} else {
 				c.ModifyClusterLabels(cliOptions.Resolve("organizationID", organizationID),
 					targetValues[0], true, targetValues[1])
@@ -275,13 +242,13 @@ var removeLabelFromClusterCmd = &cobra.Command{
 
 		if len(args) > 0 && len(args) < 2 {
 			fmt.Println("[clusterID] and [labels] must be flags or arguments, both the same type")
-			cmd.Help()
+			_ = cmd.Help()
 		} else {
 
 			targetValues, err := ResolveArgument([]string{"clusterID", "labels"}, args, []string{clusterID, rawLabels})
 			if err != nil {
 				fmt.Println(err.Error())
-				cmd.Help()
+				_ = cmd.Help()
 			} else {
 				c.ModifyClusterLabels(cliOptions.Resolve("organizationID", organizationID),
 					targetValues[0], false, targetValues[1])
