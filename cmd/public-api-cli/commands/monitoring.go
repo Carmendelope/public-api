@@ -36,11 +36,11 @@ func init() {
 	rootCmd.AddCommand(monitoringCmd)
 
 	monitoringCmd.AddCommand(clusterStatsCmd)
-	clusterStatsCmd.Flags().Int32Var(&rangeMinutes, "range-minutes", 0, "Return average values over the past <rangeMinutes> minutes.")
+	clusterStatsCmd.Flags().Int32Var(&rangeMinutes, "rangeMinutes", 0, "Return average values over the past <rangeMinutes> minutes.")
 	clusterStatsCmd.Flags().StringVar(&clusterStatFields, "fields", "", "Fields of the cluster stats (SERVICES, VOLUMES, FRAGMENTS, ENDPOINTS) comma separated.")
 
 	monitoringCmd.AddCommand(clusterSummaryCmd)
-	clusterSummaryCmd.Flags().Int32Var(&rangeMinutes, "range-minutes", 0, "Return average values over the past <rangeMinutes> minutes.")
+	clusterSummaryCmd.Flags().Int32Var(&rangeMinutes, "rangeMinutes", 0, "Return average values over the past <rangeMinutes> minutes.")
 }
 
 var clusterStatsCmd = &cobra.Command{
