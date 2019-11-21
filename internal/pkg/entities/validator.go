@@ -12,7 +12,6 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *
  */
 
 package entities
@@ -489,7 +488,18 @@ func ValidSearchRequest(request *grpc_public_api_go.SearchRequest) derrors.Error
 	return nil
 }
 
-func ValidMonitorRequest(request *grpc_monitoring_go.ClusterSummaryRequest) derrors.Error {
+func ValidClusterStatsRequest(request *grpc_monitoring_go.ClusterStatsRequest) derrors.Error {
+	if request.OrganizationId == "" {
+		return derrors.NewInvalidArgumentError(emptyOrganizationId)
+	}
+	if request.ClusterId == "" {
+		return derrors.NewInvalidArgumentError(emptyInstanceId)
+	}
+
+	return nil
+}
+
+func ValidClusterSummaryRequest(request *grpc_monitoring_go.ClusterSummaryRequest) derrors.Error {
 	if request.OrganizationId == "" {
 		return derrors.NewInvalidArgumentError(emptyOrganizationId)
 	}

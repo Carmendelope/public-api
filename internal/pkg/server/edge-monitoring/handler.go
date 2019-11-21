@@ -14,13 +14,18 @@
  * limitations under the License.
  */
 
-package monitoring
+package edge_monitoring
 
 import (
-	"github.com/nalej/derrors"
-	"golang.org/x/net/context"
+	"context"
 
+	"github.com/nalej/derrors"
+
+	"github.com/nalej/grpc-common-go"
+	"github.com/nalej/grpc-inventory-go"
 	"github.com/nalej/grpc-monitoring-go"
+	"github.com/nalej/grpc-public-api-go"
+
 	"github.com/nalej/grpc-utils/pkg/conversions"
 
 	"github.com/nalej/public-api/internal/pkg/authhelper"
@@ -39,34 +44,36 @@ func NewHandler(manager Manager) *Handler {
 	}
 }
 
-func (h *Handler) GetClusterStats(context context.Context, request *grpc_monitoring_go.ClusterStatsRequest) (*grpc_monitoring_go.ClusterStats, error) {
-	rm, err := authhelper.GetRequestMetadata(context)
+func (h *Handler) ListMetrics(ctx context.Context, selector *grpc_inventory_go.AssetSelector) (*grpc_monitoring_go.MetricsList, error) {
+	rm, err := authhelper.GetRequestMetadata(ctx)
 	if err != nil {
 		return nil, conversions.ToGRPCError(err)
 	}
-	if request.GetOrganizationId() != rm.OrganizationID {
+	if selector.GetOrganizationId() != rm.OrganizationID {
 		return nil, derrors.NewPermissionDeniedError("cannot access requested OrganizationID")
 	}
-
-	err = entities.ValidClusterStatsRequest(request)
+	err = entities.ValidAssetSelector(selector)
 	if err != nil {
 		return nil, conversions.ToGRPCError(err)
 	}
-	return h.manager.GetClusterStats(request)
+	return h.manager.ListMetrics(selector)
 }
 
-func (h *Handler) GetClusterSummary(context context.Context, request *grpc_monitoring_go.ClusterSummaryRequest) (*grpc_monitoring_go.ClusterSummary, error) {
-	rm, err := authhelper.GetRequestMetadata(context)
+func (h *Handler) QueryMetrics(ctx context.Context, request *grpc_monitoring_go.QueryMetricsRequest) (*grpc_monitoring_go.QueryMetricsResult, error) {
+	rm, err := authhelper.GetRequestMetadata(ctx)
 	if err != nil {
 		return nil, conversions.ToGRPCError(err)
 	}
-	if request.GetOrganizationId() != rm.OrganizationID {
+	if request.GetAssets().GetOrganizationId() != rm.OrganizationID {
 		return nil, derrors.NewPermissionDeniedError("cannot access requested OrganizationID")
 	}
-
-	err = entities.ValidClusterSummaryRequest(request)
+	err = entities.ValidQueryMetricsRequest(request)
 	if err != nil {
 		return nil, conversions.ToGRPCError(err)
 	}
-	return h.manager.GetClusterSummary(request)
+	return h.manager.QueryMetrics(request)
+}
+
+func (h *Handler) ConfigureMetrics(ctx context.Context, selector *grpc_public_api_go.ConfigureMetricsRequest) (*grpc_common_go.Success, error) {
+	return nil, conversions.ToGRPCError(derrors.NewUnimplementedError("ConfigureMetrics not implemented"))
 }

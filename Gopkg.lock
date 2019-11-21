@@ -87,7 +87,7 @@
   version = "v1.0"
 
 [[projects]]
-  digest = "1:ef0f2d88d6227f084dcce86d2ee0f4339516d4b15ca11a467b7241cc9f2f3e6d"
+  digest = "1:1a06e364566719f8951d5e50797e52114e4efd77b6e1d19a074e635a8933b8b5"
   name = "github.com/nalej/authx"
   packages = [
     "pkg/interceptor",
@@ -95,7 +95,7 @@
     "pkg/token",
   ]
   pruneopts = ""
-  revision = "3b47e1bb4c347f9d44172a5eb6bd8beb73b7cf90"
+  revision = "4d86861847c21d35e5ca2dc0a64c18c474c17893"
   version = "v0.4.0"
 
 [[projects]]
@@ -390,7 +390,7 @@
   version = "v1.7.1"
 
 [[projects]]
-  digest = "1:349884fbc84da0cc04726aacc98616d2a229cbb4139d96b5def6a6b7016e354b"
+  digest = "1:bb20b170036a4c2c75c40fe0aaf908437e7d03e33f28d9ddbad54f8ed017fb57"
   name = "github.com/rs/zerolog"
   packages = [
     ".",
@@ -399,8 +399,8 @@
     "log",
   ]
   pruneopts = ""
-  revision = "7592fcbe604741a8d6044390c09d70c01569e1b3"
-  version = "v1.16.0"
+  revision = "f1dd50b8c64d79be1392edf1d8fda5cedea4916d"
+  version = "v1.17.2"
 
 [[projects]]
   digest = "1:4b73a0659a08dd32fb042bfee9e62f4481bddf18cfc4dbff7dc68084e6ea4460"
@@ -442,7 +442,7 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:8e651b343c0f5aaf26364983b87406bde30dcfb659d30499c5380e8acfb487fd"
+  digest = "1:1de58c5f172054bd703e3abfc245557214c2c4a798d338eeeaadbe15a34db483"
   name = "golang.org/x/net"
   packages = [
     "context",
@@ -457,15 +457,15 @@
     "trace",
   ]
   pruneopts = ""
-  revision = "f9c8255933865a6f8452ccf0cc47ac980da5ac56"
+  revision = "fc4aabc6c91483155dade6fbb627cc953a723260"
 
 [[projects]]
   branch = "master"
-  digest = "1:4e8fe3d2bee1691125da7b926361404d4694b0543f0bb68e12c5a203d71f8784"
+  digest = "1:fc9c594ca60b506d8c47de076aed4bdb7cb7d12deabc141b9cc74f9a209f5413"
   name = "golang.org/x/sys"
   packages = ["unix"]
   pruneopts = ""
-  revision = "b5d5184f72d2900cd61b7676edc45ad9300e26a9"
+  revision = "e882bf8e40c23f260d489ef820e5e8eead5e76e3"
 
 [[projects]]
   digest = "1:740b51a55815493a8d0f2b1e0d0ae48fe48953bf7eaf3fcc4198823bf67768c0"
@@ -581,12 +581,12 @@
   revision = "dd632973f1e7218eb1089048e0798ec9ae7dceb8"
 
 [[projects]]
-  digest = "1:16c45073e621eb4261d14740daeaf985e53657ebb40b14fc56499c23e876f84a"
+  digest = "1:f2ad8cd8aee92b5cf981d7b2d2067dfcbb695ad0c4d989b272d1f43127475c1c"
   name = "gopkg.in/yaml.v2"
   packages = ["."]
   pruneopts = ""
-  revision = "f90ceb4f409096b60e2e9076b38b304b8246e5fa"
-  version = "v2.2.5"
+  revision = "a95acef3719e5e9f7614cc90a119dee4699291eb"
+  version = "v2.2.6"
 
 [solve-meta]
   analyzer-name = "dep"
