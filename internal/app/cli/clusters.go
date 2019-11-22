@@ -208,7 +208,7 @@ func (c *Clusters) Update(organizationID string, clusterID string, newName strin
 	updateRequest := &grpc_public_api_go.UpdateClusterRequest{
 		OrganizationId:                   organizationID,
 		ClusterId:                        clusterID,
-		UpdateName:                       true,
+		UpdateName:                       newName != "",
 		Name:                             newName,
 		UpdateMillicoresConversionFactor: !math.IsNaN(millicoresConversionFactor),
 		MillicoresConversionFactor:       millicoresConversionFactor,
