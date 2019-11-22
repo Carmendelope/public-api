@@ -54,6 +54,9 @@ func init() {
 	listClustersCmd.Flags().BoolVarP(&watch, "watch", "w", false, "Watch for changes")
 	clustersCmd.AddCommand(listClustersCmd)
 
+	updateClusterCmd.Flags().Float64Var(&millicoresConversionFactor, "millicoresConversionFactor", -1.0, "Modify the millicoresConversionFactor assigned to the cluster")
+	clustersCmd.AddCommand(updateClusterCmd)
+
 	clusterLabelsCmd.PersistentFlags().StringVar(&clusterID, "clusterID", "", "Cluster identifier")
 	clusterLabelsCmd.PersistentFlags().StringVar(&rawLabels, "labels", "", "Labels separated by ; as in key1:value;key2:value")
 
@@ -183,6 +186,22 @@ func stringToClusterType(ct string) grpc_infrastructure_go.ClusterType {
 	}
 
 	return result
+}
+
+var updateClusterCmd = &cobra.Command{
+	Use:   "update [clusterID]",
+	Short: "Update cluster params",
+	Long:  `Update cluster params`,
+	Args:  cobra.ExactArgs(1),
+	Run: func(cmd *cobra.Command, args []string) {
+		SetupLogging()
+		c := cli.NewClusters(
+			cliOptions.Resolve("nalejAddress", nalejAddress),
+			cliOptions.ResolveAsInt("port", nalejPort),
+			insecure, useTLS,
+			cliOptions.Resolve("cacert", caCertPath), cliOptions.Resolve("output", output), cliOptions.ResolveAsInt("labelLength", labelLength))
+		c.Update(cliOptions.Resolve("organizationID", organizationID), args[0], "", millicoresConversionFactor)
+	},
 }
 
 var clusterLabelsCmd = &cobra.Command{

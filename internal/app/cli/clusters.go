@@ -191,7 +191,7 @@ func (c *Clusters) ModifyClusterLabels(organizationID string, clusterID string, 
 	c.PrintResultOrError(updated, err, "cannot update cluster labels")
 }
 
-func (c *Clusters) Update(organizationID string, clusterID string, newName string) {
+func (c *Clusters) Update(organizationID string, clusterID string, newName string, millicoresConversionFactor float64) {
 	if organizationID == "" {
 		log.Fatal().Msg("organizationID cannot be empty")
 	}
@@ -205,10 +205,12 @@ func (c *Clusters) Update(organizationID string, clusterID string, newName strin
 	defer conn.Close()
 	defer cancel()
 	updateRequest := &grpc_public_api_go.UpdateClusterRequest{
-		OrganizationId: organizationID,
-		ClusterId:      clusterID,
-		UpdateName:     true,
-		Name:           newName,
+		OrganizationId:                   organizationID,
+		ClusterId:                        clusterID,
+		UpdateName:                       true,
+		Name:                             newName,
+		UpdateMillicoresConversionFactor: millicoresConversionFactor > 0,
+		MillicoresConversionFactor:       millicoresConversionFactor,
 	}
 	success, err := client.Update(ctx, updateRequest)
 	c.PrintResultOrError(success, err, "cannot update cluster information")
