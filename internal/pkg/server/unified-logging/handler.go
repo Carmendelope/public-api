@@ -12,7 +12,6 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *
  */
 
 package unified_logging
@@ -20,6 +19,7 @@ package unified_logging
 import (
 	"context"
 	"github.com/nalej/derrors"
+	"github.com/nalej/grpc-application-manager-go"
 	"github.com/nalej/grpc-public-api-go"
 	"github.com/nalej/grpc-utils/pkg/conversions"
 	"github.com/nalej/public-api/internal/pkg/authhelper"
@@ -50,4 +50,9 @@ func (h *Handler) Search(ctx context.Context, request *grpc_public_api_go.Search
 		return nil, conversions.ToGRPCError(err)
 	}
 	return h.Manager.Search(request)
+}
+
+func (h *Handler) Catalog(ctx context.Context, request *grpc_application_manager_go.AvailableLogRequest) (*grpc_application_manager_go.AvailableLogResponse, error) {
+	// TODO not implemented yet
+	return nil, derrors.NewUnimplementedError("Not implemented yet")
 }
