@@ -529,6 +529,7 @@ func NewSearchRequest(request *grpc_public_api_go.SearchRequest) *grpc_applicati
 		MsgQueryFilter:         request.MsgQueryFilter,
 		From:                   request.From,
 		To:                     request.To,
+		IncludeMetadata:        true,
 	}
 }
 
