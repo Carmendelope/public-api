@@ -19,6 +19,7 @@ package cli
 import (
 	"fmt"
 	"io/ioutil"
+	"math"
 	"reflect"
 	"time"
 
@@ -209,7 +210,7 @@ func (c *Clusters) Update(organizationID string, clusterID string, newName strin
 		ClusterId:                        clusterID,
 		UpdateName:                       true,
 		Name:                             newName,
-		UpdateMillicoresConversionFactor: millicoresConversionFactor > 0,
+		UpdateMillicoresConversionFactor: !math.IsNaN(millicoresConversionFactor),
 		MillicoresConversionFactor:       millicoresConversionFactor,
 	}
 	success, err := client.Update(ctx, updateRequest)

@@ -23,6 +23,7 @@ import (
 	"github.com/nalej/public-api/internal/app/cli"
 	"github.com/rs/zerolog/log"
 	"github.com/spf13/cobra"
+	"math"
 	"strconv"
 )
 
@@ -54,7 +55,7 @@ func init() {
 	listClustersCmd.Flags().BoolVarP(&watch, "watch", "w", false, "Watch for changes")
 	clustersCmd.AddCommand(listClustersCmd)
 
-	updateClusterCmd.Flags().Float64Var(&millicoresConversionFactor, "millicoresConversionFactor", -1.0, "Modify the millicoresConversionFactor assigned to the cluster")
+	updateClusterCmd.Flags().Float64Var(&millicoresConversionFactor, "millicoresConversionFactor", math.NaN(), "Modify the millicoresConversionFactor assigned to the cluster")
 	clustersCmd.AddCommand(updateClusterCmd)
 
 	clusterLabelsCmd.PersistentFlags().StringVar(&clusterID, "clusterID", "", "Cluster identifier")
