@@ -34,7 +34,7 @@ func ToInfraClusterUpdate(update grpc_public_api_go.UpdateClusterRequest) *grpc_
 	result := &grpc_infrastructure_go.UpdateClusterRequest{
 		OrganizationId:                   update.OrganizationId,
 		ClusterId:                        update.ClusterId,
-		UpdateName:                       update.Name != "",
+		UpdateName:                       update.UpdateName,
 		Name:                             update.Name,
 		AddLabels:                        update.AddLabels,
 		RemoveLabels:                     update.RemoveLabels,
