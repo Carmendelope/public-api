@@ -170,3 +170,42 @@ func (p *Provision) loadAzureCredentials(credentialsPath string) (*grpc_provisio
 	log.Debug().Interface("tenantId", credentials.TenantId).Msg("azure credentials have been loaded")
 	return credentials, nil
 }
+
+// Decomission an application cluster. This process will uninstall the nalej platform,
+// decomission the cluster from the infrastructure provider, and remove the cluster from the list.
+func (p *Provision) Decomission(organizationID string, clusterID string,
+	clusterType grpc_infrastructure_go.ClusterType,
+	targetPlatform grpc_public_api_go.Platform,
+	azureCredentialsPath string,
+	azureResourceGroup string) {
+	err := p.LoadCredentials()
+	if err != nil {
+		log.Fatal().Str("trace", err.DebugReport()).Msg("cannot load credentials, try login first")
+	}
+	azureCredentials, err := p.loadAzureCredentials(azureCredentialsPath)
+	if err != nil {
+		p.PrintResultOrError("", err, "error loading azure credentials")
+		return
+	}
+
+	request := &grpc_public_api_go.DecomissionClusterRequest{
+		OrganizationId:   organizationID,
+		ClusterId:        clusterID,
+		ClusterType:      grpc_infrastructure_go.ClusterType_KUBERNETES,
+		TargetPlatform:   targetPlatform,
+		AzureCredentials: azureCredentials,
+		AzureOptions: &grpc_provisioner_go.AzureProvisioningOptions{
+			ResourceGroup: azureResourceGroup,
+		},
+	}
+	c, err := p.GetConnection()
+	if err != nil {
+		log.Fatal().Str("trace", err.DebugReport()).Msg("cannot create the connection with the Nalej platform")
+	}
+	defer c.Close()
+	client := grpc_public_api_go.NewClustersClient(c)
+	ctx, cancel := p.GetContext()
+	defer cancel()
+	response, opErr := client.Decomission(ctx, request)
+	p.PrintResultOrError(response, opErr, "cannot decomission cluster")
+}

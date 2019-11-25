@@ -319,6 +319,29 @@ func ValidScaleClusterRequest(request *grpc_provisioner_go.ScaleClusterRequest) 
 	return nil
 }
 
+func ValidUninstallClusterRequest(request *grpc_public_api_go.UninstallClusterRequest) derrors.Error{
+	if request.OrganizationId == "" {
+		return derrors.NewInvalidArgumentError(emptyOrganizationId)
+	}
+	if request.ClusterId == "" {
+		return derrors.NewInvalidArgumentError(emptyClusterId)
+	}
+	if request.KubeConfigRaw == "" {
+		return derrors.NewInvalidArgumentError("kube_config_raw cannot be empty")
+	}
+	return nil
+}
+
+func ValidDecomissionClusterRequest(request *grpc_public_api_go.DecomissionClusterRequest) derrors.Error{
+	if request.OrganizationId == "" {
+		return derrors.NewInvalidArgumentError(emptyOrganizationId)
+	}
+	if request.ClusterId == "" {
+		return derrors.NewInvalidArgumentError(emptyClusterId)
+	}
+	return nil
+}
+
 func ValidChangePasswordRequest(request *grpc_user_manager_go.ChangePasswordRequest) derrors.Error {
 	if request.OrganizationId == "" {
 		return derrors.NewInvalidArgumentError(emptyOrganizationId)
