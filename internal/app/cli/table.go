@@ -249,7 +249,7 @@ func FromCluster(result *grpc_public_api_go.Cluster, labelLength int) *ResultTab
 		seen = time.Unix(result.LastAliveTimestamp, 0).String()
 	}
 	r = append(r, []string{result.Name, result.ClusterId, result.State.String(), result.Status.String(), seen})
-	r = append(r, []string{"NODES", "LABELS", "MILLICORES CONVERSION FACTOR"})
+	r = append(r, []string{"NODES", "LABELS", "MCF"})
 	r = append(r, []string{fmt.Sprintf("%d", result.TotalNodes), TransformLabels(result.Labels, labelLength), fmt.Sprintf("%g", result.MillicoresConversionFactor)})
 	return &ResultTable{r}
 }
