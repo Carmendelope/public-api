@@ -73,8 +73,7 @@ func (h *Handler) ProvisionAndInstall(ctx context.Context, request *grpc_provisi
 
 // Scale the number of nodes in the cluster.
 func (h *Handler) Scale(ctx context.Context, request *grpc_provisioner_go.ScaleClusterRequest) (*grpc_infrastructure_manager_go.ProvisionerResponse, error) {
-	log.Debug().Str("request", request.OrganizationId).
-		Str("organizationID", request.OrganizationId).Str("clusterID", request.ClusterId).
+	log.Debug().Str("organizationID", request.OrganizationId).Str("clusterID", request.ClusterId).
 		Int64("numNodes", request.NumNodes).Msg("Scale cluster")
 	rm, err := authhelper.GetRequestMetadata(ctx)
 	if err != nil {
@@ -93,8 +92,7 @@ func (h *Handler) Scale(ctx context.Context, request *grpc_provisioner_go.ScaleC
 // Uninstall a existing cluster. This process will uninstall the nalej platform and
 // remove the cluster from the list.
 func (h *Handler) Uninstall(ctx context.Context, request *grpc_public_api_go.UninstallClusterRequest) (*grpc_public_api_go.OpResponse, error) {
-	log.Debug().Str("request", request.OrganizationId).
-		Str("organizationID", request.OrganizationId).Str("clusterID", request.ClusterId).
+	log.Debug().Str("organizationID", request.OrganizationId).Str("clusterID", request.ClusterId).
 		Msg("Uninstall cluster")
 	rm, err := authhelper.GetRequestMetadata(ctx)
 	if err != nil {
@@ -108,7 +106,7 @@ func (h *Handler) Uninstall(ctx context.Context, request *grpc_public_api_go.Uni
 		return nil, conversions.ToGRPCError(err)
 	}
 	response, opErr := h.Manager.Uninstall(request)
-	if opErr != nil{
+	if opErr != nil {
 		return nil, opErr
 	}
 	return entities.ToPublicAPIOpResponse(response), nil
@@ -116,9 +114,8 @@ func (h *Handler) Uninstall(ctx context.Context, request *grpc_public_api_go.Uni
 
 // Decomission an application cluster. This process will uninstall the nalej platform,
 // decomission the cluster from the infrastructure provider, and remove the cluster from the list.
-func (h *Handler) Decomission(ctx  context.Context, request *grpc_public_api_go.DecomissionClusterRequest) (*grpc_public_api_go.OpResponse, error) {
-	log.Debug().Str("request", request.OrganizationId).
-		Str("organizationID", request.OrganizationId).Str("clusterID", request.ClusterId).
+func (h *Handler) Decomission(ctx context.Context, request *grpc_public_api_go.DecomissionClusterRequest) (*grpc_public_api_go.OpResponse, error) {
+	log.Debug().Str("organizationID", request.OrganizationId).Str("clusterID", request.ClusterId).
 		Msg("Decomission cluster")
 	rm, err := authhelper.GetRequestMetadata(ctx)
 	if err != nil {
@@ -132,7 +129,7 @@ func (h *Handler) Decomission(ctx  context.Context, request *grpc_public_api_go.
 		return nil, conversions.ToGRPCError(err)
 	}
 	response, opErr := h.Manager.Decomission(request)
-	if opErr != nil{
+	if opErr != nil {
 		return nil, opErr
 	}
 	return entities.ToPublicAPIOpResponse(response), nil
