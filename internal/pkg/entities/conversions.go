@@ -12,7 +12,6 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *
  */
 
 package entities
@@ -33,13 +32,15 @@ import (
 func ToInfraClusterUpdate(update grpc_public_api_go.UpdateClusterRequest) *grpc_infrastructure_go.UpdateClusterRequest {
 
 	result := &grpc_infrastructure_go.UpdateClusterRequest{
-		OrganizationId: update.OrganizationId,
-		ClusterId:      update.ClusterId,
-		UpdateName:     update.Name != "",
-		Name:           update.Name,
-		AddLabels:      update.AddLabels,
-		RemoveLabels:   update.RemoveLabels,
-		Labels:         update.Labels,
+		OrganizationId:                   update.OrganizationId,
+		ClusterId:                        update.ClusterId,
+		UpdateName:                       update.UpdateName,
+		Name:                             update.Name,
+		AddLabels:                        update.AddLabels,
+		RemoveLabels:                     update.RemoveLabels,
+		Labels:                           update.Labels,
+		UpdateMillicoresConversionFactor: update.UpdateMillicoresConversionFactor,
+		MillicoresConversionFactor:       update.MillicoresConversionFactor,
 	}
 
 	return result
@@ -47,19 +48,20 @@ func ToInfraClusterUpdate(update grpc_public_api_go.UpdateClusterRequest) *grpc_
 
 func ToPublicAPICluster(source *grpc_infrastructure_go.Cluster, totalNodes int64, runningNodes int64) *grpc_public_api_go.Cluster {
 	return &grpc_public_api_go.Cluster{
-		OrganizationId:     source.OrganizationId,
-		ClusterId:          source.ClusterId,
-		Name:               source.Name,
-		ClusterTypeName:    source.ClusterType.String(),
-		MultitenantSupport: source.Multitenant.String(),
-		StatusName:         source.ClusterStatus.String(),
-		Status:             source.ClusterStatus,
-		Labels:             source.Labels,
-		TotalNodes:         totalNodes,
-		RunningNodes:       runningNodes,
-		LastAliveTimestamp: source.LastAliveTimestamp,
-		State:              source.State,
-		StateName:          source.State.String(),
+		OrganizationId:             source.OrganizationId,
+		ClusterId:                  source.ClusterId,
+		Name:                       source.Name,
+		ClusterTypeName:            source.ClusterType.String(),
+		MultitenantSupport:         source.Multitenant.String(),
+		StatusName:                 source.ClusterStatus.String(),
+		Status:                     source.ClusterStatus,
+		Labels:                     source.Labels,
+		TotalNodes:                 totalNodes,
+		RunningNodes:               runningNodes,
+		LastAliveTimestamp:         source.LastAliveTimestamp,
+		MillicoresConversionFactor: source.MillicoresConversionFactor,
+		State:                      source.State,
+		StateName:                  source.State.String(),
 	}
 }
 

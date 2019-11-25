@@ -12,7 +12,6 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *
  */
 
 package unified_logging
@@ -54,5 +53,6 @@ func (h *Handler) Search(ctx context.Context, request *grpc_public_api_go.Search
 }
 
 func (h *Handler) Catalog(_ context.Context, in *grpc_application_manager_go.AvailableLogRequest) (*grpc_application_manager_go.AvailableLogResponse, error) {
+	// TODO not implemented yet
 	return nil, conversions.ToGRPCError(derrors.NewUnimplementedError("not implemented yet"))
 }

@@ -78,6 +78,9 @@ var clusterStatFields string
 
 var watch bool
 
+// cluster update
+var millicoresConversionFactor float64
+
 var outputPath string
 var edgeControllerID string
 var assetID string
