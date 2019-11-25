@@ -24,6 +24,7 @@ import (
 	"github.com/nalej/grpc-organization-go"
 	"github.com/nalej/grpc-provisioner-go"
 	"github.com/nalej/grpc-public-api-go"
+	"github.com/nalej/grpc-utils/pkg/conversions"
 	"github.com/nalej/public-api/internal/pkg/entities"
 	"github.com/nalej/public-api/internal/pkg/server/common"
 	"github.com/rs/zerolog/log"
@@ -104,6 +105,46 @@ func (m *Manager) Scale(request *grpc_provisioner_go.ScaleClusterRequest) (*grpc
 	ctx, cancel := common.GetContext()
 	defer cancel()
 	return m.infraClient.Scale(ctx, request)
+}
+
+// Uninstall a existing cluster. This process will uninstall the nalej platform and
+// remove the cluster from the list.
+func (m *Manager) Uninstall(request *grpc_public_api_go.UninstallClusterRequest) (*grpc_common_go.OpResponse, error) {
+	imPlatform, err := entities.ToInstallerTargetPlatform(request.TargetPlatform)
+	if err != nil {
+		return nil, conversions.ToGRPCError(err)
+	}
+	imRequest := &grpc_installer_go.UninstallClusterRequest{
+		OrganizationId: request.OrganizationId,
+		ClusterId:      request.ClusterId,
+		ClusterType:    request.ClusterType,
+		KubeConfigRaw:  request.KubeConfigRaw,
+		TargetPlatform: *imPlatform,
+	}
+	ctx, cancel := common.GetContext()
+	defer cancel()
+	return m.infraClient.Uninstall(ctx, imRequest)
+}
+
+// Decomission an application cluster. This process will uninstall the nalej platform,
+// decomission the cluster from the infrastructure provider, and remove the cluster from the list.
+func (m *Manager) Decomission(request *grpc_public_api_go.DecomissionClusterRequest) (*grpc_common_go.OpResponse, error) {
+	imPlatform, err := entities.ToInstallerTargetPlatform(request.TargetPlatform)
+	if err != nil {
+		return nil, conversions.ToGRPCError(err)
+	}
+	ctx, cancel := common.GetContext()
+	defer cancel()
+	dRequest := &grpc_provisioner_go.DecomissionClusterRequest{
+		OrganizationId:      request.OrganizationId,
+		ClusterId:           request.ClusterId,
+		ClusterType:         request.ClusterType,
+		IsManagementCluster: false,
+		TargetPlatform:      *imPlatform,
+		AzureCredentials:    request.AzureCredentials,
+		AzureOptions:        request.AzureOptions,
+	}
+	return m.infraClient.DecomissionCluster(ctx, dRequest)
 }
 
 func (m *Manager) extendInfo(source *grpc_infrastructure_go.Cluster) (*grpc_public_api_go.Cluster, error) {

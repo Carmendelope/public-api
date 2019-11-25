@@ -28,11 +28,11 @@
 
 [[constraint]]
     name="github.com/nalej/grpc-installer-go"
-    version="=v0.0.35"
+    version="=v0.0.37"
 
 [[constraint]]
     name="github.com/nalej/grpc-provisioner-go"
-    version="=v0.0.8"
+    version="=v0.0.10"
 
 [[constraint]]
     name="github.com/nalej/grpc-organization-go"
@@ -44,7 +44,7 @@
 
 [[constraint]]
     name="github.com/nalej/grpc-infrastructure-manager-go"
-    version="=v0.0.38"
+    version="=v0.0.39"
 
 [[constraint]]
     name="github.com/nalej/grpc-application-manager-go"
@@ -88,7 +88,7 @@
 
 [[constraint]]
     name="github.com/nalej/grpc-public-api-go"
-    version="=v0.0.123"
+    version="=v0.0.124"
 
 [[constraint]]
     name="github.com/nalej/grpc-login-api-go"
@@ -96,7 +96,7 @@
 
 [[constraint]]
     name="github.com/nalej/grpc-common-go"
-    version="=v0.0.35"
+    version="=v0.0.37"
 
 [[constraint]]
     name="github.com/grpc-ecosystem/grpc-gateway"
