@@ -42,7 +42,7 @@ func NewHandler(manager Manager) *Handler {
 }
 
 // Install a new cluster adding it to the system.
-func (h *Handler) Install(ctx context.Context, request *grpc_public_api_go.InstallRequest) (*grpc_infrastructure_manager_go.InstallResponse, error) {
+func (h *Handler) Install(ctx context.Context, request *grpc_public_api_go.InstallRequest) (*grpc_public_api_go.OpResponse, error) {
 	log.Debug().Interface("request", request).Msg("Install")
 	rm, err := authhelper.GetRequestMetadata(ctx)
 	if err != nil {
@@ -55,7 +55,11 @@ func (h *Handler) Install(ctx context.Context, request *grpc_public_api_go.Insta
 	if err != nil {
 		return nil, conversions.ToGRPCError(err)
 	}
-	return h.Manager.Install(request)
+	response, opErr := h.Manager.Install(request)
+	if opErr != nil {
+		return nil, opErr
+	}
+	return entities.ToPublicAPIOpResponse(response), nil
 }
 
 // Install a new cluster adding it to the system.

@@ -1,22 +1,11 @@
-[[constraint]]
-    name="github.com/rs/zerolog"
-    version="v1.8.0"
 
 [[constraint]]
-    name="github.com/spf13/cobra"
-    version="v0.0.3"
-
-[[override]]
-  source = "https://github.com/fsnotify/fsnotify/archive/v1.4.7.tar.gz"
-  name = "gopkg.in/fsnotify.v1"
+  name = "github.com/nalej/grpc-unified-logging-go"
+  version = "v0.0.5"
 
 [[constraint]]
-    name="github.com/onsi/ginkgo"
-    version="v1.6.0"
-
-[[constraint]]
-    name="github.com/onsi/gomega"
-    version="v1.4.2"
+  name = "github.com/nalej/grpc-monitoring-go"
+  version = "v0.0.5"
 
 [[constraint]]
     name="github.com/nalej/derrors"
@@ -28,7 +17,7 @@
 
 [[constraint]]
     name="github.com/nalej/grpc-installer-go"
-    version="=v0.0.37"
+    version="=v0.0.38"
 
 [[constraint]]
     name="github.com/nalej/grpc-provisioner-go"
@@ -44,7 +33,7 @@
 
 [[constraint]]
     name="github.com/nalej/grpc-infrastructure-manager-go"
-    version="=v0.0.39"
+    version="=v0.0.40"
 
 [[constraint]]
     name="github.com/nalej/grpc-application-manager-go"
@@ -71,10 +60,6 @@
     version="=v0.0.53"
 
 [[constraint]]
-    name="github.com/nalej/authx"
-    version="=v0.4.0"
-
-[[constraint]]
     name="github.com/nalej/grpc-user-go"
     version="=v0.0.33"
 
@@ -88,7 +73,7 @@
 
 [[constraint]]
     name="github.com/nalej/grpc-public-api-go"
-    version="=v0.0.124"
+    version="=v0.0.126"
 
 [[constraint]]
     name="github.com/nalej/grpc-login-api-go"
@@ -96,7 +81,31 @@
 
 [[constraint]]
     name="github.com/nalej/grpc-common-go"
-    version="=v0.0.37"
+    version="=v0.0.38"
+
+[[constraint]]
+    name="github.com/nalej/authx"
+    version="=v0.4.0"
+
+[[constraint]]
+    name="github.com/rs/zerolog"
+    version="v1.8.0"
+
+[[constraint]]
+    name="github.com/spf13/cobra"
+    version="v0.0.3"
+
+[[override]]
+  source = "https://github.com/fsnotify/fsnotify/archive/v1.4.7.tar.gz"
+  name = "gopkg.in/fsnotify.v1"
+
+[[constraint]]
+    name="github.com/onsi/ginkgo"
+    version="v1.6.0"
+
+[[constraint]]
+    name="github.com/onsi/gomega"
+    version="v1.4.2"
 
 [[constraint]]
     name="github.com/grpc-ecosystem/grpc-gateway"
@@ -106,14 +115,6 @@
   name = "github.com/dgrijalva/jwt-go"
   version = "3.2.0"
 
-[[constraint]]
-  name = "github.com/nalej/grpc-unified-logging-go"
-  version = "v0.0.5"
- 
-[[constraint]]
-  name = "github.com/nalej/grpc-monitoring-go"
-  version = "v0.0.5"
- 
 [[constraint]]
   name = "github.com/golang/protobuf"
   version = "v1.2.0"
