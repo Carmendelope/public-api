@@ -72,9 +72,8 @@ func (m *Manager) clusterNodesStats(organizationID string, clusterID string) (in
 }
 
 // Install a new cluster adding it to the system.
-func (m *Manager) Install(request *grpc_public_api_go.InstallRequest) (*grpc_infrastructure_manager_go.InstallResponse, error) {
+func (m *Manager) Install(request *grpc_public_api_go.InstallRequest) (*grpc_common_go.OpResponse, error) {
 	installRequest := &grpc_installer_go.InstallRequest{
-		InstallId:         "",
 		OrganizationId:    request.OrganizationId,
 		ClusterId:         request.ClusterId,
 		ClusterType:       request.ClusterType,

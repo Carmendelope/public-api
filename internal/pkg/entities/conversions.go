@@ -493,6 +493,7 @@ func ToPublicAPIOpResponse(response *grpc_common_go.OpResponse) *grpc_public_api
 	return &grpc_public_api_go.OpResponse{
 		OrganizationId: response.OrganizationId,
 		RequestId:      response.RequestId,
+		OperationName:  response.OperationName,
 		ElapsedTime:    response.ElapsedTime,
 		Timestamp:      response.Timestamp,
 		Status:         response.Status,
