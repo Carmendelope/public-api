@@ -93,7 +93,7 @@ func AsTable(result interface{}, labelLength int) *ResultTable {
 		return FromDevice(result, labelLength)
 	case *grpc_public_api_go.DeviceList:
 		return FromDeviceList(result, labelLength)
-	case *grpc_public_api_go.LogResponse:
+	case *grpc_application_manager_go.LogResponse:
 		return FromLogResponse(result)
 	case *grpc_public_api_go.Node:
 		return FromNode(result, labelLength)
@@ -249,8 +249,8 @@ func FromCluster(result *grpc_public_api_go.Cluster, labelLength int) *ResultTab
 		seen = time.Unix(result.LastAliveTimestamp, 0).String()
 	}
 	r = append(r, []string{result.Name, result.ClusterId, result.State.String(), result.Status.String(), seen})
-	r = append(r, []string{"NODES", "LABELS"})
-	r = append(r, []string{fmt.Sprintf("%d", result.TotalNodes), TransformLabels(result.Labels, labelLength)})
+	r = append(r, []string{"NODES", "LABELS", "MCF"})
+	r = append(r, []string{fmt.Sprintf("%d", result.TotalNodes), TransformLabels(result.Labels, labelLength), fmt.Sprintf("%g", result.MillicoresConversionFactor)})
 	return &ResultTable{r}
 }
 
@@ -501,7 +501,7 @@ func FromDeviceList(result *grpc_public_api_go.DeviceList, labelLength int) *Res
 // Log
 // ----
 
-func FromLogResponse(result *grpc_public_api_go.LogResponse) *ResultTable {
+func FromLogResponse(result *grpc_application_manager_go.LogResponse) *ResultTable {
 	r := make([][]string, 0)
 	r = append(r, []string{"FROM", "TO"})
 	r = append(r, []string {time.Unix(result.From, 0).String(), time.Unix(result.To, 0).String()})
@@ -960,7 +960,16 @@ func FromSuccess(result *grpc_common_go.Success) *ResultTable {
 
 func FromOpResponse(result *grpc_public_api_go.OpResponse) *ResultTable {
 	r := make([][]string, 0)
-	r = append(r, []string{"REQUEST_ID", "TIMESTAMP", "STATUS", "INFO"})
-	r = append(r, []string{result.RequestId, time.Unix(result.Timestamp, 0).String(), result.StatusName, result.Info})
+	if result.Error != "" {
+		r = append(r, []string{"REQUEST_ID", "OPERATION", "TIMESTAMP", "ELAPSED", "STATUS", "INFO"})
+		r = append(r, []string{result.RequestId, result.OperationName,
+			time.Unix(result.Timestamp, 0).String(), time.Duration(result.ElapsedTime).String(),
+			result.StatusName, result.Info})
+	} else {
+		r = append(r, []string{"REQUEST_ID", "OPERATION", "TIMESTAMP", "ELAPSED", "STATUS", "ERROR"})
+		r = append(r, []string{result.RequestId, result.OperationName,
+			time.Unix(result.Timestamp, 0).String(), time.Duration(result.ElapsedTime).String(),
+			result.StatusName, result.Error})
+	}
 	return &ResultTable{r}
 }

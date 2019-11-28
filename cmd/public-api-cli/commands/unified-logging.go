@@ -35,6 +35,7 @@ var logCmd = &cobra.Command{
 
 func init() {
 	rootCmd.AddCommand(logCmd)
+
 	logCmd.PersistentFlags().StringVar(&organizationID, "organizationID", "", "Organization identifier")
 	_ = logCmd.MarkFlagRequired("organizationID")
 
@@ -59,6 +60,7 @@ var searchCmd = &cobra.Command{
 	Args:  cobra.MaximumNArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		SetupLogging()
+
 		// Message filter argument
 		if len(args) > 0 {
 			message = args[0]
@@ -77,6 +79,8 @@ var searchCmd = &cobra.Command{
 			cliOptions.ResolveAsInt("port", nalejPort),
 			insecure, useTLS,
 			cliOptions.Resolve("cacert", caCertPath), cliOptions.Resolve("output", output), cliOptions.ResolveAsInt("labelLength", labelLength))
+
 		l.Search(cliOptions.Resolve("organizationID", organizationID), descriptorID, instanceID, sgID, sgInstanceID, serviceID, serviceInstanceID, message, from, to, desc, redirectLog)
+
 	},
 }

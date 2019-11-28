@@ -12,34 +12,38 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *
  */
 
 package entities
 
 import (
+	"github.com/nalej/derrors"
 	"github.com/nalej/grpc-application-go"
 	"github.com/nalej/grpc-application-manager-go"
 	"github.com/nalej/grpc-application-network-go"
 	"github.com/nalej/grpc-common-go"
 	"github.com/nalej/grpc-device-manager-go"
 	"github.com/nalej/grpc-infrastructure-go"
+	"github.com/nalej/grpc-installer-go"
 	"github.com/nalej/grpc-inventory-go"
 	"github.com/nalej/grpc-inventory-manager-go"
 	"github.com/nalej/grpc-public-api-go"
+	"github.com/rs/zerolog/log"
 )
 
 // ToInfraClusterUpdate transforms a public api update request into a infrastructure one.
 func ToInfraClusterUpdate(update grpc_public_api_go.UpdateClusterRequest) *grpc_infrastructure_go.UpdateClusterRequest {
 
 	result := &grpc_infrastructure_go.UpdateClusterRequest{
-		OrganizationId: update.OrganizationId,
-		ClusterId:      update.ClusterId,
-		UpdateName:     update.Name != "",
-		Name:           update.Name,
-		AddLabels:      update.AddLabels,
-		RemoveLabels:   update.RemoveLabels,
-		Labels:         update.Labels,
+		OrganizationId:                   update.OrganizationId,
+		ClusterId:                        update.ClusterId,
+		UpdateName:                       update.UpdateName,
+		Name:                             update.Name,
+		AddLabels:                        update.AddLabels,
+		RemoveLabels:                     update.RemoveLabels,
+		Labels:                           update.Labels,
+		UpdateMillicoresConversionFactor: update.UpdateMillicoresConversionFactor,
+		MillicoresConversionFactor:       update.MillicoresConversionFactor,
 	}
 
 	return result
@@ -47,19 +51,20 @@ func ToInfraClusterUpdate(update grpc_public_api_go.UpdateClusterRequest) *grpc_
 
 func ToPublicAPICluster(source *grpc_infrastructure_go.Cluster, totalNodes int64, runningNodes int64) *grpc_public_api_go.Cluster {
 	return &grpc_public_api_go.Cluster{
-		OrganizationId:     source.OrganizationId,
-		ClusterId:          source.ClusterId,
-		Name:               source.Name,
-		ClusterTypeName:    source.ClusterType.String(),
-		MultitenantSupport: source.Multitenant.String(),
-		StatusName:         source.ClusterStatus.String(),
-		Status:             source.ClusterStatus,
-		Labels:             source.Labels,
-		TotalNodes:         totalNodes,
-		RunningNodes:       runningNodes,
-		LastAliveTimestamp: source.LastAliveTimestamp,
-		State:              source.State,
-		StateName:          source.State.String(),
+		OrganizationId:             source.OrganizationId,
+		ClusterId:                  source.ClusterId,
+		Name:                       source.Name,
+		ClusterTypeName:            source.ClusterType.String(),
+		MultitenantSupport:         source.Multitenant.String(),
+		StatusName:                 source.ClusterStatus.String(),
+		Status:                     source.ClusterStatus,
+		Labels:                     source.Labels,
+		TotalNodes:                 totalNodes,
+		RunningNodes:               runningNodes,
+		LastAliveTimestamp:         source.LastAliveTimestamp,
+		MillicoresConversionFactor: source.MillicoresConversionFactor,
+		State:                      source.State,
+		StateName:                  source.State.String(),
 	}
 }
 
@@ -484,14 +489,17 @@ func ToPublicAPIAgentOpRequest(response *grpc_inventory_manager_go.AgentOpRespon
 	}
 }
 
-func ToPublicAPIOpResponse(appNetResponse *grpc_common_go.OpResponse) *grpc_public_api_go.OpResponse {
+func ToPublicAPIOpResponse(response *grpc_common_go.OpResponse) *grpc_public_api_go.OpResponse {
 	return &grpc_public_api_go.OpResponse{
-		OrganizationId: appNetResponse.OrganizationId,
-		RequestId:      appNetResponse.RequestId,
-		Timestamp:      appNetResponse.Timestamp,
-		Status:         appNetResponse.Status,
-		StatusName:     appNetResponse.Status.String(),
-		Info:           appNetResponse.Info,
+		OrganizationId: response.OrganizationId,
+		RequestId:      response.RequestId,
+		OperationName:  response.OperationName,
+		ElapsedTime:    response.ElapsedTime,
+		Timestamp:      response.Timestamp,
+		Status:         response.Status,
+		StatusName:     response.Status.String(),
+		Info:           response.Info,
+		Error:          response.Error,
 	}
 }
 
@@ -529,6 +537,20 @@ func NewSearchRequest(request *grpc_public_api_go.SearchRequest) *grpc_applicati
 		MsgQueryFilter:         request.MsgQueryFilter,
 		From:                   request.From,
 		To:                     request.To,
+		IncludeMetadata:        true,
 	}
 }
 
+func ToInstallerTargetPlatform(pbPlatform grpc_public_api_go.Platform) (*grpc_installer_go.Platform, derrors.Error) {
+	var installerPlatform grpc_installer_go.Platform
+	switch pbPlatform {
+	case grpc_public_api_go.Platform_AZURE:
+		installerPlatform = grpc_installer_go.Platform_AZURE
+	case grpc_public_api_go.Platform_MINIKUBE:
+		installerPlatform = grpc_installer_go.Platform_MINIKUBE
+	default:
+		log.Warn().Str("platform", pbPlatform.String()).Msg("unknown platform")
+		return nil, derrors.NewInvalidArgumentError("unknown platform").WithParams(pbPlatform.String())
+	}
+	return &installerPlatform, nil
+}

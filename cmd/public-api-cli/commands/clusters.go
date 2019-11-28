@@ -23,6 +23,7 @@ import (
 	"github.com/nalej/public-api/internal/app/cli"
 	"github.com/rs/zerolog/log"
 	"github.com/spf13/cobra"
+	"math"
 	"strconv"
 )
 
@@ -53,6 +54,9 @@ func init() {
 
 	listClustersCmd.Flags().BoolVarP(&watch, "watch", "w", false, "Watch for changes")
 	clustersCmd.AddCommand(listClustersCmd)
+
+	updateClusterCmd.Flags().Float64Var(&millicoresConversionFactor, "millicoresConversionFactor", math.NaN(), "Modify the millicoresConversionFactor assigned to the cluster")
+	clustersCmd.AddCommand(updateClusterCmd)
 
 	clusterLabelsCmd.PersistentFlags().StringVar(&clusterID, "clusterID", "", "Cluster identifier")
 	clusterLabelsCmd.PersistentFlags().StringVar(&rawLabels, "labels", "", "Labels separated by ; as in key1:value;key2:value")
@@ -88,6 +92,15 @@ func init() {
 	scaleClusterCmd.PersistentFlags().StringVar(&provisionAzureResourceGroup, "azureResourceGroup", "", "Azure resource group")
 	scaleClusterCmd.PersistentFlags().StringVar(&provisionTargetPlatform, "targetPlatform", "", "Target platform")
 	clustersCmd.AddCommand(scaleClusterCmd)
+
+	uninstallClusterCmd.Flags().StringVar(&provisionTargetPlatform, "targetPlatform", "", "Target platform")
+	clustersCmd.AddCommand(uninstallClusterCmd)
+
+	decomissionClusterCmd.Flags().StringVar(&provisionClusterType, "clusterType", "kubernetes", "Cluster type")
+	decomissionClusterCmd.Flags().StringVar(&provisionAzureCredentialsPath, "azureCredentialsPath", "", "Path for the azure credentials file")
+	decomissionClusterCmd.Flags().StringVar(&provisionAzureResourceGroup, "azureResourceGroup", "", "Azure resource group")
+	decomissionClusterCmd.Flags().StringVar(&provisionTargetPlatform, "targetPlatform", "", "Target platform")
+	clustersCmd.AddCommand(decomissionClusterCmd)
 }
 
 var installClustersCmd = &cobra.Command{
@@ -115,7 +128,7 @@ var installClustersCmd = &cobra.Command{
 }
 
 var infoClusterCmd = &cobra.Command{
-	Use:     "info [clusterID]",
+	Use:     "info <clusterID>",
 	Aliases: []string{"get"},
 	Short:   "Get the cluster information",
 	Long:    `Get the cluster information`,
@@ -127,15 +140,7 @@ var infoClusterCmd = &cobra.Command{
 			cliOptions.ResolveAsInt("port", nalejPort),
 			insecure, useTLS,
 			cliOptions.Resolve("cacert", caCertPath), cliOptions.Resolve("output", output), cliOptions.ResolveAsInt("labelLength", labelLength))
-
-		targetValues, err := ResolveArgument([]string{"clusterID"}, args, []string{clusterID})
-		if err != nil {
-			fmt.Println(err.Error())
-			_ = cmd.Help()
-		} else {
-			c.Info(cliOptions.Resolve("organizationID", organizationID), cliOptions.Resolve("clusterID", targetValues[0]))
-		}
-
+		c.Info(cliOptions.Resolve("organizationID", organizationID), args[0])
 	},
 }
 
@@ -185,6 +190,22 @@ func stringToClusterType(ct string) grpc_infrastructure_go.ClusterType {
 	return result
 }
 
+var updateClusterCmd = &cobra.Command{
+	Use:   "update <clusterID>",
+	Short: "Update cluster params",
+	Long:  `Update cluster params`,
+	Args:  cobra.ExactArgs(1),
+	Run: func(cmd *cobra.Command, args []string) {
+		SetupLogging()
+		c := cli.NewClusters(
+			cliOptions.Resolve("nalejAddress", nalejAddress),
+			cliOptions.ResolveAsInt("port", nalejPort),
+			insecure, useTLS,
+			cliOptions.Resolve("cacert", caCertPath), cliOptions.Resolve("output", output), cliOptions.ResolveAsInt("labelLength", labelLength))
+		c.Update(cliOptions.Resolve("organizationID", organizationID), args[0], "", millicoresConversionFactor)
+	},
+}
+
 var clusterLabelsCmd = &cobra.Command{
 	Use:     "label",
 	Aliases: []string{"labels", "l"},
@@ -197,7 +218,7 @@ var clusterLabelsCmd = &cobra.Command{
 }
 
 var addLabelToClusterCmd = &cobra.Command{
-	Use:   "add [clusterID] [labels]",
+	Use:   "add <clusterID> <labels>",
 	Short: "Add a set of labels to a cluster",
 	Long:  `Add a set of labels to a cluster`,
 	Args:  cobra.MaximumNArgs(2),
@@ -227,7 +248,7 @@ var addLabelToClusterCmd = &cobra.Command{
 }
 
 var removeLabelFromClusterCmd = &cobra.Command{
-	Use:     "delete [clusterID] [labels]",
+	Use:     "delete <clusterID> <labels>",
 	Aliases: []string{"remove", "del", "rm"},
 	Short:   "Remove a set of labels from a cluster",
 	Long:    `Remove a set of labels from a cluster`,
@@ -258,7 +279,7 @@ var removeLabelFromClusterCmd = &cobra.Command{
 }
 
 var cordonClusterCmd = &cobra.Command{
-	Use:   "cordon [clusterID]",
+	Use:   "cordon <clusterID>",
 	Short: "cordon a cluster ignoring new application deployments",
 	Long:  `cordon a cluster ignoring new application deployments`,
 	Args:  cobra.MinimumNArgs(1),
@@ -274,7 +295,7 @@ var cordonClusterCmd = &cobra.Command{
 }
 
 var uncordonClusterCmd = &cobra.Command{
-	Use:   "uncordon [clusterID]",
+	Use:   "uncordon <clusterID>",
 	Short: "uncordon a cluster making possible new application deployments",
 	Long:  `uncordon a cluster making possible new application deployments`,
 	Args:  cobra.MinimumNArgs(1),
@@ -290,7 +311,7 @@ var uncordonClusterCmd = &cobra.Command{
 }
 
 var drainClusterCmd = &cobra.Command{
-	Use:   "drain [clusterID]",
+	Use:   "drain <clusterID>",
 	Short: "drain a cluster",
 	Long:  `drain a cordoned cluster and force current applications to be re-scheduled`,
 	Args:  cobra.MinimumNArgs(1),
@@ -306,8 +327,8 @@ var drainClusterCmd = &cobra.Command{
 }
 
 var provAndInstCmd = &cobra.Command{
-	Use:     "provision-and-install",
-	Aliases: []string{"pai"},
+	Use:     "provision",
+	Aliases: []string{"provision-and-install", "pai"},
 	Short:   "Provision and install a new cluster",
 	Long:    `Provision and install a new cluster`,
 	Run: func(cmd *cobra.Command, args []string) {
@@ -342,7 +363,7 @@ var provAndInstCmd = &cobra.Command{
 
 // scaleClusterCmd with the cmd definition of a scale cluster operation.
 var scaleClusterCmd = &cobra.Command{
-	Use:   "scale [clusterID] [numNodes]",
+	Use:   "scale <clusterID> <numNodes>",
 	Short: "Scale an application cluster",
 	Long:  `Scale an application cluster`,
 	Args:  cobra.ExactArgs(2),
@@ -372,5 +393,90 @@ var scaleClusterCmd = &cobra.Command{
 			provisionAzureCredentialsPath,
 			provisionAzureResourceGroup,
 		)
+	},
+}
+
+var uninstallClusterLongHelp = `
+Uninstall the Nalej components deployed in the target cluster.
+
+This command will remove the Nalej components deployed in an application
+cluster as created by the installing process. Notice that this operation
+does not free the computing resources associated with the cluster. To
+completelly uninstall the platform and free the associated computing resources
+use the decomission command as:
+
+public-api-cli cluster decomission ...
+
+`
+
+var uninstallClusterExamples = `
+# Uninstall an application cluster
+public-api-cli cluster uninstall 00630f9c-59fe-408a-829c-6dc67c2b98e7 nalej/appCluster.yaml
+`
+
+// uninstallClusterCmd with the cmd definition of a uninstall cluster operation.
+var uninstallClusterCmd = &cobra.Command{
+	Use:     "uninstall <clusterID> <kubeConfigPath>",
+	Short:   "Uninstall an application cluster",
+	Long:    uninstallClusterLongHelp,
+	Example: uninstallClusterExamples,
+	Args:    cobra.ExactArgs(2),
+	Run: func(cmd *cobra.Command, args []string) {
+		SetupLogging()
+
+		c := cli.NewClusters(
+			cliOptions.Resolve("nalejAddress", nalejAddress),
+			cliOptions.ResolveAsInt("port", nalejPort),
+			insecure, useTLS,
+			cliOptions.Resolve("cacert", caCertPath), cliOptions.Resolve("output", output), cliOptions.ResolveAsInt("labelLength", labelLength))
+
+		targetPlatform := stringToTargetPlatform(provisionTargetPlatform)
+		c.Uninstall(cliOptions.Resolve("organizationId", organizationID),
+			args[0], args[1], targetPlatform)
+	},
+}
+
+var decomissionClusterLongHelp = `
+Decomission an application cluster.
+
+This command will perform an uninstall of the Nalej components deployed in
+the application cluster. Once all components are uninstalled, it will trigger
+the decomissioning process so that computing resources are freed.
+
+The decomissioning process depends on the infrastructure provider used to
+host the cluster, and valid credentials for that provider must be
+available to execute this operation. Once the cluster is decomissioned, it
+will be removed from the list of application clusters.
+`
+
+var decomissionClusterExamples = `
+# Decomission an Azure application cluster
+public-api-cli cluster decomission 00630f9c-59fe-408a-829c-6dc67c2b98e7 --targetPlatform AZURE --azureCredentialsPath azure/credentials.json --azureResourceGroup dev
+`
+
+// decomissionClusterCmd with the cmd definition of a decomission cluster operation.
+var decomissionClusterCmd = &cobra.Command{
+	Use:     "decomission <clusterID>",
+	Short:   "decomission an application cluster",
+	Long:    decomissionClusterLongHelp,
+	Example: decomissionClusterExamples,
+	Args:    cobra.ExactArgs(1),
+	Run: func(cmd *cobra.Command, args []string) {
+		SetupLogging()
+		p := cli.NewProvision(
+			cliOptions.Resolve("nalejAddress", nalejAddress),
+			cliOptions.ResolveAsInt("port", nalejPort),
+			insecure, useTLS,
+			cliOptions.Resolve("cacert", caCertPath), cliOptions.Resolve("output", output),
+			cliOptions.ResolveAsInt("labelLength", labelLength),
+			provisionKubeConfigOutputPath)
+
+		clusterType := stringToClusterType(provisionClusterType)
+		targetPlatform := stringToTargetPlatform(provisionTargetPlatform)
+
+		p.Decomission(cliOptions.Resolve("organizationId", organizationID),
+			args[0], clusterType, targetPlatform,
+			provisionAzureCredentialsPath, provisionAzureResourceGroup)
+
 	},
 }

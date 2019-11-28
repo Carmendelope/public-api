@@ -12,7 +12,6 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *
  */
 
 package unified_logging
@@ -37,7 +36,7 @@ func NewHandler(manager Manager) *Handler {
 	return &Handler{manager}
 }
 
-// Undeploy a running application instance.
+// Search for log entries matching a query.
 func (h *Handler) Search(ctx context.Context, request *grpc_public_api_go.SearchRequest) (*grpc_application_manager_go.LogResponse, error) {
 	rm, err := authhelper.GetRequestMetadata(ctx)
 	if err != nil {
@@ -52,3 +51,4 @@ func (h *Handler) Search(ctx context.Context, request *grpc_public_api_go.Search
 	}
 	return h.Manager.Search(request)
 }
+

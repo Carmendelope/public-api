@@ -19,6 +19,7 @@ package cli
 import (
 	"fmt"
 	"io/ioutil"
+	"math"
 	"reflect"
 	"time"
 
@@ -191,7 +192,7 @@ func (c *Clusters) ModifyClusterLabels(organizationID string, clusterID string, 
 	c.PrintResultOrError(updated, err, "cannot update cluster labels")
 }
 
-func (c *Clusters) Update(organizationID string, clusterID string, newName string) {
+func (c *Clusters) Update(organizationID string, clusterID string, newName string, millicoresConversionFactor float64) {
 	if organizationID == "" {
 		log.Fatal().Msg("organizationID cannot be empty")
 	}
@@ -205,10 +206,12 @@ func (c *Clusters) Update(organizationID string, clusterID string, newName strin
 	defer conn.Close()
 	defer cancel()
 	updateRequest := &grpc_public_api_go.UpdateClusterRequest{
-		OrganizationId: organizationID,
-		ClusterId:      clusterID,
-		UpdateName:     true,
-		Name:           newName,
+		OrganizationId:                   organizationID,
+		ClusterId:                        clusterID,
+		UpdateName:                       newName != "",
+		Name:                             newName,
+		UpdateMillicoresConversionFactor: !math.IsNaN(millicoresConversionFactor),
+		MillicoresConversionFactor:       millicoresConversionFactor,
 	}
 	success, err := client.Update(ctx, updateRequest)
 	c.PrintResultOrError(success, err, "cannot update cluster information")
@@ -272,4 +275,41 @@ func (c *Clusters) DrainCluster(organizationID string, clusterID string) {
 	}
 	success, err := client.Drain(ctx, clusterIDReq)
 	c.PrintResultOrError(success, err, "cannot drain cluster")
+}
+
+// Uninstall a existing cluster. This process will uninstall the nalej platform and
+// remove the cluster from the list.
+func (c *Clusters) Uninstall(organizationID string, clusterID string, kubeConfigPath string, targetPlatform grpc_public_api_go.Platform) {
+	if organizationID == "" {
+		log.Fatal().Msg("organizationID cannot be empty")
+	}
+	if clusterID == "" {
+		log.Fatal().Msg("clusterID cannot be empty")
+	}
+	if kubeConfigPath == "" {
+		log.Fatal().Msg("kubeConfigPath cannot be empty")
+	}
+	var kubeConfigRaw = ""
+
+	kc, err := ioutil.ReadFile(kubeConfigPath)
+	if err != nil {
+		log.Fatal().Err(err).Msg("cannot read kubeConfig file")
+	}
+	kubeConfigRaw = string(kc)
+
+	c.load()
+
+	uninstallRequest := &grpc_public_api_go.UninstallClusterRequest{
+		OrganizationId: organizationID,
+		ClusterId:      clusterID,
+		ClusterType:    grpc_infrastructure_go.ClusterType_KUBERNETES,
+		KubeConfigRaw:  kubeConfigRaw,
+		TargetPlatform: targetPlatform,
+	}
+	ctx, cancel := c.GetContext()
+	client, conn := c.getClient()
+	defer conn.Close()
+	defer cancel()
+	success, err := client.Uninstall(ctx, uninstallRequest)
+	c.PrintResultOrError(success, err, "cannot uninstall cluster")
 }
