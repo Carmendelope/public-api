@@ -81,18 +81,23 @@ func (u *UnifiedLogging) Search(organizationId, descriptorId, instanceId, sgId, 
 
 	// Parse and validate timestamps
 	var fromTime, toTime time.Time
+	var fromInt, toInt int64
+	fromInt = 0
+	toInt = 0
 	var err error
 	if from != "" {
 		fromTime, err = dateparse.ParseLocal(from)
 		if err != nil {
 			log.Fatal().Err(err).Msg("invalid from time")
 		}
+		fromInt = fromTime.Unix()
 	}
 	if to != "" {
 		toTime, err = dateparse.ParseLocal(to)
 		if err != nil {
 			log.Fatal().Err(err).Msg("invalid to time")
 		}
+		toInt = toTime.Unix()
 	}
 
 	u.load()
@@ -115,8 +120,8 @@ func (u *UnifiedLogging) Search(organizationId, descriptorId, instanceId, sgId, 
 		ServiceId:              serviceId,
 		ServiceInstanceId:      serviceInstanceId,
 		MsgQueryFilter:         msgFilter,
-		From:                   fromTime.Unix(),
-		To:                     toTime.Unix(),
+		From:                   fromInt,
+		To:                     toInt, 
 		Order:                  &order,
 	}
 

@@ -20,6 +20,7 @@ package unified_logging
 import (
 	"context"
 	"github.com/nalej/derrors"
+	"github.com/nalej/grpc-application-manager-go"
 	"github.com/nalej/grpc-public-api-go"
 	"github.com/nalej/grpc-utils/pkg/conversions"
 	"github.com/nalej/public-api/internal/pkg/authhelper"
@@ -37,7 +38,7 @@ func NewHandler(manager Manager) *Handler {
 }
 
 // Undeploy a running application instance.
-func (h *Handler) Search(ctx context.Context, request *grpc_public_api_go.SearchRequest) (*grpc_public_api_go.LogResponse, error) {
+func (h *Handler) Search(ctx context.Context, request *grpc_public_api_go.SearchRequest) (*grpc_application_manager_go.LogResponse, error) {
 	rm, err := authhelper.GetRequestMetadata(ctx)
 	if err != nil {
 		return nil, conversions.ToGRPCError(err)

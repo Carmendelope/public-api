@@ -44,11 +44,11 @@
 
 [[constraint]]
     name="github.com/nalej/grpc-infrastructure-manager-go"
-    version="=v0.0.38"
+    version="=v0.0.40"
 
 [[constraint]]
     name="github.com/nalej/grpc-application-manager-go"
-    version="=v0.0.45"
+    version="=v0.0.48"
 
 [[constraint]]
     name="github.com/nalej/grpc-application-network-go"
@@ -88,7 +88,7 @@
 
 [[constraint]]
     name="github.com/nalej/grpc-public-api-go"
-    version="=v0.0.120"
+    version="=v0.0.127"
 
 [[constraint]]
     name="github.com/nalej/grpc-login-api-go"
@@ -96,7 +96,7 @@
 
 [[constraint]]
     name="github.com/nalej/grpc-common-go"
-    version="=v0.0.35"
+    version="=v0.0.38"
 
 [[constraint]]
     name="github.com/grpc-ecosystem/grpc-gateway"
@@ -112,7 +112,7 @@
  
 [[constraint]]
   name = "github.com/nalej/grpc-monitoring-go"
-  version = "v0.0.5"
+  version = "v0.0.9"
  
 [[constraint]]
   name = "github.com/golang/protobuf"

@@ -503,6 +503,9 @@ func FromDeviceList(result *grpc_public_api_go.DeviceList, labelLength int) *Res
 
 func FromLogResponse(result *grpc_public_api_go.LogResponse) *ResultTable {
 	r := make([][]string, 0)
+	r = append(r, []string{"FROM", "TO"})
+	r = append(r, []string {time.Unix(result.From, 0).String(), time.Unix(result.To, 0).String()})
+	r = append(r, []string{""})
 	r = append(r, []string{"TIMESTAMP", "MSG"})
 
 	for _, e := range result.Entries {
