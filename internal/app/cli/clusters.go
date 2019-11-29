@@ -149,21 +149,43 @@ func (c *Clusters) List(organizationID string, watch bool) {
 	}
 	previous, err := client.List(ctx, orgID)
 	c.PrintResultOrError(previous, err, "cannot obtain cluster list")
-
+	toCompare := make(map[string]*grpc_public_api_go.Cluster, 0)
+	if watch {
+		for _, p := range previous.Clusters {
+			toCompare[p.ClusterId] = p
+		}
+	}
 	for watch {
 		watchCtx, watchCancel := c.GetContext()
 		clusters, err := client.List(watchCtx, orgID)
 		if err != nil {
 			c.PrintResultOrError(clusters, err, "cannot obtain cluster list information")
 		}
-		if !reflect.DeepEqual(previous, clusters) {
+		toShow := make([]*grpc_public_api_go.Cluster, 0)
+		for _, retrieved := range clusters.Clusters {
+			found, exists := toCompare[retrieved.ClusterId]
+			if !exists {
+				toShow = append(toShow, retrieved)
+			} else if c.clusterDiff(found, retrieved) {
+				toShow = append(toShow, retrieved)
+			}
+			toCompare[retrieved.ClusterId] = retrieved
+		}
+
+		if len(toShow) > 0 {
+			clusters.Clusters = toShow
 			fmt.Println("")
 			c.PrintResultOrError(clusters, err, "cannot obtain cluster list information")
 		}
-		previous = clusters
+
 		watchCancel()
 		time.Sleep(WatchSleep)
 	}
+}
+
+func (c *Clusters) clusterDiff(previous *grpc_public_api_go.Cluster, current *grpc_public_api_go.Cluster) bool {
+	return (current.Status != previous.Status) || (current.State != previous.State) ||
+		!reflect.DeepEqual(current.Labels, previous.Labels)
 }
 
 func (c *Clusters) ModifyClusterLabels(organizationID string, clusterID string, add bool, rawLabels string) {
