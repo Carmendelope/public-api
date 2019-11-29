@@ -93,7 +93,7 @@ func init() {
 	scaleClusterCmd.PersistentFlags().StringVar(&provisionTargetPlatform, "targetPlatform", "", "Target platform")
 	clustersCmd.AddCommand(scaleClusterCmd)
 
-	uninstallClusterCmd.Flags().StringVar(&provisionTargetPlatform, "targetPlatform", "", "Target platform")
+	uninstallClusterCmd.Flags().StringVar(&provisionTargetPlatform, "targetPlatform", "AZURE", "Target platform")
 	clustersCmd.AddCommand(uninstallClusterCmd)
 
 	decomissionClusterCmd.Flags().StringVar(&provisionClusterType, "clusterType", "kubernetes", "Cluster type")

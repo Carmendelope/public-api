@@ -957,7 +957,7 @@ func FromSuccess(result *grpc_common_go.Success) *ResultTable {
 
 func FromOpResponse(result *grpc_public_api_go.OpResponse) *ResultTable {
 	r := make([][]string, 0)
-	if result.Error != "" {
+	if result.Error == "" {
 		r = append(r, []string{"REQUEST_ID", "OPERATION", "TIMESTAMP", "ELAPSED", "STATUS", "INFO"})
 		r = append(r, []string{result.RequestId, result.OperationName,
 			time.Unix(result.Timestamp, 0).String(), time.Duration(result.ElapsedTime).String(),
