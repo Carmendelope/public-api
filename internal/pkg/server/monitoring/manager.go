@@ -23,10 +23,10 @@ import (
 
 // Manager structure with the required clients for monitoring operations.
 type Manager struct {
-	client grpc_monitoring_go.MetricsCollectorClient
+	client grpc_monitoring_go.MonitoringManagerClient
 }
 
-func NewManager(client grpc_monitoring_go.MetricsCollectorClient) Manager {
+func NewManager(client grpc_monitoring_go.MonitoringManagerClient) Manager {
 	return Manager{client: client}
 }
 

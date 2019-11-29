@@ -37,7 +37,7 @@ func NewHandler(manager Manager) *Handler {
 }
 
 // Search for log entries matching a query.
-func (h *Handler) Search(ctx context.Context, request *grpc_public_api_go.SearchRequest) (*grpc_public_api_go.LogResponse, error) {
+func (h *Handler) Search(ctx context.Context, request *grpc_public_api_go.SearchRequest) (*grpc_application_manager_go.LogResponse, error) {
 	rm, err := authhelper.GetRequestMetadata(ctx)
 	if err != nil {
 		return nil, conversions.ToGRPCError(err)
@@ -52,7 +52,3 @@ func (h *Handler) Search(ctx context.Context, request *grpc_public_api_go.Search
 	return h.Manager.Search(request)
 }
 
-func (h *Handler) Catalog(_ context.Context, in *grpc_application_manager_go.AvailableLogRequest) (*grpc_application_manager_go.AvailableLogResponse, error) {
-	// TODO not implemented yet
-	return nil, conversions.ToGRPCError(derrors.NewUnimplementedError("not implemented yet"))
-}

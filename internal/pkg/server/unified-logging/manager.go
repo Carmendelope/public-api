@@ -34,17 +34,14 @@ func NewManager(unifiedLoggingClient grpc_application_manager_go.UnifiedLoggingC
 	return Manager{unifiedLoggingClient}
 }
 
-func (m *Manager) Search(request *grpc_public_api_go.SearchRequest) (*grpc_public_api_go.LogResponse, error) {
+func (m *Manager) Search(request *grpc_public_api_go.SearchRequest) (*grpc_application_manager_go.LogResponse, error) {
 	ctx, cancel := common.GetContext()
 	defer cancel()
-	response, err := m.unifiedLoggingClient.Search(ctx, entities.NewSearchRequest(request))
+	convertedLog, err := m.unifiedLoggingClient.Search(ctx, entities.NewSearchRequest(request))
 
 	if err != nil {
 		return nil, err
 	}
-
-	// convert grpc_application_manager_go.LogResponse to grpc_public_api_go.LogResponse
-	convertedLog := entities.ToPublicAPILogResponse(response)
 
 	// if sorting requested -> apply the decorator
 	if request.Order != nil {

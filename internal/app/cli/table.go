@@ -93,7 +93,7 @@ func AsTable(result interface{}, labelLength int) *ResultTable {
 		return FromDevice(result, labelLength)
 	case *grpc_public_api_go.DeviceList:
 		return FromDeviceList(result, labelLength)
-	case *grpc_public_api_go.LogResponse:
+	case *grpc_application_manager_go.LogResponse:
 		return FromLogResponse(result)
 	case *grpc_public_api_go.Node:
 		return FromNode(result, labelLength)
@@ -501,8 +501,11 @@ func FromDeviceList(result *grpc_public_api_go.DeviceList, labelLength int) *Res
 // Log
 // ----
 
-func FromLogResponse(result *grpc_public_api_go.LogResponse) *ResultTable {
+func FromLogResponse(result *grpc_application_manager_go.LogResponse) *ResultTable {
 	r := make([][]string, 0)
+	r = append(r, []string{"FROM", "TO"})
+	r = append(r, []string {time.Unix(result.From, 0).String(), time.Unix(result.To, 0).String()})
+	r = append(r, []string{""})
 	r = append(r, []string{"TIMESTAMP", "MSG"})
 
 	for _, e := range result.Entries {

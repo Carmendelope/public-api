@@ -21,7 +21,7 @@ package decorators
 import (
 	"github.com/nalej/derrors"
 	"github.com/nalej/grpc-application-go"
-	"github.com/nalej/grpc-public-api-go"
+	"github.com/nalej/grpc-application-manager-go"
 	"github.com/nalej/public-api/internal/pkg/utils"
 	"github.com/rs/zerolog/log"
 	"reflect"
@@ -57,7 +57,7 @@ func (od *OrderDecorator) Validate(result interface{}) derrors.Error {
 	switch result.(type) {
 	case []*grpc_application_go.AppDescriptor:
 		return od.ValidateSortingDecorator(AppDescriptorListAllowedFields)
-	case []*grpc_public_api_go.LogEntryResponse:
+	case []*grpc_application_manager_go.LogEntryResponse:
 		return od.ValidateSortingDecorator(LogResponseAllowedFields)
 	}
 

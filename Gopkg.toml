@@ -1,13 +1,5 @@
 
 [[constraint]]
-  name = "github.com/nalej/grpc-unified-logging-go"
-  version = "v0.0.5"
-
-[[constraint]]
-  name = "github.com/nalej/grpc-monitoring-go"
-  version = "v0.0.5"
-
-[[constraint]]
     name="github.com/nalej/derrors"
     version="v2.1.0"
 
@@ -37,7 +29,7 @@
 
 [[constraint]]
     name="github.com/nalej/grpc-application-manager-go"
-    version="=v0.0.47"
+    version="=v0.0.48"
 
 [[constraint]]
     name="github.com/nalej/grpc-application-network-go"
@@ -73,7 +65,7 @@
 
 [[constraint]]
     name="github.com/nalej/grpc-public-api-go"
-    version="=v0.0.126"
+    version="=v0.0.127"
 
 [[constraint]]
     name="github.com/nalej/grpc-login-api-go"
@@ -115,6 +107,14 @@
   name = "github.com/dgrijalva/jwt-go"
   version = "3.2.0"
 
+[[constraint]]
+  name = "github.com/nalej/grpc-unified-logging-go"
+  version = "v0.0.5"
+ 
+[[constraint]]
+  name = "github.com/nalej/grpc-monitoring-go"
+  version = "v0.0.9"
+ 
 [[constraint]]
   name = "github.com/golang/protobuf"
   version = "v1.2.0"

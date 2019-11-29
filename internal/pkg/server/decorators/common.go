@@ -21,6 +21,7 @@ package decorators
 import (
 	"github.com/nalej/derrors"
 	"github.com/nalej/grpc-application-go"
+	"github.com/nalej/grpc-application-manager-go"
 	"github.com/nalej/grpc-public-api-go"
 )
 
@@ -31,7 +32,7 @@ import (
 type DecoratorResponse struct {
 	AppDescriptorList []*grpc_application_go.AppDescriptor
 	AppInstanceList   []*grpc_public_api_go.AppInstance
-	LogResponseList   []*grpc_public_api_go.LogEntryResponse
+	LogResponseList   []*grpc_application_manager_go.LogEntryResponse
 	Error             derrors.Error
 }
 
@@ -52,7 +53,7 @@ func ApplyDecorator(result interface{}, decorator Decorator) *DecoratorResponse 
 		return FromAppDescriptorList(result, decorator)
 	case []*grpc_public_api_go.AppInstance:
 		return FromAppInstanceList(result, decorator)
-	case []*grpc_public_api_go.LogEntryResponse:
+	case []*grpc_application_manager_go.LogEntryResponse:
 		return FromLogEntryResponse(result, decorator)
 	}
 	return &DecoratorResponse{
@@ -96,7 +97,7 @@ func FromAppDescriptorList(result []*grpc_application_go.AppDescriptor, decorato
 }
 
 // FromLogEntryResponse applies decorator to a FromLogEntryResponse
-func FromLogEntryResponse(result []*grpc_public_api_go.LogEntryResponse, decorator Decorator) *DecoratorResponse {
+func FromLogEntryResponse(result []*grpc_application_manager_go.LogEntryResponse, decorator Decorator) *DecoratorResponse {
 	// convert to []interface{}
 	toGenericList := make([]interface{}, len(result))
 	for i, d := range result {
@@ -112,9 +113,9 @@ func FromLogEntryResponse(result []*grpc_public_api_go.LogEntryResponse, decorat
 	}
 
 	// reconvert to grpc_public_api_go.LogEntryResponse
-	orderedResult := make([]*grpc_public_api_go.LogEntryResponse, len(result))
+	orderedResult := make([]*grpc_application_manager_go.LogEntryResponse, len(result))
 	for i, d := range ordered {
-		aux := d.(grpc_public_api_go.LogEntryResponse)
+		aux := d.(grpc_application_manager_go.LogEntryResponse)
 		orderedResult[i] = &aux
 	}
 
