@@ -57,6 +57,10 @@ stages:
   - job: 
     pool:
       vmImage: 'ubuntu-latest'  
+    variables:
+      - name: authxSecret
+        value: "this-is-my-little-secret"
+      - group: testing-placeholders
     steps:
     - template: misc/nalej-component.yaml@ci_templates
 
@@ -67,10 +71,24 @@ stages:
         environment: "staging"
         version: edge
 
+    - template: k8s/secrets/create.yaml@ci_templates
+      parameters:
+        name: authx-secret
+        namespace: "__NPH_NAMESPACE"
+        yamlPath: $(system.defaultWorkingDirectory)/dist/yaml/$(stagingDockerRegistry)/mngtcluster
+        yamlFile: authx.secret.yaml
+        contents: "{'secret': '$(placeholderAuthxSecret)'}"
+
     - template: k8s/yaml/namespace.yaml@ci_templates
       parameters:
         namespace: $(namespace)
         yamlPath: dist/yaml/staging
+
+    - template: placeholders/replace_secrets.yaml@ci_templates
+      parameters:
+        yamlPath: dist/yaml/$(stagingDockerRegistry)
+        placeholders: "$(placeholderAuthxSecret)"
+        values: "$(authxSecret)"
 
     - task: DownloadSecureFile@1
       name: ci_kubeconfig
