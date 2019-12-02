@@ -139,7 +139,7 @@ func (u *UnifiedLogging) Search(organizationId, descriptorId, instanceId, sgId, 
 		select {
 		case <-done:
 			return
-		case t := <-ticker.C:
+		case <-ticker.C:
 			if toReturned != 0 {
 				searchRequest.From = toReturned + time.Unix(1, 0, ).Unix()
 			}
