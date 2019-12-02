@@ -49,6 +49,7 @@ func init() {
 	searchCmd.Flags().StringVar(&to, "to", "", "End time of logs")
 	searchCmd.Flags().BoolVar(&desc, "desc", false, "Sort results in descending time order")
 	searchCmd.Flags().BoolVar(&redirectLog, "redirectResultAsLog", false, "Redirect the result to the CLI log")
+	searchCmd.Flags().BoolVarP(&follow, "follow", "f", false, "Specify if the logs should be streamed")
 }
 
 var searchCmd = &cobra.Command{
@@ -70,7 +71,7 @@ var searchCmd = &cobra.Command{
 			insecure, useTLS,
 			cliOptions.Resolve("cacert", caCertPath), cliOptions.Resolve("output", output), cliOptions.ResolveAsInt("labelLength", labelLength))
 
-		l.Search(cliOptions.Resolve("organizationID", organizationID), descriptorID, instanceID, sgID, sgInstanceID, serviceID, serviceInstanceID, message, from, to, desc, redirectLog)
+		l.Search(cliOptions.Resolve("organizationID", organizationID), descriptorID, instanceID, sgID, sgInstanceID, serviceID, serviceInstanceID, message, from, to, desc, redirectLog, follow)
 
 	},
 }

@@ -30,6 +30,8 @@ import (
 )
 
 const OrderByField = "timestamp"
+const FollowSleep = time.Second * 3
+
 
 type UnifiedLogging struct {
 	Connection
@@ -73,7 +75,8 @@ func parseTime(timeString string) (*timestamp.Timestamp, error) {
 }
 
 //l.Search(cliOptions.Resolve("organizationID", organizationID), descriptorID, instanceID, sgID, sgInstanceID, serviceID, serviceInstanceID, message, from, to, desc, redirectLog)
-func (u *UnifiedLogging) Search(organizationId, descriptorId, instanceId, sgId, sgInstanceId, serviceId, serviceInstanceId, msgFilter, from, to string, desc bool, redirectLog bool) {
+func (u *UnifiedLogging) Search(organizationId, descriptorId, instanceId, sgId, sgInstanceId, serviceId, serviceInstanceId,
+	msgFilter, from, to string, desc bool, redirectLog bool, follow bool) {
 	// Validate options
 	if organizationId == "" {
 		log.Fatal().Msg("organizationID cannot be empty")
@@ -98,6 +101,10 @@ func (u *UnifiedLogging) Search(organizationId, descriptorId, instanceId, sgId, 
 			log.Fatal().Err(err).Msg("invalid to time")
 		}
 		toInt = toTime.Unix()
+	}
+
+	if follow && (toInt != 0 || fromInt != 0) {
+		log.Fatal().Msg("time range can not be informed with follow option")
 	}
 
 	u.load()
@@ -138,6 +145,29 @@ func (u *UnifiedLogging) Search(organizationId, descriptorId, instanceId, sgId, 
 		}
 	} else {
 		u.PrintResultOrError(result, err, "cannot search logs")
+	}
+	for follow	{
+		time.Sleep(FollowSleep)
+		followCtx, followCancel := u.GetContext()
+		if result.To != 0 {
+			searchRequest.From = result.To + time.Unix(1, 0, ).Unix()
+		}
+		//searchRequest.To = time.Now().Unix()
+		result, err = client.Search(followCtx, searchRequest)
+		if redirectLog {
+			if err != nil {
+				log.Fatal().Str("trace", conversions.ToDerror(err).DebugReport()).Msg("cannot search logs")
+			} else {
+				log.Info().Str("OrganizationId", result.OrganizationId).Str("from", time.Unix(result.From, 0).String()).
+					Str("to", time.Unix(result.To, 0).String()).Msg("app log")
+				for _, le := range result.Entries {
+					log.Info().Msg(fmt.Sprintf("[%s] %s", time.Unix(le.Timestamp, 0).String(), le.Msg))
+				}
+			}
+		} else {
+			u.PrintResultOrError(result, err, "cannot search logs")
+		}
+		followCancel()
 	}
 
 }

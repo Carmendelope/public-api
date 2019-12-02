@@ -24,6 +24,7 @@ import (
 	"github.com/nalej/public-api/internal/pkg/entities"
 	"github.com/nalej/public-api/internal/pkg/server/common"
 	"github.com/nalej/public-api/internal/pkg/server/decorators"
+	"github.com/rs/zerolog/log"
 )
 
 type Manager struct {
@@ -35,6 +36,7 @@ func NewManager(unifiedLoggingClient grpc_application_manager_go.UnifiedLoggingC
 }
 
 func (m *Manager) Search(request *grpc_public_api_go.SearchRequest) (*grpc_application_manager_go.LogResponse, error) {
+	log.Debug().Interface("request", request).Msg("Search request")
 	ctx, cancel := common.GetContext()
 	defer cancel()
 	convertedLog, err := m.unifiedLoggingClient.Search(ctx, entities.NewSearchRequest(request))
