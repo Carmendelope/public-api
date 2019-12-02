@@ -10,6 +10,9 @@
   "image_list": [
     "public-api"
   ],
+  "component_list": [
+    "public-api"
+  ],
   "tools": [
     "docker",
     "k8s"
