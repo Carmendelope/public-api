@@ -75,7 +75,7 @@ stages:
       parameters:
         name: authx-secret
         namespace: "__NPH_NAMESPACE"
-        yamlPath: $(system.defaultWorkingDirectory)/dist/yaml/$(stagingDockerRegistry)/mngtcluster
+        yamlPath: $(system.defaultWorkingDirectory)/dist/yaml/staging/mngtcluster
         yamlFile: authx.secret.yaml
         contents: "{'secret': '$(placeholderAuthxSecret)'}"
 
@@ -86,7 +86,7 @@ stages:
 
     - template: placeholders/replace_secrets.yaml@ci_templates
       parameters:
-        yamlPath: dist/yaml/$(stagingDockerRegistry)
+        yamlPath: dist/yaml/staging
         placeholders: "$(placeholderAuthxSecret)"
         values: "$(authxSecret)"
 
