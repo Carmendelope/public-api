@@ -32,7 +32,6 @@ import (
 const OrderByField = "timestamp"
 const FollowSleep = time.Second * 3
 
-
 type UnifiedLogging struct {
 	Connection
 	Credentials
@@ -127,30 +126,32 @@ func (u *UnifiedLogging) Search(organizationId, descriptorId, instanceId, sgId, 
 		ServiceInstanceId:      serviceInstanceId,
 		MsgQueryFilter:         msgFilter,
 		From:                   fromInt,
-		To:                     toInt, 
+		To:                     toInt,
 		Order:                  &order,
 	}
 
 	toReturned := u.callSearch(searchRequest, redirectLog, client)
 
-	ticker := time.NewTicker(FollowSleep)
-	done := make(chan bool)
-	for {
-		select {
-		case <-done:
-			return
-		case <-ticker.C:
-			if toReturned != 0 {
-				searchRequest.From = toReturned + time.Unix(1, 0, ).Unix()
+	if follow {
+		ticker := time.NewTicker(FollowSleep)
+		done := make(chan bool)
+		for {
+			select {
+			case <-done:
+				return
+			case <-ticker.C:
+				if toReturned != 0 {
+					searchRequest.From = toReturned + time.Unix(1, 0).Unix()
+				}
+				toReturned = u.callSearch(searchRequest, redirectLog, client)
 			}
-			toReturned = u.callSearch(searchRequest, redirectLog, client)
 		}
 	}
 
 }
 
 // returns searchTo field (we need this value to update the next search)
-func (u *UnifiedLogging) callSearch(searchRequest *grpc_public_api_go.SearchRequest, redirectLog bool, client grpc_public_api_go.UnifiedLoggingClient) int64{
+func (u *UnifiedLogging) callSearch(searchRequest *grpc_public_api_go.SearchRequest, redirectLog bool, client grpc_public_api_go.UnifiedLoggingClient) int64 {
 	followCtx, followCancel := u.GetContext()
 	defer followCancel()
 	result, err := client.Search(followCtx, searchRequest)

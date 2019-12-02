@@ -51,4 +51,3 @@ func (h *Handler) Search(ctx context.Context, request *grpc_public_api_go.Search
 	}
 	return h.Manager.Search(request)
 }
-
