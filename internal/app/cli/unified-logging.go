@@ -108,10 +108,9 @@ func (u *UnifiedLogging) Search(organizationId, descriptorId, instanceId, sgId, 
 	}
 
 	u.load()
-	ctx, cancel := u.GetContext()
+
 	client, conn := u.getClient()
 	defer conn.Close()
-	defer cancel()
 
 	var order = grpc_public_api_go.OrderOptions{Order: grpc_public_api_go.Order_ASC, Field: OrderByField}
 	if desc {
@@ -132,7 +131,29 @@ func (u *UnifiedLogging) Search(organizationId, descriptorId, instanceId, sgId, 
 		Order:                  &order,
 	}
 
-	result, err := client.Search(ctx, searchRequest)
+	toReturned := u.callSearch(searchRequest, redirectLog, client)
+
+	ticker := time.NewTicker(FollowSleep)
+	done := make(chan bool)
+	for {
+		select {
+		case <-done:
+			return
+		case t := <-ticker.C:
+			if toReturned != 0 {
+				searchRequest.From = toReturned + time.Unix(1, 0, ).Unix()
+			}
+			toReturned = u.callSearch(searchRequest, redirectLog, client)
+		}
+	}
+
+}
+
+// returns searchTo field (we need this value to update the next search)
+func (u *UnifiedLogging) callSearch(searchRequest *grpc_public_api_go.SearchRequest, redirectLog bool, client grpc_public_api_go.UnifiedLoggingClient) int64{
+	followCtx, followCancel := u.GetContext()
+	defer followCancel()
+	result, err := client.Search(followCtx, searchRequest)
 	if redirectLog {
 		if err != nil {
 			log.Fatal().Str("trace", conversions.ToDerror(err).DebugReport()).Msg("cannot search logs")
@@ -146,28 +167,5 @@ func (u *UnifiedLogging) Search(organizationId, descriptorId, instanceId, sgId, 
 	} else {
 		u.PrintResultOrError(result, err, "cannot search logs")
 	}
-	for follow	{
-		time.Sleep(FollowSleep)
-		followCtx, followCancel := u.GetContext()
-		if result.To != 0 {
-			searchRequest.From = result.To + time.Unix(1, 0, ).Unix()
-		}
-		//searchRequest.To = time.Now().Unix()
-		result, err = client.Search(followCtx, searchRequest)
-		if redirectLog {
-			if err != nil {
-				log.Fatal().Str("trace", conversions.ToDerror(err).DebugReport()).Msg("cannot search logs")
-			} else {
-				log.Info().Str("OrganizationId", result.OrganizationId).Str("from", time.Unix(result.From, 0).String()).
-					Str("to", time.Unix(result.To, 0).String()).Msg("app log")
-				for _, le := range result.Entries {
-					log.Info().Msg(fmt.Sprintf("[%s] %s", time.Unix(le.Timestamp, 0).String(), le.Msg))
-				}
-			}
-		} else {
-			u.PrintResultOrError(result, err, "cannot search logs")
-		}
-		followCancel()
-	}
-
+	return result.To
 }
