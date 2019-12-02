@@ -57,10 +57,6 @@ stages:
   - job: 
     pool:
       vmImage: 'ubuntu-latest'  
-    variables:
-      - name: authxSecret
-        value: "this-is-my-little-secret"
-      - group: testing-placeholders
     steps:
     - template: misc/nalej-component.yaml@ci_templates
 
