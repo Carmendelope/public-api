@@ -19,7 +19,6 @@ package commands
 
 import (
 	"github.com/nalej/public-api/internal/app/cli"
-	"github.com/rs/zerolog/log"
 	"github.com/spf13/cobra"
 )
 
@@ -48,9 +47,9 @@ func init() {
 	searchCmd.Flags().StringVar(&serviceInstanceID, "serviceInstanceID", "", "Service instance identifier")
 	searchCmd.Flags().StringVar(&from, "from", "", "Start time of logs")
 	searchCmd.Flags().StringVar(&to, "to", "", "End time of logs")
-	searchCmd.Flags().BoolVar(&asc, "asc", false, "Sort results in ascending time order")
 	searchCmd.Flags().BoolVar(&desc, "desc", false, "Sort results in descending time order")
 	searchCmd.Flags().BoolVar(&redirectLog, "redirectResultAsLog", false, "Redirect the result to the CLI log")
+	searchCmd.Flags().BoolVarP(&follow, "follow", "f", false, "Specify if the logs should be streamed")
 }
 
 var searchCmd = &cobra.Command{
@@ -66,21 +65,13 @@ var searchCmd = &cobra.Command{
 			message = args[0]
 		}
 
-		// Verify sort order
-		// Default is ascending, so "--asc" is only used to make the command line
-		// very explicit. If "--desc" is set, we know "--asc" is not because of
-		// this check.
-		if asc && desc {
-			log.Fatal().Msg("Specify sort order as ascending OR descending - not both")
-		}
-
 		l := cli.NewUnifiedLogging(
 			cliOptions.Resolve("nalejAddress", nalejAddress),
 			cliOptions.ResolveAsInt("port", nalejPort),
 			insecure, useTLS,
 			cliOptions.Resolve("cacert", caCertPath), cliOptions.Resolve("output", output), cliOptions.ResolveAsInt("labelLength", labelLength))
 
-		l.Search(cliOptions.Resolve("organizationID", organizationID), descriptorID, instanceID, sgID, sgInstanceID, serviceID, serviceInstanceID, message, from, to, desc, redirectLog)
+		l.Search(cliOptions.Resolve("organizationID", organizationID), descriptorID, instanceID, sgID, sgInstanceID, serviceID, serviceInstanceID, message, from, to, desc, redirectLog, follow)
 
 	},
 }
