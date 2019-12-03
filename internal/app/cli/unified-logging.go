@@ -92,14 +92,14 @@ func (u *UnifiedLogging) Search(organizationId, descriptorId, instanceId, sgId, 
 		if err != nil {
 			log.Fatal().Err(err).Msg("invalid from time")
 		}
-		fromInt = fromTime.Unix()
+		fromInt = fromTime.UnixNano()
 	}
 	if to != "" {
 		toTime, err = dateparse.ParseLocal(to)
 		if err != nil {
 			log.Fatal().Err(err).Msg("invalid to time")
 		}
-		toInt = toTime.Unix()
+		toInt = toTime.UnixNano()
 	}
 
 	if follow && (toInt != 0 || fromInt != 0) {
@@ -141,7 +141,7 @@ func (u *UnifiedLogging) Search(organizationId, descriptorId, instanceId, sgId, 
 				return
 			case <-ticker.C:
 				if toReturned != 0 {
-					searchRequest.From = toReturned + time.Unix(1, 0).Unix()
+					searchRequest.From = toReturned + time.Second.Nanoseconds()
 				}
 				toReturned = u.callSearch(searchRequest, redirectLog, client)
 			}
@@ -159,10 +159,10 @@ func (u *UnifiedLogging) callSearch(searchRequest *grpc_public_api_go.SearchRequ
 		if err != nil {
 			log.Fatal().Str("trace", conversions.ToDerror(err).DebugReport()).Msg("cannot search logs")
 		} else {
-			log.Info().Str("OrganizationId", result.OrganizationId).Str("from", time.Unix(result.From, 0).String()).
-				Str("to", time.Unix(result.To, 0).String()).Msg("app log")
+			log.Info().Str("OrganizationId", result.OrganizationId).Str("from", string(result.From)).
+				Str("to", string(result.To)).Msg("app log")
 			for _, le := range result.Entries {
-				log.Info().Msg(fmt.Sprintf("[%s] %s", time.Unix(le.Timestamp, 0).String(), le.Msg))
+				log.Info().Msg(fmt.Sprintf("[%s] %s", string(le.Timestamp), le.Msg))
 			}
 		}
 	} else {
