@@ -12,7 +12,6 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *
  */
 
 /*
@@ -74,7 +73,7 @@ var _ = ginkgo.Describe("Unified Logging", func() {
 	var devToken string
 	var operToken string
 
-	var from, to time.Time
+	var from, to int64
 
 	ginkgo.BeforeSuite(func() {
 		listener = test.GetDefaultListener()
@@ -104,9 +103,9 @@ var _ = ginkgo.Describe("Unified Logging", func() {
 		appInstance = fmt.Sprintf("testAppInstance-%d", ginkgo.GinkgoRandomSeed())
 		sgInstance = fmt.Sprintf("testSGInstance-%d", ginkgo.GinkgoRandomSeed())
 
-		from = time.Unix(0, 0)
+		from = 0
 
-		to = time.Now()
+		to = time.Now().UnixNano()
 
 		token = ithelpers.GenerateToken("email@nalej.com",
 			organization, "Owner", "secret",
@@ -220,8 +219,8 @@ var _ = ginkgo.Describe("Unified Logging", func() {
 			request := &grpc_public_api_go.SearchRequest{
 				OrganizationId: organization,
 				AppInstanceId:  appInstance,
-				From:           from.Unix(),
-				To:             to.Unix(),
+				From:           from,
+				To:             to,
 			}
 			for _, test := range tests {
 				ginkgo.By(test.Msg)
