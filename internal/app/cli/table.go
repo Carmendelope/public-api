@@ -508,7 +508,7 @@ func FromLogResponse(result *grpc_application_manager_go.LogResponse) *ResultTab
 		r = append(r, []string{"TIMESTAMP", "MSG"})
 
 		for _, e := range result.Entries {
-			r = append(r, []string{string(e.Timestamp), e.Msg})
+			r = append(r, []string{time.Unix(0, e.Timestamp).String(), e.Msg})
 		}
 	}
 
