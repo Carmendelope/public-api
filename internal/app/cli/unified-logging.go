@@ -140,7 +140,8 @@ func (u *UnifiedLogging) Search(organizationId, descriptorId, instanceId, sgId, 
 				return
 			case <-ticker.C:
 				if toReturned != 0 {
-					searchRequest.From = toReturned + time.Second.Nanoseconds()
+					// next milisecond
+					searchRequest.From = toReturned + 1000000
 				}
 				toReturned = u.callSearch(searchRequest, redirectLog, client)
 			}
@@ -151,6 +152,7 @@ func (u *UnifiedLogging) Search(organizationId, descriptorId, instanceId, sgId, 
 
 // returns searchTo field (we need this value to update the next search)
 func (u *UnifiedLogging) callSearch(searchRequest *grpc_public_api_go.SearchRequest, redirectLog bool, client grpc_public_api_go.UnifiedLoggingClient) int64 {
+
 	followCtx, followCancel := u.GetContext()
 	defer followCancel()
 	result, err := client.Search(followCtx, searchRequest)
