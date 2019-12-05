@@ -70,3 +70,19 @@ func (h *Handler) GetClusterSummary(context context.Context, request *grpc_monit
 	}
 	return h.manager.GetClusterSummary(request)
 }
+
+func (h *Handler) GetOrganizationApplicationStats(context context.Context, request *grpc_monitoring_go.OrganizationApplicationStatsRequest) (*grpc_monitoring_go.OrganizationApplicationStatsResponse, error) {
+	rm, err := authhelper.GetRequestMetadata(context)
+	if err != nil {
+		return nil, conversions.ToGRPCError(err)
+	}
+	if request.GetOrganizationId() != rm.OrganizationID {
+		return nil, derrors.NewPermissionDeniedError("cannot access requested OrganizationID")
+	}
+
+	err = entities.ValidOrganizationApplicationStatsRequest(request)
+	if err != nil {
+		return nil, conversions.ToGRPCError(err)
+	}
+	return h.manager.GetOrganizationApplicationStats(request)
+}
