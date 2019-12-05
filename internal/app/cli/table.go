@@ -42,6 +42,14 @@ const MinWidth = 5
 const TabWidth = 2
 const Padding = 3
 
+const (
+	PebiByte = 1125899906842624
+	TebiByte = 1099511627776
+	GibiByte = 1073741824
+	MebiByte = 1048576
+	Kibibyte = 1024
+)
+
 const AppInstanceHeader = ""
 
 var Headers = map[string]string{}
@@ -67,6 +75,8 @@ func AsTable(result interface{}, labelLength int) *ResultTable {
 		return FromClusterSummary(result)
 	case *grpc_monitoring_go.ClusterStats:
 		return FromClusterStats(result)
+	case *grpc_monitoring_go.OrganizationApplicationStatsResponse:
+		return FromOrganizationApplicationStatsResponse(result)
 	case *grpc_public_api_go.ClusterList:
 		return FromClusterList(result, labelLength)
 	case *grpc_infrastructure_manager_go.InstallResponse:
@@ -945,6 +955,71 @@ func FromClusterStats(result *grpc_monitoring_go.ClusterStats) *ResultTable {
 		r = append(r, []string{statName, fmt.Sprint(stat.Created), fmt.Sprint(stat.Running), fmt.Sprint(stat.Deleted), fmt.Sprint(stat.Errors)})
 	}
 	return &ResultTable{r}
+}
+
+func FromOrganizationApplicationStatsResponse(response *grpc_monitoring_go.OrganizationApplicationStatsResponse) *ResultTable {
+	r := make([][]string, 0)
+	r = append(r, []string{fmt.Sprintf("TIMESTAMP: %d", response.GetTimestamp())})
+
+	stats := response.ServiceInstanceStats
+	sort.Slice(stats, func(i, j int) bool {
+		return stats[i].GetAppInstanceName() <= stats[j].GetAppInstanceName() &&
+			stats[i].GetServiceGroupInstanceName() <= stats[j].GetServiceGroupInstanceName() &&
+			stats[i].GetServiceInstanceName() <= stats[j].GetServiceInstanceName()
+	})
+
+	r = append(r, []string{"APPLICATION", "SERVICE GROUP", "SERVICE", "CPU", "MEMORY", "STORAGE"})
+	applicationName := ""
+	serviceGroupName := ""
+	for _, stat := range stats {
+		line := make([]string, 0, 6)
+		if applicationName != stat.GetAppInstanceName() {
+			applicationName = stat.GetAppInstanceName()
+			line = append(line, applicationName)
+		} else {
+			line = append(line, "")
+		}
+		if serviceGroupName != stat.GetServiceGroupInstanceName() {
+			serviceGroupName = stat.GetServiceGroupInstanceName()
+			line = append(line, serviceGroupName)
+		} else {
+			line = append(line, "")
+		}
+		line = append(line, stat.GetServiceInstanceName())
+
+		line = append(line, fmt.Sprintf("%f mc", stat.GetCpuMillicore()))
+
+		memory, memoryUnit := scaleByteUnit(stat.MemoryByte)
+		line = append(line, fmt.Sprintf("%f %s", memory, memoryUnit))
+
+		storage, storageUnit := scaleByteUnit(stat.StorageByte)
+		line = append(line, fmt.Sprintf("%f %s", storage, storageUnit))
+		r = append(r, line)
+	}
+
+	return &ResultTable{r}
+}
+
+func scaleByteUnit(value float64) (float64, string) {
+	unit := "B"
+	switch {
+	case value > PebiByte:
+		value /= PebiByte
+		unit = "PiB"
+	case value > TebiByte:
+		value /= TebiByte
+		unit = "TiB"
+	case value > GibiByte:
+		value /= GibiByte
+		unit = "GiB"
+	case value > MebiByte:
+		value /= MebiByte
+		unit = "MiB"
+	case value > Kibibyte:
+		value /= Kibibyte
+		unit = "kiB"
+	}
+	return value, unit
 }
 
 // ----

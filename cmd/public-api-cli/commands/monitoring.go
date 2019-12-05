@@ -41,6 +41,8 @@ func init() {
 
 	monitoringCmd.AddCommand(clusterSummaryCmd)
 	clusterSummaryCmd.Flags().Int32Var(&rangeMinutes, "rangeMinutes", 0, "Return average values over the past <rangeMinutes> minutes.")
+
+	monitoringCmd.AddCommand(orgAppStatsCmd)
 }
 
 var clusterStatsCmd = &cobra.Command{
@@ -76,5 +78,23 @@ var clusterSummaryCmd = &cobra.Command{
 			cliOptions.Resolve("cacert", caCertPath), cliOptions.Resolve("output", output), cliOptions.ResolveAsInt("labelLength", labelLength))
 
 		monitoring.GetClusterSummary(cliOptions.Resolve("organizationID", organizationID), args[0], rangeMinutes)
+	},
+}
+
+var orgAppStatsCmd = &cobra.Command{
+	Use:     "organization-application-stats",
+	Aliases: []string{"oas", "orgappstats"},
+	Short:   "Display aggregated stats of all the applications",
+	Long:    `Display aggregated stats of all the applications of the organization grouped by serviceInstance`,
+
+	Run: func(cmd *cobra.Command, args []string) {
+		SetupLogging()
+		monitoring := cli.NewMonitoring(
+			cliOptions.Resolve("nalejAddress", nalejAddress),
+			cliOptions.ResolveAsInt("port", nalejPort),
+			insecure, useTLS,
+			cliOptions.Resolve("cacert", caCertPath), cliOptions.Resolve("output", output), cliOptions.ResolveAsInt("labelLength", labelLength))
+
+		monitoring.GetOrganizationApplicationStats(cliOptions.Resolve("organizationID", organizationID))
 	},
 }

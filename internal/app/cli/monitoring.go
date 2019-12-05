@@ -115,3 +115,22 @@ func (m *Monitoring) GetClusterSummary(organizationId string, clusterId string, 
 	clusterSummary, err := client.GetClusterSummary(context, request)
 	m.PrintResultOrError(clusterSummary, err, "cannot query cluster summary")
 }
+
+func (m *Monitoring) GetOrganizationApplicationStats(organizationId string) {
+	if organizationId == "" {
+		log.Fatal().Msg("organizationId cannot be empty")
+	}
+
+	m.load()
+	context, cancel := m.GetContext()
+	client, connection := m.getClient()
+	defer connection.Close()
+	defer cancel()
+
+	request := &grpc_monitoring_go.OrganizationApplicationStatsRequest{
+		OrganizationId: organizationId,
+	}
+
+	response, err := client.GetOrganizationApplicationStats(context, request)
+	m.PrintResultOrError(response, err, "cannot query organization application stats")
+}
