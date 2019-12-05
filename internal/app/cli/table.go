@@ -963,9 +963,8 @@ func FromOrganizationApplicationStatsResponse(response *grpc_monitoring_go.Organ
 
 	stats := response.ServiceInstanceStats
 	sort.Slice(stats, func(i, j int) bool {
-		return stats[i].GetAppInstanceName() <= stats[j].GetAppInstanceName() &&
-			stats[i].GetServiceGroupInstanceName() <= stats[j].GetServiceGroupInstanceName() &&
-			stats[i].GetServiceInstanceName() <= stats[j].GetServiceInstanceName()
+		return stats[i].GetAppInstanceName()+stats[i].GetServiceGroupInstanceName()+stats[i].GetServiceInstanceName() <=
+			stats[j].GetAppInstanceName()+stats[j].GetServiceGroupInstanceName()+stats[j].GetServiceInstanceName()
 	})
 
 	r = append(r, []string{"APPLICATION", "SERVICE GROUP", "SERVICE", "CPU", "MEMORY", "STORAGE"})
