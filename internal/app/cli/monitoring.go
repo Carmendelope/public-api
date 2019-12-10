@@ -136,8 +136,10 @@ func (m *Monitoring) GetOrganizationApplicationStats(organizationId string, watc
 	m.PrintResultOrError(response, err, "cannot query organization application stats")
 
 	if watch {
+		ticker := time.NewTicker(WatchSleep)
 		previous := response
-		for watch {
+		for {
+			_ = <-ticker.C
 			context, cancel := m.GetContext()
 			client, connection := m.getClient()
 
@@ -153,7 +155,6 @@ func (m *Monitoring) GetOrganizationApplicationStats(organizationId string, watc
 				m.PrintResultOrError(response, err, "cannot query organization application stats")
 			}
 			previous = response
-			time.Sleep(WatchSleep)
 		}
 	}
 }
