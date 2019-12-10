@@ -79,7 +79,7 @@ type AppJSONSchema struct {
 // -------------------------------------------
 
 // Local instance for the application descriptor validator
-var AppDescValidator AppJSONSchema = AppJSONSchema{}
+var AppDescValidator = AppJSONSchema{}
 
 // Initialize the local AppDescValidator reading the schema from the filePath. This is a single run operation.
 func InitializeJSON() derrors.Error {
@@ -528,6 +528,14 @@ func ValidClusterSummaryRequest(request *grpc_monitoring_go.ClusterSummaryReques
 	}
 	if request.ClusterId == "" {
 		return derrors.NewInvalidArgumentError(emptyInstanceId)
+	}
+
+	return nil
+}
+
+func ValidOrganizationApplicationStatsRequest(request *grpc_monitoring_go.OrganizationApplicationStatsRequest) derrors.Error {
+	if request.OrganizationId == "" {
+		return derrors.NewInvalidArgumentError(emptyOrganizationId)
 	}
 
 	return nil

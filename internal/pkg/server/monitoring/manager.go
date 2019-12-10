@@ -43,3 +43,10 @@ func (m *Manager) GetClusterSummary(request *grpc_monitoring_go.ClusterSummaryRe
 
 	return m.client.GetClusterSummary(ctx, request)
 }
+
+func (m *Manager) GetOrganizationApplicationStats(request *grpc_monitoring_go.OrganizationApplicationStatsRequest) (*grpc_monitoring_go.OrganizationApplicationStatsResponse, error) {
+	ctx, cancel := common.GetContext()
+	defer cancel()
+
+	return m.client.GetOrganizationApplicationStats(ctx, request)
+}
