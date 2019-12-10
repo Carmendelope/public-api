@@ -42,6 +42,7 @@ func init() {
 	monitoringCmd.AddCommand(clusterSummaryCmd)
 	clusterSummaryCmd.Flags().Int32Var(&rangeMinutes, "rangeMinutes", 0, "Return average values over the past <rangeMinutes> minutes.")
 
+	orgAppStatsCmd.Flags().BoolVarP(&watch, "watch", "w", false, "Watch for changes")
 	monitoringCmd.AddCommand(orgAppStatsCmd)
 }
 
@@ -95,6 +96,6 @@ var orgAppStatsCmd = &cobra.Command{
 			insecure, useTLS,
 			cliOptions.Resolve("cacert", caCertPath), cliOptions.Resolve("output", output), cliOptions.ResolveAsInt("labelLength", labelLength))
 
-		monitoring.GetOrganizationApplicationStats(cliOptions.Resolve("organizationID", organizationID))
+		monitoring.GetOrganizationApplicationStats(cliOptions.Resolve("organizationID", organizationID), watch)
 	},
 }

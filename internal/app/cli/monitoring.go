@@ -22,6 +22,7 @@ import (
 	"github.com/rs/zerolog/log"
 	"google.golang.org/grpc"
 	"strings"
+	"time"
 )
 
 type Monitoring struct {
@@ -116,7 +117,7 @@ func (m *Monitoring) GetClusterSummary(organizationId string, clusterId string, 
 	m.PrintResultOrError(clusterSummary, err, "cannot query cluster summary")
 }
 
-func (m *Monitoring) GetOrganizationApplicationStats(organizationId string) {
+func (m *Monitoring) GetOrganizationApplicationStats(organizationId string, watch bool) {
 	if organizationId == "" {
 		log.Fatal().Msg("organizationId cannot be empty")
 	}
@@ -133,4 +134,27 @@ func (m *Monitoring) GetOrganizationApplicationStats(organizationId string) {
 
 	response, err := client.GetOrganizationApplicationStats(context, request)
 	m.PrintResultOrError(response, err, "cannot query organization application stats")
+
+	if watch {
+		ticker := time.NewTicker(WatchSleep)
+		previous := response
+		for {
+			_ = <-ticker.C
+			context, cancel := m.GetContext()
+			client, connection := m.getClient()
+
+			request := &grpc_monitoring_go.OrganizationApplicationStatsRequest{
+				OrganizationId: organizationId,
+			}
+
+			response, err := client.GetOrganizationApplicationStats(context, request)
+			connection.Close()
+			cancel()
+
+			if err != nil || previous.Timestamp != response.Timestamp {
+				m.PrintResultOrError(response, err, "cannot query organization application stats")
+			}
+			previous = response
+		}
+	}
 }
