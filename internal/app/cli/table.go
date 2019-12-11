@@ -968,19 +968,19 @@ func FromOrganizationApplicationStatsResponse(response *grpc_monitoring_go.Organ
 	})
 
 	r = append(r, []string{"APPLICATION", "SERVICE GROUP", "SERVICE", "CPU", "MEMORY", "STORAGE"})
-	applicationName := ""
-	serviceGroupName := ""
+	applicationId := ""
+	serviceGroupId := ""
 	for _, stat := range stats {
 		line := make([]string, 0, 6)
-		if applicationName != stat.GetAppInstanceName() {
-			applicationName = stat.GetAppInstanceName()
-			line = append(line, applicationName)
+		if applicationId != stat.GetAppInstanceId() {
+			applicationId = stat.GetAppInstanceId()
+			line = append(line, stat.GetAppInstanceName())
 		} else {
 			line = append(line, "")
 		}
-		if serviceGroupName != stat.GetServiceGroupInstanceName() {
-			serviceGroupName = stat.GetServiceGroupInstanceName()
-			line = append(line, serviceGroupName)
+		if serviceGroupId != stat.GetServiceGroupInstanceId() {
+			serviceGroupId = stat.GetServiceGroupInstanceId()
+			line = append(line, stat.GetServiceGroupInstanceName())
 		} else {
 			line = append(line, "")
 		}
