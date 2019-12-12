@@ -74,7 +74,7 @@ func parseTime(timeString string) (*timestamp.Timestamp, error) {
 
 //l.Search(cliOptions.Resolve("organizationID", organizationID), descriptorID, instanceID, sgID, sgInstanceID, serviceID, serviceInstanceID, message, from, to, desc, redirectLog)
 func (u *UnifiedLogging) Search(organizationId, descriptorId, instanceId, sgId, sgInstanceId, serviceId, serviceInstanceId,
-	msgFilter, from, to string, desc bool, redirectLog bool, follow bool) {
+	msgFilter, from, to string, desc bool, redirectLog bool, follow bool, nFirst bool) {
 	// Validate options
 	if organizationId == "" {
 		log.Fatal().Msg("organizationID cannot be empty")
@@ -127,6 +127,7 @@ func (u *UnifiedLogging) Search(organizationId, descriptorId, instanceId, sgId, 
 		From:                   fromInt,
 		To:                     toInt,
 		Order:                  &order,
+		NFirst:                 nFirst,
 	}
 
 	toReturned := u.callSearch(searchRequest, redirectLog, client)
