@@ -53,6 +53,7 @@ func init() {
 	updateUserCmd.Flags().StringVar(&phone, "phone", "", "New phone for the user")
 	updateUserCmd.Flags().StringVar(&location, "location", "", "New location for the user")
 	_ = updateUserCmd.MarkFlagRequired("name")
+	_ = updateUserCmd.MarkFlagRequired("email")
 	usersCmd.AddCommand(updateUserCmd)
 
 	addUserCmd.Flags().StringVar(&name, "name", "", "Full name")
