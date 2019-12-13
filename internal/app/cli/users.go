@@ -171,12 +171,12 @@ func (u *Users) Update(organizationID string, email string, newName string, newT
 	defer cancel()
 
 	updateRequest := &grpc_user_go.UpdateUserRequest{
-		OrganizationId:       organizationID,
-		Email:                email,
-		Name:                 newName,
-		Title:                newTitle,
-		Phone:                newPhone,
-		Location:             newLocation,
+		OrganizationId: organizationID,
+		Email:          email,
+		Name:           newName,
+		Title:          newTitle,
+		Phone:          newPhone,
+		Location:       newLocation,
 	}
 	if newName != "" {
 		updateRequest.Name = newName
