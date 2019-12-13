@@ -25,6 +25,10 @@ var publicKeyPath string
 var title string
 var phone string
 var location string
+var updateName bool
+var updateLocation bool
+var updatePhone bool
+var updateTitle bool
 
 var newPassword string
 

@@ -48,6 +48,7 @@ const emptyServiceId = "service_id cannot be empty"
 const emptyClusterId = "cluster_id cannot be empty"
 const emptyNodeId = "node_id cannot be empty"
 const emptyEmail = "email cannot be empty"
+const invalidUpdateUserRequest = "no parameter marked to update"
 const emptyName = "name cannot be empty"
 const emptyPassword = "password cannot be empty"
 const emptyNewPassword = "new password cannot be empty"
@@ -244,6 +245,9 @@ func ValidUpdateUserRequest(updateUserRequest *grpc_user_go.UpdateUserRequest) d
 	}
 	if updateUserRequest.Email == "" {
 		return derrors.NewInvalidArgumentError(emptyEmail)
+	}
+	if !(updateUserRequest.UpdateLocation || updateUserRequest.UpdatePhone || updateUserRequest.UpdateTitle || updateUserRequest.UpdateName) {
+		return derrors.NewInvalidArgumentError(invalidUpdateUserRequest)
 	}
 	return nil
 }

@@ -47,12 +47,15 @@ func init() {
 	_ = resetPasswordCmd.MarkFlagRequired("newPassword")
 	usersCmd.AddCommand(resetPasswordCmd)
 
+	updateUserCmd.Flags().StringVar(&email, "email", "", "Email for the user")
 	updateUserCmd.Flags().StringVar(&name, "name", "", "New name for the user")
-	updateUserCmd.Flags().StringVar(&email, "email", "", "New email for the user")
 	updateUserCmd.Flags().StringVar(&title, "title", "", "New title for the user")
 	updateUserCmd.Flags().StringVar(&phone, "phone", "", "New phone for the user")
 	updateUserCmd.Flags().StringVar(&location, "location", "", "New location for the user")
-	_ = updateUserCmd.MarkFlagRequired("name")
+	updateUserCmd.Flags().BoolVar(&updateName, "updateName", false, "New name for the user")
+	updateUserCmd.Flags().BoolVar(&updateTitle, "updateTitle", false, "New title for the user")
+	updateUserCmd.Flags().BoolVar(&updatePhone, "updatePhone", false, "New phone for the user")
+	updateUserCmd.Flags().BoolVar(&updateLocation, "updateLocation", false, "New location for the user")
 	_ = updateUserCmd.MarkFlagRequired("email")
 	usersCmd.AddCommand(updateUserCmd)
 
