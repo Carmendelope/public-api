@@ -160,7 +160,7 @@ func (u *Users) ChangePassword(organizationID string, email string, password str
 }
 
 // Update the user information.
-func (u *Users) Update(organizationID string, email string, newName string) {
+func (u *Users) Update(organizationID string, email string, newName string, newTitle string, newPhone string, newLocation string) {
 	if organizationID == "" {
 		log.Fatal().Msg("organizationID cannot be empty")
 	}
@@ -171,8 +171,12 @@ func (u *Users) Update(organizationID string, email string, newName string) {
 	defer cancel()
 
 	updateRequest := &grpc_user_go.UpdateUserRequest{
-		OrganizationId: organizationID,
-		Email:          email,
+		OrganizationId:       organizationID,
+		Email:                email,
+		Name:                 newName,
+		Title:                newTitle,
+		Phone:                newPhone,
+		Location:             newLocation,
 	}
 	if newName != "" {
 		updateRequest.Name = newName

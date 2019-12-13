@@ -48,6 +48,10 @@ func init() {
 	usersCmd.AddCommand(resetPasswordCmd)
 
 	updateUserCmd.Flags().StringVar(&name, "name", "", "New name for the user")
+	updateUserCmd.Flags().StringVar(&email, "email", "", "New email for the user")
+	updateUserCmd.Flags().StringVar(&title, "title", "", "New title for the user")
+	updateUserCmd.Flags().StringVar(&phone, "phone", "", "New phone for the user")
+	updateUserCmd.Flags().StringVar(&location, "location", "", "New location for the user")
 	_ = updateUserCmd.MarkFlagRequired("name")
 	usersCmd.AddCommand(updateUserCmd)
 
@@ -136,7 +140,7 @@ var updateUserCmd = &cobra.Command{
 			cliOptions.ResolveAsInt("port", nalejPort),
 			insecure, useTLS,
 			cliOptions.Resolve("cacert", caCertPath), cliOptions.Resolve("output", output), cliOptions.ResolveAsInt("labelLength", labelLength))
-		u.Update(cliOptions.Resolve("organizationID", organizationID), email, name)
+		u.Update(cliOptions.Resolve("organizationID", organizationID), email, name, title, phone, location)
 	},
 }
 

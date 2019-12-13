@@ -22,6 +22,9 @@ var loginPort int
 var email string
 var password string
 var publicKeyPath string
+var title string
+var phone string
+var location string
 
 var newPassword string
 
