@@ -20,6 +20,7 @@ import (
 	"context"
 	"github.com/nalej/derrors"
 	"github.com/nalej/grpc-application-manager-go"
+	"github.com/nalej/grpc-log-download-manager-go"
 	"github.com/nalej/grpc-public-api-go"
 	"github.com/nalej/grpc-utils/pkg/conversions"
 	"github.com/nalej/public-api/internal/pkg/authhelper"
@@ -50,4 +51,36 @@ func (h *Handler) Search(ctx context.Context, request *grpc_public_api_go.Search
 		return nil, conversions.ToGRPCError(err)
 	}
 	return h.Manager.Search(request)
+}
+
+// Check checks the state of the download operation
+func (h *Handler) Check(ctx context.Context, requestId *grpc_log_download_manager_go.DownloadRequestId) (*grpc_public_api_go.DownloadLogResponse, error) {
+	rm, err := authhelper.GetRequestMetadata(ctx)
+	if err != nil {
+		return nil, conversions.ToGRPCError(err)
+	}
+	if requestId.OrganizationId != rm.OrganizationID {
+		return nil, derrors.NewPermissionDeniedError("cannot access requested OrganizationID")
+	}
+	err = entities.ValidDownloadRequestId(requestId)
+	if err != nil {
+		return nil, conversions.ToGRPCError(err)
+	}
+	return h.Manager.Check(requestId)
+}
+
+// DownloadLog ask for log entries and store them into a zip file
+func (h *Handler) DownloadLog(ctx context.Context, request *grpc_log_download_manager_go.DownloadLogRequest) (*grpc_public_api_go.DownloadLogResponse, error) {
+	rm, err := authhelper.GetRequestMetadata(ctx)
+	if err != nil {
+		return nil, conversions.ToGRPCError(err)
+	}
+	if request.OrganizationId != rm.OrganizationID {
+		return nil, derrors.NewPermissionDeniedError("cannot access requested OrganizationID")
+	}
+	err = entities.ValidDownloadLogRequest(request)
+	if err != nil {
+		return nil, conversions.ToGRPCError(err)
+	}
+	return h.Manager.DownloadLog(request)
 }

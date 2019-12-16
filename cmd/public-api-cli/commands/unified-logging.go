@@ -50,6 +50,18 @@ func init() {
 	searchCmd.Flags().BoolVar(&redirectLog, "redirectResultAsLog", false, "Redirect the result to the CLI log")
 	searchCmd.Flags().BoolVarP(&follow, "follow", "f", false, "Specify if the logs should be streamed")
 	searchCmd.Flags().BoolVar(&nFirst, "nFirst", false, "Specify if the user expects to receive the first n results or not")
+
+	logCmd.AddCommand(downloadCmd)
+	downloadCmd.Flags().StringVar(&descriptorID, "descriptorID", "", "Application descriptor identifier")
+	downloadCmd.Flags().StringVar(&instanceID, "instanceID", "", "Application instance identifier")
+	downloadCmd.Flags().StringVar(&sgID, "sgID", "", "Service group identifier")
+	downloadCmd.Flags().StringVar(&sgInstanceID, "sgInstanceID", "", "Service group instance identifier")
+	downloadCmd.Flags().StringVar(&serviceID, "serviceID", "", "Service identifier")
+	downloadCmd.Flags().StringVar(&serviceInstanceID, "serviceInstanceID", "", "Service instance identifier")
+	downloadCmd.Flags().StringVar(&from, "from", "", "Start time of logs")
+	downloadCmd.Flags().StringVar(&to, "to", "", "End time of logs")
+	downloadCmd.Flags().BoolVar(&desc, "desc", false, "Sort results in descending time order")
+	downloadCmd.Flags().BoolVar(&metadata, "metadata", false, "Specify if the user expects to receive log entries metadata")
 }
 
 var searchCmd = &cobra.Command{
@@ -72,6 +84,30 @@ var searchCmd = &cobra.Command{
 			cliOptions.Resolve("cacert", caCertPath), cliOptions.Resolve("output", output), cliOptions.ResolveAsInt("labelLength", labelLength))
 
 		l.Search(cliOptions.Resolve("organizationID", organizationID), descriptorID, instanceID, sgID, sgInstanceID, serviceID, serviceInstanceID, message, from, to, desc, redirectLog, follow, nFirst)
+
+	},
+}
+
+var downloadCmd = &cobra.Command{
+	Use:   "download [filter string]",
+	Short: "Download application logs",
+	Long:  `Download application logs based on application and service group instance`,
+	Args:  cobra.MaximumNArgs(1),
+	Run: func(cmd *cobra.Command, args []string) {
+		SetupLogging()
+
+		// Message filter argument
+		if len(args) > 0 {
+			message = args[0]
+		}
+
+		l := cli.NewUnifiedLogging(
+			cliOptions.Resolve("nalejAddress", nalejAddress),
+			cliOptions.ResolveAsInt("port", nalejPort),
+			insecure, useTLS,
+			cliOptions.Resolve("cacert", caCertPath), cliOptions.Resolve("output", output), cliOptions.ResolveAsInt("labelLength", labelLength))
+
+		l.Download(cliOptions.Resolve("organizationID", organizationID), descriptorID, instanceID, sgID, sgInstanceID, serviceID, serviceInstanceID, message, from, to, desc, metadata)
 
 	},
 }
