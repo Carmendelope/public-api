@@ -528,18 +528,26 @@ func FromLogResponse(result *grpc_application_manager_go.LogResponse) *ResultTab
 }
 
 func FromDownloadLogResponse(result *grpc_public_api_go.DownloadLogResponse) *ResultTable {
+
+	from := "NA"
+	to := "NA"
+	if result.From != 0 {
+		time.Unix(0, result.From).String()
+	}
+	if result.To != 0 {
+		time.Unix(0, result.To).String()
+	}
+
 	r := make([][]string, 0)
 
 	r = append(r, []string{"REQUEST_ID", "FROM", "TO", "STATE", "INFO"})
-	r = append(r, []string{result.RequestId, time.Unix(0, result.From).String(),time.Unix(0, result.To).String(),
-		result.StateName, result.Info})
+	r = append(r, []string{result.RequestId, from, to, result.StateName, result.Info})
 
 	if result.Url != "" {
+		r = append(r, []string{""})
 		r = append(r, []string{"URL", "EXPIRATION"})
 		r = append(r, []string{result.Url, time.Unix(0, result.Expiration).String()})
 	}
-
-
 
 	return &ResultTable{r}
 }
