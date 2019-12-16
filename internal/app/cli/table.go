@@ -105,6 +105,8 @@ func AsTable(result interface{}, labelLength int) *ResultTable {
 		return FromDeviceList(result, labelLength)
 	case *grpc_application_manager_go.LogResponse:
 		return FromLogResponse(result)
+	case *grpc_public_api_go.DownloadLogResponse:
+		return FromDownloadLogResponse(result)
 	case *grpc_public_api_go.Node:
 		return FromNode(result, labelLength)
 	case *grpc_public_api_go.NodeList:
@@ -521,6 +523,23 @@ func FromLogResponse(result *grpc_application_manager_go.LogResponse) *ResultTab
 			r = append(r, []string{time.Unix(0, e.Timestamp).String(), e.Msg})
 		}
 	}
+
+	return &ResultTable{r}
+}
+
+func FromDownloadLogResponse(result *grpc_public_api_go.DownloadLogResponse) *ResultTable {
+	r := make([][]string, 0)
+
+	r = append(r, []string{"REQUEST_ID", "FROM", "TO", "STATE", "INFO"})
+	r = append(r, []string{result.RequestId, time.Unix(0, result.From).String(),time.Unix(0, result.To).String(),
+		result.StateName, result.Info})
+
+	if result.Url != "" {
+		r = append(r, []string{"URL", "EXPIRATION"})
+		r = append(r, []string{result.Url, time.Unix(0, result.Expiration).String()})
+	}
+
+
 
 	return &ResultTable{r}
 }

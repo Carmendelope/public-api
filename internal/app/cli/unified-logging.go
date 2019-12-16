@@ -21,6 +21,8 @@ import (
 	"github.com/araddon/dateparse"
 	"github.com/golang/protobuf/ptypes"
 	"github.com/golang/protobuf/ptypes/timestamp"
+	"github.com/nalej/grpc-common-go"
+	"github.com/nalej/grpc-log-download-manager-go"
 	"github.com/nalej/grpc-public-api-go"
 	"github.com/nalej/grpc-utils/pkg/conversions"
 	"github.com/rs/zerolog/log"
@@ -148,6 +150,67 @@ func (u *UnifiedLogging) Search(organizationId, descriptorId, instanceId, sgId, 
 			}
 		}
 	}
+
+}
+
+// TODO: download - check & get
+func (u *UnifiedLogging) Download(organizationId, descriptorId, instanceId, sgId, sgInstanceId, serviceId, serviceInstanceId,
+	msgFilter, from, to string, desc bool, include_metadata bool) {
+	// Validate options
+	if organizationId == "" {
+		log.Fatal().Msg("organizationID cannot be empty")
+	}
+
+	// Parse and validate timestamps
+	var fromTime, toTime time.Time
+	var fromInt, toInt int64
+	fromInt = 0
+	toInt = 0
+	var err error
+	if from != "" {
+		fromTime, err = dateparse.ParseLocal(from)
+		if err != nil {
+			log.Fatal().Err(err).Msg("invalid from time")
+		}
+		fromInt = fromTime.UnixNano()
+	}
+	if to != "" {
+		toTime, err = dateparse.ParseLocal(to)
+		if err != nil {
+			log.Fatal().Err(err).Msg("invalid to time")
+		}
+		toInt = toTime.UnixNano()
+	}
+
+	u.load()
+
+	client, conn := u.getClient()
+	defer conn.Close()
+
+	var order = grpc_common_go.OrderOptions{Order: grpc_common_go.Order_ASC, Field: OrderByField}
+	if desc {
+		order.Order = grpc_common_go.Order_DESC
+	}
+
+	request := &grpc_log_download_manager_go.DownloadLogRequest{
+		OrganizationId:         organizationId,
+		AppDescriptorId:        descriptorId,
+		AppInstanceId:          instanceId,
+		ServiceGroupId:         sgId,
+		ServiceGroupInstanceId: sgInstanceId,
+		ServiceId:              serviceId,
+		ServiceInstanceId:      serviceInstanceId,
+		MsgQueryFilter:         msgFilter,
+		From:                   fromInt,
+		To:                     toInt,
+		Order:                  &order,
+		IncludeMetadata:        include_metadata,
+	}
+	ctx, cancel := u.GetContext()
+	defer cancel()
+
+	response, err := client.DownloadLog(ctx, request)
+	u.PrintResultOrError(response, err, "cannot download log entries")
 
 }
 
