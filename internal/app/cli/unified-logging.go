@@ -17,10 +17,12 @@
 package cli
 
 import (
+	"context"
 	"fmt"
 	"github.com/araddon/dateparse"
 	"github.com/golang/protobuf/ptypes"
 	"github.com/golang/protobuf/ptypes/timestamp"
+	"github.com/nalej/derrors"
 	"github.com/nalej/grpc-common-go"
 	"github.com/nalej/grpc-log-download-manager-go"
 	"github.com/nalej/grpc-public-api-go"
@@ -155,7 +157,7 @@ func (u *UnifiedLogging) Search(organizationId, descriptorId, instanceId, sgId, 
 
 // TODO: download - check & get
 func (u *UnifiedLogging) Download(organizationId, descriptorId, instanceId, sgId, sgInstanceId, serviceId, serviceInstanceId,
-	msgFilter, from, to string, desc bool, include_metadata bool) {
+	msgFilter, from, to string, desc bool, includeMetadata bool) {
 	// Validate options
 	if organizationId == "" {
 		log.Fatal().Msg("organizationID cannot be empty")
@@ -204,14 +206,76 @@ func (u *UnifiedLogging) Download(organizationId, descriptorId, instanceId, sgId
 		From:                   fromInt,
 		To:                     toInt,
 		Order:                  &order,
-		IncludeMetadata:        include_metadata,
+		IncludeMetadata:        includeMetadata,
 	}
 	ctx, cancel := u.GetContext()
 	defer cancel()
 
+	log.Info().Msg("download log entries...")
 	response, err := client.DownloadLog(ctx, request)
-	u.PrintResultOrError(response, err, "cannot download log entries")
 
+	// check the operation status
+	if err != nil {
+		u.PrintResultOrError(response, err, "cannot download log entries")
+	}else{
+		// no error, check!
+		rCtx, rCancel := context.WithTimeout(context.Background(),  time.Minute * 10)
+		defer rCancel()
+		ticker := time.NewTicker(FollowSleep)
+		done := make(chan bool)
+		for {
+			select {
+			case <-done:
+				return
+			case <-ticker.C:
+				checkResponse, err := u.callCheck(organizationId, response.RequestId)
+				if err != nil {
+					u.PrintResultOrError(checkResponse, err, "cannot check file status")
+					return
+				}
+				log.Info().Str("state", checkResponse.StateName).Msg("check download status...")
+				if checkResponse.State == grpc_log_download_manager_go.DownloadLogState_ERROR {
+					u.PrintResultOrError(checkResponse, err, "")
+					return
+				}
+				if checkResponse.State == grpc_log_download_manager_go.DownloadLogState_READY {
+					// TODO: call to download when the services will be implemented
+					return
+				}
+				// check
+			case <- rCtx.Done():
+				log.Info().Msg("error")
+				err = derrors.NewDeadlineExceededError("Download error. Try it manually")
+				return
+			}
+		}
+	}
+}
+
+func (u *UnifiedLogging) callCheck(organizationId, requestId string) (*grpc_public_api_go.DownloadLogResponse, error){
+	u.load()
+
+	client, conn := u.getClient()
+	defer conn.Close()
+	ctx, cancel := u.GetContext()
+	defer cancel()
+
+	return client.Check(ctx, &grpc_log_download_manager_go.DownloadRequestId{
+		OrganizationId: organizationId,
+		RequestId:      requestId,
+	})
+
+}
+
+func (u *UnifiedLogging) Check(organizationId, requestId string) {
+	// Validate options
+	if organizationId == "" {
+		log.Fatal().Msg("organizationID cannot be empty")
+	}
+
+	response, err := u.callCheck(organizationId, requestId)
+
+	u.PrintResultOrError(response, err, "cannot check the status of the request")
 }
 
 // returns searchTo field (we need this value to update the next search)

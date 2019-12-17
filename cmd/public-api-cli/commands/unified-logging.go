@@ -62,6 +62,10 @@ func init() {
 	downloadCmd.Flags().StringVar(&to, "to", "", "End time of logs")
 	downloadCmd.Flags().BoolVar(&desc, "desc", false, "Sort results in descending time order")
 	downloadCmd.Flags().BoolVar(&metadata, "metadata", false, "Specify if the user expects to receive log entries metadata")
+
+	logCmd.AddCommand(checkCmd)
+	checkCmd.Flags().StringVar(&requestId, "requestID", "", "request identifier")
+
 }
 
 var searchCmd = &cobra.Command{
@@ -108,6 +112,30 @@ var downloadCmd = &cobra.Command{
 			cliOptions.Resolve("cacert", caCertPath), cliOptions.Resolve("output", output), cliOptions.ResolveAsInt("labelLength", labelLength))
 
 		l.Download(cliOptions.Resolve("organizationID", organizationID), descriptorID, instanceID, sgID, sgInstanceID, serviceID, serviceInstanceID, message, from, to, desc, metadata)
+
+	},
+}
+
+var checkCmd = &cobra.Command{
+	Use:   "check requestID",
+	Short: "Check the status of a download request",
+	Long:  `Check the status of a download request`,
+	Args:  cobra.MaximumNArgs(1),
+	Run: func(cmd *cobra.Command, args []string) {
+		SetupLogging()
+
+		// Message filter argument
+		if len(args) > 0 {
+			requestId = args[0]
+		}
+
+		l := cli.NewUnifiedLogging(
+			cliOptions.Resolve("nalejAddress", nalejAddress),
+			cliOptions.ResolveAsInt("port", nalejPort),
+			insecure, useTLS,
+			cliOptions.Resolve("cacert", caCertPath), cliOptions.Resolve("output", output), cliOptions.ResolveAsInt("labelLength", labelLength))
+
+		l.Check(cliOptions.Resolve("organizationID", organizationID), requestId)
 
 	},
 }
