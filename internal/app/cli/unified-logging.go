@@ -18,6 +18,7 @@ package cli
 
 import (
 	"context"
+	"crypto/tls"
 	"fmt"
 	"github.com/araddon/dateparse"
 	"github.com/golang/protobuf/ptypes"
@@ -29,6 +30,9 @@ import (
 	"github.com/nalej/grpc-utils/pkg/conversions"
 	"github.com/rs/zerolog/log"
 	"google.golang.org/grpc"
+	"io"
+	"net/http"
+	"os"
 	"time"
 )
 
@@ -155,9 +159,8 @@ func (u *UnifiedLogging) Search(organizationId, descriptorId, instanceId, sgId, 
 
 }
 
-// TODO: download - check & get
 func (u *UnifiedLogging) Download(organizationId, descriptorId, instanceId, sgId, sgInstanceId, serviceId, serviceInstanceId,
-	msgFilter, from, to string, desc bool, includeMetadata bool) {
+	msgFilter, from, to string, desc bool, includeMetadata bool, outputPath string) {
 	// Validate options
 	if organizationId == "" {
 		log.Fatal().Msg("organizationID cannot be empty")
@@ -217,9 +220,9 @@ func (u *UnifiedLogging) Download(organizationId, descriptorId, instanceId, sgId
 	// check the operation status
 	if err != nil {
 		u.PrintResultOrError(response, err, "cannot download log entries")
-	}else{
+	} else {
 		// no error, check!
-		rCtx, rCancel := context.WithTimeout(context.Background(),  time.Minute * 10)
+		rCtx, rCancel := context.WithTimeout(context.Background(), time.Minute*10)
 		defer rCancel()
 		ticker := time.NewTicker(FollowSleep)
 		done := make(chan bool)
@@ -239,11 +242,11 @@ func (u *UnifiedLogging) Download(organizationId, descriptorId, instanceId, sgId
 					return
 				}
 				if checkResponse.State == grpc_log_download_manager_go.DownloadLogState_READY {
-					// TODO: call to download when the services will be implemented
+					u.callGet(checkResponse, outputPath)
 					return
 				}
 				// check
-			case <- rCtx.Done():
+			case <-rCtx.Done():
 				log.Info().Msg("error")
 				err = derrors.NewDeadlineExceededError("Download error. Try it manually")
 				return
@@ -252,7 +255,77 @@ func (u *UnifiedLogging) Download(organizationId, descriptorId, instanceId, sgId
 	}
 }
 
-func (u *UnifiedLogging) callCheck(organizationId, requestId string) (*grpc_public_api_go.DownloadLogResponse, error){
+func (u *UnifiedLogging) Check(organizationId, requestId string) {
+	// Validate options
+	if organizationId == "" {
+		log.Fatal().Msg("organizationID cannot be empty")
+	}
+	if requestId == "" {
+		log.Fatal().Msg("requestId cannot be empty")
+	}
+	response, err := u.callCheck(organizationId, requestId)
+
+	u.PrintResultOrError(response, err, "cannot check the status of the request")
+}
+
+func (u *UnifiedLogging) Get (organizationId, requestId, outputPath string ){
+	// Validate options
+	if organizationId == "" {
+		log.Fatal().Msg("organizationID cannot be empty")
+	}
+	if requestId == "" {
+		log.Fatal().Msg("requestId cannot be empty")
+	}
+
+	// get the url
+	response, err := u.callCheck(organizationId, requestId)
+	if err != nil {
+		u.PrintResultOrError(response, err, "cannot check the status of the request")
+	}else{
+		u.callGet(response, outputPath)
+	}
+	return
+}
+
+func (u *UnifiedLogging) callGet(checkResponse *grpc_public_api_go.DownloadLogResponse, outputPath string) {
+
+	tlsConfigInsecure := &tls.Config{InsecureSkipVerify: true}
+
+	tr := &http.Transport{
+		MaxIdleConns:       10,
+		IdleConnTimeout:    30 * time.Second,
+		DisableCompression: true,
+		TLSClientConfig:    tlsConfigInsecure,
+	}
+	client := &http.Client{
+		Transport: tr,
+	}
+	req, err := http.NewRequest("GET", checkResponse.Url, nil)
+	req.Header.Add("authorization", u.Token)
+	resp, err := client.Do(req)
+
+
+	defer resp.Body.Close()
+
+	// Create the file
+	outputFilePath := fmt.Sprintf("%s%s.zip",outputPath, checkResponse.RequestId)
+	out, err := os.Create(outputFilePath)
+	if err != nil {
+		u.PrintResultOrError(checkResponse, err, "error creating the file")
+		return
+	}
+	defer out.Close()
+
+	// Write the body to file
+	_, err = io.Copy(out, resp.Body)
+	if err != nil {
+		u.PrintResultOrError(checkResponse, err, "error copying the file")
+		return
+	}
+	fmt.Printf("\nLog Entries file: %s\n", outputFilePath)
+}
+
+func (u *UnifiedLogging) callCheck(organizationId, requestId string) (*grpc_public_api_go.DownloadLogResponse, error) {
 	u.load()
 
 	client, conn := u.getClient()
@@ -267,16 +340,6 @@ func (u *UnifiedLogging) callCheck(organizationId, requestId string) (*grpc_publ
 
 }
 
-func (u *UnifiedLogging) Check(organizationId, requestId string) {
-	// Validate options
-	if organizationId == "" {
-		log.Fatal().Msg("organizationID cannot be empty")
-	}
-
-	response, err := u.callCheck(organizationId, requestId)
-
-	u.PrintResultOrError(response, err, "cannot check the status of the request")
-}
 
 // returns searchTo field (we need this value to update the next search)
 func (u *UnifiedLogging) callSearch(searchRequest *grpc_public_api_go.SearchRequest, redirectLog bool, client grpc_public_api_go.UnifiedLoggingClient) int64 {
