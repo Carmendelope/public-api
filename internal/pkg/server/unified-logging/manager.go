@@ -19,6 +19,7 @@ package unified_logging
 import (
 	"github.com/nalej/grpc-application-manager-go"
 	"github.com/nalej/grpc-log-download-manager-go"
+	"github.com/nalej/grpc-organization-go"
 	"github.com/nalej/grpc-public-api-go"
 	"github.com/nalej/grpc-utils/pkg/conversions"
 	"github.com/nalej/public-api/internal/pkg/entities"
@@ -83,4 +84,21 @@ func (m *Manager) DownloadLog(request *grpc_log_download_manager_go.DownloadLogR
 		return nil, err
 	}
 	return entities.ToPublicAPIDownloadLogReponse(response), nil
+}
+
+func (m *Manager) List(request *grpc_organization_go.OrganizationId) (*grpc_public_api_go.DownloadLogResponseList, error) {
+	ctx, cancel := common.GetContext()
+	defer cancel()
+	responses, err := m.logDownloadClient.List(ctx, request)
+	if err != nil {
+		return nil, err
+	}
+
+	responseList := make([]*grpc_public_api_go.DownloadLogResponse, len(responses.Responses))
+	for i, resp := range responses.Responses {
+		responseList[i] = entities.ToPublicAPIDownloadLogReponse(resp)
+	}
+	return &grpc_public_api_go.DownloadLogResponseList{
+		Responses: responseList,
+	}, nil
 }
