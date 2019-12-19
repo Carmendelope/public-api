@@ -17,6 +17,7 @@
 package cli
 
 import (
+	"bytes"
 	"context"
 	"crypto/tls"
 	"fmt"
@@ -26,6 +27,7 @@ import (
 	"github.com/nalej/derrors"
 	"github.com/nalej/grpc-common-go"
 	"github.com/nalej/grpc-log-download-manager-go"
+	"github.com/nalej/grpc-organization-go"
 	"github.com/nalej/grpc-public-api-go"
 	"github.com/nalej/grpc-utils/pkg/conversions"
 	"github.com/rs/zerolog/log"
@@ -287,6 +289,26 @@ func (u *UnifiedLogging) Get (organizationId, requestId, outputPath string ){
 	return
 }
 
+func (u *UnifiedLogging) List (organizationId string) {
+	// Validate options
+	if organizationId == "" {
+		log.Fatal().Msg("organizationID cannot be empty")
+	}
+
+	u.load()
+
+	client, conn := u.getClient()
+	defer conn.Close()
+	ctx, cancel := u.GetContext()
+	defer cancel()
+
+	response, err := client.List(ctx, &grpc_organization_go.OrganizationId{
+		OrganizationId: organizationId,
+	})
+
+	u.PrintResultOrError(response, err, "cannot list the status of the requests")
+}
+
 func (u *UnifiedLogging) callGet(checkResponse *grpc_public_api_go.DownloadLogResponse, outputPath string) {
 
 	tlsConfigInsecure := &tls.Config{InsecureSkipVerify: true}
@@ -303,10 +325,18 @@ func (u *UnifiedLogging) callGet(checkResponse *grpc_public_api_go.DownloadLogRe
 	req, err := http.NewRequest("GET", checkResponse.Url, nil)
 	req.Header.Add("authorization", u.Token)
 	resp, err := client.Do(req)
-
-
 	defer resp.Body.Close()
 
+	if err != nil {
+		u.PrintResultOrError(req, err, "error getting the file")
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		buf := new(bytes.Buffer)
+		buf.ReadFrom(resp.Body)
+		u.PrintResultOrError(req, derrors.NewInternalError(resp.Status), buf.String())
+		return
+	}
 	// Create the file
 	outputFilePath := fmt.Sprintf("%s%s.zip",outputPath, checkResponse.RequestId)
 	out, err := os.Create(outputFilePath)

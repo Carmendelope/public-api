@@ -73,6 +73,8 @@ func init() {
 	downloadCmd.AddCommand(checkCmd)
 	checkCmd.Flags().StringVar(&requestId, "requestID", "", "request identifier")
 
+	downloadCmd.AddCommand(listCmd)
+
 }
 
 var searchCmd = &cobra.Command{
@@ -177,6 +179,24 @@ var checkCmd = &cobra.Command{
 			cliOptions.Resolve("cacert", caCertPath), cliOptions.Resolve("output", output), cliOptions.ResolveAsInt("labelLength", labelLength))
 
 		l.Check(cliOptions.Resolve("organizationID", organizationID), requestId)
+
+	},
+}
+
+var listCmd = &cobra.Command{
+	Use:   "list",
+	Short: "List the status of all download requests",
+	Long:  `Check the status of all download requests`,
+	Run: func(cmd *cobra.Command, args []string) {
+		SetupLogging()
+
+		l := cli.NewUnifiedLogging(
+			cliOptions.Resolve("nalejAddress", nalejAddress),
+			cliOptions.ResolveAsInt("port", nalejPort),
+			insecure, useTLS,
+			cliOptions.Resolve("cacert", caCertPath), cliOptions.Resolve("output", output), cliOptions.ResolveAsInt("labelLength", labelLength))
+
+		l.List(cliOptions.Resolve("organizationID", organizationID))
 
 	},
 }
