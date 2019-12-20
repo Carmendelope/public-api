@@ -26,6 +26,7 @@ import (
 	"github.com/nalej/grpc-utils/pkg/conversions"
 	"github.com/nalej/public-api/internal/pkg/authhelper"
 	"github.com/nalej/public-api/internal/pkg/entities"
+	"github.com/rs/zerolog/log"
 )
 
 // Handler structure for the applications requests.
@@ -67,7 +68,7 @@ func (h *Handler) Check(ctx context.Context, requestId *grpc_log_download_manage
 	if err != nil {
 		return nil, conversions.ToGRPCError(err)
 	}
-	return h.Manager.Check(requestId)
+	return h.Manager.Check(requestId, rm.UserID)
 }
 
 // DownloadLog ask for log entries and store them into a zip file
@@ -83,7 +84,7 @@ func (h *Handler) DownloadLog(ctx context.Context, request *grpc_log_download_ma
 	if err != nil {
 		return nil, conversions.ToGRPCError(err)
 	}
-	return h.Manager.DownloadLog(request)
+	return h.Manager.DownloadLog(request, rm.UserID)
 }
 
 func (h *Handler) List(ctx context.Context, request *grpc_organization_go.OrganizationId) (*grpc_public_api_go.DownloadLogResponseList, error){
@@ -91,6 +92,7 @@ func (h *Handler) List(ctx context.Context, request *grpc_organization_go.Organi
 	if err != nil {
 		return nil, conversions.ToGRPCError(err)
 	}
+	log.Debug().Interface("rm", rm).Msg("metadata")
 	if request.OrganizationId != rm.OrganizationID {
 		return nil, derrors.NewPermissionDeniedError("cannot access requested OrganizationID")
 	}
@@ -98,5 +100,5 @@ func (h *Handler) List(ctx context.Context, request *grpc_organization_go.Organi
 	if err != nil {
 		return nil, conversions.ToGRPCError(err)
 	}
-	return h.Manager.List(request)
+	return h.Manager.List(request, rm.UserID)
 }

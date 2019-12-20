@@ -18,6 +18,8 @@ package common
 
 import (
 	"context"
+	"github.com/rs/zerolog/log"
+	"google.golang.org/grpc/metadata"
 	"time"
 )
 
@@ -27,4 +29,11 @@ const DefaultTimeout = time.Minute
 // have any security related information attached to it.
 func GetContext() (context.Context, context.CancelFunc) {
 	return context.WithTimeout(context.Background(), DefaultTimeout)
+}
+
+func GetContextWithUser(userId string)(context.Context, context.CancelFunc){
+	md := metadata.New(map[string]string{"user_id": userId})
+	log.Debug().Interface("md", md).Msg("metadata has been created")
+	baseContext, cancel := context.WithTimeout(context.Background(), DefaultTimeout)
+	return metadata.NewOutgoingContext(baseContext, md), cancel
 }
