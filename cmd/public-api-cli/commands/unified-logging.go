@@ -74,6 +74,8 @@ func init() {
 	checkCmd.Flags().StringVar(&requestId, "requestID", "", "request identifier")
 
 	downloadCmd.AddCommand(listCmd)
+	listCmd.Flags().BoolVarP(&watch, "watch", "w", false, "Watch for changes")
+
 
 }
 
@@ -196,7 +198,7 @@ var listCmd = &cobra.Command{
 			insecure, useTLS,
 			cliOptions.Resolve("cacert", caCertPath), cliOptions.Resolve("output", output), cliOptions.ResolveAsInt("labelLength", labelLength))
 
-		l.List(cliOptions.Resolve("organizationID", organizationID))
+		l.List(cliOptions.Resolve("organizationID", organizationID), watch)
 
 	},
 }

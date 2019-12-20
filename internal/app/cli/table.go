@@ -558,9 +558,13 @@ func FromDownloadLogResponseList(result *grpc_public_api_go.DownloadLogResponseL
 
 	r := make([][]string, 0)
 
-	r = append(r, []string{"REQUEST_ID", "STATE", "INFO"})
+	r = append(r, []string{"REQUEST_ID", "STATE", "INFO", "EXPIRATION"})
 	for _, response := range result.Responses {
-		r = append(r, []string{response.RequestId, response.StateName, response.Info})
+		exp := ""
+		if response.Expiration != 0 {
+			exp= time.Unix(0, response.Expiration).String()
+		}
+		r = append(r, []string{response.RequestId, response.StateName, response.Info, exp})
 	}
 
 	return &ResultTable{r}

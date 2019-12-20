@@ -39,7 +39,7 @@ import (
 )
 
 const OrderByField = "timestamp"
-const FollowSleep = time.Second * 3
+const FollowSleep = time.Second * 5
 
 type UnifiedLogging struct {
 	Connection
@@ -289,7 +289,7 @@ func (u *UnifiedLogging) Get (organizationId, requestId, outputPath string ){
 	return
 }
 
-func (u *UnifiedLogging) List (organizationId string) {
+func (u *UnifiedLogging) List (organizationId string, watch bool) {
 	// Validate options
 	if organizationId == "" {
 		log.Fatal().Msg("organizationID cannot be empty")
@@ -302,11 +302,52 @@ func (u *UnifiedLogging) List (organizationId string) {
 	ctx, cancel := u.GetContext()
 	defer cancel()
 
-	response, err := client.List(ctx, &grpc_organization_go.OrganizationId{
+	request := &grpc_organization_go.OrganizationId{
 		OrganizationId: organizationId,
-	})
+	}
+	response, err := client.List(ctx, request)
+
+	toCompare := make (map[string]*grpc_public_api_go.DownloadLogResponse, 0)
+	for _, resp := range response.Responses {
+		toCompare[resp.RequestId] = resp
+	}
 
 	u.PrintResultOrError(response, err, "cannot list the status of the requests")
+
+	if watch {
+		ticker := time.NewTicker(FollowSleep)
+		for {
+			select {
+			case <-ticker.C:
+				toShow := make([]*grpc_public_api_go.DownloadLogResponse, 0)
+
+				watchCtx, watchCancel := u.GetContext()
+				operations, err := client.List(watchCtx, request)
+				if err != nil {
+					u.PrintResultOrError(operations, err, "cannot list the status of the requests")
+				}else {
+
+					for _, retrieved := range operations.Responses {
+						found, exists := toCompare[retrieved.RequestId]
+						if !exists {
+							toShow = append(toShow, retrieved)
+						} else if found.State != retrieved.State || found.Info != retrieved.Info {
+							toShow = append(toShow, retrieved)
+						}
+						toCompare[retrieved.RequestId] = retrieved
+					}
+				}
+
+				if len(toShow) > 0 {
+					operations.Responses = toShow
+					fmt.Println("")
+					u.PrintResultOrError(operations, err, "cannot list the status of the requests")
+				}
+
+				watchCancel()
+			}
+		}
+	}
 }
 
 func (u *UnifiedLogging) callGet(checkResponse *grpc_public_api_go.DownloadLogResponse, outputPath string) {
