@@ -175,11 +175,11 @@ func (u *Users) Update(organizationID string, email string, updateName bool, new
 		Email:          email,
 		UpdateName:     updateName,
 		Name:           newName,
-		UpdateTitle:updateTitle,
+		UpdateTitle:    updateTitle,
 		Title:          newTitle,
-		UpdatePhone:updatePhone,
+		UpdatePhone:    updatePhone,
 		Phone:          newPhone,
-		UpdateLocation:updateLocation,
+		UpdateLocation: updateLocation,
 		Location:       newLocation,
 	}
 	if newName != "" {
