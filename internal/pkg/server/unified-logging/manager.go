@@ -18,6 +18,8 @@ package unified_logging
 
 import (
 	"github.com/nalej/grpc-application-manager-go"
+	"github.com/nalej/grpc-log-download-manager-go"
+	"github.com/nalej/grpc-organization-go"
 	"github.com/nalej/grpc-public-api-go"
 	"github.com/nalej/grpc-utils/pkg/conversions"
 	"github.com/nalej/public-api/internal/pkg/entities"
@@ -28,10 +30,12 @@ import (
 
 type Manager struct {
 	unifiedLoggingClient grpc_application_manager_go.UnifiedLoggingClient
+	logDownloadClient    grpc_log_download_manager_go.LogDownloadManagerClient
 }
 
-func NewManager(unifiedLoggingClient grpc_application_manager_go.UnifiedLoggingClient) Manager {
-	return Manager{unifiedLoggingClient}
+func NewManager(unifiedLoggingClient grpc_application_manager_go.UnifiedLoggingClient,
+	logDownloadClient grpc_log_download_manager_go.LogDownloadManagerClient) Manager {
+	return Manager{unifiedLoggingClient, logDownloadClient}
 }
 
 func (m *Manager) Search(request *grpc_public_api_go.SearchRequest) (*grpc_application_manager_go.LogResponse, error) {
@@ -55,4 +59,46 @@ func (m *Manager) Search(request *grpc_public_api_go.SearchRequest) (*grpc_appli
 		}
 	}
 	return convertedLog, nil
+}
+
+// Check checks the state of the download operation
+func (m *Manager) Check(requestId *grpc_log_download_manager_go.DownloadRequestId, userId string) (*grpc_public_api_go.DownloadLogResponse, error) {
+	log.Debug().Interface("request", requestId).Msg("Check request")
+	ctx, cancel := common.GetContextWithUser(userId)
+	defer cancel()
+	response, err := m.logDownloadClient.Check(ctx, requestId)
+	if err != nil {
+		return nil, err
+	}
+	return entities.ToPublicAPIDownloadLogReponse(response), nil
+
+}
+
+// DownloadLog ask for log entries and store them into a zip file
+func (m *Manager) DownloadLog(request *grpc_log_download_manager_go.DownloadLogRequest, userId string) (*grpc_public_api_go.DownloadLogResponse, error) {
+	log.Debug().Interface("request", request).Msg("DownloadLog request")
+	ctx, cancel := common.GetContextWithUser(userId)
+	defer cancel()
+	response, err := m.logDownloadClient.DownloadLog(ctx, request)
+	if err != nil {
+		return nil, err
+	}
+	return entities.ToPublicAPIDownloadLogReponse(response), nil
+}
+
+func (m *Manager) List(request *grpc_organization_go.OrganizationId, userId string) (*grpc_public_api_go.DownloadLogResponseList, error) {
+	ctx, cancel := common.GetContextWithUser(userId)
+	defer cancel()
+	responses, err := m.logDownloadClient.List(ctx, request)
+	if err != nil {
+		return nil, err
+	}
+
+	responseList := make([]*grpc_public_api_go.DownloadLogResponse, len(responses.Responses))
+	for i, resp := range responses.Responses {
+		responseList[i] = entities.ToPublicAPIDownloadLogReponse(resp)
+	}
+	return &grpc_public_api_go.DownloadLogResponseList{
+		Responses: responseList,
+	}, nil
 }

@@ -27,6 +27,7 @@ import (
 	"github.com/nalej/grpc-infrastructure-go"
 	"github.com/nalej/grpc-inventory-go"
 	"github.com/nalej/grpc-inventory-manager-go"
+	"github.com/nalej/grpc-log-download-manager-go"
 	"github.com/nalej/grpc-monitoring-go"
 	"github.com/nalej/grpc-organization-go"
 	"github.com/nalej/grpc-provisioner-go"
@@ -68,6 +69,8 @@ const emptySourceInstanceId = "source_instance_id cannot be empty"
 const emptyTargetInstanceId = "target_instance_id cannot be empty"
 const emptyInboundName = "inbound_name cannot be empty"
 const emptyOutboundName = "outbound_name cannot be empty"
+
+const emptyRequestId = "request_id cannot be empty"
 
 // --------- Application descriptor JSON Schema
 type AppJSONSchema struct {
@@ -512,6 +515,25 @@ func ValidSearchRequest(request *grpc_public_api_go.SearchRequest) derrors.Error
 			return derrors.NewInvalidArgumentError(invalidSortOrder)
 		}
 	}
+	return nil
+}
+
+func ValidDownloadRequestId(request *grpc_log_download_manager_go.DownloadRequestId) derrors.Error {
+	if request.OrganizationId == "" {
+		return derrors.NewInvalidArgumentError(emptyOrganizationId)
+	}
+	if request.RequestId == "" {
+		return derrors.NewInvalidArgumentError(emptyRequestId)
+	}
+
+	return nil
+}
+
+func ValidDownloadLogRequest(request *grpc_log_download_manager_go.DownloadLogRequest) derrors.Error {
+	if request.OrganizationId == "" {
+		return derrors.NewInvalidArgumentError(emptyOrganizationId)
+	}
+
 	return nil
 }
 
