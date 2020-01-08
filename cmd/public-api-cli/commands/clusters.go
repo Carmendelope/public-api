@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Nalej
+ * Copyright 2020 Nalej
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -77,29 +77,29 @@ func init() {
 	provAndInstCmd.PersistentFlags().StringVar(&provisionAzureCredentialsPath, "azureCredentialsPath", "", "Path for the azure credentials file")
 	provAndInstCmd.PersistentFlags().StringVar(&provisionAzureDnsZoneName, "azureDnsZoneName", "", "DNS zone for azure")
 	provAndInstCmd.PersistentFlags().StringVar(&provisionAzureResourceGroup, "azureResourceGroup", "", "Azure resource group")
-	provAndInstCmd.PersistentFlags().StringVar(&provisionClusterType, "clusterType", "kubernetes", "Cluster type")
+	provAndInstCmd.PersistentFlags().StringVar(&provisionClusterType, "clusterType", "KUBERNETES", "Cluster type")
 	provAndInstCmd.PersistentFlags().BoolVar(&provisionIsProductionCluster, "isProductionCluster", false, "Indicate the provisioning of a cluster in a production environment")
 	provAndInstCmd.PersistentFlags().StringVar(&provisionKubernetesVersion, "kubernetesVersion", "", "Kubernetes version to be used")
 	provAndInstCmd.PersistentFlags().StringVar(&provisionNodeType, "nodeType", "", "Type of node to use")
 	provAndInstCmd.PersistentFlags().IntVar(&provisionNumNodes, "numNodes", 1, "Number of nodes")
-	provAndInstCmd.PersistentFlags().StringVar(&provisionTargetPlatform, "targetPlatform", "", "Target platform")
+	provAndInstCmd.PersistentFlags().StringVar(&provisionTargetPlatform, "targetPlatform", "MINIKUBE", "Target platform")
 	provAndInstCmd.PersistentFlags().StringVar(&provisionZone, "zone", "", "Deployment zone")
 	provAndInstCmd.PersistentFlags().StringVar(&provisionKubeConfigOutputPath, "kubeConfigOutputPath", "/tmp", "Path where the kubeconfig will be stored")
 	clustersCmd.AddCommand(provAndInstCmd)
 
-	scaleClusterCmd.PersistentFlags().StringVar(&provisionClusterType, "clusterType", "kubernetes", "Cluster type")
+	scaleClusterCmd.PersistentFlags().StringVar(&provisionClusterType, "clusterType", "KUBERNETES", "Cluster type")
 	scaleClusterCmd.PersistentFlags().StringVar(&provisionAzureCredentialsPath, "azureCredentialsPath", "", "Path for the azure credentials file")
 	scaleClusterCmd.PersistentFlags().StringVar(&provisionAzureResourceGroup, "azureResourceGroup", "", "Azure resource group")
-	scaleClusterCmd.PersistentFlags().StringVar(&provisionTargetPlatform, "targetPlatform", "", "Target platform")
+	scaleClusterCmd.PersistentFlags().StringVar(&provisionTargetPlatform, "targetPlatform", "MINIKUBE", "Target platform")
 	clustersCmd.AddCommand(scaleClusterCmd)
 
 	uninstallClusterCmd.Flags().StringVar(&provisionTargetPlatform, "targetPlatform", "AZURE", "Target platform")
 	clustersCmd.AddCommand(uninstallClusterCmd)
 
-	decomissionClusterCmd.Flags().StringVar(&provisionClusterType, "clusterType", "kubernetes", "Cluster type")
+	decomissionClusterCmd.Flags().StringVar(&provisionClusterType, "clusterType", "KUBERNETES", "Cluster type")
 	decomissionClusterCmd.Flags().StringVar(&provisionAzureCredentialsPath, "azureCredentialsPath", "", "Path for the azure credentials file")
 	decomissionClusterCmd.Flags().StringVar(&provisionAzureResourceGroup, "azureResourceGroup", "", "Azure resource group")
-	decomissionClusterCmd.Flags().StringVar(&provisionTargetPlatform, "targetPlatform", "", "Target platform")
+	decomissionClusterCmd.Flags().StringVar(&provisionTargetPlatform, "targetPlatform", "MINIKUBE", "Target platform")
 	clustersCmd.AddCommand(decomissionClusterCmd)
 }
 
