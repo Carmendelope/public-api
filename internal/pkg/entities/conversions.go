@@ -87,6 +87,7 @@ func ToPublicAPIEndpoints(source []*grpc_application_go.Endpoint) []*grpc_public
 		toAdd := &grpc_public_api_go.Endpoint{
 			TypeName: e.Type.String(),
 			Path:     e.Path,
+			Options:  e.Options,
 		}
 		result = append(result, toAdd)
 	}
@@ -130,8 +131,11 @@ func hideCredentials(credentials *grpc_application_go.ImageCredentials) *grpc_ap
 	}
 }
 
-func ToPublicAPIServiceInstances(source []*grpc_application_go.ServiceInstance) []*grpc_public_api_go.ServiceInstance {
+// ToPublicAPIServiceInstances convert []*grpc_application_go.ServiceInstance to []*grpc_public_api_go.ServiceInstance
+// and returns a list of HOST_HEADER_CONFIGURATION (endpoint options) defined by the user
+func ToPublicAPIServiceInstances(source []*grpc_application_go.ServiceInstance) ([]*grpc_public_api_go.ServiceInstance, []string) {
 	result := make([]*grpc_public_api_go.ServiceInstance, 0)
+	hostHeader := make ([]string, 0)
 
 	for _, si := range source {
 		endpoints := make([]string, len(si.Endpoints))
@@ -141,6 +145,16 @@ func ToPublicAPIServiceInstances(source []*grpc_application_go.ServiceInstance) 
 		credentials := si.Credentials
 		if credentials != nil {
 			credentials = hideCredentials(credentials)
+		}
+
+		for _, port := range si.ExposedPorts {
+			for _, endpoint := range port.Endpoints {
+				for optionKey, optionValue := range endpoint.Options {
+					if optionKey == grpc_application_go.EndpointOptions_HOST_HEADER_CONFIGURATION.String() {
+						hostHeader = append(hostHeader, optionValue)
+					}
+				}
+			}
 		}
 
 		toAdd := &grpc_public_api_go.ServiceInstance{
@@ -170,7 +184,7 @@ func ToPublicAPIServiceInstances(source []*grpc_application_go.ServiceInstance) 
 		}
 		result = append(result, toAdd)
 	}
-	return result
+	return result, hostHeader
 }
 
 func ToPublicAPIInstanceMetadata(metadata *grpc_application_go.InstanceMetadata) *grpc_public_api_go.InstanceMetadata {
@@ -203,7 +217,7 @@ func ToPublicAPIGroupInstances(source []*grpc_application_go.ServiceGroupInstanc
 	result := make([]*grpc_public_api_go.ServiceGroupInstance, 0)
 	for _, sgi := range source {
 		serviceInstance := make([]*grpc_public_api_go.ServiceInstance, len(sgi.ServiceInstances))
-		serviceInstance = ToPublicAPIServiceInstances(sgi.ServiceInstances)
+		serviceInstance, hostHeader := ToPublicAPIServiceInstances(sgi.ServiceInstances)
 		var spec *grpc_public_api_go.ServiceGroupDeploymentSpecs
 		if sgi.Specs != nil {
 			spec = &grpc_public_api_go.ServiceGroupDeploymentSpecs{
@@ -226,7 +240,7 @@ func ToPublicAPIGroupInstances(source []*grpc_application_go.ServiceGroupInstanc
 			Metadata:               ToPublicAPIInstanceMetadata(sgi.Metadata),
 			Specs:                  spec,
 			Labels:                 sgi.Labels,
-			GlobalFqdn:             sgi.GlobalFqdn,
+			GlobalFqdn:             append(sgi.GlobalFqdn, hostHeader...),
 		}
 		result = append(result, toAdd)
 	}
