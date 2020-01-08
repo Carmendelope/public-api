@@ -53,11 +53,6 @@ func init() {
 	updateUserCmd.Flags().StringVar(&phone, "phone", "", "New phone for the user")
 	updateUserCmd.Flags().StringVar(&location, "location", "", "New location for the user")
 	updateUserCmd.Flags().StringVar(&lastName, "lastName", "", "New last name for the user")
-	updateUserCmd.Flags().BoolVar(&updateName, "updateName", false, "New name for the user")
-	updateUserCmd.Flags().BoolVar(&updateTitle, "updateTitle", false, "New title for the user")
-	updateUserCmd.Flags().BoolVar(&updatePhone, "updatePhone", false, "New phone for the user")
-	updateUserCmd.Flags().BoolVar(&updateLocation, "updateLocation", false, "New location for the user")
-	updateUserCmd.Flags().BoolVar(&updateLastName, "updateLastName", false, "New last name for the user")
 	_ = updateUserCmd.MarkFlagRequired("email")
 	usersCmd.AddCommand(updateUserCmd)
 
