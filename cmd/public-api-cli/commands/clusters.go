@@ -45,7 +45,7 @@ func init() {
 	installClustersCmd.Flags().StringVar(&username, "username", "", "Username (for clusters requiring the install of Kubernetes)")
 	installClustersCmd.Flags().StringVar(&password, "password", "", "Password (for clusters requiring the install of Kubernetes)")
 	installClustersCmd.Flags().StringArrayVar(&nodes, "nodes", []string{}, "Nodes (for clusters requiring the install of Kubernetes)")
-	installClustersCmd.Flags().StringVar(&targetPlatform, "targetPlatform", "MINIKUBE", "Indicate the target platform between MINIKUBE AZURE")
+	installClustersCmd.Flags().StringVar(&targetPlatform, "targetPlatform", "", "Indicate the target platform between MINIKUBE AZURE")
 	installClustersCmd.Flags().BoolVar(&useStaticIPAddresses, "useStaticIPAddresses", false,
 		"Use statically assigned IP Addresses for the public facing services")
 	installClustersCmd.Flags().StringVar(&ipAddressIngress, "ipAddressIngress", "",
@@ -82,7 +82,7 @@ func init() {
 	provAndInstCmd.PersistentFlags().StringVar(&provisionKubernetesVersion, "kubernetesVersion", "", "Kubernetes version to be used")
 	provAndInstCmd.PersistentFlags().StringVar(&provisionNodeType, "nodeType", "", "Type of node to use")
 	provAndInstCmd.PersistentFlags().IntVar(&provisionNumNodes, "numNodes", 1, "Number of nodes")
-	provAndInstCmd.PersistentFlags().StringVar(&provisionTargetPlatform, "targetPlatform", "MINIKUBE", "Target platform")
+	provAndInstCmd.PersistentFlags().StringVar(&provisionTargetPlatform, "targetPlatform", "", "Target platform")
 	provAndInstCmd.PersistentFlags().StringVar(&provisionZone, "zone", "", "Deployment zone")
 	provAndInstCmd.PersistentFlags().StringVar(&provisionKubeConfigOutputPath, "kubeConfigOutputPath", "/tmp", "Path where the kubeconfig will be stored")
 	clustersCmd.AddCommand(provAndInstCmd)
@@ -90,7 +90,7 @@ func init() {
 	scaleClusterCmd.PersistentFlags().StringVar(&provisionClusterType, "clusterType", "KUBERNETES", "Cluster type")
 	scaleClusterCmd.PersistentFlags().StringVar(&provisionAzureCredentialsPath, "azureCredentialsPath", "", "Path for the azure credentials file")
 	scaleClusterCmd.PersistentFlags().StringVar(&provisionAzureResourceGroup, "azureResourceGroup", "", "Azure resource group")
-	scaleClusterCmd.PersistentFlags().StringVar(&provisionTargetPlatform, "targetPlatform", "MINIKUBE", "Target platform")
+	scaleClusterCmd.PersistentFlags().StringVar(&provisionTargetPlatform, "targetPlatform", "", "Target platform")
 	clustersCmd.AddCommand(scaleClusterCmd)
 
 	uninstallClusterCmd.Flags().StringVar(&provisionTargetPlatform, "targetPlatform", "AZURE", "Target platform")
@@ -99,7 +99,7 @@ func init() {
 	decomissionClusterCmd.Flags().StringVar(&provisionClusterType, "clusterType", "KUBERNETES", "Cluster type")
 	decomissionClusterCmd.Flags().StringVar(&provisionAzureCredentialsPath, "azureCredentialsPath", "", "Path for the azure credentials file")
 	decomissionClusterCmd.Flags().StringVar(&provisionAzureResourceGroup, "azureResourceGroup", "", "Azure resource group")
-	decomissionClusterCmd.Flags().StringVar(&provisionTargetPlatform, "targetPlatform", "MINIKUBE", "Target platform")
+	decomissionClusterCmd.Flags().StringVar(&provisionTargetPlatform, "targetPlatform", "", "Target platform")
 	clustersCmd.AddCommand(decomissionClusterCmd)
 }
 
