@@ -27,6 +27,7 @@ import (
 	"github.com/nalej/grpc-infrastructure-go"
 	"github.com/nalej/grpc-infrastructure-manager-go"
 	"github.com/nalej/grpc-inventory-manager-go"
+	"github.com/nalej/grpc-log-download-manager-go"
 	"github.com/nalej/grpc-monitoring-go"
 	"github.com/nalej/grpc-organization-go"
 	"github.com/nalej/grpc-provisioner-go"
@@ -85,6 +86,7 @@ type Clients struct {
 	agentClient       grpc_inventory_manager_go.AgentClient
 	appNetClient      grpc_application_manager_go.ApplicationNetworkClient
 	provisionerClient grpc_provisioner_go.ProvisionClient
+	logDownloadClient grpc_log_download_manager_go.LogDownloadManagerClient
 }
 
 func (s *Service) GetClients() (*Clients, derrors.Error) {
@@ -124,6 +126,10 @@ func (s *Service) GetClients() (*Clients, derrors.Error) {
 	if err != nil {
 		return nil, derrors.AsError(err, "canot create connection with provisioner manager address")
 	}
+	logDownConn, err := grpc.Dial(s.Configuration.LogDownloadManagerAddress, grpc.WithInsecure())
+	if err != nil {
+		return nil, derrors.AsError(err, "canot create connection with log-download manager address")
+	}
 
 	oClient := grpc_organization_go.NewOrganizationsClient(smConn)
 	cClient := grpc_infrastructure_go.NewClustersClient(smConn)
@@ -141,11 +147,12 @@ func (s *Service) GetClients() (*Clients, derrors.Error) {
 	appNetClient := grpc_application_manager_go.NewApplicationNetworkClient(appConn)
 	provClient := grpc_provisioner_go.NewProvisionClient(provConn)
 	unifLoggClient := grpc_application_manager_go.NewUnifiedLoggingClient(appConn)
+	downloadClient := grpc_log_download_manager_go.NewLogDownloadManagerClient(logDownConn)
 
 	return &Clients{oClient, cClient, nClient, infraClient, umClient,
 		appClient, deviceClient, ulClient, unifLoggClient, mmClient, amClient,
 		eicClient, invClient, agentClient, appNetClient,
-		provClient}, nil
+		provClient, downloadClient}, nil
 }
 
 // Run the service, launch the REST service handler.
@@ -244,7 +251,6 @@ func (s *Service) LaunchHTTP() error {
 	if err := grpc_public_api_go.RegisterProvisionHandlerFromEndpoint(context.Background(), mux, clientAddr, opts); err != nil {
 		log.Fatal().Err(err).Msg("failed to start provision handler")
 	}
-
 	server := &http.Server{
 		Addr:    addr,
 		Handler: s.allowCORS(mux),
@@ -289,7 +295,7 @@ func (s *Service) LaunchGRPC(authConfig *interceptor.AuthorizationConfig) error 
 	devManager := devices.NewManager(clients.deviceClient)
 	devHandler := devices.NewHandler(devManager)
 
-	ulManager := unified_logging.NewManager(clients.unifLoggClient)
+	ulManager := unified_logging.NewManager(clients.unifLoggClient, clients.logDownloadClient)
 	ulHandler := unified_logging.NewHandler(ulManager)
 
 	ecManager := ec.NewManager(clients.eicClient, clients.agentClient)

@@ -105,6 +105,10 @@ func AsTable(result interface{}, labelLength int) *ResultTable {
 		return FromDeviceList(result, labelLength)
 	case *grpc_application_manager_go.LogResponse:
 		return FromLogResponse(result)
+	case *grpc_public_api_go.DownloadLogResponse:
+		return FromDownloadLogResponse(result)
+	case *grpc_public_api_go.DownloadLogResponseList:
+		return FromDownloadLogResponseList(result)
 	case *grpc_public_api_go.Node:
 		return FromNode(result, labelLength)
 	case *grpc_public_api_go.NodeList:
@@ -520,6 +524,47 @@ func FromLogResponse(result *grpc_application_manager_go.LogResponse) *ResultTab
 		for _, e := range result.Entries {
 			r = append(r, []string{time.Unix(0, e.Timestamp).String(), e.Msg})
 		}
+	}
+
+	return &ResultTable{r}
+}
+
+func FromDownloadLogResponse(result *grpc_public_api_go.DownloadLogResponse) *ResultTable {
+
+	from := "NA"
+	to := "NA"
+	if result.From != 0 {
+		time.Unix(0, result.From).String()
+	}
+	if result.To != 0 {
+		time.Unix(0, result.To).String()
+	}
+
+	r := make([][]string, 0)
+
+	r = append(r, []string{"REQUEST_ID", "FROM", "TO", "STATE", "INFO"})
+	r = append(r, []string{result.RequestId, from, to, result.StateName, result.Info})
+
+	if result.Url != "" {
+		r = append(r, []string{""})
+		r = append(r, []string{"URL", "EXPIRATION"})
+		r = append(r, []string{result.Url, time.Unix(0, result.Expiration).String()})
+	}
+
+	return &ResultTable{r}
+}
+
+func FromDownloadLogResponseList(result *grpc_public_api_go.DownloadLogResponseList) *ResultTable {
+
+	r := make([][]string, 0)
+
+	r = append(r, []string{"REQUEST_ID", "STATE", "INFO", "EXPIRATION"})
+	for _, response := range result.Responses {
+		exp := ""
+		if response.Expiration != 0 {
+			exp= time.Unix(0, response.Expiration).String()
+		}
+		r = append(r, []string{response.RequestId, response.StateName, response.Info, exp})
 	}
 
 	return &ResultTable{r}

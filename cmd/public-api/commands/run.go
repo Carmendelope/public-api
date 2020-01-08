@@ -61,6 +61,8 @@ func init() {
 		"Provisioner Manager address (host:port)")
 	runCmd.PersistentFlags().StringVar(&config.InventoryManagerAddress, "inventoryManagerAddress", "localhost:5510",
 		"Inventory Manager address (host:port)")
+	runCmd.PersistentFlags().StringVar(&config.LogDownloadManagerAddress, "logDownloadManagerAddress", "localhost:8940",
+		"logDownload Manager address (host:port)")
 
 	rootCmd.AddCommand(runCmd)
 }

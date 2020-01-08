@@ -27,6 +27,7 @@ import (
 	"github.com/nalej/authx/pkg/interceptor"
 	"github.com/nalej/grpc-application-manager-go"
 	"github.com/nalej/grpc-authx-go"
+	"github.com/nalej/grpc-log-download-manager-go"
 	"github.com/nalej/grpc-organization-go"
 	"github.com/nalej/grpc-public-api-go"
 	"github.com/nalej/grpc-utils/pkg/test"
@@ -51,9 +52,10 @@ var _ = ginkgo.Describe("Unified Logging", func() {
 	var (
 		systemModelAddress    = os.Getenv("IT_SM_ADDRESS")
 		unifiedLoggingAddress = os.Getenv("IT_UL_COORD_ADDRESS")
+		logManagerAddress = os.Getenv("LOG_DOWNLOAD_ADDRESS")
 	)
 
-	if systemModelAddress == "" || unifiedLoggingAddress == "" {
+	if systemModelAddress == "" || unifiedLoggingAddress == "" || logManagerAddress == ""{
 		ginkgo.Fail("missing environment variables")
 	}
 
@@ -67,6 +69,8 @@ var _ = ginkgo.Describe("Unified Logging", func() {
 	var orgClient grpc_organization_go.OrganizationsClient
 	var smConn *grpc.ClientConn
 	var client grpc_public_api_go.UnifiedLoggingClient
+	var lmClient grpc_log_download_manager_go.LogDownloadManagerClient
+	var lmConn *grpc.ClientConn
 
 	var organization, appInstance, sgInstance string
 	var token string
@@ -87,10 +91,13 @@ var _ = ginkgo.Describe("Unified Logging", func() {
 		ulConn = utils.GetConnection(unifiedLoggingAddress)
 		ulClient = grpc_application_manager_go.NewUnifiedLoggingClient(ulConn)
 
+		lmConn = utils.GetConnection(logManagerAddress)
+		lmClient = grpc_log_download_manager_go.NewLogDownloadManagerClient(lmConn)
+
 		conn, err := test.GetConn(*listener)
 		gomega.Expect(err).To(gomega.Succeed())
 
-		manager := NewManager(ulClient)
+		manager := NewManager(ulClient, lmClient)
 		handler := NewHandler(manager)
 		grpc_public_api_go.RegisterUnifiedLoggingServer(server, handler)
 		test.LaunchServer(server, listener)

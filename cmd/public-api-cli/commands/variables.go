@@ -83,6 +83,7 @@ var redirectLog bool
 var desc bool
 var follow bool
 var nFirst bool
+var metadata bool
 
 var rangeMinutes int32
 var clusterStatFields string

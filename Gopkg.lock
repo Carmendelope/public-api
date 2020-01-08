@@ -163,12 +163,12 @@
   version = "v0.0.8"
 
 [[projects]]
-  digest = "1:5b4a712e9c2afbde8fe222cb0096183d0a0f72d1c2e4493cd39b55318b1a7c67"
+  digest = "1:95f5a2198d2514a3e6a61c4232ba4d3beb427ea1238e83701f9afa3ce890f0f4"
   name = "github.com/nalej/grpc-common-go"
   packages = ["."]
   pruneopts = ""
-  revision = "88afedc770cfa91e85284eeced920c2978fee8ef"
-  version = "v0.0.38"
+  revision = "c8ada5678b3c35c8c35fb030326d9891550901bf"
+  version = "v0.0.39"
 
 [[projects]]
   digest = "1:442429f610e3934106628ab549ddce78c45195ded6ba88ad76339b2a7756dc27"
@@ -251,6 +251,14 @@
   version = "v0.0.57"
 
 [[projects]]
+  digest = "1:6d73d2765df384574a8b2533ecc87716abd7bad857cf171c2ae6ec6f4fc0b984"
+  name = "github.com/nalej/grpc-log-download-manager-go"
+  packages = ["."]
+  pruneopts = ""
+  revision = "309d10e59a5d5746a6626f0d6614d73233cc33f8"
+  version = "v0.0.2"
+
+[[projects]]
   digest = "1:47c7ff107cac9e04917b46348f45c7a9a0a0a2021a45f3ed0b20074d75ea043e"
   name = "github.com/nalej/grpc-login-api-go"
   packages = ["."]
@@ -299,12 +307,12 @@
   version = "v0.0.10"
 
 [[projects]]
-  digest = "1:86c4da3384de8b398caff649ebbab987026c8b6593fc144d52629d8afd9be11d"
+  digest = "1:5e56f05e559c416ee72da6c4233da1eee1bad127ac9a7e1b2ad0a2ac050fb40b"
   name = "github.com/nalej/grpc-public-api-go"
   packages = ["."]
   pruneopts = ""
-  revision = "b72f3366bcad3bcfb3a38c8281c9d4ed275b323f"
-  version = "v0.0.129"
+  revision = "098589d88e465924cf0237e5a324a4218dd9e338"
+  version = "v0.0.131"
 
 [[projects]]
   digest = "1:9996325ca6794ee35aea9478f041ef73eaf4e4a4f8418943e6c9aec1a9f5a211"
@@ -616,6 +624,7 @@
     "github.com/nalej/grpc-installer-go",
     "github.com/nalej/grpc-inventory-go",
     "github.com/nalej/grpc-inventory-manager-go",
+    "github.com/nalej/grpc-log-download-manager-go",
     "github.com/nalej/grpc-login-api-go",
     "github.com/nalej/grpc-monitoring-go",
     "github.com/nalej/grpc-organization-go",

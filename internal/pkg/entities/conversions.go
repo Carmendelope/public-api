@@ -27,6 +27,7 @@ import (
 	"github.com/nalej/grpc-installer-go"
 	"github.com/nalej/grpc-inventory-go"
 	"github.com/nalej/grpc-inventory-manager-go"
+	"github.com/nalej/grpc-log-download-manager-go"
 	"github.com/nalej/grpc-public-api-go"
 	"github.com/rs/zerolog/log"
 )
@@ -539,6 +540,20 @@ func NewSearchRequest(request *grpc_public_api_go.SearchRequest) *grpc_applicati
 		To:                     request.To,
 		IncludeMetadata:        true,
 		NFirst:                 request.NFirst,
+	}
+}
+
+func ToPublicAPIDownloadLogReponse(response *grpc_log_download_manager_go.DownloadLogResponse) *grpc_public_api_go.DownloadLogResponse {
+	return &grpc_public_api_go.DownloadLogResponse{
+		OrganizationId: response.OrganizationId,
+		RequestId:      response.RequestId,
+		From:           response.From,
+		To:             response.To,
+		State:          response.State,
+		StateName:      response.State.String(),
+		Url:            response.Url,
+		Expiration:     response.Expiration,
+		Info:           response.Info,
 	}
 }
 
