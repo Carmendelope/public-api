@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Nalej
+ * Copyright 2020 Nalej
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -246,7 +246,7 @@ func ValidUpdateUserRequest(updateUserRequest *grpc_user_go.UpdateUserRequest) d
 	if updateUserRequest.Email == "" {
 		return derrors.NewInvalidArgumentError(emptyEmail)
 	}
-	if !(updateUserRequest.UpdateLocation || updateUserRequest.UpdatePhone || updateUserRequest.UpdateTitle || updateUserRequest.UpdateName) {
+	if !(updateUserRequest.UpdateLocation || updateUserRequest.UpdatePhone || updateUserRequest.UpdateTitle || updateUserRequest.UpdateName || updateUserRequest.UpdateLastName) {
 		return derrors.NewInvalidArgumentError(invalidUpdateUserRequest)
 	}
 	return nil

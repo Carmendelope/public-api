@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Nalej
+ * Copyright 2020 Nalej
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -160,7 +160,7 @@ func (u *Users) ChangePassword(organizationID string, email string, password str
 }
 
 // Update the user information.
-func (u *Users) Update(organizationID string, email string, updateName bool, newName string, updateTitle bool, newTitle string, updatePhone bool, newPhone string, updateLocation bool, newLocation string) {
+func (u *Users) Update(organizationID string, email string, updateName bool, newName string, updateTitle bool, newTitle string, updatePhone bool, newPhone string, updateLocation bool, newLocation string, updateLastName bool, newLastName string) {
 	if organizationID == "" {
 		log.Fatal().Msg("organizationID cannot be empty")
 	}
@@ -181,6 +181,8 @@ func (u *Users) Update(organizationID string, email string, updateName bool, new
 		Phone:          newPhone,
 		UpdateLocation: updateLocation,
 		Location:       newLocation,
+		UpdateLastName: updateLastName,
+		LastName:       newLastName,
 	}
 	if newName != "" {
 		updateRequest.Name = newName

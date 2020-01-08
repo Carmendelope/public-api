@@ -53,7 +53,7 @@
 
 [[constraint]]
     name="github.com/nalej/grpc-user-go"
-    version="=v0.0.35"
+    version="=v0.0.36"
 
 [[constraint]]
     name="github.com/nalej/grpc-user-manager-go"

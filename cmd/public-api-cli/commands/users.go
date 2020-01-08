@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Nalej
+ * Copyright 2020 Nalej
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -52,10 +52,12 @@ func init() {
 	updateUserCmd.Flags().StringVar(&title, "title", "", "New title for the user")
 	updateUserCmd.Flags().StringVar(&phone, "phone", "", "New phone for the user")
 	updateUserCmd.Flags().StringVar(&location, "location", "", "New location for the user")
+	updateUserCmd.Flags().StringVar(&lastName, "lastName", "", "New last name for the user")
 	updateUserCmd.Flags().BoolVar(&updateName, "updateName", false, "New name for the user")
 	updateUserCmd.Flags().BoolVar(&updateTitle, "updateTitle", false, "New title for the user")
 	updateUserCmd.Flags().BoolVar(&updatePhone, "updatePhone", false, "New phone for the user")
 	updateUserCmd.Flags().BoolVar(&updateLocation, "updateLocation", false, "New location for the user")
+	updateUserCmd.Flags().BoolVar(&updateLastName, "updateLastName", false, "New last name for the user")
 	_ = updateUserCmd.MarkFlagRequired("email")
 	usersCmd.AddCommand(updateUserCmd)
 
@@ -144,7 +146,7 @@ var updateUserCmd = &cobra.Command{
 			cliOptions.ResolveAsInt("port", nalejPort),
 			insecure, useTLS,
 			cliOptions.Resolve("cacert", caCertPath), cliOptions.Resolve("output", output), cliOptions.ResolveAsInt("labelLength", labelLength))
-		u.Update(cliOptions.Resolve("organizationID", organizationID), email, updateName, name, updateTitle, title, updatePhone, phone, updateLocation, location)
+		u.Update(cliOptions.Resolve("organizationID", organizationID), email, updateName, name, updateTitle, title, updatePhone, phone, updateLocation, location, updateLastName, lastName)
 	},
 }
 
