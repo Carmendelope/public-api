@@ -87,7 +87,7 @@ func (h *Handler) DownloadLog(ctx context.Context, request *grpc_log_download_ma
 	return h.Manager.DownloadLog(request, rm.UserID)
 }
 
-func (h *Handler) List(ctx context.Context, request *grpc_organization_go.OrganizationId) (*grpc_public_api_go.DownloadLogResponseList, error){
+func (h *Handler) List(ctx context.Context, request *grpc_organization_go.OrganizationId) (*grpc_public_api_go.DownloadLogResponseList, error) {
 	rm, err := authhelper.GetRequestMetadata(ctx)
 	if err != nil {
 		return nil, conversions.ToGRPCError(err)

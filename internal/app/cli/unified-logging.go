@@ -270,7 +270,7 @@ func (u *UnifiedLogging) Check(organizationId, requestId string) {
 	u.PrintResultOrError(response, err, "cannot check the status of the request")
 }
 
-func (u *UnifiedLogging) Get (organizationId, requestId, outputPath string ){
+func (u *UnifiedLogging) Get(organizationId, requestId, outputPath string) {
 	// Validate options
 	if organizationId == "" {
 		log.Fatal().Msg("organizationID cannot be empty")
@@ -283,13 +283,13 @@ func (u *UnifiedLogging) Get (organizationId, requestId, outputPath string ){
 	response, err := u.callCheck(organizationId, requestId)
 	if err != nil {
 		u.PrintResultOrError(response, err, "cannot check the status of the request")
-	}else{
+	} else {
 		u.callGet(response, outputPath)
 	}
 	return
 }
 
-func (u *UnifiedLogging) List (organizationId string, watch bool) {
+func (u *UnifiedLogging) List(organizationId string, watch bool) {
 	// Validate options
 	if organizationId == "" {
 		log.Fatal().Msg("organizationID cannot be empty")
@@ -307,7 +307,7 @@ func (u *UnifiedLogging) List (organizationId string, watch bool) {
 	}
 	response, err := client.List(ctx, request)
 
-	toCompare := make (map[string]*grpc_public_api_go.DownloadLogResponse, 0)
+	toCompare := make(map[string]*grpc_public_api_go.DownloadLogResponse, 0)
 	for _, resp := range response.Responses {
 		toCompare[resp.RequestId] = resp
 	}
@@ -325,7 +325,7 @@ func (u *UnifiedLogging) List (organizationId string, watch bool) {
 				operations, err := client.List(watchCtx, request)
 				if err != nil {
 					u.PrintResultOrError(operations, err, "cannot list the status of the requests")
-				}else {
+				} else {
 
 					for _, retrieved := range operations.Responses {
 						found, exists := toCompare[retrieved.RequestId]
@@ -379,7 +379,7 @@ func (u *UnifiedLogging) callGet(checkResponse *grpc_public_api_go.DownloadLogRe
 		return
 	}
 	// Create the file
-	outputFilePath := fmt.Sprintf("%s%s.zip",outputPath, checkResponse.RequestId)
+	outputFilePath := fmt.Sprintf("%s%s.zip", outputPath, checkResponse.RequestId)
 	out, err := os.Create(outputFilePath)
 	if err != nil {
 		u.PrintResultOrError(checkResponse, err, "error creating the file")
@@ -410,7 +410,6 @@ func (u *UnifiedLogging) callCheck(organizationId, requestId string) (*grpc_publ
 	})
 
 }
-
 
 // returns searchTo field (we need this value to update the next search)
 func (u *UnifiedLogging) callSearch(searchRequest *grpc_public_api_go.SearchRequest, redirectLog bool, client grpc_public_api_go.UnifiedLoggingClient) int64 {

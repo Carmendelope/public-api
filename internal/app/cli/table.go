@@ -562,7 +562,7 @@ func FromDownloadLogResponseList(result *grpc_public_api_go.DownloadLogResponseL
 	for _, response := range result.Responses {
 		exp := ""
 		if response.Expiration != 0 {
-			exp= time.Unix(0, response.Expiration).String()
+			exp = time.Unix(0, response.Expiration).String()
 		}
 		r = append(r, []string{response.RequestId, response.StateName, response.Info, exp})
 	}

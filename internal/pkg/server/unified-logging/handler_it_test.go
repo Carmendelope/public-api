@@ -52,10 +52,10 @@ var _ = ginkgo.Describe("Unified Logging", func() {
 	var (
 		systemModelAddress    = os.Getenv("IT_SM_ADDRESS")
 		unifiedLoggingAddress = os.Getenv("IT_UL_COORD_ADDRESS")
-		logManagerAddress = os.Getenv("LOG_DOWNLOAD_ADDRESS")
+		logManagerAddress     = os.Getenv("LOG_DOWNLOAD_ADDRESS")
 	)
 
-	if systemModelAddress == "" || unifiedLoggingAddress == "" || logManagerAddress == ""{
+	if systemModelAddress == "" || unifiedLoggingAddress == "" || logManagerAddress == "" {
 		ginkgo.Fail("missing environment variables")
 	}
 
