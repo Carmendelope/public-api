@@ -63,23 +63,6 @@ func (o *Organizations) Info(organizationID string) *grpc_organization_manager_g
 	return info
 }
 
-/*
-OrganizationId       string   `protobuf:"bytes,1,opt,name=organization_id,json=organizationId,proto3" json:"organization_id,omitempty"`
-	UpdateName           bool     `protobuf:"varint,2,opt,name=update_name,json=updateName,proto3" json:"update_name,omitempty"`
-	Name                 string   `protobuf:"bytes,3,opt,name=name,proto3" json:"name,omitempty"`
-	UpdateFullAddress    bool     `protobuf:"varint,4,opt,name=update_full_address,json=updateFullAddress,proto3" json:"update_full_address,omitempty"`
-	FullAddress          string   `protobuf:"bytes,5,opt,name=full_address,json=fullAddress,proto3" json:"full_address,omitempty"`
-	UpdateCity           bool     `protobuf:"varint,6,opt,name=update_city,json=updateCity,proto3" json:"update_city,omitempty"`
-	City                 string   `protobuf:"bytes,7,opt,name=city,proto3" json:"city,omitempty"`
-	UpdateState          bool     `protobuf:"varint,8,opt,name=update_state,json=updateState,proto3" json:"update_state,omitempty"`
-	State                string   `protobuf:"bytes,9,opt,name=state,proto3" json:"state,omitempty"`
-	UpdateCountry        bool     `protobuf:"varint,10,opt,name=update_country,json=updateCountry,proto3" json:"update_country,omitempty"`
-	Country              string   `protobuf:"bytes,11,opt,name=country,proto3" json:"country,omitempty"`
-	UpdateZipCode        bool     `protobuf:"varint,12,opt,name=update_zip_code,json=updateZipCode,proto3" json:"update_zip_code,omitempty"`
-	ZipCode              string   `protobuf:"bytes,13,opt,name=zip_code,json=zipCode,proto3" json:"zip_code,omitempty"`
-	UpdatePhoto          bool     `protobuf:"varint,14,opt,name=update_photo,json=updatePhoto,proto3" json:"update_photo,omitempty"`
-	PhotoBase64          string   `protobuf:"bytes,15,opt,name=photo_base64,json=photoBase64,proto3" json:"photo_base64,omitempty"`
-*/
 func (o *Organizations) Update(organizationID string, updateName bool, name string, updateFullAddress bool, fullAddress string,
 	updateCity bool, city string, updateState bool, state string, updateCountry bool, country string, updateZipCode bool, zipCode string) {
 	if organizationID == "" {
