@@ -25,6 +25,14 @@ var publicKeyPath string
 
 var newPassword string
 
+// organization update
+var address string
+var city string
+var state string
+var country string
+var zipCode string
+var photo string
+
 var name string
 var roleName string
 var roleID string

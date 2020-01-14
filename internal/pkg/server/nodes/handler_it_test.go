@@ -17,6 +17,7 @@
 /*
 RUN_INTEGRATION_TEST=true
 IT_SM_ADDRESS=localhost:8800
+IT_ORGMNG_ADDRESS=localhost:8950
 */
 
 package nodes
@@ -26,7 +27,7 @@ import (
 	"github.com/nalej/authx/pkg/interceptor"
 	"github.com/nalej/grpc-authx-go"
 	"github.com/nalej/grpc-infrastructure-go"
-	"github.com/nalej/grpc-organization-go"
+	"github.com/nalej/grpc-organization-manager-go"
 	"github.com/nalej/grpc-public-api-go"
 	"github.com/nalej/grpc-utils/pkg/test"
 	"github.com/nalej/public-api/internal/pkg/server/ithelpers"
@@ -50,9 +51,10 @@ var _ = ginkgo.Describe("Nodes", func() {
 
 	var (
 		systemModelAddress = os.Getenv("IT_SM_ADDRESS")
+		orgManagerAddress = os.Getenv("IT_ORGMNG_ADDRESS")
 	)
 
-	if systemModelAddress == "" {
+	if systemModelAddress == "" || orgManagerAddress == "" {
 		ginkgo.Fail("missing environment variables")
 	}
 
@@ -61,14 +63,15 @@ var _ = ginkgo.Describe("Nodes", func() {
 	// grpc test listener
 	var listener *bufconn.Listener
 	// client
-	var orgClient grpc_organization_go.OrganizationsClient
+	var orgClient grpc_organization_manager_go.OrganizationsClient
 	var clustClient grpc_infrastructure_go.ClustersClient
 	var nodeClient grpc_infrastructure_go.NodesClient
 	var smConn *grpc.ClientConn
+	var orgConn *grpc.ClientConn
 	var client grpc_public_api_go.NodesClient
 
 	// Target organization.
-	var targetOrganization *grpc_organization_go.Organization
+	var targetOrganization *grpc_organization_manager_go.Organization
 	var targetCluster *grpc_infrastructure_go.Cluster
 	var token string
 	var devToken string
@@ -80,9 +83,11 @@ var _ = ginkgo.Describe("Nodes", func() {
 		server = grpc.NewServer(interceptor.WithServerAuthxInterceptor(interceptor.NewConfig(ithelpers.GetAllAuthConfig(), "secret", ithelpers.AuthHeader)))
 
 		smConn = utils.GetConnection(systemModelAddress)
-		orgClient = grpc_organization_go.NewOrganizationsClient(smConn)
 		clustClient = grpc_infrastructure_go.NewClustersClient(smConn)
 		nodeClient = grpc_infrastructure_go.NewNodesClient(smConn)
+
+		orgConn	= utils.GetConnection(orgManagerAddress)
+		orgClient = grpc_organization_manager_go.NewOrganizationsClient(orgConn)
 
 		conn, err := test.GetConn(*listener)
 		gomega.Expect(err).To(gomega.Succeed())
@@ -114,6 +119,7 @@ var _ = ginkgo.Describe("Nodes", func() {
 		server.Stop()
 		listener.Close()
 		smConn.Close()
+		orgConn.Close()
 	})
 
 	ginkgo.It("should be able to list the nodes in a clusters", func() {

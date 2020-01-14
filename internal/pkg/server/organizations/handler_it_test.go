@@ -16,7 +16,7 @@
 
 /*
 RUN_INTEGRATION_TEST=true
-IT_SM_ADDRESS=localhost:8800
+IT_ORGMNG_ADDRESS=localhost:8950
 */
 
 package organizations
@@ -26,6 +26,7 @@ import (
 	"github.com/nalej/authx/pkg/interceptor"
 	"github.com/nalej/grpc-authx-go"
 	"github.com/nalej/grpc-organization-go"
+	"github.com/nalej/grpc-organization-manager-go"
 	"github.com/nalej/grpc-public-api-go"
 	"github.com/nalej/grpc-utils/pkg/test"
 	"github.com/nalej/public-api/internal/pkg/server/ithelpers"
@@ -46,10 +47,10 @@ var _ = ginkgo.Describe("Organizations", func() {
 	}
 
 	var (
-		systemModelAddress = os.Getenv("IT_SM_ADDRESS")
+		orgManagerAddress = os.Getenv("IT_ORGMNG_ADDRESS")
 	)
 
-	if systemModelAddress == "" {
+	if orgManagerAddress == "" {
 		ginkgo.Fail("missing environment variables")
 	}
 
@@ -58,12 +59,13 @@ var _ = ginkgo.Describe("Organizations", func() {
 	// grpc test listener
 	var listener *bufconn.Listener
 	// client
-	var orgClient grpc_organization_go.OrganizationsClient
-	var smConn *grpc.ClientConn
+	var orgClient grpc_organization_manager_go.OrganizationsClient
+	var orgConn *grpc.ClientConn
+
 	var client grpc_public_api_go.OrganizationsClient
 
 	// Target organization.
-	var targetOrganization *grpc_organization_go.Organization
+	var targetOrganization *grpc_organization_manager_go.Organization
 	var token string
 	var devToken string
 	var opeToken string
@@ -73,8 +75,9 @@ var _ = ginkgo.Describe("Organizations", func() {
 
 		server = grpc.NewServer(interceptor.WithServerAuthxInterceptor(interceptor.NewConfig(
 			ithelpers.GetAllAuthConfig(), "secret", ithelpers.AuthHeader)))
-		smConn = utils.GetConnection(systemModelAddress)
-		orgClient = grpc_organization_go.NewOrganizationsClient(smConn)
+
+		orgConn = utils.GetConnection(orgManagerAddress)
+		orgClient = grpc_organization_manager_go.NewOrganizationsClient(orgConn)
 
 		conn, err := test.GetConn(*listener)
 		gomega.Expect(err).To(gomega.Succeed())
@@ -100,7 +103,7 @@ var _ = ginkgo.Describe("Organizations", func() {
 	ginkgo.AfterSuite(func() {
 		server.Stop()
 		listener.Close()
-		smConn.Close()
+		orgConn.Close()
 	})
 
 	ginkgo.It("should be able to retrieve an existing organization", func() {

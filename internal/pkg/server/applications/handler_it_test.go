@@ -16,8 +16,8 @@
 
 /*
 RUN_INTEGRATION_TEST=true
-IT_SM_ADDRESS=localhost:8800
 IT_APPMGR_ADDRESS=localhost:8910
+IT_ORGMGR_ADDRESS=localhost:8950
 */
 
 package applications
@@ -29,6 +29,7 @@ import (
 	"github.com/nalej/grpc-application-manager-go"
 	"github.com/nalej/grpc-authx-go"
 	"github.com/nalej/grpc-organization-go"
+	"github.com/nalej/grpc-organization-manager-go"
 	"github.com/nalej/grpc-public-api-go"
 	"github.com/nalej/grpc-utils/pkg/conversions"
 	"github.com/nalej/grpc-utils/pkg/test"
@@ -50,11 +51,11 @@ var _ = ginkgo.Describe("Applications", func() {
 	}
 
 	var (
-		systemModelAddress = os.Getenv("IT_SM_ADDRESS")
-		appManagerAddress  = os.Getenv("IT_APPMGR_ADDRESS")
+		appManagerAddress          = os.Getenv("IT_APPMGR_ADDRESS")
+		organizationManagerAddress = os.Getenv("IT_ORGMGR_ADDRESS")
 	)
 
-	if systemModelAddress == "" || appManagerAddress == "" {
+	if organizationManagerAddress == "" || appManagerAddress == "" {
 		ginkgo.Fail("missing environment variables")
 	}
 
@@ -63,15 +64,16 @@ var _ = ginkgo.Describe("Applications", func() {
 	// grpc test listener
 	var listener *bufconn.Listener
 	// client
-	var orgClient grpc_organization_go.OrganizationsClient
+	var orgClient grpc_organization_manager_go.OrganizationsClient
 	var appClient grpc_application_manager_go.ApplicationManagerClient
 	var smConn *grpc.ClientConn
+	var orgConn *grpc.ClientConn
 	var appConn *grpc.ClientConn
 	var client grpc_public_api_go.ApplicationsClient
 	var targetDescriptor *grpc_application_go.AppDescriptor
 
 	// Target organization.
-	var targetOrganization *grpc_organization_go.Organization
+	var targetOrganization *grpc_organization_manager_go.Organization
 	var token string
 	var devToken string
 	var operToken string
@@ -82,8 +84,8 @@ var _ = ginkgo.Describe("Applications", func() {
 		authConfig := ithelpers.GetAllAuthConfig()
 		server = grpc.NewServer(interceptor.WithServerAuthxInterceptor(interceptor.NewConfig(authConfig, "secret", ithelpers.AuthHeader)))
 
-		smConn = utils.GetConnection(systemModelAddress)
-		orgClient = grpc_organization_go.NewOrganizationsClient(smConn)
+		orgConn = utils.GetConnection(organizationManagerAddress)
+		orgClient = grpc_organization_manager_go.NewOrganizationsClient(orgConn)
 
 		appConn = utils.GetConnection(appManagerAddress)
 		appClient = grpc_application_manager_go.NewApplicationManagerClient(appConn)
