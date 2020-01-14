@@ -36,6 +36,14 @@ func init() {
 	orgCmd.PersistentFlags().StringVar(&organizationID, "organizationID", "", "Organization identifier")
 	rootCmd.AddCommand(orgCmd)
 	orgCmd.AddCommand(infoCmd)
+
+	updateOrgCmd.Flags().StringVar(&name, "name", "", "new organization name")
+	updateOrgCmd.Flags().StringVar(&address, "address", "", "new organization address")
+	updateOrgCmd.Flags().StringVar(&city, "city", "", "new organization city")
+	updateOrgCmd.Flags().StringVar(&state, "state", "", "new state")
+	updateOrgCmd.Flags().StringVar(&country, "country", "", "new organization country")
+	updateOrgCmd.Flags().StringVar(&zipCode, "zipCode", "", "new zipCode")
+	orgCmd.AddCommand(updateOrgCmd)
 }
 
 var infoCmd = &cobra.Command{
@@ -53,5 +61,28 @@ var infoCmd = &cobra.Command{
 			cliOptions.Resolve("output", output),
 			cliOptions.ResolveAsInt("labelLength", labelLength))
 		o.Info(cliOptions.Resolve("organizationID", organizationID))
+	},
+}
+
+var updateOrgCmd = &cobra.Command{
+	Use:   "update",
+	Short: "Update the info of an organization",
+	Long:  `Update the info of an organization`,
+	Run: func(cmd *cobra.Command, args []string) {
+		SetupLogging()
+		o := cli.NewOrganizations(
+			cliOptions.Resolve("nalejAddress", nalejAddress),
+			cliOptions.ResolveAsInt("port", nalejPort),
+			insecure, useTLS,
+			cliOptions.Resolve("cacert", caCertPath),
+			cliOptions.Resolve("output", output),
+			cliOptions.ResolveAsInt("labelLength", labelLength))
+		o.Update(cliOptions.Resolve("organizationID", organizationID),
+			cmd.Flag("name").Changed, name,
+			cmd.Flag("address").Changed, address,
+			cmd.Flag("city").Changed, city,
+			cmd.Flag("state").Changed, state,
+			cmd.Flag("country").Changed, country,
+			cmd.Flag("zipCode").Changed, zipCode)
 	},
 }

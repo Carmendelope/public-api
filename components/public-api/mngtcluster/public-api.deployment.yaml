@@ -53,6 +53,7 @@ spec:
         - "--inventoryManagerAddress=inventory-manager.__NPH_NAMESPACE:5510"
         - "--provisionerManagerAddress=provisioner.__NPH_NAMESPACE:8930"
         - "--logDownloadManagerAddress=log-download-manager.__NPH_NAMESPACE:8940"
+        - "--OrganizationManagerAddress=organization-manager.__NPH_NAMESPACE:8950"
         - "--authHeader=authorization"
         - "--authSecret=$(AUTH_SECRET)"
         - "--authConfigPath=/nalej/config/authx-config.json"

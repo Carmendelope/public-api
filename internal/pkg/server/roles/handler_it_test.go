@@ -16,8 +16,9 @@
 
 /*
 RUN_INTEGRATION_TEST=true
-IT_SM_ADDRESS=localhost:8800
 IT_USER_MANAGER_ADDRESS=localhost:8920
+IT_ORGMNG_ADDRESS=localhost:8950
+
 */
 
 package roles
@@ -27,6 +28,7 @@ import (
 	"github.com/nalej/authx/pkg/interceptor"
 	"github.com/nalej/grpc-authx-go"
 	"github.com/nalej/grpc-organization-go"
+	"github.com/nalej/grpc-organization-manager-go"
 	"github.com/nalej/grpc-public-api-go"
 	"github.com/nalej/grpc-user-manager-go"
 	"github.com/nalej/grpc-utils/pkg/test"
@@ -48,11 +50,11 @@ var _ = ginkgo.Describe("Roles", func() {
 	}
 
 	var (
-		systemModelAddress = os.Getenv("IT_SM_ADDRESS")
+		orgManagerAddress = os.Getenv("IT_ORGMNG_ADDRESS")
 		userManagerAddress = os.Getenv("IT_USER_MANAGER_ADDRESS")
 	)
 
-	if systemModelAddress == "" || userManagerAddress == "" {
+	if userManagerAddress == "" || orgManagerAddress == "" {
 		ginkgo.Fail("missing environment variables")
 	}
 
@@ -61,14 +63,15 @@ var _ = ginkgo.Describe("Roles", func() {
 	// grpc test listener
 	var listener *bufconn.Listener
 	// client
-	var orgClient grpc_organization_go.OrganizationsClient
+	var orgClient grpc_organization_manager_go.OrganizationsClient
 	var umClient grpc_user_manager_go.UserManagerClient
-	var smConn *grpc.ClientConn
+	var orgConn *grpc.ClientConn
+
 	var umConn *grpc.ClientConn
 	var client grpc_public_api_go.RolesClient
 
 	// Target organization.
-	var targetOrganization *grpc_organization_go.Organization
+	var targetOrganization *grpc_organization_manager_go.Organization
 	var targetRole *grpc_authx_go.Role
 	var token string
 	var devToken string
@@ -80,8 +83,8 @@ var _ = ginkgo.Describe("Roles", func() {
 		server = grpc.NewServer(interceptor.WithServerAuthxInterceptor(interceptor.NewConfig(
 			ithelpers.GetAllAuthConfig(), "secret", ithelpers.AuthHeader)))
 
-		smConn = utils.GetConnection(systemModelAddress)
-		orgClient = grpc_organization_go.NewOrganizationsClient(smConn)
+		orgConn = utils.GetConnection(orgManagerAddress)
+		orgClient = grpc_organization_manager_go.NewOrganizationsClient(orgConn)
 		umConn = utils.GetConnection(userManagerAddress)
 		umClient = grpc_user_manager_go.NewUserManagerClient(umConn)
 
@@ -110,8 +113,8 @@ var _ = ginkgo.Describe("Roles", func() {
 	ginkgo.AfterSuite(func() {
 		server.Stop()
 		listener.Close()
-		smConn.Close()
 		umConn.Close()
+		orgConn.Close()
 	})
 
 	ginkgo.It("should be able to list the roles in the system", func() {

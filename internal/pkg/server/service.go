@@ -29,7 +29,7 @@ import (
 	"github.com/nalej/grpc-inventory-manager-go"
 	"github.com/nalej/grpc-log-download-manager-go"
 	"github.com/nalej/grpc-monitoring-go"
-	"github.com/nalej/grpc-organization-go"
+	"github.com/nalej/grpc-organization-manager-go"
 	"github.com/nalej/grpc-provisioner-go"
 	"github.com/nalej/grpc-public-api-go"
 	"github.com/nalej/grpc-unified-logging-go"
@@ -70,7 +70,7 @@ func NewService(conf Config) *Service {
 }
 
 type Clients struct {
-	orgClient         grpc_organization_go.OrganizationsClient
+	orgClient         grpc_organization_manager_go.OrganizationsClient
 	clusClient        grpc_infrastructure_go.ClustersClient
 	nodeClient        grpc_infrastructure_go.NodesClient
 	infraClient       grpc_infrastructure_manager_go.InfrastructureManagerClient
@@ -124,14 +124,18 @@ func (s *Service) GetClients() (*Clients, derrors.Error) {
 	}
 	provConn, err := grpc.Dial(s.Configuration.ProvisionerManagerAddress, grpc.WithInsecure())
 	if err != nil {
-		return nil, derrors.AsError(err, "canot create connection with provisioner manager address")
+		return nil, derrors.AsError(err, "cannot create connection with provisioner manager address")
 	}
 	logDownConn, err := grpc.Dial(s.Configuration.LogDownloadManagerAddress, grpc.WithInsecure())
 	if err != nil {
-		return nil, derrors.AsError(err, "canot create connection with log-download manager address")
+		return nil, derrors.AsError(err, "cannot create connection with log-download manager address")
+	}
+	orgConn, err := grpc.Dial(s.Configuration.OrganizationManagerAddress, grpc.WithInsecure())
+	if err != nil {
+		return nil, derrors.AsError(err, "cannot create connection with organization manager address")
 	}
 
-	oClient := grpc_organization_go.NewOrganizationsClient(smConn)
+	oClient := grpc_organization_manager_go.NewOrganizationsClient(orgConn)
 	cClient := grpc_infrastructure_go.NewClustersClient(smConn)
 	nClient := grpc_infrastructure_go.NewNodesClient(smConn)
 	infraClient := grpc_infrastructure_manager_go.NewInfrastructureManagerClient(infraConn)

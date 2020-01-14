@@ -119,6 +119,17 @@ func ValidOrganizationId(organizationID *grpc_organization_go.OrganizationId) de
 	return nil
 }
 
+func ValidUpdateOrganizationRequest(request *grpc_organization_go.UpdateOrganizationRequest) derrors.Error {
+	if request.OrganizationId == "" {
+		return derrors.NewInvalidArgumentError(emptyOrganizationId)
+	}
+	if !request.UpdateName && !request.UpdateFullAddress && !request.UpdateCity && !request.UpdateState &&
+		!request.UpdateCountry && !request.UpdateZipCode && !request.UpdatePhoto {
+		return derrors.NewInvalidArgumentError("some field must be modified")
+	}
+	return nil
+}
+
 func ValidClusterId(clusterID *grpc_infrastructure_go.ClusterId) derrors.Error {
 	if clusterID.OrganizationId == "" {
 		return derrors.NewInvalidArgumentError(emptyOrganizationId)

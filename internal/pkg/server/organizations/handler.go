@@ -19,8 +19,9 @@ package organizations
 import (
 	"context"
 	"github.com/nalej/derrors"
+	"github.com/nalej/grpc-common-go"
 	"github.com/nalej/grpc-organization-go"
-	"github.com/nalej/grpc-public-api-go"
+	"github.com/nalej/grpc-organization-manager-go"
 	"github.com/nalej/grpc-utils/pkg/conversions"
 	"github.com/nalej/public-api/internal/pkg/authhelper"
 	"github.com/nalej/public-api/internal/pkg/entities"
@@ -36,7 +37,7 @@ func NewHandler(manager Manager) *Handler {
 	return &Handler{manager}
 }
 
-func (h *Handler) Info(ctx context.Context, organizationID *grpc_organization_go.OrganizationId) (*grpc_public_api_go.OrganizationInfo, error) {
+func (h *Handler) Info(ctx context.Context, organizationID *grpc_organization_go.OrganizationId) (*grpc_organization_manager_go.Organization, error) {
 	rm, err := authhelper.GetRequestMetadata(ctx)
 	if err != nil {
 		return nil, conversions.ToGRPCError(err)
@@ -49,4 +50,21 @@ func (h *Handler) Info(ctx context.Context, organizationID *grpc_organization_go
 		return nil, conversions.ToGRPCError(err)
 	}
 	return h.Manager.Info(organizationID)
+}
+
+func (h *Handler) Update(ctx context.Context, updateRequest *grpc_organization_go.UpdateOrganizationRequest) (*grpc_common_go.Success, error) {
+	rm, err := authhelper.GetRequestMetadata(ctx)
+	if err != nil {
+		return nil, conversions.ToGRPCError(err)
+	}
+	if updateRequest.OrganizationId != rm.OrganizationID {
+		return nil, derrors.NewPermissionDeniedError("cannot access requested OrganizationID")
+	}
+
+	err = entities.ValidUpdateOrganizationRequest(updateRequest)
+	if err != nil {
+		return nil, conversions.ToGRPCError(err)
+	}
+	return h.Manager.Update(updateRequest)
+
 }
