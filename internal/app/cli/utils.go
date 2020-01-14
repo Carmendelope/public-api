@@ -59,6 +59,7 @@ func GetPath(path string) string {
 }
 
 // PhotoToBase64 reads a image an convert the content to a base64 string
+// The photo can not be bigger than 1M
 func PhotoToBase64(path string) (string, derrors.Error) {
 	// if there is no path -> empty image
 	if path == ""  {
@@ -70,6 +71,11 @@ func PhotoToBase64(path string) (string, derrors.Error) {
 	if err != nil {
 		return "", derrors.AsError(err, "cannot read descriptor")
 	}
+
+	if len(content) > (1024*1024) {
+		return "", derrors.NewInvalidArgumentError("photo can not be bigger than 1M")
+	}
+
 	// convert the buffer bytes to base64 string - use buf.Bytes() for new image
 	imgBase64Str := base64.StdEncoding.EncodeToString(content)
 
