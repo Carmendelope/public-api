@@ -64,7 +64,8 @@ func (o *Organizations) Info(organizationID string) *grpc_organization_manager_g
 }
 
 func (o *Organizations) Update(organizationID string, updateName bool, name string, updateFullAddress bool, fullAddress string,
-	updateCity bool, city string, updateState bool, state string, updateCountry bool, country string, updateZipCode bool, zipCode string) {
+	updateCity bool, city string, updateState bool, state string, updateCountry bool, country string,
+	updateZipCode bool, zipCode string, updatePhoto bool, photoPath string) {
 	if organizationID == "" {
 		log.Fatal().Msg("organizationID cannot be empty")
 	}
@@ -79,6 +80,12 @@ func (o *Organizations) Update(organizationID string, updateName bool, name stri
 		log.Fatal().Str("trace", err.DebugReport()).Msg("cannot create the connection with the Nalej platform")
 	}
 	defer c.Close()
+
+	photo64, err := PhotoToBase64(photoPath)
+	if err != nil {
+		o.PrintResultOrError(photoPath, err, "cannot open photo file")
+	}
+
 	ctx, cancel := o.GetContext()
 	defer cancel()
 
@@ -97,6 +104,8 @@ func (o *Organizations) Update(organizationID string, updateName bool, name stri
 		Country:           country,
 		UpdateZipCode:     updateZipCode,
 		ZipCode:           zipCode,
+		UpdatePhoto:       updatePhoto,
+		PhotoBase64:       photo64,
 	}
 	success, iErr := orgClient.Update(ctx, updateRequest)
 	o.PrintResultOrError(success, iErr, "cannot update organization info")

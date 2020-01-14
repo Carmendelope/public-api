@@ -43,6 +43,7 @@ func init() {
 	updateOrgCmd.Flags().StringVar(&state, "state", "", "new state")
 	updateOrgCmd.Flags().StringVar(&country, "country", "", "new organization country")
 	updateOrgCmd.Flags().StringVar(&zipCode, "zipCode", "", "new zipCode")
+	updateOrgCmd.Flags().StringVar(&photoPath, "photoPath", "", "Organization logo path")
 	orgCmd.AddCommand(updateOrgCmd)
 }
 
@@ -83,6 +84,7 @@ var updateOrgCmd = &cobra.Command{
 			cmd.Flag("city").Changed, city,
 			cmd.Flag("state").Changed, state,
 			cmd.Flag("country").Changed, country,
-			cmd.Flag("zipCode").Changed, zipCode)
+			cmd.Flag("zipCode").Changed, zipCode,
+			cmd.Flag("photoPath").Changed, photoPath)
 	},
 }
