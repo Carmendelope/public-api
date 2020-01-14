@@ -225,6 +225,7 @@ func FromOrganization(info *grpc_organization_manager_go.Organization) *ResultTa
 	result = append(result, []string{""})
 	result = append(result, []string{"ADDRESS", "CITY", "STATE", "COUNTRY", "ZIP CODE"})
 	result = append(result, []string{info.FullAddress, info.City, info.State, info.Country, info.ZipCode})
+	result = append(result, []string{""})
 	result = append(result, []string{"NUM.USERS", "NUM.ROLES", "NUM.SETTINGS"})
 	result = append(result, []string{fmt.Sprintf("%d", info.NumUsers), fmt.Sprintf("%d", info.NumRoles), fmt.Sprintf("%d", info.NumSettings)})
 	return &ResultTable{result}
