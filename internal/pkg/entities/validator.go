@@ -797,3 +797,11 @@ func ValidUpdateSettingRequest(updateRequest *grpc_public_api_go.UpdateSettingRe
 	}
 	return nil
 }
+
+func ValidListRequest(request *grpc_public_api_go.ListRequest) derrors.Error {
+	if request.OrganizationId == "" {
+		return derrors.NewInvalidArgumentError(emptyOrganizationId)
+	}
+
+	return nil
+}

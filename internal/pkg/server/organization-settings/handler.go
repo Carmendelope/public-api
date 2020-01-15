@@ -22,7 +22,6 @@ import (
 	"context"
 	"github.com/nalej/derrors"
 	"github.com/nalej/grpc-common-go"
-	"github.com/nalej/grpc-organization-go"
 	"github.com/nalej/grpc-organization-manager-go"
 	"github.com/nalej/grpc-public-api-go"
 	"github.com/nalej/grpc-utils/pkg/conversions"
@@ -57,7 +56,7 @@ func (h *Handler) Update(ctx context.Context, updateRequest *grpc_public_api_go.
 
 	return h.Manager.Update(updateRequest)
 }
-func (h *Handler) List(ctx context.Context, orgID *grpc_organization_go.OrganizationId) (*grpc_organization_manager_go.SettingList, error){
+func (h *Handler) List(ctx context.Context, orgID *grpc_public_api_go.ListRequest) (*grpc_organization_manager_go.SettingList, error){
 	rm, err := authhelper.GetRequestMetadata(ctx)
 	if err != nil {
 		return nil, conversions.ToGRPCError(err)
@@ -66,7 +65,7 @@ func (h *Handler) List(ctx context.Context, orgID *grpc_organization_go.Organiza
 		return nil, derrors.NewPermissionDeniedError("cannot access requested OrganizationID")
 	}
 
-	vErr := entities.ValidOrganizationId(orgID)
+	vErr := entities.ValidListRequest(orgID)
 	if vErr != nil {
 		return nil, conversions.ToGRPCError(vErr)
 	}

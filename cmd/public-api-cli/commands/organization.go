@@ -54,6 +54,8 @@ func init() {
 	setCmd.AddCommand(updateSetCmd)
 	// list
 	setCmd.AddCommand(listSetCmd)
+	listSetCmd.Flags().BoolVar(&desc, "desc", false, "Sort settings in descending order")
+
 }
 
 var infoCmd = &cobra.Command{
@@ -146,6 +148,6 @@ var listSetCmd = &cobra.Command{
 			cliOptions.Resolve("cacert", caCertPath),
 			cliOptions.Resolve("output", output),
 			cliOptions.ResolveAsInt("labelLength", labelLength))
-		o.ListSettings(cliOptions.Resolve("organizationID", organizationID))
+		o.ListSettings(cliOptions.Resolve("organizationID", organizationID), desc)
 	},
 }

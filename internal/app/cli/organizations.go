@@ -17,6 +17,7 @@
 package cli
 
 import (
+	"github.com/nalej/grpc-common-go"
 	"github.com/nalej/grpc-organization-go"
 	"github.com/nalej/grpc-organization-manager-go"
 	"github.com/nalej/grpc-public-api-go"
@@ -145,7 +146,7 @@ func (o *Organizations) UpdateSetting(organizationID string, key string, value s
 	return
 }
 
-func (o *Organizations) ListSettings (organizationID string) *grpc_organization_manager_go.SettingList{
+func (o *Organizations) ListSettings (organizationID string, desc bool) *grpc_organization_manager_go.SettingList{
 	if organizationID == "" {
 		log.Fatal().Msg("organizationID cannot be empty")
 	}
@@ -163,9 +164,17 @@ func (o *Organizations) ListSettings (organizationID string) *grpc_organization_
 	defer cancel()
 
 	orgClient := grpc_public_api_go.NewOrganizationSettingsClient(c)
+	order := &grpc_common_go.OrderOptions{
+		Field: "key",
+		Order: grpc_common_go.Order_ASC,
+	}
+	if desc {
+		order.Order = grpc_common_go.Order_DESC
+	}
 
-	list, iErr := orgClient.List(ctx, &grpc_organization_go.OrganizationId{
+	list, iErr := orgClient.List(ctx, &grpc_public_api_go.ListRequest{
 		OrganizationId: organizationID,
+		Order: order,
 	})
 
 	o.PrintResultOrError(list, iErr, "cannot obtain organization info")
