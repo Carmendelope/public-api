@@ -52,9 +52,6 @@ func init() {
 	orgCmd.AddCommand(setCmd)
 	// update
 	setCmd.AddCommand(updateSetCmd)
-	//	updateSetCmd.Flags().StringVar(&key, "key", "", "setting key")
-	updateSetCmd.Flags().StringVar(&value, "value", "", "new setting value")
-
 	// list
 	setCmd.AddCommand(listSetCmd)
 }
