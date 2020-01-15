@@ -103,7 +103,7 @@ var updateOrgCmd = &cobra.Command{
 
 var setCmd = &cobra.Command{
 	Use:     "setting",
-	Aliases: []string{"org"},
+	Aliases: []string{"set"},
 	Short:   "Settings related operations",
 	Long:    `Settings related operations`,
 	Run: func(cmd *cobra.Command, args []string) {
