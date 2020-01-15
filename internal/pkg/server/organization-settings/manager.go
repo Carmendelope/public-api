@@ -23,8 +23,10 @@ import (
 	"github.com/nalej/grpc-organization-go"
 	"github.com/nalej/grpc-organization-manager-go"
 	"github.com/nalej/grpc-public-api-go"
+	"github.com/nalej/grpc-utils/pkg/conversions"
 	"github.com/nalej/public-api/internal/pkg/entities"
 	"github.com/nalej/public-api/internal/pkg/server/common"
+	"github.com/nalej/public-api/internal/pkg/server/decorators"
 )
 
 type Manager struct {
@@ -44,10 +46,26 @@ func (m *Manager) Update(updateRequest *grpc_public_api_go.UpdateSettingRequest)
 
 }
 
-func (m *Manager) List(organizationID *grpc_organization_go.OrganizationId) (*grpc_organization_manager_go.SettingList, error) {
+func (m *Manager) List(organizationID *grpc_public_api_go.ListRequest) (*grpc_organization_manager_go.SettingList, error) {
 
 	ctx, cancel := common.GetContext()
 	defer cancel()
 
-	return m.settingClient.ListSettings(ctx, organizationID)
+	list, err :=  m.settingClient.ListSettings(ctx, &grpc_organization_go.OrganizationId{
+		OrganizationId: organizationID.OrganizationId,
+	})
+	if err != nil {
+		return nil, err
+	}
+	// if sorting requested -> apply the decorator
+	if organizationID.Order != nil {
+		sortOptions := decorators.OrderOptions{Field: organizationID.Order.Field, Asc: organizationID.Order.Order == grpc_common_go.Order_ASC}
+		sortingResponse := decorators.ApplyDecorator(list.Settings, decorators.NewOrderDecorator(sortOptions))
+		if sortingResponse.Error != nil {
+			return nil, conversions.ToGRPCError(sortingResponse.Error)
+		} else {
+			list.Settings = sortingResponse.SettingList
+		}
+	}
+	return list, nil
 }
