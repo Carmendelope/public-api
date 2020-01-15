@@ -17,7 +17,12 @@
 package cli
 
 import (
+	"encoding/base64"
+	"github.com/nalej/derrors"
 	"github.com/rs/zerolog/log"
+	"io/ioutil"
+	"os/user"
+	"path/filepath"
 	"strings"
 )
 
@@ -33,4 +38,46 @@ func GetLabels(rawLabels string) map[string]string {
 		labels[ls[0]] = ls[1]
 	}
 	return labels
+}
+
+
+// GetPath resolves a given path by adding support for relative paths.
+func GetPath(path string) string {
+	if strings.HasPrefix(path, "~") {
+		usr, _ := user.Current()
+		return strings.Replace(path, "~", usr.HomeDir, 1)
+	}
+	if strings.HasPrefix(path, "../") {
+		abs, _ := filepath.Abs("../")
+		return strings.Replace(path, "..", abs, 1)
+	}
+	if strings.HasPrefix(path, ".") {
+		abs, _ := filepath.Abs("./")
+		return strings.Replace(path, ".", abs, 1)
+	}
+	return path
+}
+
+// PhotoToBase64 reads a image an convert the content to a base64 string
+// The photo can not be bigger than 1M
+func PhotoToBase64(path string) (string, derrors.Error) {
+	// if there is no path -> empty image
+	if path == ""  {
+		return "", nil
+	}
+
+	convertedPath := GetPath(path)
+	content, err := ioutil.ReadFile(convertedPath)
+	if err != nil {
+		return "", derrors.AsError(err, "cannot read descriptor")
+	}
+
+	if len(content) > (1024*1024) {
+		return "", derrors.NewInvalidArgumentError("photo can not be bigger than 1M")
+	}
+
+	// convert the buffer bytes to base64 string - use buf.Bytes() for new image
+	imgBase64Str := base64.StdEncoding.EncodeToString(content)
+
+	return imgBase64Str, nil
 }

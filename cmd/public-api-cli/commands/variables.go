@@ -31,7 +31,7 @@ var city string
 var state string
 var country string
 var zipCode string
-var photo string
+var photoPath string
 
 var name string
 var roleName string
