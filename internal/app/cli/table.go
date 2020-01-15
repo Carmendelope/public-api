@@ -64,6 +64,8 @@ func AsTable(result interface{}, labelLength int) *ResultTable {
 	switch result := result.(type) {
 	case *grpc_organization_manager_go.Organization:
 		return FromOrganization(result)
+	case *grpc_organization_manager_go.SettingList:
+		return FromSettingList(result)
 	case *grpc_public_api_go.User:
 		return FromUser(result)
 	case *grpc_user_manager_go.User:
@@ -228,6 +230,15 @@ func FromOrganization(info *grpc_organization_manager_go.Organization) *ResultTa
 	result = append(result, []string{""})
 	result = append(result, []string{"NUM.USERS", "NUM.ROLES", "NUM.SETTINGS"})
 	result = append(result, []string{fmt.Sprintf("%d", info.NumUsers), fmt.Sprintf("%d", info.NumRoles), fmt.Sprintf("%d", info.NumSettings)})
+	return &ResultTable{result}
+}
+
+func FromSettingList (list *grpc_organization_manager_go.SettingList) *ResultTable {
+	result := make([][]string, 0)
+	result = append(result, []string{"KEY", "VALUE", "DESCRIPTION"})
+	for _, setting := range list.Settings {
+		result = append(result, []string{setting.Key, setting.Value, setting.Description})
+	}
 	return &ResultTable{result}
 }
 

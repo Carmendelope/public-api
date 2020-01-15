@@ -44,6 +44,7 @@ import (
 	"github.com/nalej/public-api/internal/pkg/server/inventory"
 	"github.com/nalej/public-api/internal/pkg/server/monitoring"
 	"github.com/nalej/public-api/internal/pkg/server/nodes"
+	"github.com/nalej/public-api/internal/pkg/server/organization-settings"
 	"github.com/nalej/public-api/internal/pkg/server/organizations"
 	"github.com/nalej/public-api/internal/pkg/server/provisioner"
 	"github.com/nalej/public-api/internal/pkg/server/resources"
@@ -255,6 +256,9 @@ func (s *Service) LaunchHTTP() error {
 	if err := grpc_public_api_go.RegisterProvisionHandlerFromEndpoint(context.Background(), mux, clientAddr, opts); err != nil {
 		log.Fatal().Err(err).Msg("failed to start provision handler")
 	}
+	if err := grpc_public_api_go.RegisterOrganizationSettingsHandlerFromEndpoint(context.Background(), mux, clientAddr, opts); err != nil {
+		log.Fatal().Err(err).Msg("failed to start organization settings handler")
+	}
 	server := &http.Server{
 		Addr:    addr,
 		Handler: s.allowCORS(mux),
@@ -323,6 +327,9 @@ func (s *Service) LaunchGRPC(authConfig *interceptor.AuthorizationConfig) error 
 	provManager := provisioner.NewManager(clients.provisionerClient)
 	provHandler := provisioner.NewHandler(provManager)
 
+	settingsManager := organization_settings.NewManager(clients.orgClient)
+	settingsHandler := organization_settings.NewHandler(settingsManager)
+
 	grpcServer := grpc.NewServer(interceptor.WithServerAuthxInterceptor(
 		interceptor.NewConfig(authConfig, s.Configuration.AuthSecret, s.Configuration.AuthHeader)))
 	grpc_public_api_go.RegisterOrganizationsServer(grpcServer, orgHandler)
@@ -341,6 +348,7 @@ func (s *Service) LaunchGRPC(authConfig *interceptor.AuthorizationConfig) error 
 	grpc_public_api_go.RegisterAgentServer(grpcServer, agentHandler)
 	grpc_public_api_go.RegisterApplicationNetworkServer(grpcServer, appNetHandler)
 	grpc_public_api_go.RegisterProvisionServer(grpcServer, provHandler)
+	grpc_public_api_go.RegisterOrganizationSettingsServer(grpcServer, settingsHandler)
 
 	if s.Configuration.Debug {
 		log.Info().Msg("Enabling gRPC server reflection")

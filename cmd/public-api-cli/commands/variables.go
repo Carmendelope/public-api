@@ -25,6 +25,9 @@ var publicKeyPath string
 
 var newPassword string
 
+var key string
+var value string
+
 // organization update
 var address string
 var city string

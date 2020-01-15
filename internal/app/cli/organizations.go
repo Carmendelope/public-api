@@ -111,3 +111,63 @@ func (o *Organizations) Update(organizationID string, updateName bool, name stri
 	o.PrintResultOrError(success, iErr, "cannot update organization info")
 	return
 }
+
+func (o *Organizations) UpdateSetting(organizationID string, key string, value string) {
+	if organizationID == "" {
+		log.Fatal().Msg("organizationID cannot be empty")
+	}
+	if key == "" {
+		log.Fatal().Msg("key cannot be empty")
+	}
+
+	err := o.LoadCredentials()
+	if err != nil {
+		log.Fatal().Str("trace", err.DebugReport()).Msg("cannot load credentials, try login first")
+	}
+
+	c, err := o.GetConnection()
+	if err != nil {
+		log.Fatal().Str("trace", err.DebugReport()).Msg("cannot create the connection with the Nalej platform")
+	}
+	defer c.Close()
+	ctx, cancel := o.GetContext()
+	defer cancel()
+
+	orgClient := grpc_public_api_go.NewOrganizationSettingsClient(c)
+
+	success, iErr := orgClient.Update(ctx, &grpc_public_api_go.UpdateSettingRequest{
+		OrganizationId: organizationID,
+		Key:            key,
+		Value:          value,
+	})
+
+	o.PrintResultOrError(success, iErr, "cannot obtain organization info")
+	return
+}
+
+func (o *Organizations) ListSettings (organizationID string) *grpc_organization_manager_go.SettingList{
+	if organizationID == "" {
+		log.Fatal().Msg("organizationID cannot be empty")
+	}
+	err := o.LoadCredentials()
+	if err != nil {
+		log.Fatal().Str("trace", err.DebugReport()).Msg("cannot load credentials, try login first")
+	}
+
+	c, err := o.GetConnection()
+	if err != nil {
+		log.Fatal().Str("trace", err.DebugReport()).Msg("cannot create the connection with the Nalej platform")
+	}
+	defer c.Close()
+	ctx, cancel := o.GetContext()
+	defer cancel()
+
+	orgClient := grpc_public_api_go.NewOrganizationSettingsClient(c)
+
+	list, iErr := orgClient.List(ctx, &grpc_organization_go.OrganizationId{
+		OrganizationId: organizationID,
+	})
+
+	o.PrintResultOrError(list, iErr, "cannot obtain organization info")
+	return list
+}
