@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Nalej
+ * Copyright 2020 Nalej
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -72,7 +72,6 @@ const emptyOutboundName = "outbound_name cannot be empty"
 const emptyRequestId = "request_id cannot be empty"
 
 const emptyKey = "key cannot be empty"
-
 
 // --------- Application descriptor JSON Schema
 type AppJSONSchema struct {
@@ -349,7 +348,7 @@ func ValidUninstallClusterRequest(request *grpc_public_api_go.UninstallClusterRe
 	return nil
 }
 
-func ValidDecomissionClusterRequest(request *grpc_public_api_go.DecomissionClusterRequest) derrors.Error {
+func ValidDecommissionClusterRequest(request *grpc_public_api_go.DecommissionClusterRequest) derrors.Error {
 	if request.OrganizationId == "" {
 		return derrors.NewInvalidArgumentError(emptyOrganizationId)
 	}
@@ -786,7 +785,6 @@ func ValidRemoveConnectionRequest(conn *grpc_application_network_go.RemoveConnec
 
 	return nil
 }
-
 
 func ValidUpdateSettingRequest(updateRequest *grpc_public_api_go.UpdateSettingRequest) derrors.Error {
 	if updateRequest.OrganizationId == "" {
