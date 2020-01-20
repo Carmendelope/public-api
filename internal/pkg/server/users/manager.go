@@ -87,7 +87,6 @@ func (m *Manager) Add(addUserRequest *grpc_public_api_go.AddUserRequest) (*grpc_
 		LastLogin:            0,
 		Phone:                "",
 		Location:             "",
-		XXX_NoUnkeyedLiteral: struct{}{},
 	}, nil
 }
 
