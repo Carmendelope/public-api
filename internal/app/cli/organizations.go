@@ -146,7 +146,7 @@ func (o *Organizations) UpdateSetting(organizationID string, key string, value s
 	return
 }
 
-func (o *Organizations) ListSettings (organizationID string, desc bool) *grpc_organization_manager_go.SettingList{
+func (o *Organizations) ListSettings(organizationID string, desc bool) *grpc_organization_manager_go.SettingList {
 	if organizationID == "" {
 		log.Fatal().Msg("organizationID cannot be empty")
 	}
@@ -174,7 +174,7 @@ func (o *Organizations) ListSettings (organizationID string, desc bool) *grpc_or
 
 	list, iErr := orgClient.List(ctx, &grpc_public_api_go.ListRequest{
 		OrganizationId: organizationID,
-		Order: order,
+		Order:          order,
 	})
 
 	o.PrintResultOrError(list, iErr, "cannot obtain organization info")

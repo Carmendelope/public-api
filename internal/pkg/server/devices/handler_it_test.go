@@ -55,7 +55,7 @@ var _ = ginkgo.Describe("Devices", func() {
 
 	var (
 		deviceManagerAddress = os.Getenv("IT_DEVICE_MANAGER_ADDRESS")
-		orgManagerAddress = os.Getenv("IT_ORGMNG_ADDRESS")
+		orgManagerAddress    = os.Getenv("IT_ORGMNG_ADDRESS")
 	)
 
 	if orgManagerAddress == "" || deviceManagerAddress == "" {

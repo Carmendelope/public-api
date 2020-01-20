@@ -52,7 +52,7 @@ var _ = ginkgo.Describe("Users", func() {
 
 	var (
 		userManagerAddress = os.Getenv("IT_USER_MANAGER_ADDRESS")
-		orgManagerAddress = os.Getenv("IT_ORGMGR_ADDRESS")
+		orgManagerAddress  = os.Getenv("IT_ORGMGR_ADDRESS")
 	)
 
 	if orgManagerAddress == "" || userManagerAddress == "" {
@@ -296,7 +296,7 @@ var _ = ginkgo.Describe("Users", func() {
 			OrganizationId: targetUser.OrganizationId,
 			Email:          targetUser.Email,
 			Name:           "newName",
-			PhotoBase64:       "newPhotoPath",
+			PhotoBase64:    "newPhotoPath",
 		}
 		ctx, cancel := ithelpers.GetContext(token)
 		defer cancel()
@@ -311,7 +311,7 @@ var _ = ginkgo.Describe("Users", func() {
 			OrganizationId: targetUser.OrganizationId,
 			Email:          targetUser.Email,
 			Name:           "newName",
-			PhotoBase64:       "newPhotoPath",
+			PhotoBase64:    "newPhotoPath",
 		}
 		ctx, cancel := ithelpers.GetContext(devToken)
 		defer cancel()
@@ -325,7 +325,7 @@ var _ = ginkgo.Describe("Users", func() {
 			OrganizationId: targetUser.OrganizationId,
 			Email:          targetUser.Email,
 			Name:           "newName",
-			PhotoBase64:       "newPhotoPath",
+			PhotoBase64:    "newPhotoPath",
 		}
 		ctx, cancel := ithelpers.GetContext(devToken)
 		defer cancel()

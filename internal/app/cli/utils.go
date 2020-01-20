@@ -40,7 +40,6 @@ func GetLabels(rawLabels string) map[string]string {
 	return labels
 }
 
-
 // GetPath resolves a given path by adding support for relative paths.
 func GetPath(path string) string {
 	if strings.HasPrefix(path, "~") {
@@ -62,7 +61,7 @@ func GetPath(path string) string {
 // The photo can not be bigger than 1M
 func PhotoToBase64(path string) (string, derrors.Error) {
 	// if there is no path -> empty image
-	if path == ""  {
+	if path == "" {
 		return "", nil
 	}
 
@@ -72,7 +71,7 @@ func PhotoToBase64(path string) (string, derrors.Error) {
 		return "", derrors.AsError(err, "cannot read descriptor")
 	}
 
-	if len(content) > (1024*1024) {
+	if len(content) > (1024 * 1024) {
 		return "", derrors.NewInvalidArgumentError("photo can not be bigger than 1M")
 	}
 

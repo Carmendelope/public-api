@@ -50,7 +50,7 @@ var _ = ginkgo.Describe("Roles", func() {
 	}
 
 	var (
-		orgManagerAddress = os.Getenv("IT_ORGMNG_ADDRESS")
+		orgManagerAddress  = os.Getenv("IT_ORGMNG_ADDRESS")
 		userManagerAddress = os.Getenv("IT_USER_MANAGER_ADDRESS")
 	)
 

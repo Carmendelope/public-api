@@ -33,7 +33,6 @@ var AppDescriptorListAllowedFields = []string{"name"}
 var LogResponseAllowedFields = []string{"timestamp"}
 var SettingsAllowedFields = []string{"key"}
 
-
 // OrderOptions represents the ordering to be applied
 type OrderOptions struct {
 	// Field to be ordered by

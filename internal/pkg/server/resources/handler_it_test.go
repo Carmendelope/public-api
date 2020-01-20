@@ -66,7 +66,7 @@ var _ = ginkgo.Describe("Resources", func() {
 
 	var (
 		systemModelAddress = os.Getenv("IT_SM_ADDRESS")
-		orgManagerAddress = os.Getenv("IT_ORGMNG_ADDRESS")
+		orgManagerAddress  = os.Getenv("IT_ORGMNG_ADDRESS")
 	)
 
 	if systemModelAddress == "" {
@@ -101,7 +101,7 @@ var _ = ginkgo.Describe("Resources", func() {
 		clustClient = grpc_infrastructure_go.NewClustersClient(smConn)
 		nodeClient = grpc_infrastructure_go.NewNodesClient(smConn)
 
-		orgConn	 = utils.GetConnection(orgManagerAddress)
+		orgConn = utils.GetConnection(orgManagerAddress)
 		orgClient = grpc_organization_manager_go.NewOrganizationsClient(orgConn)
 
 		conn, err := test.GetConn(*listener)

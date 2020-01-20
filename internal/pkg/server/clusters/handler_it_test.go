@@ -55,7 +55,7 @@ var _ = ginkgo.Describe("Clusters", func() {
 
 	var (
 		systemModelAddress    = os.Getenv("IT_SM_ADDRESS")
-		orgManagerAddress    = os.Getenv("IT_ORGMGR_ADDRESS")
+		orgManagerAddress     = os.Getenv("IT_ORGMGR_ADDRESS")
 		infraManagerAddress   = os.Getenv("IT_INFRAMGR_ADDRESS")
 		monitorManagerAddress = os.Getenv("IT_MONITORING_MANAGER_ADDRESS")
 	)

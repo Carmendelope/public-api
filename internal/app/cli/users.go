@@ -78,16 +78,16 @@ func (u *Users) Add(organizationID string, email string, password string, name s
 	}
 
 	addRequest := &grpc_public_api_go.AddUserRequest{
-		OrganizationId:       organizationID,
-		Email:                email,
-		Password:             password,
-		Name:                 name,
-		PhotoBase64:          photoBase64,
-		LastName:             lastName,
-		Location:             location,
-		Phone:                phone,
-		Title:                title,
-		RoleName:             roleName,
+		OrganizationId: organizationID,
+		Email:          email,
+		Password:       password,
+		Name:           name,
+		PhotoBase64:    photoBase64,
+		LastName:       lastName,
+		Location:       location,
+		Phone:          phone,
+		Title:          title,
+		RoleName:       roleName,
 	}
 	log.Debug().Interface("add user request", addRequest).Msg("debugging")
 	added, err := client.Add(ctx, addRequest)
@@ -185,16 +185,16 @@ func (u *Users) Update(organizationID string, email string, newName string, newP
 	defer conn.Close()
 	defer cancel()
 
-	updateRequest := ApplyUpdate (organizationID, email, newName, newPhotoPath, newLastName, newTitle, newPhone, newLocation)
+	updateRequest := ApplyUpdate(organizationID, email, newName, newPhotoPath, newLastName, newTitle, newPhone, newLocation)
 	log.Debug().Interface("updateRequest", updateRequest).Msg("sending update request")
 	done, err := client.Update(ctx, updateRequest)
 	u.PrintResultOrError(done, err, "cannot update user")
 }
 
-func ApplyUpdate (organizationID string, email string, newName string, newPhotoPath string, newLastName string, newTitle string, newPhone string, newLocation string) *grpc_user_go.UpdateUserRequest {
+func ApplyUpdate(organizationID string, email string, newName string, newPhotoPath string, newLastName string, newTitle string, newPhone string, newLocation string) *grpc_user_go.UpdateUserRequest {
 	updateRequest := &grpc_user_go.UpdateUserRequest{
-		OrganizationId:       organizationID,
-		Email:                email,
+		OrganizationId: organizationID,
+		Email:          email,
 	}
 	if newName != "" {
 		updateRequest.UpdateName = true
@@ -203,7 +203,7 @@ func ApplyUpdate (organizationID string, email string, newName string, newPhotoP
 
 	if newPhotoPath != "" {
 		updateRequest.UpdatePhotoBase64 = true
-		updateRequest.PhotoBase64 = PhotoPathToBase64 (newPhotoPath)
+		updateRequest.PhotoBase64 = PhotoPathToBase64(newPhotoPath)
 	}
 
 	if newLastName != "" {
@@ -230,8 +230,8 @@ func ApplyUpdate (organizationID string, email string, newName string, newPhotoP
 }
 
 // PhotoPathToBase64 converts an image defined by its path in a base64-encoded string
-func PhotoPathToBase64 (photoPath string) string {
-	ValidateImage (photoPath)
+func PhotoPathToBase64(photoPath string) string {
+	ValidateImage(photoPath)
 
 	photoBytes, err := ioutil.ReadFile(photoPath)
 	if err != nil {
@@ -243,7 +243,7 @@ func PhotoPathToBase64 (photoPath string) string {
 }
 
 // ValidateImage validates that the image is jpg or png and wights under 1 MB
-func ValidateImage (photoPath string) {
+func ValidateImage(photoPath string) {
 	// Check extension
 	photoExt := filepath.Ext(photoPath)
 	log.Debug().Str("extension", photoExt).Msg("image extension")

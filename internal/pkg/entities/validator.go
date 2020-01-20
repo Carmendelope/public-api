@@ -74,7 +74,6 @@ const emptyRequestId = "request_id cannot be empty"
 
 const emptyKey = "key cannot be empty"
 
-
 // --------- Application descriptor JSON Schema
 type AppJSONSchema struct {
 	// Singleton object used to validate application descriptors
@@ -787,7 +786,6 @@ func ValidRemoveConnectionRequest(conn *grpc_application_network_go.RemoveConnec
 
 	return nil
 }
-
 
 func ValidUpdateSettingRequest(updateRequest *grpc_public_api_go.UpdateSettingRequest) derrors.Error {
 	if updateRequest.OrganizationId == "" {

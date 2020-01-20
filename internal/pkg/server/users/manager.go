@@ -57,16 +57,16 @@ func (m *Manager) Add(addUserRequest *grpc_public_api_go.AddUserRequest) (*grpc_
 		return nil, conversions.ToGRPCError(derrors.NewInvalidArgumentError("role not found"))
 	}
 	toAdd := &grpc_user_manager_go.AddUserRequest{
-		OrganizationId:       addUserRequest.OrganizationId,
-		Email:                addUserRequest.Email,
-		Password:             addUserRequest.Password,
-		Name:                 addUserRequest.Name,
-		PhotoBase64:          addUserRequest.PhotoBase64,
-		LastName:             addUserRequest.LastName,
-		Location:             addUserRequest.Location,
-		Phone:                addUserRequest.Phone,
-		Title:                addUserRequest.Title,
-		RoleId:               roleId,
+		OrganizationId: addUserRequest.OrganizationId,
+		Email:          addUserRequest.Email,
+		Password:       addUserRequest.Password,
+		Name:           addUserRequest.Name,
+		PhotoBase64:    addUserRequest.PhotoBase64,
+		LastName:       addUserRequest.LastName,
+		Location:       addUserRequest.Location,
+		Phone:          addUserRequest.Phone,
+		Title:          addUserRequest.Title,
+		RoleId:         roleId,
 	}
 	ctx2, cancel2 := common.GetContext()
 	defer cancel2()

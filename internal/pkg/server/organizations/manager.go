@@ -33,7 +33,7 @@ func NewManager(orgClient grpc_organization_manager_go.OrganizationsClient) Mana
 	return Manager{orgClient: orgClient}
 }
 
-func (m *Manager) ToOrganizationInfo(organization *grpc_organization_manager_go.Organization) *grpc_organization_manager_go.Organization{
+func (m *Manager) ToOrganizationInfo(organization *grpc_organization_manager_go.Organization) *grpc_organization_manager_go.Organization {
 	return &grpc_organization_manager_go.Organization{
 		OrganizationId: organization.OrganizationId,
 		Name:           organization.Name,
@@ -52,7 +52,7 @@ func (m *Manager) Info(organizationID *grpc_organization_go.OrganizationId) (*gr
 	//return m.ToOrganizationInfo(retrieved), nil
 }
 
-func (m *Manager) Update(updateRequest *grpc_organization_go.UpdateOrganizationRequest)  (*grpc_common_go.Success, error) {
+func (m *Manager) Update(updateRequest *grpc_organization_go.UpdateOrganizationRequest) (*grpc_common_go.Success, error) {
 	ctx, cancel := common.GetContext()
 	defer cancel()
 	return m.orgClient.UpdateOrganization(ctx, updateRequest)

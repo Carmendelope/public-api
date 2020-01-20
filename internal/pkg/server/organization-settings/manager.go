@@ -34,7 +34,7 @@ type Manager struct {
 }
 
 func NewManager(settingClient grpc_organization_manager_go.OrganizationsClient) Manager {
-	return Manager{settingClient:settingClient}
+	return Manager{settingClient: settingClient}
 }
 
 func (m *Manager) Update(updateRequest *grpc_public_api_go.UpdateSettingRequest) (*grpc_common_go.Success, error) {
@@ -51,7 +51,7 @@ func (m *Manager) List(organizationID *grpc_public_api_go.ListRequest) (*grpc_or
 	ctx, cancel := common.GetContext()
 	defer cancel()
 
-	list, err :=  m.settingClient.ListSettings(ctx, &grpc_organization_go.OrganizationId{
+	list, err := m.settingClient.ListSettings(ctx, &grpc_organization_go.OrganizationId{
 		OrganizationId: organizationID.OrganizationId,
 	})
 	if err != nil {

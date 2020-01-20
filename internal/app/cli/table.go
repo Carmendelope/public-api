@@ -233,7 +233,7 @@ func FromOrganization(info *grpc_organization_manager_go.Organization) *ResultTa
 	return &ResultTable{result}
 }
 
-func FromSettingList (list *grpc_organization_manager_go.SettingList) *ResultTable {
+func FromSettingList(list *grpc_organization_manager_go.SettingList) *ResultTable {
 	result := make([][]string, 0)
 	result = append(result, []string{"KEY", "VALUE", "DESCRIPTION"})
 	for _, setting := range list.Settings {
