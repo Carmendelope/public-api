@@ -18,6 +18,7 @@
 RUN_INTEGRATION_TEST=true
 IT_SM_ADDRESS=localhost:8800
 IT_UL_COORD_ADDRESS=localhost:8323
+IT_ORGMGR_ADDRESS=localhost:8950
 */
 
 package unified_logging
@@ -28,7 +29,7 @@ import (
 	"github.com/nalej/grpc-application-manager-go"
 	"github.com/nalej/grpc-authx-go"
 	"github.com/nalej/grpc-log-download-manager-go"
-	"github.com/nalej/grpc-organization-go"
+	"github.com/nalej/grpc-organization-manager-go"
 	"github.com/nalej/grpc-public-api-go"
 	"github.com/nalej/grpc-utils/pkg/test"
 	"github.com/nalej/public-api/internal/pkg/server/ithelpers"
@@ -52,10 +53,11 @@ var _ = ginkgo.Describe("Unified Logging", func() {
 	var (
 		systemModelAddress    = os.Getenv("IT_SM_ADDRESS")
 		unifiedLoggingAddress = os.Getenv("IT_UL_COORD_ADDRESS")
-		logManagerAddress     = os.Getenv("LOG_DOWNLOAD_ADDRESS")
+		logManagerAddress = os.Getenv("LOG_DOWNLOAD_ADDRESS")
+		orgManagerAddress = os.Getenv("IT_ORGMGR_ADDRESS")
 	)
 
-	if systemModelAddress == "" || unifiedLoggingAddress == "" || logManagerAddress == "" {
+	if systemModelAddress == "" || unifiedLoggingAddress == "" || logManagerAddress == "" || orgManagerAddress == "" {
 		ginkgo.Fail("missing environment variables")
 	}
 
@@ -66,8 +68,10 @@ var _ = ginkgo.Describe("Unified Logging", func() {
 	// client
 	var ulClient grpc_application_manager_go.UnifiedLoggingClient
 	var ulConn *grpc.ClientConn
-	var orgClient grpc_organization_go.OrganizationsClient
+	var orgClient grpc_organization_manager_go.OrganizationsClient
 	var smConn *grpc.ClientConn
+	var orgConn *grpc.ClientConn
+
 	var client grpc_public_api_go.UnifiedLoggingClient
 	var lmClient grpc_log_download_manager_go.LogDownloadManagerClient
 	var lmConn *grpc.ClientConn
@@ -86,7 +90,8 @@ var _ = ginkgo.Describe("Unified Logging", func() {
 		server = grpc.NewServer(interceptor.WithServerAuthxInterceptor(interceptor.NewConfig(authConfig, "secret", ithelpers.AuthHeader)))
 
 		smConn = utils.GetConnection(systemModelAddress)
-		orgClient = grpc_organization_go.NewOrganizationsClient(smConn)
+		orgConn = utils.GetConnection(orgManagerAddress)
+		orgClient = grpc_organization_manager_go.NewOrganizationsClient(orgConn)
 
 		ulConn = utils.GetConnection(unifiedLoggingAddress)
 		ulClient = grpc_application_manager_go.NewUnifiedLoggingClient(ulConn)
@@ -133,6 +138,7 @@ var _ = ginkgo.Describe("Unified Logging", func() {
 		listener.Close()
 		smConn.Close()
 		ulConn.Close()
+		orgConn.Close()
 	})
 
 	ginkgo.Context("search", func() {

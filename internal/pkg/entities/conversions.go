@@ -28,6 +28,7 @@ import (
 	"github.com/nalej/grpc-inventory-go"
 	"github.com/nalej/grpc-inventory-manager-go"
 	"github.com/nalej/grpc-log-download-manager-go"
+	"github.com/nalej/grpc-organization-go"
 	"github.com/nalej/grpc-public-api-go"
 	"github.com/rs/zerolog/log"
 )
@@ -583,4 +584,13 @@ func ToInstallerTargetPlatform(pbPlatform grpc_public_api_go.Platform) (*grpc_in
 		return nil, derrors.NewInvalidArgumentError("unknown platform").WithParams(pbPlatform.String())
 	}
 	return &installerPlatform, nil
+}
+
+func ToUpdateSettingRequest (updateRequest *grpc_public_api_go.UpdateSettingRequest) *grpc_organization_go.UpdateSettingRequest{
+	return &grpc_organization_go.UpdateSettingRequest{
+		OrganizationId: updateRequest.OrganizationId,
+		Key: updateRequest.Key,
+		UpdateValue: true,
+		Value: updateRequest.Value,
+	}
 }

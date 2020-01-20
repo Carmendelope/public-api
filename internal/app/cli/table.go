@@ -26,6 +26,7 @@ import (
 	"github.com/nalej/grpc-inventory-go"
 	"github.com/nalej/grpc-inventory-manager-go"
 	"github.com/nalej/grpc-monitoring-go"
+	"github.com/nalej/grpc-organization-manager-go"
 	"github.com/nalej/grpc-provisioner-go"
 	"github.com/nalej/grpc-public-api-go"
 	"github.com/nalej/grpc-user-manager-go"
@@ -61,8 +62,10 @@ type ResultTable struct {
 func AsTable(result interface{}, labelLength int) *ResultTable {
 	log.Debug().Int("labelLength", labelLength).Msg("Label length")
 	switch result := result.(type) {
-	case *grpc_public_api_go.OrganizationInfo:
-		return FromOrganizationInfo(result)
+	case *grpc_organization_manager_go.Organization:
+		return FromOrganization(result)
+	case *grpc_organization_manager_go.SettingList:
+		return FromSettingList(result)
 	case *grpc_public_api_go.User:
 		return FromUser(result)
 	case *grpc_user_manager_go.User:
@@ -217,10 +220,25 @@ func TruncateString(text string, length int) string {
 	return truncatedString
 }
 
-func FromOrganizationInfo(info *grpc_public_api_go.OrganizationInfo) *ResultTable {
+func FromOrganization(info *grpc_organization_manager_go.Organization) *ResultTable {
 	result := make([][]string, 0)
 	result = append(result, []string{"ID", "NAME"})
 	result = append(result, []string{info.OrganizationId, info.Name})
+	result = append(result, []string{""})
+	result = append(result, []string{"ADDRESS", "CITY", "STATE", "COUNTRY", "ZIP CODE"})
+	result = append(result, []string{info.FullAddress, info.City, info.State, info.Country, info.ZipCode})
+	result = append(result, []string{""})
+	result = append(result, []string{"NUM.USERS", "NUM.ROLES", "NUM.SETTINGS"})
+	result = append(result, []string{fmt.Sprintf("%d", info.NumUsers), fmt.Sprintf("%d", info.NumRoles), fmt.Sprintf("%d", info.NumSettings)})
+	return &ResultTable{result}
+}
+
+func FromSettingList (list *grpc_organization_manager_go.SettingList) *ResultTable {
+	result := make([][]string, 0)
+	result = append(result, []string{"KEY", "VALUE", "DESCRIPTION"})
+	for _, setting := range list.Settings {
+		result = append(result, []string{setting.Key, setting.Value, setting.Description})
+	}
 	return &ResultTable{result}
 }
 

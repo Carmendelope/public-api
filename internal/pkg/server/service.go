@@ -29,7 +29,7 @@ import (
 	"github.com/nalej/grpc-inventory-manager-go"
 	"github.com/nalej/grpc-log-download-manager-go"
 	"github.com/nalej/grpc-monitoring-go"
-	"github.com/nalej/grpc-organization-go"
+	"github.com/nalej/grpc-organization-manager-go"
 	"github.com/nalej/grpc-provisioner-go"
 	"github.com/nalej/grpc-public-api-go"
 	"github.com/nalej/grpc-unified-logging-go"
@@ -44,6 +44,7 @@ import (
 	"github.com/nalej/public-api/internal/pkg/server/inventory"
 	"github.com/nalej/public-api/internal/pkg/server/monitoring"
 	"github.com/nalej/public-api/internal/pkg/server/nodes"
+	"github.com/nalej/public-api/internal/pkg/server/organization-settings"
 	"github.com/nalej/public-api/internal/pkg/server/organizations"
 	"github.com/nalej/public-api/internal/pkg/server/provisioner"
 	"github.com/nalej/public-api/internal/pkg/server/resources"
@@ -70,7 +71,7 @@ func NewService(conf Config) *Service {
 }
 
 type Clients struct {
-	orgClient         grpc_organization_go.OrganizationsClient
+	orgClient         grpc_organization_manager_go.OrganizationsClient
 	clusClient        grpc_infrastructure_go.ClustersClient
 	nodeClient        grpc_infrastructure_go.NodesClient
 	infraClient       grpc_infrastructure_manager_go.InfrastructureManagerClient
@@ -124,14 +125,18 @@ func (s *Service) GetClients() (*Clients, derrors.Error) {
 	}
 	provConn, err := grpc.Dial(s.Configuration.ProvisionerManagerAddress, grpc.WithInsecure())
 	if err != nil {
-		return nil, derrors.AsError(err, "canot create connection with provisioner manager address")
+		return nil, derrors.AsError(err, "cannot create connection with provisioner manager address")
 	}
 	logDownConn, err := grpc.Dial(s.Configuration.LogDownloadManagerAddress, grpc.WithInsecure())
 	if err != nil {
-		return nil, derrors.AsError(err, "canot create connection with log-download manager address")
+		return nil, derrors.AsError(err, "cannot create connection with log-download manager address")
+	}
+	orgConn, err := grpc.Dial(s.Configuration.OrganizationManagerAddress, grpc.WithInsecure())
+	if err != nil {
+		return nil, derrors.AsError(err, "cannot create connection with organization manager address")
 	}
 
-	oClient := grpc_organization_go.NewOrganizationsClient(smConn)
+	oClient := grpc_organization_manager_go.NewOrganizationsClient(orgConn)
 	cClient := grpc_infrastructure_go.NewClustersClient(smConn)
 	nClient := grpc_infrastructure_go.NewNodesClient(smConn)
 	infraClient := grpc_infrastructure_manager_go.NewInfrastructureManagerClient(infraConn)
@@ -251,6 +256,9 @@ func (s *Service) LaunchHTTP() error {
 	if err := grpc_public_api_go.RegisterProvisionHandlerFromEndpoint(context.Background(), mux, clientAddr, opts); err != nil {
 		log.Fatal().Err(err).Msg("failed to start provision handler")
 	}
+	if err := grpc_public_api_go.RegisterOrganizationSettingsHandlerFromEndpoint(context.Background(), mux, clientAddr, opts); err != nil {
+		log.Fatal().Err(err).Msg("failed to start organization settings handler")
+	}
 	server := &http.Server{
 		Addr:    addr,
 		Handler: s.allowCORS(mux),
@@ -319,6 +327,9 @@ func (s *Service) LaunchGRPC(authConfig *interceptor.AuthorizationConfig) error 
 	provManager := provisioner.NewManager(clients.provisionerClient)
 	provHandler := provisioner.NewHandler(provManager)
 
+	settingsManager := organization_settings.NewManager(clients.orgClient)
+	settingsHandler := organization_settings.NewHandler(settingsManager)
+
 	grpcServer := grpc.NewServer(interceptor.WithServerAuthxInterceptor(
 		interceptor.NewConfig(authConfig, s.Configuration.AuthSecret, s.Configuration.AuthHeader)))
 	grpc_public_api_go.RegisterOrganizationsServer(grpcServer, orgHandler)
@@ -337,6 +348,7 @@ func (s *Service) LaunchGRPC(authConfig *interceptor.AuthorizationConfig) error 
 	grpc_public_api_go.RegisterAgentServer(grpcServer, agentHandler)
 	grpc_public_api_go.RegisterApplicationNetworkServer(grpcServer, appNetHandler)
 	grpc_public_api_go.RegisterProvisionServer(grpcServer, provHandler)
+	grpc_public_api_go.RegisterOrganizationSettingsServer(grpcServer, settingsHandler)
 
 	if s.Configuration.Debug {
 		log.Info().Msg("Enabling gRPC server reflection")

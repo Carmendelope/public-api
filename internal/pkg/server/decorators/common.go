@@ -20,6 +20,7 @@ import (
 	"github.com/nalej/derrors"
 	"github.com/nalej/grpc-application-go"
 	"github.com/nalej/grpc-application-manager-go"
+	"github.com/nalej/grpc-organization-manager-go"
 	"github.com/nalej/grpc-public-api-go"
 )
 
@@ -31,6 +32,7 @@ type DecoratorResponse struct {
 	AppDescriptorList []*grpc_application_go.AppDescriptor
 	AppInstanceList   []*grpc_public_api_go.AppInstance
 	LogResponseList   []*grpc_application_manager_go.LogEntryResponse
+	SettingList       []*grpc_organization_manager_go.Setting
 	Error             derrors.Error
 }
 
@@ -53,6 +55,8 @@ func ApplyDecorator(result interface{}, decorator Decorator) *DecoratorResponse 
 		return FromAppInstanceList(result, decorator)
 	case []*grpc_application_manager_go.LogEntryResponse:
 		return FromLogEntryResponse(result, decorator)
+	case []*grpc_organization_manager_go.Setting:
+		return FromSetting(result, decorator)
 	}
 	return &DecoratorResponse{
 		Error: derrors.NewInvalidArgumentError("unable to apply decorator"),
@@ -119,5 +123,33 @@ func FromLogEntryResponse(result []*grpc_application_manager_go.LogEntryResponse
 
 	return &DecoratorResponse{
 		LogResponseList: orderedResult,
+	}
+}
+
+// FromLogEntryResponse applies decorator to a list of Settings
+func FromSetting(result []*grpc_organization_manager_go.Setting, decorator Decorator) *DecoratorResponse {
+	// convert to []interface{}
+	toGenericList := make([]interface{}, len(result))
+	for i, d := range result {
+		toGenericList[i] = *d
+	}
+
+	// call to apply
+	ordered, err := decorator.Apply(toGenericList)
+	if err != nil {
+		return &DecoratorResponse{
+			Error: err,
+		}
+	}
+
+	// reconvert to grpc_public_api_go.LogEntryResponse
+	orderedResult := make([]*grpc_organization_manager_go.Setting, len(result))
+	for i, d := range ordered {
+		aux := d.(grpc_organization_manager_go.Setting)
+		orderedResult[i] = &aux
+	}
+
+	return &DecoratorResponse{
+		SettingList: orderedResult,
 	}
 }

@@ -41,7 +41,6 @@ func NewHandler(manager Manager) *Handler {
 }
 
 func (h *Handler) Add(ctx context.Context, addUserRequest *grpc_public_api_go.AddUserRequest) (*grpc_public_api_go.User, error) {
-	log.Debug().Str("organizationID", addUserRequest.OrganizationId).Str("email", addUserRequest.Email).Msg("add user")
 	rm, err := authhelper.GetRequestMetadata(ctx)
 	if err != nil {
 		return nil, conversions.ToGRPCError(err)

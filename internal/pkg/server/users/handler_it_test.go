@@ -16,8 +16,8 @@
 
 /*
 RUN_INTEGRATION_TEST=true
-IT_SM_ADDRESS=localhost:8800
 IT_USER_MANAGER_ADDRESS=localhost:8920
+IT_ORGMGR_ADDRESS=localhost:8950
 */
 
 package users
@@ -27,6 +27,7 @@ import (
 	"github.com/nalej/authx/pkg/interceptor"
 	"github.com/nalej/grpc-authx-go"
 	"github.com/nalej/grpc-organization-go"
+	"github.com/nalej/grpc-organization-manager-go"
 	"github.com/nalej/grpc-public-api-go"
 	"github.com/nalej/grpc-user-go"
 	"github.com/nalej/grpc-user-manager-go"
@@ -50,11 +51,11 @@ var _ = ginkgo.Describe("Users", func() {
 	}
 
 	var (
-		systemModelAddress = os.Getenv("IT_SM_ADDRESS")
 		userManagerAddress = os.Getenv("IT_USER_MANAGER_ADDRESS")
+		orgManagerAddress = os.Getenv("IT_ORGMGR_ADDRESS")
 	)
 
-	if systemModelAddress == "" || userManagerAddress == "" {
+	if orgManagerAddress == "" || userManagerAddress == "" {
 		ginkgo.Fail("missing environment variables")
 	}
 
@@ -63,14 +64,14 @@ var _ = ginkgo.Describe("Users", func() {
 	// grpc test listener
 	var listener *bufconn.Listener
 	// client
-	var orgClient grpc_organization_go.OrganizationsClient
+	var orgClient grpc_organization_manager_go.OrganizationsClient
 	var umClient grpc_user_manager_go.UserManagerClient
-	var smConn *grpc.ClientConn
+	var orgConn *grpc.ClientConn
 	var umConn *grpc.ClientConn
 	var client grpc_public_api_go.UsersClient
 
 	// Target organization.
-	var targetOrganization *grpc_organization_go.Organization
+	var targetOrganization *grpc_organization_manager_go.Organization
 	var targetRole *grpc_authx_go.Role
 	var targetUser *grpc_user_manager_go.User
 	var token string
@@ -84,8 +85,8 @@ var _ = ginkgo.Describe("Users", func() {
 		server = grpc.NewServer(interceptor.WithServerAuthxInterceptor(
 			interceptor.NewConfig(ithelpers.GetAllAuthConfig(), "secret", ithelpers.AuthHeader)))
 
-		smConn = utils.GetConnection(systemModelAddress)
-		orgClient = grpc_organization_go.NewOrganizationsClient(smConn)
+		orgConn = utils.GetConnection(orgManagerAddress)
+		orgClient = grpc_organization_manager_go.NewOrganizationsClient(orgConn)
 		umConn = utils.GetConnection(userManagerAddress)
 		umClient = grpc_user_manager_go.NewUserManagerClient(umConn)
 
@@ -118,8 +119,8 @@ var _ = ginkgo.Describe("Users", func() {
 		ithelpers.DeleteAllUsers(targetOrganization.OrganizationId, umClient)
 		server.Stop()
 		listener.Close()
-		smConn.Close()
 		umConn.Close()
+		orgConn.Close()
 	})
 
 	ginkgo.BeforeEach(func() {
@@ -133,7 +134,7 @@ var _ = ginkgo.Describe("Users", func() {
 			Email:          fmt.Sprintf("random%d@nalej.com", rand.Int()),
 			Password:       "password",
 			Name:           "Name",
-			RoleName:       targetRole.Name,
+			//RoleName:       targetRole.Name,
 		}
 		ctx, cancel := ithelpers.GetContext(token)
 		defer cancel()
@@ -141,7 +142,7 @@ var _ = ginkgo.Describe("Users", func() {
 		gomega.Expect(err).To(gomega.Succeed())
 		gomega.Expect(added.OrganizationId).Should(gomega.Equal(addRequest.OrganizationId))
 		gomega.Expect(added.Email).Should(gomega.Equal(addRequest.Email))
-		gomega.Expect(added.RoleName).Should(gomega.Equal(addRequest.RoleName))
+		//gomega.Expect(added.RoleName).Should(gomega.Equal(addRequest.RoleName))
 	})
 	ginkgo.It("Developer should NOT be able to add a new user", func() {
 		addRequest := &grpc_public_api_go.AddUserRequest{
@@ -149,7 +150,7 @@ var _ = ginkgo.Describe("Users", func() {
 			Email:          fmt.Sprintf("developer%d@nalej.com", rand.Int()),
 			Password:       "password",
 			Name:           "Name",
-			RoleName:       targetRole.Name,
+			//RoleName:       targetRole.Name,
 		}
 		ctx, cancel := ithelpers.GetContext(devToken)
 		defer cancel()
@@ -162,7 +163,7 @@ var _ = ginkgo.Describe("Users", func() {
 			Email:          fmt.Sprintf("operator%d@nalej.com", rand.Int()),
 			Password:       "password",
 			Name:           "Name",
-			RoleName:       targetRole.Name,
+			//RoleName:       targetRole.Name,
 		}
 		ctx, cancel := ithelpers.GetContext(opToken)
 		defer cancel()
@@ -295,7 +296,7 @@ var _ = ginkgo.Describe("Users", func() {
 			OrganizationId: targetUser.OrganizationId,
 			Email:          targetUser.Email,
 			Name:           "newName",
-			PhotoUrl:       "newURL",
+			PhotoBase64:       "newPhotoPath",
 		}
 		ctx, cancel := ithelpers.GetContext(token)
 		defer cancel()
@@ -310,7 +311,7 @@ var _ = ginkgo.Describe("Users", func() {
 			OrganizationId: targetUser.OrganizationId,
 			Email:          targetUser.Email,
 			Name:           "newName",
-			PhotoUrl:       "newURL",
+			PhotoBase64:       "newPhotoPath",
 		}
 		ctx, cancel := ithelpers.GetContext(devToken)
 		defer cancel()
@@ -324,7 +325,7 @@ var _ = ginkgo.Describe("Users", func() {
 			OrganizationId: targetUser.OrganizationId,
 			Email:          targetUser.Email,
 			Name:           "newName",
-			PhotoUrl:       "newURL",
+			PhotoBase64:       "newPhotoPath",
 		}
 		ctx, cancel := ithelpers.GetContext(devToken)
 		defer cancel()

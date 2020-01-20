@@ -47,18 +47,23 @@ func init() {
 	_ = resetPasswordCmd.MarkFlagRequired("newPassword")
 	usersCmd.AddCommand(resetPasswordCmd)
 
-	updateUserCmd.Flags().StringVar(&email, "email", "", "Email for the user")
 	updateUserCmd.Flags().StringVar(&name, "name", "", "New name for the user")
+	updateUserCmd.Flags().StringVar(&photoPath, "photoPath", "", "Path to the new user photo")
+	updateUserCmd.Flags().StringVar(&lastName, "lastName", "", "New last name for the user")
 	updateUserCmd.Flags().StringVar(&title, "title", "", "New title for the user")
 	updateUserCmd.Flags().StringVar(&phone, "phone", "", "New phone for the user")
 	updateUserCmd.Flags().StringVar(&location, "location", "", "New location for the user")
-	updateUserCmd.Flags().StringVar(&lastName, "lastName", "", "New last name for the user")
 	_ = updateUserCmd.MarkFlagRequired("email")
 	usersCmd.AddCommand(updateUserCmd)
 
 	addUserCmd.Flags().StringVar(&name, "name", "", "Full name")
-	addUserCmd.Flags().StringVar(&roleName, "role", "", "Rol name")
+	addUserCmd.Flags().StringVar(&roleName, "role", "", "Role name")
 	addUserCmd.Flags().StringVar(&password, "password", "", "Password")
+	addUserCmd.Flags().StringVar(&photoPath, "photoPath", "", "Path to user photo")
+	addUserCmd.Flags().StringVar(&lastName, "lastName", "", "Last name")
+	addUserCmd.Flags().StringVar(&title, "title", "", "Title")
+	addUserCmd.Flags().StringVar(&phone, "phone", "", "Phone")
+	addUserCmd.Flags().StringVar(&location, "location", "", "Location")
 	_ = addUserCmd.MarkPersistentFlagRequired("email")
 	_ = addUserCmd.MarkFlagRequired("name")
 	_ = addUserCmd.MarkFlagRequired("role")
@@ -141,7 +146,7 @@ var updateUserCmd = &cobra.Command{
 			cliOptions.ResolveAsInt("port", nalejPort),
 			insecure, useTLS,
 			cliOptions.Resolve("cacert", caCertPath), cliOptions.Resolve("output", output), cliOptions.ResolveAsInt("labelLength", labelLength))
-		u.Update(cliOptions.Resolve("organizationID", organizationID), email, cmd.Flag("name").Changed, name, cmd.Flag("title").Changed, title, cmd.Flag("phone").Changed, phone, cmd.Flag("location").Changed, location, cmd.Flag("lastName").Changed, lastName)
+		u.Update(cliOptions.Resolve("organizationID", organizationID), email, name, photoPath, lastName, title, phone, location)
 
 	},
 }
@@ -157,6 +162,6 @@ var addUserCmd = &cobra.Command{
 			cliOptions.ResolveAsInt("port", nalejPort),
 			insecure, useTLS,
 			cliOptions.Resolve("cacert", caCertPath), cliOptions.Resolve("output", output), cliOptions.ResolveAsInt("labelLength", labelLength))
-		u.Add(cliOptions.Resolve("organizationID", organizationID), email, password, name, roleName)
+		u.Add(cliOptions.Resolve("organizationID", organizationID), email, password, name, roleName, photoPath, lastName, location, phone, title)
 	},
 }

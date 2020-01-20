@@ -29,6 +29,7 @@ import (
 	"github.com/nalej/grpc-device-manager-go"
 	"github.com/nalej/grpc-infrastructure-go"
 	"github.com/nalej/grpc-organization-go"
+	"github.com/nalej/grpc-organization-manager-go"
 	"github.com/nalej/grpc-user-go"
 	"github.com/nalej/grpc-user-manager-go"
 	"github.com/onsi/gomega"
@@ -41,7 +42,7 @@ import (
 
 const AuthHeader = "authorization"
 
-func CreateOrganization(name string, orgClient grpc_organization_go.OrganizationsClient) *grpc_organization_go.Organization {
+func CreateOrganization(name string, orgClient grpc_organization_manager_go.OrganizationsClient) *grpc_organization_manager_go.Organization {
 	toAdd := &grpc_organization_go.AddOrganizationRequest{
 		Name: name,
 	}
@@ -51,7 +52,7 @@ func CreateOrganization(name string, orgClient grpc_organization_go.Organization
 	return added
 }
 
-func CreateCluster(organization *grpc_organization_go.Organization, clusterName string, clustClient grpc_infrastructure_go.ClustersClient) *grpc_infrastructure_go.Cluster {
+func CreateCluster(organization *grpc_organization_manager_go.Organization, clusterName string, clustClient grpc_infrastructure_go.ClustersClient) *grpc_infrastructure_go.Cluster {
 	toAdd := &grpc_infrastructure_go.AddClusterRequest{
 		RequestId:      organization.OrganizationId,
 		OrganizationId: organization.OrganizationId,

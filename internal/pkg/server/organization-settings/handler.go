@@ -12,16 +12,18 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
+ *
  */
 
-package organizations
+package organization_settings
 
 import (
 	"context"
 	"github.com/nalej/derrors"
 	"github.com/nalej/grpc-common-go"
-	"github.com/nalej/grpc-organization-go"
 	"github.com/nalej/grpc-organization-manager-go"
+	"github.com/nalej/grpc-public-api-go"
 	"github.com/nalej/grpc-utils/pkg/conversions"
 	"github.com/nalej/public-api/internal/pkg/authhelper"
 	"github.com/nalej/public-api/internal/pkg/entities"
@@ -37,22 +39,8 @@ func NewHandler(manager Manager) *Handler {
 	return &Handler{manager}
 }
 
-func (h *Handler) Info(ctx context.Context, organizationID *grpc_organization_go.OrganizationId) (*grpc_organization_manager_go.Organization, error) {
-	rm, err := authhelper.GetRequestMetadata(ctx)
-	if err != nil {
-		return nil, conversions.ToGRPCError(err)
-	}
-	if organizationID.OrganizationId != rm.OrganizationID {
-		return nil, derrors.NewPermissionDeniedError("cannot access requested OrganizationID")
-	}
-	err = entities.ValidOrganizationId(organizationID)
-	if err != nil {
-		return nil, conversions.ToGRPCError(err)
-	}
-	return h.Manager.Info(organizationID)
-}
 
-func (h *Handler) Update(ctx context.Context, updateRequest *grpc_organization_go.UpdateOrganizationRequest) (*grpc_common_go.Success, error) {
+func (h *Handler) Update(ctx context.Context, updateRequest *grpc_public_api_go.UpdateSettingRequest) (*grpc_common_go.Success, error) {
 	rm, err := authhelper.GetRequestMetadata(ctx)
 	if err != nil {
 		return nil, conversions.ToGRPCError(err)
@@ -61,10 +49,26 @@ func (h *Handler) Update(ctx context.Context, updateRequest *grpc_organization_g
 		return nil, derrors.NewPermissionDeniedError("cannot access requested OrganizationID")
 	}
 
-	err = entities.ValidUpdateOrganizationRequest(updateRequest)
+	vErr := entities.ValidUpdateSettingRequest(updateRequest)
+	if vErr != nil {
+		return nil, conversions.ToGRPCError(vErr)
+	}
+
+	return h.Manager.Update(updateRequest)
+}
+func (h *Handler) List(ctx context.Context, orgID *grpc_public_api_go.ListRequest) (*grpc_organization_manager_go.SettingList, error){
+	rm, err := authhelper.GetRequestMetadata(ctx)
 	if err != nil {
 		return nil, conversions.ToGRPCError(err)
 	}
-	return h.Manager.Update(updateRequest)
+	if orgID.OrganizationId != rm.OrganizationID {
+		return nil, derrors.NewPermissionDeniedError("cannot access requested OrganizationID")
+	}
 
+	vErr := entities.ValidListRequest(orgID)
+	if vErr != nil {
+		return nil, conversions.ToGRPCError(vErr)
+	}
+
+	return h.Manager.List(orgID)
 }

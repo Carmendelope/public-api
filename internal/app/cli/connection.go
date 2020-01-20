@@ -28,8 +28,6 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
 	"io/ioutil"
-	"os/user"
-	"path/filepath"
 	"strings"
 )
 
@@ -54,23 +52,6 @@ type Connection struct {
 // NewConnection creates a new connection object that will establish the communication with the public API.
 func NewConnection(address string, port int, insecure bool, useTLS bool, caCertPath string, output string, labelLength int) *Connection {
 	return &Connection{address, port, insecure, useTLS, caCertPath, output, labelLength}
-}
-
-// GetPath resolves a given path by adding support for relative paths.
-func GetPath(path string) string {
-	if strings.HasPrefix(path, "~") {
-		usr, _ := user.Current()
-		return strings.Replace(path, "~", usr.HomeDir, 1)
-	}
-	if strings.HasPrefix(path, "../") {
-		abs, _ := filepath.Abs("../")
-		return strings.Replace(path, "..", abs, 1)
-	}
-	if strings.HasPrefix(path, ".") {
-		abs, _ := filepath.Abs("./")
-		return strings.Replace(path, ".", abs, 1)
-	}
-	return path
 }
 
 // GetSecureConnection returns a secure connection.

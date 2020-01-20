@@ -17,6 +17,7 @@
 /*
 RUN_INTEGRATION_TEST=true
 IT_SM_ADDRESS=localhost:8800
+IT_ORGMGR_ADDRESS=localhost:8950
 IT_INFRAMGR_ADDRESS=localhost:8860
 IT_IM_COORD_ADDRESS=localhost:8423
 */
@@ -30,6 +31,7 @@ import (
 	"github.com/nalej/grpc-infrastructure-go"
 	"github.com/nalej/grpc-infrastructure-manager-go"
 	"github.com/nalej/grpc-organization-go"
+	"github.com/nalej/grpc-organization-manager-go"
 	"github.com/nalej/grpc-public-api-go"
 	"github.com/nalej/grpc-utils/pkg/test"
 	"github.com/nalej/public-api/internal/pkg/server/ithelpers"
@@ -53,6 +55,7 @@ var _ = ginkgo.Describe("Clusters", func() {
 
 	var (
 		systemModelAddress    = os.Getenv("IT_SM_ADDRESS")
+		orgManagerAddress    = os.Getenv("IT_ORGMGR_ADDRESS")
 		infraManagerAddress   = os.Getenv("IT_INFRAMGR_ADDRESS")
 		monitorManagerAddress = os.Getenv("IT_MONITORING_MANAGER_ADDRESS")
 	)
@@ -66,16 +69,17 @@ var _ = ginkgo.Describe("Clusters", func() {
 	// grpc test listener
 	var listener *bufconn.Listener
 	// client
-	var orgClient grpc_organization_go.OrganizationsClient
+	var orgClient grpc_organization_manager_go.OrganizationsClient
 	var clustClient grpc_infrastructure_go.ClustersClient
 	var nodeClient grpc_infrastructure_go.NodesClient
 	var infraClient grpc_infrastructure_manager_go.InfrastructureManagerClient
 	var smConn *grpc.ClientConn
+	var orgConn *grpc.ClientConn
 	var infraConn *grpc.ClientConn
 	var client grpc_public_api_go.ClustersClient
 
 	// Target organization.
-	var targetOrganization *grpc_organization_go.Organization
+	var targetOrganization *grpc_organization_manager_go.Organization
 	var targetCluster *grpc_infrastructure_go.Cluster
 	var token string
 	var devToken string
@@ -87,11 +91,12 @@ var _ = ginkgo.Describe("Clusters", func() {
 		server = grpc.NewServer(interceptor.WithServerAuthxInterceptor(interceptor.NewConfig(ithelpers.GetAllAuthConfig(), "secret", ithelpers.AuthHeader)))
 
 		smConn = utils.GetConnection(systemModelAddress)
-		orgClient = grpc_organization_go.NewOrganizationsClient(smConn)
 		clustClient = grpc_infrastructure_go.NewClustersClient(smConn)
 		nodeClient = grpc_infrastructure_go.NewNodesClient(smConn)
 		infraConn = utils.GetConnection(infraManagerAddress)
 		infraClient = grpc_infrastructure_manager_go.NewInfrastructureManagerClient(infraConn)
+		orgConn = utils.GetConnection(orgManagerAddress)
+		orgClient = grpc_organization_manager_go.NewOrganizationsClient(orgConn)
 
 		conn, err := test.GetConn(*listener)
 		gomega.Expect(err).To(gomega.Succeed())
@@ -125,6 +130,7 @@ var _ = ginkgo.Describe("Clusters", func() {
 		server.Stop()
 		listener.Close()
 		smConn.Close()
+		orgConn.Close()
 	})
 
 	ginkgo.It("should be able to retrieve the information of a cluster", func() {

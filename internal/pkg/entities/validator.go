@@ -72,6 +72,9 @@ const emptyOutboundName = "outbound_name cannot be empty"
 
 const emptyRequestId = "request_id cannot be empty"
 
+const emptyKey = "key cannot be empty"
+
+
 // --------- Application descriptor JSON Schema
 type AppJSONSchema struct {
 	// Singleton object used to validate application descriptors
@@ -116,6 +119,17 @@ func InitializeJSON() derrors.Error {
 func ValidOrganizationId(organizationID *grpc_organization_go.OrganizationId) derrors.Error {
 	if organizationID.OrganizationId == "" {
 		return derrors.NewInvalidArgumentError(emptyOrganizationId)
+	}
+	return nil
+}
+
+func ValidUpdateOrganizationRequest(request *grpc_organization_go.UpdateOrganizationRequest) derrors.Error {
+	if request.OrganizationId == "" {
+		return derrors.NewInvalidArgumentError(emptyOrganizationId)
+	}
+	if !request.UpdateName && !request.UpdateFullAddress && !request.UpdateCity && !request.UpdateState &&
+		!request.UpdateCountry && !request.UpdateZipCode && !request.UpdatePhoto {
+		return derrors.NewInvalidArgumentError("some field must be modified")
 	}
 	return nil
 }
@@ -248,9 +262,6 @@ func ValidUpdateUserRequest(updateUserRequest *grpc_user_go.UpdateUserRequest) d
 	}
 	if updateUserRequest.Email == "" {
 		return derrors.NewInvalidArgumentError(emptyEmail)
-	}
-	if !(updateUserRequest.UpdateLocation || updateUserRequest.UpdatePhone || updateUserRequest.UpdateTitle || updateUserRequest.UpdateName || updateUserRequest.UpdateLastName) {
-		return derrors.NewInvalidArgumentError(invalidUpdateUserRequest)
 	}
 	return nil
 }
@@ -772,6 +783,25 @@ func ValidRemoveConnectionRequest(conn *grpc_application_network_go.RemoveConnec
 	}
 	if conn.OutboundName == "" {
 		return derrors.NewInvalidArgumentError(emptyOutboundName)
+	}
+
+	return nil
+}
+
+
+func ValidUpdateSettingRequest(updateRequest *grpc_public_api_go.UpdateSettingRequest) derrors.Error {
+	if updateRequest.OrganizationId == "" {
+		return derrors.NewInvalidArgumentError(emptyOrganizationId)
+	}
+	if updateRequest.Key == "" {
+		return derrors.NewInvalidArgumentError(emptyKey)
+	}
+	return nil
+}
+
+func ValidListRequest(request *grpc_public_api_go.ListRequest) derrors.Error {
+	if request.OrganizationId == "" {
+		return derrors.NewInvalidArgumentError(emptyOrganizationId)
 	}
 
 	return nil

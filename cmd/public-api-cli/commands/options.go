@@ -23,9 +23,6 @@ import (
 	"strings"
 )
 
-var key string
-var value string
-
 var optionsCmd = &cobra.Command{
 	Use:     "option",
 	Aliases: []string{"options", "opt"},

@@ -17,12 +17,16 @@
 package cli
 
 import (
+	"encoding/base64"
 	"github.com/nalej/grpc-organization-go"
 	"github.com/nalej/grpc-public-api-go"
 	"github.com/nalej/grpc-user-go"
 	"github.com/nalej/grpc-user-manager-go"
 	"github.com/rs/zerolog/log"
 	"google.golang.org/grpc"
+	"io/ioutil"
+	"os"
+	"path/filepath"
 )
 
 type Users struct {
@@ -54,7 +58,7 @@ func (u *Users) getClient() (grpc_public_api_go.UsersClient, *grpc.ClientConn) {
 }
 
 // Add a new user to the organization.
-func (u *Users) Add(organizationID string, email string, password string, name string, roleName string) {
+func (u *Users) Add(organizationID string, email string, password string, name string, roleName string, photoPath string, lastName string, location string, phone string, title string) {
 	if organizationID == "" {
 		log.Fatal().Msg("organizationID cannot be empty")
 	}
@@ -68,13 +72,24 @@ func (u *Users) Add(organizationID string, email string, password string, name s
 	defer conn.Close()
 	defer cancel()
 
-	addRequest := &grpc_public_api_go.AddUserRequest{
-		OrganizationId: organizationID,
-		Email:          email,
-		Password:       password,
-		Name:           name,
-		RoleName:       roleName,
+	photoBase64 := ""
+	if photoPath != "" {
+		photoBase64 = PhotoPathToBase64(photoPath)
 	}
+
+	addRequest := &grpc_public_api_go.AddUserRequest{
+		OrganizationId:       organizationID,
+		Email:                email,
+		Password:             password,
+		Name:                 name,
+		PhotoBase64:          photoBase64,
+		LastName:             lastName,
+		Location:             location,
+		Phone:                phone,
+		Title:                title,
+		RoleName:             roleName,
+	}
+	log.Debug().Interface("add user request", addRequest).Msg("debugging")
 	added, err := client.Add(ctx, addRequest)
 	u.PrintResultOrError(added, err, "cannot add user")
 }
@@ -160,7 +175,7 @@ func (u *Users) ChangePassword(organizationID string, email string, password str
 }
 
 // Update the user information.
-func (u *Users) Update(organizationID string, email string, updateName bool, newName string, updateTitle bool, newTitle string, updatePhone bool, newPhone string, updateLocation bool, newLocation string, updateLastName bool, newLastName string) {
+func (u *Users) Update(organizationID string, email string, newName string, newPhotoPath string, newLastName string, newTitle string, newPhone string, newLocation string) {
 	if organizationID == "" {
 		log.Fatal().Msg("organizationID cannot be empty")
 	}
@@ -170,24 +185,79 @@ func (u *Users) Update(organizationID string, email string, updateName bool, new
 	defer conn.Close()
 	defer cancel()
 
-	updateRequest := &grpc_user_go.UpdateUserRequest{
-		OrganizationId: organizationID,
-		Email:          email,
-		UpdateName:     updateName,
-		Name:           newName,
-		UpdateTitle:    updateTitle,
-		Title:          newTitle,
-		UpdatePhone:    updatePhone,
-		Phone:          newPhone,
-		UpdateLocation: updateLocation,
-		Location:       newLocation,
-		UpdateLastName: updateLastName,
-		LastName:       newLastName,
-	}
-	if newName != "" {
-		updateRequest.Name = newName
-	}
+	updateRequest := ApplyUpdate (organizationID, email, newName, newPhotoPath, newLastName, newTitle, newPhone, newLocation)
 	log.Debug().Interface("updateRequest", updateRequest).Msg("sending update request")
 	done, err := client.Update(ctx, updateRequest)
 	u.PrintResultOrError(done, err, "cannot update user")
+}
+
+func ApplyUpdate (organizationID string, email string, newName string, newPhotoPath string, newLastName string, newTitle string, newPhone string, newLocation string) *grpc_user_go.UpdateUserRequest {
+	updateRequest := &grpc_user_go.UpdateUserRequest{
+		OrganizationId:       organizationID,
+		Email:                email,
+	}
+	if newName != "" {
+		updateRequest.UpdateName = true
+		updateRequest.Name = newName
+	}
+
+	if newPhotoPath != "" {
+		updateRequest.UpdatePhotoBase64 = true
+		updateRequest.PhotoBase64 = PhotoPathToBase64 (newPhotoPath)
+	}
+
+	if newLastName != "" {
+		updateRequest.UpdateLastName = true
+		updateRequest.LastName = newLastName
+	}
+
+	if newTitle != "" {
+		updateRequest.UpdateTitle = true
+		updateRequest.Title = newTitle
+	}
+
+	if newPhone != "" {
+		updateRequest.UpdatePhone = true
+		updateRequest.Phone = newPhone
+	}
+
+	if newLocation != "" {
+		updateRequest.UpdateLocation = true
+		updateRequest.Location = newLocation
+	}
+
+	return updateRequest
+}
+
+// PhotoPathToBase64 converts an image defined by its path in a base64-encoded string
+func PhotoPathToBase64 (photoPath string) string {
+	ValidateImage (photoPath)
+
+	photoBytes, err := ioutil.ReadFile(photoPath)
+	if err != nil {
+		log.Error().Err(err).Msg("cannot read image")
+		return ""
+	}
+
+	return base64.StdEncoding.EncodeToString(photoBytes)
+}
+
+// ValidateImage validates that the image is jpg or png and wights under 1 MB
+func ValidateImage (photoPath string) {
+	// Check extension
+	photoExt := filepath.Ext(photoPath)
+	log.Debug().Str("extension", photoExt).Msg("image extension")
+	if photoExt != ".jpg" && photoExt != ".JPG" && photoExt != ".jpeg" && photoExt != ".JPEG" && photoExt != ".png" && photoExt != ".PNG" {
+		log.Error().Msg("invalid image format, please use jpg or png")
+	}
+
+	// Check size
+	photoFile, err := os.Stat(photoPath)
+	if err != nil {
+		log.Error().Err(err).Msg("cannot read photo")
+	} else {
+		if photoFile.Size() > 1024*1024 {
+			log.Error().Msg("image too big, please keep it under 1 MB")
+		}
+	}
 }

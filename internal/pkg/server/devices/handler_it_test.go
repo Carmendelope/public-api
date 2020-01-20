@@ -25,6 +25,7 @@ import (
 	"github.com/nalej/grpc-device-go"
 	"github.com/nalej/grpc-device-manager-go"
 	"github.com/nalej/grpc-organization-go"
+	"github.com/nalej/grpc-organization-manager-go"
 	"github.com/nalej/grpc-public-api-go"
 	"github.com/nalej/grpc-utils/pkg/test"
 	"github.com/nalej/public-api/internal/pkg/server/ithelpers"
@@ -40,8 +41,9 @@ import (
 
 /*
 RUN_INTEGRATION_TEST=true
-IT_SM_ADDRESS=localhost:8800
 IT_DEVICE_MANAGER_ADDRESS=localhost:6010
+IT_ORGMNG_ADDRESS=localhost:8950
+
 */
 
 var _ = ginkgo.Describe("Devices", func() {
@@ -52,11 +54,11 @@ var _ = ginkgo.Describe("Devices", func() {
 	}
 
 	var (
-		systemModelAddress   = os.Getenv("IT_SM_ADDRESS")
 		deviceManagerAddress = os.Getenv("IT_DEVICE_MANAGER_ADDRESS")
+		orgManagerAddress = os.Getenv("IT_ORGMNG_ADDRESS")
 	)
 
-	if systemModelAddress == "" || deviceManagerAddress == "" {
+	if orgManagerAddress == "" || deviceManagerAddress == "" {
 		ginkgo.Fail("missing environment variables")
 	}
 
@@ -65,7 +67,7 @@ var _ = ginkgo.Describe("Devices", func() {
 	// grpc test listener
 	var listener *bufconn.Listener
 	// client
-	var orgClient grpc_organization_go.OrganizationsClient
+	var orgClient grpc_organization_manager_go.OrganizationsClient
 	var dmClient grpc_device_manager_go.DevicesClient
 	var latClient grpc_device_manager_go.LatencyClient
 	var smConn *grpc.ClientConn
@@ -74,7 +76,7 @@ var _ = ginkgo.Describe("Devices", func() {
 	var client grpc_public_api_go.DevicesClient
 
 	// Target organization.
-	var targetOrganization *grpc_organization_go.Organization
+	var targetOrganization *grpc_organization_manager_go.Organization
 	//var targetDeviceGroup *grpc_device_manager_go.DeviceGroup
 	var ownerToken string
 	var devManagerToken string
@@ -86,10 +88,10 @@ var _ = ginkgo.Describe("Devices", func() {
 		server = grpc.NewServer(interceptor.WithServerAuthxInterceptor(
 			interceptor.NewConfig(ithelpers.GetAllAuthConfig(), "secret", ithelpers.AuthHeader)))
 
-		smConn = utils.GetConnection(systemModelAddress)
+		smConn = utils.GetConnection(orgManagerAddress)
 		dmConn = utils.GetConnection(deviceManagerAddress)
 		latConn = utils.GetConnection(deviceManagerAddress)
-		orgClient = grpc_organization_go.NewOrganizationsClient(smConn)
+		orgClient = grpc_organization_manager_go.NewOrganizationsClient(smConn)
 		dmClient = grpc_device_manager_go.NewDevicesClient(dmConn)
 		latClient = grpc_device_manager_go.NewLatencyClient(latConn)
 
@@ -105,7 +107,6 @@ var _ = ginkgo.Describe("Devices", func() {
 		client = grpc_public_api_go.NewDevicesClient(conn)
 		rand.Seed(ginkgo.GinkgoRandomSeed())
 		targetOrganization = ithelpers.CreateOrganization(fmt.Sprintf("testOrg-%d", rand.Int()), orgClient)
-		//targetDeviceGroup = ithelpers.CreateDeviceGroup(targetOrganization.OrganizationId, fmt.Sprintf("testDG-%d", rand.Int()), dmClient)
 		ownerToken = ithelpers.GenerateToken("email@nalej.com",
 			targetOrganization.OrganizationId, "Owner", "secret",
 			[]grpc_authx_go.AccessPrimitive{grpc_authx_go.AccessPrimitive_ORG})

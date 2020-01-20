@@ -57,12 +57,16 @@ func (m *Manager) Add(addUserRequest *grpc_public_api_go.AddUserRequest) (*grpc_
 		return nil, conversions.ToGRPCError(derrors.NewInvalidArgumentError("role not found"))
 	}
 	toAdd := &grpc_user_manager_go.AddUserRequest{
-		OrganizationId: addUserRequest.OrganizationId,
-		Email:          addUserRequest.Email,
-		Password:       addUserRequest.Password,
-		Name:           addUserRequest.Name,
-		PhotoUrl:       "",
-		RoleId:         roleId,
+		OrganizationId:       addUserRequest.OrganizationId,
+		Email:                addUserRequest.Email,
+		Password:             addUserRequest.Password,
+		Name:                 addUserRequest.Name,
+		PhotoBase64:          addUserRequest.PhotoBase64,
+		LastName:             addUserRequest.LastName,
+		Location:             addUserRequest.Location,
+		Phone:                addUserRequest.Phone,
+		Title:                addUserRequest.Title,
+		RoleId:               roleId,
 	}
 	ctx2, cancel2 := common.GetContext()
 	defer cancel2()
@@ -71,10 +75,21 @@ func (m *Manager) Add(addUserRequest *grpc_public_api_go.AddUserRequest) (*grpc_
 		return nil, err
 	}
 	return &grpc_public_api_go.User{
-		OrganizationId: added.OrganizationId,
-		Email:          added.Email,
-		Name:           added.Name,
-		RoleName:       added.RoleName,
+		OrganizationId:       added.OrganizationId,
+		Email:                added.Email,
+		Name:                 added.Name,
+		PhotoBase64:          "",
+		MemberSince:          0,
+		RoleId:               "",
+		RoleName:             added.RoleName,
+		LastName:             "",
+		Title:                "",
+		LastLogin:            0,
+		Phone:                "",
+		Location:             "",
+		XXX_NoUnkeyedLiteral: struct{}{},
+		XXX_unrecognized:     nil,
+		XXX_sizecache:        0,
 	}, nil
 }
 
@@ -103,7 +118,7 @@ func (m *Manager) List(organizationID *grpc_organization_go.OrganizationId) (*gr
 	}
 	users := make([]*grpc_public_api_go.User, 0)
 	for _, u := range list.Users {
-		if !u.Internal {
+		if !u.InternalRole {
 			toAdd := &grpc_public_api_go.User{
 				OrganizationId: u.OrganizationId,
 				Email:          u.Email,
