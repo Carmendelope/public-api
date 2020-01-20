@@ -15,7 +15,7 @@ data:
        "/public_api.Clusters/ProvisionAndInstall":{"must":["RESOURCES_MNGT"]},
        "/public_api.Clusters/Scale":{"must":["RESOURCES_MNGT"]},
        "/public_api.Clusters/Uninstall":{"must":["RESOURCES_MNGT"]},
-       "/public_api.Clusters/Decomission":{"must":["RESOURCES_MNGT"]},
+       "/public_api.Clusters/Decommission":{"must":["RESOURCES_MNGT"]},
        "/public_api.Clusters/Info":{"should":["ORG", "RESOURCES"]},
        "/public_api.Clusters/List":{"should":["ORG", "RESOURCES"]},
        "/public_api.Clusters/Monitor":{"must":["RESOURCES_MNGT"]},

@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Nalej
+ * Copyright 2020 Nalej
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -116,11 +116,11 @@ func (h *Handler) Uninstall(ctx context.Context, request *grpc_public_api_go.Uni
 	return entities.ToPublicAPIOpResponse(response), nil
 }
 
-// Decomission an application cluster. This process will uninstall the nalej platform,
-// decomission the cluster from the infrastructure provider, and remove the cluster from the list.
-func (h *Handler) Decomission(ctx context.Context, request *grpc_public_api_go.DecomissionClusterRequest) (*grpc_public_api_go.OpResponse, error) {
+// Decommission an application cluster. This process will uninstall the nalej platform,
+// decommission the cluster from the infrastructure provider, and remove the cluster from the list.
+func (h *Handler) Decommission(ctx context.Context, request *grpc_public_api_go.DecommissionClusterRequest) (*grpc_public_api_go.OpResponse, error) {
 	log.Debug().Str("organizationID", request.OrganizationId).Str("clusterID", request.ClusterId).
-		Msg("Decomission cluster")
+		Msg("Decommission cluster")
 	rm, err := authhelper.GetRequestMetadata(ctx)
 	if err != nil {
 		return nil, conversions.ToGRPCError(err)
@@ -128,11 +128,11 @@ func (h *Handler) Decomission(ctx context.Context, request *grpc_public_api_go.D
 	if request.OrganizationId != rm.OrganizationID {
 		return nil, derrors.NewPermissionDeniedError("cannot access requested OrganizationID")
 	}
-	err = entities.ValidDecomissionClusterRequest(request)
+	err = entities.ValidDecommissionClusterRequest(request)
 	if err != nil {
 		return nil, conversions.ToGRPCError(err)
 	}
-	response, opErr := h.Manager.Decomission(request)
+	response, opErr := h.Manager.Decommission(request)
 	if opErr != nil {
 		return nil, opErr
 	}

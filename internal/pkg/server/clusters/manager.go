@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Nalej
+ * Copyright 2020 Nalej
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -125,16 +125,16 @@ func (m *Manager) Uninstall(request *grpc_public_api_go.UninstallClusterRequest)
 	return m.infraClient.Uninstall(ctx, imRequest)
 }
 
-// Decomission an application cluster. This process will uninstall the nalej platform,
-// decomission the cluster from the infrastructure provider, and remove the cluster from the list.
-func (m *Manager) Decomission(request *grpc_public_api_go.DecomissionClusterRequest) (*grpc_common_go.OpResponse, error) {
+// Decommission an application cluster. This process will uninstall the nalej platform,
+// decommission the cluster from the infrastructure provider, and remove the cluster from the list.
+func (m *Manager) Decommission(request *grpc_public_api_go.DecommissionClusterRequest) (*grpc_common_go.OpResponse, error) {
 	imPlatform, err := entities.ToInstallerTargetPlatform(request.TargetPlatform)
 	if err != nil {
 		return nil, conversions.ToGRPCError(err)
 	}
 	ctx, cancel := common.GetContext()
 	defer cancel()
-	dRequest := &grpc_provisioner_go.DecomissionClusterRequest{
+	dRequest := &grpc_provisioner_go.DecommissionClusterRequest{
 		OrganizationId:      request.OrganizationId,
 		ClusterId:           request.ClusterId,
 		ClusterType:         request.ClusterType,
@@ -143,7 +143,7 @@ func (m *Manager) Decomission(request *grpc_public_api_go.DecomissionClusterRequ
 		AzureCredentials:    request.AzureCredentials,
 		AzureOptions:        request.AzureOptions,
 	}
-	return m.infraClient.DecomissionCluster(ctx, dRequest)
+	return m.infraClient.DecommissionCluster(ctx, dRequest)
 }
 
 func (m *Manager) extendInfo(source *grpc_infrastructure_go.Cluster) (*grpc_public_api_go.Cluster, error) {
