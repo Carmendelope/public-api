@@ -75,7 +75,6 @@ func (m *Manager) Add(addUserRequest *grpc_public_api_go.AddUserRequest) (*grpc_
 		return nil, err
 	}
 	return &grpc_public_api_go.User{
-<<<<<<< HEAD
 		OrganizationId: added.OrganizationId,
 		Email:          added.Email,
 		Name:           added.Name,
@@ -88,20 +87,6 @@ func (m *Manager) Add(addUserRequest *grpc_public_api_go.AddUserRequest) (*grpc_
 		LastLogin:      added.LastLogin,
 		Phone:          added.Phone,
 		Location:       added.Location,
-=======
-		OrganizationId:       added.OrganizationId,
-		Email:                added.Email,
-		Name:                 added.Name,
-		PhotoBase64:          "",
-		MemberSince:          0,
-		RoleId:               "",
-		RoleName:             added.RoleName,
-		LastName:             "",
-		Title:                "",
-		LastLogin:            0,
-		Phone:                "",
-		Location:             "",
->>>>>>> c14b2cd6589ef8182d85e859bdc4537dfce13572
 	}, nil
 }
 
