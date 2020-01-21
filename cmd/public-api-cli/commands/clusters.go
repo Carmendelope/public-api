@@ -66,7 +66,6 @@ func init() {
 	clustersCmd.AddCommand(clusterLabelsCmd)
 
 	clustersCmd.AddCommand(infoClusterCmd)
-	infoClusterCmd.Flags().StringVar(&clusterID, "clusterID", "", "Cluster identifier")
 
 	clustersCmd.AddCommand(cordonClusterCmd)
 	clustersCmd.AddCommand(uncordonClusterCmd)
@@ -132,7 +131,7 @@ var infoClusterCmd = &cobra.Command{
 	Aliases: []string{"get"},
 	Short:   "Get the cluster information",
 	Long:    `Get the cluster information`,
-	Args:    cobra.MaximumNArgs(1),
+	Args:    cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		SetupLogging()
 		c := cli.NewClusters(
