@@ -70,7 +70,11 @@ func (u *Users) Add(organizationID string, email string, password string, name s
 
 	photoBase64 := ""
 	if photoPath != "" {
-		photoBase64, _ = PhotoPathToBase64(photoPath)
+		tempPhotoBase64, err := PhotoPathToBase64(photoPath)
+		if err != nil {
+			log.Error().Err(err).Msg("error converting image to base64")
+		}
+		photoBase64 = tempPhotoBase64
 	}
 
 	addRequest := &grpc_public_api_go.AddUserRequest{
@@ -199,7 +203,12 @@ func ApplyUpdate(organizationID string, email string, updateName bool, newName s
 
 	if updatePhoto {
 		updateRequest.UpdatePhotoBase64 = true
-		updateRequest.PhotoBase64, _ = PhotoPathToBase64(newPhotoPath)
+		photoBase64, err := PhotoPathToBase64(newPhotoPath)
+		if err != nil {
+			log.Error().Err(err).Msg("error converting image to base64")
+		}
+		updateRequest.PhotoBase64 = photoBase64
+
 	}
 
 	if updateLastName {
