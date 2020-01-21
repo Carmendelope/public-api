@@ -95,11 +95,11 @@ func init() {
 	uninstallClusterCmd.Flags().StringVar(&provisionTargetPlatform, "targetPlatform", "AZURE", "Target platform")
 	clustersCmd.AddCommand(uninstallClusterCmd)
 
-	decomissionClusterCmd.Flags().StringVar(&provisionClusterType, "clusterType", "KUBERNETES", "Cluster type")
-	decomissionClusterCmd.Flags().StringVar(&provisionAzureCredentialsPath, "azureCredentialsPath", "", "Path for the azure credentials file")
-	decomissionClusterCmd.Flags().StringVar(&provisionAzureResourceGroup, "azureResourceGroup", "", "Azure resource group")
-	decomissionClusterCmd.Flags().StringVar(&provisionTargetPlatform, "targetPlatform", "", "Target platform")
-	clustersCmd.AddCommand(decomissionClusterCmd)
+	decommissionClusterCmd.Flags().StringVar(&provisionClusterType, "clusterType", "KUBERNETES", "Cluster type")
+	decommissionClusterCmd.Flags().StringVar(&provisionAzureCredentialsPath, "azureCredentialsPath", "", "Path for the azure credentials file")
+	decommissionClusterCmd.Flags().StringVar(&provisionAzureResourceGroup, "azureResourceGroup", "", "Azure resource group")
+	decommissionClusterCmd.Flags().StringVar(&provisionTargetPlatform, "targetPlatform", "", "Target platform")
+	clustersCmd.AddCommand(decommissionClusterCmd)
 }
 
 var installClustersCmd = &cobra.Command{
@@ -402,9 +402,9 @@ This command will remove the Nalej components deployed in an application
 cluster as created by the installing process. Notice that this operation
 does not free the computing resources associated with the cluster. To
 completelly uninstall the platform and free the associated computing resources
-use the decomission command as:
+use the decommission command as:
 
-public-api-cli cluster decomission ...
+public-api-cli cluster decommission ...
 
 `
 
@@ -435,30 +435,30 @@ var uninstallClusterCmd = &cobra.Command{
 	},
 }
 
-var decomissionClusterLongHelp = `
-Decomission an application cluster.
+var decommissionClusterLongHelp = `
+Decommission an application cluster.
 
 This command will perform an uninstall of the Nalej components deployed in
 the application cluster. Once all components are uninstalled, it will trigger
-the decomissioning process so that computing resources are freed.
+the decommissioning process so that computing resources are freed.
 
-The decomissioning process depends on the infrastructure provider used to
+The decommissioning process depends on the infrastructure provider used to
 host the cluster, and valid credentials for that provider must be
-available to execute this operation. Once the cluster is decomissioned, it
+available to execute this operation. Once the cluster is decommissioned, it
 will be removed from the list of application clusters.
 `
 
-var decomissionClusterExamples = `
-# Decomission an Azure application cluster
-public-api-cli cluster decomission 00630f9c-59fe-408a-829c-6dc67c2b98e7 --targetPlatform AZURE --azureCredentialsPath azure/credentials.json --azureResourceGroup dev
+var decommissionClusterExamples = `
+# Decommission an Azure application cluster
+public-api-cli cluster decommission 00630f9c-59fe-408a-829c-6dc67c2b98e7 --targetPlatform AZURE --azureCredentialsPath azure/credentials.json --azureResourceGroup dev
 `
 
-// decomissionClusterCmd with the cmd definition of a decomission cluster operation.
-var decomissionClusterCmd = &cobra.Command{
-	Use:     "decomission <clusterID>",
-	Short:   "decomission an application cluster",
-	Long:    decomissionClusterLongHelp,
-	Example: decomissionClusterExamples,
+// decommissionClusterCmd with the cmd definition of a decommission cluster operation.
+var decommissionClusterCmd = &cobra.Command{
+	Use:     "decommission <clusterID>",
+	Short:   "decommission an application cluster",
+	Long:    decommissionClusterLongHelp,
+	Example: decommissionClusterExamples,
 	Args:    cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		SetupLogging()
@@ -473,7 +473,7 @@ var decomissionClusterCmd = &cobra.Command{
 		clusterType := stringToClusterType(provisionClusterType)
 		targetPlatform := stringToTargetPlatform(provisionTargetPlatform)
 
-		p.Decomission(cliOptions.Resolve("organizationId", organizationID),
+		p.Decommission(cliOptions.Resolve("organizationId", organizationID),
 			args[0], clusterType, targetPlatform,
 			provisionAzureCredentialsPath, provisionAzureResourceGroup)
 

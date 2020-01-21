@@ -171,9 +171,9 @@ func (p *Provision) loadAzureCredentials(credentialsPath string) (*grpc_provisio
 	return credentials, nil
 }
 
-// Decomission an application cluster. This process will uninstall the nalej platform,
-// decomission the cluster from the infrastructure provider, and remove the cluster from the list.
-func (p *Provision) Decomission(organizationID string, clusterID string,
+// Decommission an application cluster. This process will uninstall the nalej platform,
+// decommission the cluster from the infrastructure provider, and remove the cluster from the list.
+func (p *Provision) Decommission(organizationID string, clusterID string,
 	clusterType grpc_infrastructure_go.ClusterType,
 	targetPlatform grpc_public_api_go.Platform,
 	azureCredentialsPath string,
@@ -188,7 +188,7 @@ func (p *Provision) Decomission(organizationID string, clusterID string,
 		return
 	}
 
-	request := &grpc_public_api_go.DecomissionClusterRequest{
+	request := &grpc_public_api_go.DecommissionClusterRequest{
 		OrganizationId:   organizationID,
 		ClusterId:        clusterID,
 		ClusterType:      grpc_infrastructure_go.ClusterType_KUBERNETES,
@@ -206,6 +206,6 @@ func (p *Provision) Decomission(organizationID string, clusterID string,
 	client := grpc_public_api_go.NewClustersClient(c)
 	ctx, cancel := p.GetContext()
 	defer cancel()
-	response, opErr := client.Decomission(ctx, request)
-	p.PrintResultOrError(response, opErr, "cannot decomission cluster")
+	response, opErr := client.Decommission(ctx, request)
+	p.PrintResultOrError(response, opErr, "cannot decommission cluster")
 }
