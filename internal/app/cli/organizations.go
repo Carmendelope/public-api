@@ -82,7 +82,7 @@ func (o *Organizations) Update(organizationID string, updateName bool, name stri
 	}
 	defer c.Close()
 
-	photo64, err := PhotoToBase64(photoPath)
+	photo64, err := PhotoPathToBase64(photoPath)
 	if err != nil {
 		o.PrintResultOrError(photoPath, err, "cannot open photo file")
 	}

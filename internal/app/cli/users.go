@@ -17,16 +17,12 @@
 package cli
 
 import (
-	"encoding/base64"
 	"github.com/nalej/grpc-organization-go"
 	"github.com/nalej/grpc-public-api-go"
 	"github.com/nalej/grpc-user-go"
 	"github.com/nalej/grpc-user-manager-go"
 	"github.com/rs/zerolog/log"
 	"google.golang.org/grpc"
-	"io/ioutil"
-	"os"
-	"path/filepath"
 )
 
 type Users struct {
@@ -74,7 +70,7 @@ func (u *Users) Add(organizationID string, email string, password string, name s
 
 	photoBase64 := ""
 	if photoPath != "" {
-		photoBase64 = PhotoPathToBase64(photoPath)
+		photoBase64, _ = PhotoPathToBase64(photoPath)
 	}
 
 	addRequest := &grpc_public_api_go.AddUserRequest{
@@ -175,7 +171,7 @@ func (u *Users) ChangePassword(organizationID string, email string, password str
 }
 
 // Update the user information.
-func (u *Users) Update(organizationID string, email string, newName string, newPhotoPath string, newLastName string, newTitle string, newPhone string, newLocation string) {
+func (u *Users) Update(organizationID string, email string, updateName bool, newName string, updatePhoto bool, newPhotoPath string, updateLastName bool, newLastName string, updateTitle bool, newTitle string, updatePhone bool, newPhone string, updateLocation bool, newLocation string) {
 	if organizationID == "" {
 		log.Fatal().Msg("organizationID cannot be empty")
 	}
@@ -185,79 +181,46 @@ func (u *Users) Update(organizationID string, email string, newName string, newP
 	defer conn.Close()
 	defer cancel()
 
-	updateRequest := ApplyUpdate(organizationID, email, newName, newPhotoPath, newLastName, newTitle, newPhone, newLocation)
+	updateRequest := ApplyUpdate(organizationID, email, updateName, newName, updatePhoto, newPhotoPath, updateLastName, newLastName, updateTitle, newTitle, updatePhone, newPhone, updateLocation, newLocation)
 	log.Debug().Interface("updateRequest", updateRequest).Msg("sending update request")
 	done, err := client.Update(ctx, updateRequest)
 	u.PrintResultOrError(done, err, "cannot update user")
 }
 
-func ApplyUpdate(organizationID string, email string, newName string, newPhotoPath string, newLastName string, newTitle string, newPhone string, newLocation string) *grpc_user_go.UpdateUserRequest {
+func ApplyUpdate(organizationID string, email string, updateName bool, newName string, updatePhoto bool, newPhotoPath string, updateLastName bool, newLastName string, updateTitle bool, newTitle string, updatePhone bool, newPhone string, updateLocation bool, newLocation string) *grpc_user_go.UpdateUserRequest {
 	updateRequest := &grpc_user_go.UpdateUserRequest{
 		OrganizationId: organizationID,
 		Email:          email,
 	}
-	if newName != "" {
+	if updateName {
 		updateRequest.UpdateName = true
 		updateRequest.Name = newName
 	}
 
-	if newPhotoPath != "" {
+	if updatePhoto {
 		updateRequest.UpdatePhotoBase64 = true
-		updateRequest.PhotoBase64 = PhotoPathToBase64(newPhotoPath)
+		updateRequest.PhotoBase64, _ = PhotoPathToBase64(newPhotoPath)
 	}
 
-	if newLastName != "" {
+	if updateLastName {
 		updateRequest.UpdateLastName = true
 		updateRequest.LastName = newLastName
 	}
 
-	if newTitle != "" {
+	if updateTitle {
 		updateRequest.UpdateTitle = true
 		updateRequest.Title = newTitle
 	}
 
-	if newPhone != "" {
+	if updatePhone {
 		updateRequest.UpdatePhone = true
 		updateRequest.Phone = newPhone
 	}
 
-	if newLocation != "" {
+	if updateLocation {
 		updateRequest.UpdateLocation = true
 		updateRequest.Location = newLocation
 	}
 
 	return updateRequest
-}
-
-// PhotoPathToBase64 converts an image defined by its path in a base64-encoded string
-func PhotoPathToBase64(photoPath string) string {
-	ValidateImage(photoPath)
-
-	photoBytes, err := ioutil.ReadFile(photoPath)
-	if err != nil {
-		log.Error().Err(err).Msg("cannot read image")
-		return ""
-	}
-
-	return base64.StdEncoding.EncodeToString(photoBytes)
-}
-
-// ValidateImage validates that the image is jpg or png and wights under 1 MB
-func ValidateImage(photoPath string) {
-	// Check extension
-	photoExt := filepath.Ext(photoPath)
-	log.Debug().Str("extension", photoExt).Msg("image extension")
-	if photoExt != ".jpg" && photoExt != ".JPG" && photoExt != ".jpeg" && photoExt != ".JPEG" && photoExt != ".png" && photoExt != ".PNG" {
-		log.Error().Msg("invalid image format, please use jpg or png")
-	}
-
-	// Check size
-	photoFile, err := os.Stat(photoPath)
-	if err != nil {
-		log.Error().Err(err).Msg("cannot read photo")
-	} else {
-		if photoFile.Size() > 1024*1024 {
-			log.Error().Msg("image too big, please keep it under 1 MB")
-		}
-	}
 }

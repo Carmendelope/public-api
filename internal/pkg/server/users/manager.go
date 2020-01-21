@@ -75,21 +75,18 @@ func (m *Manager) Add(addUserRequest *grpc_public_api_go.AddUserRequest) (*grpc_
 		return nil, err
 	}
 	return &grpc_public_api_go.User{
-		OrganizationId:       added.OrganizationId,
-		Email:                added.Email,
-		Name:                 added.Name,
-		PhotoBase64:          "",
-		MemberSince:          0,
-		RoleId:               "",
-		RoleName:             added.RoleName,
-		LastName:             "",
-		Title:                "",
-		LastLogin:            0,
-		Phone:                "",
-		Location:             "",
-		XXX_NoUnkeyedLiteral: struct{}{},
-		XXX_unrecognized:     nil,
-		XXX_sizecache:        0,
+		OrganizationId: added.OrganizationId,
+		Email:          added.Email,
+		Name:           added.Name,
+		PhotoBase64:    added.PhotoBase64,
+		MemberSince:    added.MemberSince,
+		RoleId:         added.RoleId,
+		RoleName:       added.RoleName,
+		LastName:       added.LastName,
+		Title:          added.Title,
+		LastLogin:      added.LastLogin,
+		Phone:          added.Phone,
+		Location:       added.Location,
 	}, nil
 }
 
@@ -123,7 +120,15 @@ func (m *Manager) List(organizationID *grpc_organization_go.OrganizationId) (*gr
 				OrganizationId: u.OrganizationId,
 				Email:          u.Email,
 				Name:           u.Name,
+				PhotoBase64:    u.PhotoBase64,
+				MemberSince:    u.MemberSince,
+				RoleId:         u.RoleId,
 				RoleName:       u.RoleName,
+				LastName:       u.LastName,
+				Title:          u.Title,
+				LastLogin:      u.LastLogin,
+				Phone:          u.Phone,
+				Location:       u.Location,
 			}
 			users = append(users, toAdd)
 		}

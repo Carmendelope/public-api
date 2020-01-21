@@ -145,9 +145,16 @@ var updateUserCmd = &cobra.Command{
 			cliOptions.Resolve("nalejAddress", nalejAddress),
 			cliOptions.ResolveAsInt("port", nalejPort),
 			insecure, useTLS,
-			cliOptions.Resolve("cacert", caCertPath), cliOptions.Resolve("output", output), cliOptions.ResolveAsInt("labelLength", labelLength))
-		u.Update(cliOptions.Resolve("organizationID", organizationID), email, name, photoPath, lastName, title, phone, location)
-
+			cliOptions.Resolve("cacert", caCertPath),
+			cliOptions.Resolve("output", output),
+			cliOptions.ResolveAsInt("labelLength", labelLength))
+		u.Update(cliOptions.Resolve("organizationID", organizationID), email,
+			cmd.Flag("name").Changed, name,
+			cmd.Flag("photoPath").Changed, photoPath,
+			cmd.Flag("lastName").Changed, lastName,
+			cmd.Flag("title").Changed, title,
+			cmd.Flag("phone").Changed, phone,
+			cmd.Flag("location").Changed, location)
 	},
 }
 
