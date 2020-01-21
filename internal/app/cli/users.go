@@ -73,6 +73,7 @@ func (u *Users) Add(organizationID string, email string, password string, name s
 		tempPhotoBase64, err := PhotoPathToBase64(photoPath)
 		if err != nil {
 			log.Error().Err(err).Msg("error converting image to base64")
+			u.ExitOnError(err, "error trying to add image")
 		}
 		photoBase64 = tempPhotoBase64
 	}
@@ -185,13 +186,13 @@ func (u *Users) Update(organizationID string, email string, updateName bool, new
 	defer conn.Close()
 	defer cancel()
 
-	updateRequest := ApplyUpdate(organizationID, email, updateName, newName, updatePhoto, newPhotoPath, updateLastName, newLastName, updateTitle, newTitle, updatePhone, newPhone, updateLocation, newLocation)
+	updateRequest, err := ApplyUpdate(organizationID, email, updateName, newName, updatePhoto, newPhotoPath, updateLastName, newLastName, updateTitle, newTitle, updatePhone, newPhone, updateLocation, newLocation)
 	log.Debug().Interface("updateRequest", updateRequest).Msg("sending update request")
 	done, err := client.Update(ctx, updateRequest)
 	u.PrintResultOrError(done, err, "cannot update user")
 }
 
-func ApplyUpdate(organizationID string, email string, updateName bool, newName string, updatePhoto bool, newPhotoPath string, updateLastName bool, newLastName string, updateTitle bool, newTitle string, updatePhone bool, newPhone string, updateLocation bool, newLocation string) *grpc_user_go.UpdateUserRequest {
+func ApplyUpdate(organizationID string, email string, updateName bool, newName string, updatePhoto bool, newPhotoPath string, updateLastName bool, newLastName string, updateTitle bool, newTitle string, updatePhone bool, newPhone string, updateLocation bool, newLocation string) (*grpc_user_go.UpdateUserRequest, error) {
 	updateRequest := &grpc_user_go.UpdateUserRequest{
 		OrganizationId: organizationID,
 		Email:          email,
@@ -206,6 +207,7 @@ func ApplyUpdate(organizationID string, email string, updateName bool, newName s
 		photoBase64, err := PhotoPathToBase64(newPhotoPath)
 		if err != nil {
 			log.Error().Err(err).Msg("error converting image to base64")
+			return nil, err
 		}
 		updateRequest.PhotoBase64 = photoBase64
 
@@ -231,5 +233,5 @@ func ApplyUpdate(organizationID string, email string, updateName bool, newName s
 		updateRequest.Location = newLocation
 	}
 
-	return updateRequest
+	return updateRequest, nil
 }
