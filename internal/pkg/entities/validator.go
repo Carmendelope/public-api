@@ -349,7 +349,7 @@ func ValidUninstallClusterRequest(request *grpc_public_api_go.UninstallClusterRe
 	return nil
 }
 
-func ValidDecomissionClusterRequest(request *grpc_public_api_go.DecomissionClusterRequest) derrors.Error {
+func ValidDecommissionClusterRequest(request *grpc_public_api_go.DecommissionClusterRequest) derrors.Error {
 	if request.OrganizationId == "" {
 		return derrors.NewInvalidArgumentError(emptyOrganizationId)
 	}
