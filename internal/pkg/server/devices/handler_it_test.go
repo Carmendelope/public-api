@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Nalej
+ * Copyright 2020 Nalej
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -55,7 +55,7 @@ var _ = ginkgo.Describe("Devices", func() {
 
 	var (
 		deviceManagerAddress = os.Getenv("IT_DEVICE_MANAGER_ADDRESS")
-		orgManagerAddress = os.Getenv("IT_ORGMNG_ADDRESS")
+		orgManagerAddress    = os.Getenv("IT_ORGMNG_ADDRESS")
 	)
 
 	if orgManagerAddress == "" || deviceManagerAddress == "" {

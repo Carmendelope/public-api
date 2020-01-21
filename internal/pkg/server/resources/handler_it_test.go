@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Nalej
+ * Copyright 2020 Nalej
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -66,7 +66,7 @@ var _ = ginkgo.Describe("Resources", func() {
 
 	var (
 		systemModelAddress = os.Getenv("IT_SM_ADDRESS")
-		orgManagerAddress = os.Getenv("IT_ORGMNG_ADDRESS")
+		orgManagerAddress  = os.Getenv("IT_ORGMNG_ADDRESS")
 	)
 
 	if systemModelAddress == "" {
@@ -101,7 +101,7 @@ var _ = ginkgo.Describe("Resources", func() {
 		clustClient = grpc_infrastructure_go.NewClustersClient(smConn)
 		nodeClient = grpc_infrastructure_go.NewNodesClient(smConn)
 
-		orgConn	 = utils.GetConnection(orgManagerAddress)
+		orgConn = utils.GetConnection(orgManagerAddress)
 		orgClient = grpc_organization_manager_go.NewOrganizationsClient(orgConn)
 
 		conn, err := test.GetConn(*listener)

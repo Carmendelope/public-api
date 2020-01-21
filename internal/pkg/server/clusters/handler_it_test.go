@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Nalej
+ * Copyright 2020 Nalej
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -55,7 +55,7 @@ var _ = ginkgo.Describe("Clusters", func() {
 
 	var (
 		systemModelAddress    = os.Getenv("IT_SM_ADDRESS")
-		orgManagerAddress    = os.Getenv("IT_ORGMGR_ADDRESS")
+		orgManagerAddress     = os.Getenv("IT_ORGMGR_ADDRESS")
 		infraManagerAddress   = os.Getenv("IT_INFRAMGR_ADDRESS")
 		monitorManagerAddress = os.Getenv("IT_MONITORING_MANAGER_ADDRESS")
 	)

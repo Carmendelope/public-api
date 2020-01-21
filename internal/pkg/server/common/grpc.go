@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Nalej
+ * Copyright 2020 Nalej
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,15 +25,16 @@ import (
 
 const (
 	DefaultTimeout = time.Minute
-	UserID = "userid"
+	UserID         = "userid"
 )
+
 // GetContext returns a context with a default timeout for internal communications. Notice that the context does not
 // have any security related information attached to it.
 func GetContext() (context.Context, context.CancelFunc) {
 	return context.WithTimeout(context.Background(), DefaultTimeout)
 }
 
-func GetContextWithUser(userId string)(context.Context, context.CancelFunc){
+func GetContextWithUser(userId string) (context.Context, context.CancelFunc) {
 	md := metadata.New(map[string]string{UserID: userId})
 	log.Debug().Interface("md", md).Msg("metadata has been created")
 	baseContext, cancel := context.WithTimeout(context.Background(), DefaultTimeout)

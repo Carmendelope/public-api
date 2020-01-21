@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Nalej
+ * Copyright 2020 Nalej
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -61,7 +61,11 @@ func (m *Manager) Add(addUserRequest *grpc_public_api_go.AddUserRequest) (*grpc_
 		Email:          addUserRequest.Email,
 		Password:       addUserRequest.Password,
 		Name:           addUserRequest.Name,
-		PhotoUrl:       "",
+		PhotoBase64:    addUserRequest.PhotoBase64,
+		LastName:       addUserRequest.LastName,
+		Location:       addUserRequest.Location,
+		Phone:          addUserRequest.Phone,
+		Title:          addUserRequest.Title,
 		RoleId:         roleId,
 	}
 	ctx2, cancel2 := common.GetContext()
@@ -74,7 +78,15 @@ func (m *Manager) Add(addUserRequest *grpc_public_api_go.AddUserRequest) (*grpc_
 		OrganizationId: added.OrganizationId,
 		Email:          added.Email,
 		Name:           added.Name,
+		PhotoBase64:    added.PhotoBase64,
+		MemberSince:    added.MemberSince,
+		RoleId:         added.RoleId,
 		RoleName:       added.RoleName,
+		LastName:       added.LastName,
+		Title:          added.Title,
+		LastLogin:      added.LastLogin,
+		Phone:          added.Phone,
+		Location:       added.Location,
 	}, nil
 }
 
@@ -103,12 +115,20 @@ func (m *Manager) List(organizationID *grpc_organization_go.OrganizationId) (*gr
 	}
 	users := make([]*grpc_public_api_go.User, 0)
 	for _, u := range list.Users {
-		if !u.Internal {
+		if !u.InternalRole {
 			toAdd := &grpc_public_api_go.User{
 				OrganizationId: u.OrganizationId,
 				Email:          u.Email,
 				Name:           u.Name,
+				PhotoBase64:    u.PhotoBase64,
+				MemberSince:    u.MemberSince,
+				RoleId:         u.RoleId,
 				RoleName:       u.RoleName,
+				LastName:       u.LastName,
+				Title:          u.Title,
+				LastLogin:      u.LastLogin,
+				Phone:          u.Phone,
+				Location:       u.Location,
 			}
 			users = append(users, toAdd)
 		}

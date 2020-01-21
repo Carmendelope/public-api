@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Nalej
+ * Copyright 2020 Nalej
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -54,7 +54,7 @@ func (u *Users) getClient() (grpc_public_api_go.UsersClient, *grpc.ClientConn) {
 }
 
 // Add a new user to the organization.
-func (u *Users) Add(organizationID string, email string, password string, name string, roleName string) {
+func (u *Users) Add(organizationID string, email string, password string, name string, roleName string, photoPath string, lastName string, location string, phone string, title string) {
 	if organizationID == "" {
 		log.Fatal().Msg("organizationID cannot be empty")
 	}
@@ -68,13 +68,29 @@ func (u *Users) Add(organizationID string, email string, password string, name s
 	defer conn.Close()
 	defer cancel()
 
+	photoBase64 := ""
+	if photoPath != "" {
+		tempPhotoBase64, err := PhotoPathToBase64(photoPath)
+		if err != nil {
+			log.Error().Err(err).Msg("error converting image to base64")
+			u.ExitOnError(err, "error trying to add image")
+		}
+		photoBase64 = tempPhotoBase64
+	}
+
 	addRequest := &grpc_public_api_go.AddUserRequest{
 		OrganizationId: organizationID,
 		Email:          email,
 		Password:       password,
 		Name:           name,
+		PhotoBase64:    photoBase64,
+		LastName:       lastName,
+		Location:       location,
+		Phone:          phone,
+		Title:          title,
 		RoleName:       roleName,
 	}
+	log.Debug().Interface("add user request", addRequest).Msg("debugging")
 	added, err := client.Add(ctx, addRequest)
 	u.PrintResultOrError(added, err, "cannot add user")
 }
@@ -160,7 +176,7 @@ func (u *Users) ChangePassword(organizationID string, email string, password str
 }
 
 // Update the user information.
-func (u *Users) Update(organizationID string, email string, newName string) {
+func (u *Users) Update(organizationID string, email string, updateName bool, newName string, updatePhoto bool, newPhotoPath string, updateLastName bool, newLastName string, updateTitle bool, newTitle string, updatePhone bool, newPhone string, updateLocation bool, newLocation string) {
 	if organizationID == "" {
 		log.Fatal().Msg("organizationID cannot be empty")
 	}
@@ -170,14 +186,52 @@ func (u *Users) Update(organizationID string, email string, newName string) {
 	defer conn.Close()
 	defer cancel()
 
+	updateRequest, err := ApplyUpdate(organizationID, email, updateName, newName, updatePhoto, newPhotoPath, updateLastName, newLastName, updateTitle, newTitle, updatePhone, newPhone, updateLocation, newLocation)
+	log.Debug().Interface("updateRequest", updateRequest).Msg("sending update request")
+	done, err := client.Update(ctx, updateRequest)
+	u.PrintResultOrError(done, err, "cannot update user")
+}
+
+func ApplyUpdate(organizationID string, email string, updateName bool, newName string, updatePhoto bool, newPhotoPath string, updateLastName bool, newLastName string, updateTitle bool, newTitle string, updatePhone bool, newPhone string, updateLocation bool, newLocation string) (*grpc_user_go.UpdateUserRequest, error) {
 	updateRequest := &grpc_user_go.UpdateUserRequest{
 		OrganizationId: organizationID,
 		Email:          email,
 	}
-	if newName != "" {
+	if updateName {
+		updateRequest.UpdateName = true
 		updateRequest.Name = newName
 	}
-	log.Debug().Interface("updateRequest", updateRequest).Msg("sending update request")
-	done, err := client.Update(ctx, updateRequest)
-	u.PrintResultOrError(done, err, "cannot update user")
+
+	if updatePhoto {
+		updateRequest.UpdatePhotoBase64 = true
+		photoBase64, err := PhotoPathToBase64(newPhotoPath)
+		if err != nil {
+			log.Error().Err(err).Msg("error converting image to base64")
+			return nil, err
+		}
+		updateRequest.PhotoBase64 = photoBase64
+
+	}
+
+	if updateLastName {
+		updateRequest.UpdateLastName = true
+		updateRequest.LastName = newLastName
+	}
+
+	if updateTitle {
+		updateRequest.UpdateTitle = true
+		updateRequest.Title = newTitle
+	}
+
+	if updatePhone {
+		updateRequest.UpdatePhone = true
+		updateRequest.Phone = newPhone
+	}
+
+	if updateLocation {
+		updateRequest.UpdateLocation = true
+		updateRequest.Location = newLocation
+	}
+
+	return updateRequest, nil
 }

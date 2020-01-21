@@ -331,20 +331,20 @@
   version = "v0.0.12"
 
 [[projects]]
-  digest = "1:3c48d4db5e7f6c3cda75e4fc1f9b061eb121ec26587bec82059eba37bac619be"
+  digest = "1:c28ae2de3465b87c885623e72f1a3d8df64c2eac7dde5bd920d53e256e29ba52"
   name = "github.com/nalej/grpc-user-go"
   packages = ["."]
   pruneopts = ""
-  revision = "698c351ad5637388b817eb09b823876ce93f1f88"
-  version = "v0.0.33"
+  revision = "acad5ce030ec1f89c2e4bb90c11b89fb19427c46"
+  version = "v0.0.37"
 
 [[projects]]
-  digest = "1:be9ed81eb2b376cff95447fc29d418788028a5ebf39baeda15a9738e7dffc522"
+  digest = "1:7a32bdd201afeaf3feddc70ef8dbc24fc76690dc2176ff7bf350b4cdbe0b9f42"
   name = "github.com/nalej/grpc-user-manager-go"
   packages = ["."]
   pruneopts = ""
-  revision = "6884f008f95e3cf9912d3d0bd0085d988fa11225"
-  version = "v0.0.29"
+  revision = "62bbbd03621cec64f40f2218523622a9cc6a79b4"
+  version = "v0.0.30"
 
 [[projects]]
   digest = "1:0261633894934ecc23f9b2551c21676dc5e89554d76aafd8ccb84aff21196799"
@@ -477,11 +477,11 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:e8efaf355e422c977bc540db3f5697c48fc59caac9e666c181254c943d9d81cf"
+  digest = "1:f3379d6e618c0e7d0a0a260034f43b97fb02e8980f13288a9fb183397d2de171"
   name = "golang.org/x/sys"
   packages = ["unix"]
   pruneopts = ""
-  revision = "655fe14d7479994387fe12003042545d0c2859a5"
+  revision = "34d275377bf96a094e8d5b0c61750ddd54cd6b36"
 
 [[projects]]
   digest = "1:740b51a55815493a8d0f2b1e0d0ae48fe48953bf7eaf3fcc4198823bf67768c0"

@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Nalej
+ * Copyright 2020 Nalej
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -69,13 +69,11 @@ func init() {
 	downloadGetCmd.Flags().StringVar(&requestId, "requestID", "", "request identifier")
 	downloadGetCmd.Flags().StringVar(&outputPath, "outputPath", "./", "Path to store the file")
 
-
 	downloadCmd.AddCommand(checkCmd)
 	checkCmd.Flags().StringVar(&requestId, "requestID", "", "request identifier")
 
 	downloadCmd.AddCommand(listCmd)
 	listCmd.Flags().BoolVarP(&watch, "watch", "w", false, "Watch for changes")
-
 
 }
 
@@ -104,7 +102,7 @@ var searchCmd = &cobra.Command{
 }
 
 var downloadCmd = &cobra.Command{
-	Use:     "download",
+	Use:   "download",
 	Short: "Download application logs",
 	Long:  `Download application logs based on application and service group instance`,
 	Run: func(cmd *cobra.Command, args []string) {
