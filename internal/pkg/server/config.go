@@ -41,8 +41,6 @@ type Config struct {
 	UserManagerAddress string
 	// DeviceManagerAddress with the host:port to connect to the Device Manager component.
 	DeviceManagerAddress string
-	// UnifiedLoggingAddress with the host:port to connect to the Unified Logging Coordinator component.
-	UnifiedLoggingAddress string
 	// MonitoringManagerAddress with the host:port to connect to the Monitoring Manager component.
 	MonitoringManagerAddress string
 	// InventoryManagerAddress with the host:port to connect to the Inventory Manager component.
@@ -85,10 +83,6 @@ func (conf *Config) Validate() derrors.Error {
 
 	if conf.DeviceManagerAddress == "" {
 		return derrors.NewInvalidArgumentError("deviceManagerAddress must be set")
-	}
-
-	if conf.UnifiedLoggingAddress == "" {
-		return derrors.NewInvalidArgumentError("unifiedLoggingAddress must be set")
 	}
 
 	if conf.MonitoringManagerAddress == "" {
@@ -135,7 +129,6 @@ func (conf *Config) Print() {
 	log.Info().Str("URL", conf.InfrastructureManagerAddress).Msg("Infrastructure Manager")
 	log.Info().Str("URL", conf.ApplicationsManagerAddress).Msg("Applications Manager")
 	log.Info().Str("URL", conf.UserManagerAddress).Msg("User Manager")
-	log.Info().Str("URL", conf.UnifiedLoggingAddress).Msg("Unified Logging Coordinator Service")
 	log.Info().Str("URL", conf.MonitoringManagerAddress).Msg("Monitoring Manager Service")
 	log.Info().Str("URL", conf.DeviceManagerAddress).Msg("Device Manager Service")
 	log.Info().Str("URL", conf.InventoryManagerAddress).Msg("Inventory Manager Service")

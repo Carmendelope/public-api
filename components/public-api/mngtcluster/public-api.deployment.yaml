@@ -48,7 +48,6 @@ spec:
         - "--applicationsManagerAddress=application-manager.__NPH_NAMESPACE:8910"
         - "--userManagerAddress=user-manager.__NPH_NAMESPACE:8920"
         - "--deviceManagerAddress=device-manager.__NPH_NAMESPACE:6010"
-        - "--unifiedLoggingAddress=unified-logging-coord.__NPH_NAMESPACE:8323"
         - "--monitoringManagerAddress=monitoring-manager.__NPH_NAMESPACE:8423"
         - "--inventoryManagerAddress=inventory-manager.__NPH_NAMESPACE:5510"
         - "--provisionerManagerAddress=provisioner.__NPH_NAMESPACE:8930"

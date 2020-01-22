@@ -32,7 +32,6 @@ import (
 	"github.com/nalej/grpc-organization-manager-go"
 	"github.com/nalej/grpc-provisioner-go"
 	"github.com/nalej/grpc-public-api-go"
-	"github.com/nalej/grpc-unified-logging-go"
 	"github.com/nalej/grpc-user-manager-go"
 	"github.com/nalej/public-api/internal/pkg/server/agent"
 	"github.com/nalej/public-api/internal/pkg/server/application-network"
@@ -78,7 +77,6 @@ type Clients struct {
 	umClient          grpc_user_manager_go.UserManagerClient
 	appClient         grpc_application_manager_go.ApplicationManagerClient
 	deviceClient      grpc_device_manager_go.DevicesClient
-	ulClient          grpc_unified_logging_go.CoordinatorClient
 	unifLoggClient    grpc_application_manager_go.UnifiedLoggingClient
 	mmClient          grpc_monitoring_go.MonitoringManagerClient
 	amClient          grpc_monitoring_go.AssetMonitoringClient
@@ -111,10 +109,6 @@ func (s *Service) GetClients() (*Clients, derrors.Error) {
 	if err != nil {
 		return nil, derrors.AsError(err, "cannot create connection with the device manager")
 	}
-	ulConn, err := grpc.Dial(s.Configuration.UnifiedLoggingAddress, grpc.WithInsecure())
-	if err != nil {
-		return nil, derrors.AsError(err, "cannot create connection with unified logging coordinator")
-	}
 	mmConn, err := grpc.Dial(s.Configuration.MonitoringManagerAddress, grpc.WithInsecure())
 	if err != nil {
 		return nil, derrors.AsError(err, "cannot create connection with infrastructure monitor coordinator")
@@ -143,7 +137,7 @@ func (s *Service) GetClients() (*Clients, derrors.Error) {
 	umClient := grpc_user_manager_go.NewUserManagerClient(umConn)
 	appClient := grpc_application_manager_go.NewApplicationManagerClient(appConn)
 	deviceClient := grpc_device_manager_go.NewDevicesClient(devConn)
-	ulClient := grpc_unified_logging_go.NewCoordinatorClient(ulConn)
+	//ulClient := grpc_unified_logging_go.NewCoordinatorClient(ulConn)
 	mmClient := grpc_monitoring_go.NewMonitoringManagerClient(mmConn)
 	amClient := grpc_monitoring_go.NewAssetMonitoringClient(mmConn)
 	eicClient := grpc_inventory_manager_go.NewEICClient(invManagerConn)
@@ -155,7 +149,7 @@ func (s *Service) GetClients() (*Clients, derrors.Error) {
 	downloadClient := grpc_log_download_manager_go.NewLogDownloadManagerClient(logDownConn)
 
 	return &Clients{oClient, cClient, nClient, infraClient, umClient,
-		appClient, deviceClient, ulClient, unifLoggClient, mmClient, amClient,
+		appClient, deviceClient,unifLoggClient, mmClient, amClient,
 		eicClient, invClient, agentClient, appNetClient,
 		provClient, downloadClient}, nil
 }
