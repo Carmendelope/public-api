@@ -28,3 +28,4 @@ steps:
       done
       exit $isOk
     displayName: Verify public-api deployment is ready
+    condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
