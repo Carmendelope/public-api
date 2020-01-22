@@ -10,7 +10,7 @@ resources:
       type: github
       name: nalej/ci-templates
       endpoint: nalej
-      ref: refs/tags/v1.1.0
+      ref: refs/tags/v1.1.1
 
 stages:
 - stage: 'MainPipeline'
