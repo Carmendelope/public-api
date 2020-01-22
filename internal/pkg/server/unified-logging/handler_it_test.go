@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Nalej
+ * Copyright 2020 Nalej
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -53,8 +53,8 @@ var _ = ginkgo.Describe("Unified Logging", func() {
 	var (
 		systemModelAddress    = os.Getenv("IT_SM_ADDRESS")
 		unifiedLoggingAddress = os.Getenv("IT_UL_COORD_ADDRESS")
-		logManagerAddress = os.Getenv("LOG_DOWNLOAD_ADDRESS")
-		orgManagerAddress = os.Getenv("IT_ORGMGR_ADDRESS")
+		logManagerAddress     = os.Getenv("LOG_DOWNLOAD_ADDRESS")
+		orgManagerAddress     = os.Getenv("IT_ORGMGR_ADDRESS")
 	)
 
 	if systemModelAddress == "" || unifiedLoggingAddress == "" || logManagerAddress == "" || orgManagerAddress == "" {

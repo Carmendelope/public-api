@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Nalej
+ * Copyright 2020 Nalej
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -50,7 +50,7 @@ var _ = ginkgo.Describe("Roles", func() {
 	}
 
 	var (
-		orgManagerAddress = os.Getenv("IT_ORGMNG_ADDRESS")
+		orgManagerAddress  = os.Getenv("IT_ORGMNG_ADDRESS")
 		userManagerAddress = os.Getenv("IT_USER_MANAGER_ADDRESS")
 	)
 

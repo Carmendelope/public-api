@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Nalej
+ * Copyright 2020 Nalej
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -136,7 +136,7 @@ func hideCredentials(credentials *grpc_application_go.ImageCredentials) *grpc_ap
 // and returns a list of HOST_HEADER_CONFIGURATION (endpoint options) defined by the user
 func ToPublicAPIServiceInstances(source []*grpc_application_go.ServiceInstance) ([]*grpc_public_api_go.ServiceInstance, []string) {
 	result := make([]*grpc_public_api_go.ServiceInstance, 0)
-	hostHeader := make ([]string, 0)
+	hostHeader := make([]string, 0)
 
 	for _, si := range source {
 		endpoints := make([]string, len(si.Endpoints))
@@ -586,11 +586,11 @@ func ToInstallerTargetPlatform(pbPlatform grpc_public_api_go.Platform) (*grpc_in
 	return &installerPlatform, nil
 }
 
-func ToUpdateSettingRequest (updateRequest *grpc_public_api_go.UpdateSettingRequest) *grpc_organization_go.UpdateSettingRequest{
+func ToUpdateSettingRequest(updateRequest *grpc_public_api_go.UpdateSettingRequest) *grpc_organization_go.UpdateSettingRequest {
 	return &grpc_organization_go.UpdateSettingRequest{
 		OrganizationId: updateRequest.OrganizationId,
-		Key: updateRequest.Key,
-		UpdateValue: true,
-		Value: updateRequest.Value,
+		Key:            updateRequest.Key,
+		UpdateValue:    true,
+		Value:          updateRequest.Value,
 	}
 }

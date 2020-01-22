@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Nalej
+ * Copyright 2020 Nalej
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,6 +22,10 @@ var loginPort int
 var email string
 var password string
 var publicKeyPath string
+var title string
+var phone string
+var location string
+var lastName string
 
 var newPassword string
 

@@ -39,7 +39,6 @@ func NewHandler(manager Manager) *Handler {
 	return &Handler{manager}
 }
 
-
 func (h *Handler) Update(ctx context.Context, updateRequest *grpc_public_api_go.UpdateSettingRequest) (*grpc_common_go.Success, error) {
 	rm, err := authhelper.GetRequestMetadata(ctx)
 	if err != nil {
@@ -56,7 +55,7 @@ func (h *Handler) Update(ctx context.Context, updateRequest *grpc_public_api_go.
 
 	return h.Manager.Update(updateRequest)
 }
-func (h *Handler) List(ctx context.Context, orgID *grpc_public_api_go.ListRequest) (*grpc_organization_manager_go.SettingList, error){
+func (h *Handler) List(ctx context.Context, orgID *grpc_public_api_go.ListRequest) (*grpc_organization_manager_go.SettingList, error) {
 	rm, err := authhelper.GetRequestMetadata(ctx)
 	if err != nil {
 		return nil, conversions.ToGRPCError(err)

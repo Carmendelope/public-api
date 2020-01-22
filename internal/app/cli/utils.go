@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Nalej
+ * Copyright 2020 Nalej
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,6 +21,7 @@ import (
 	"github.com/nalej/derrors"
 	"github.com/rs/zerolog/log"
 	"io/ioutil"
+	"os"
 	"os/user"
 	"path/filepath"
 	"strings"
@@ -40,7 +41,6 @@ func GetLabels(rawLabels string) map[string]string {
 	return labels
 }
 
-
 // GetPath resolves a given path by adding support for relative paths.
 func GetPath(path string) string {
 	if strings.HasPrefix(path, "~") {
@@ -58,26 +58,51 @@ func GetPath(path string) string {
 	return path
 }
 
-// PhotoToBase64 reads a image an convert the content to a base64 string
-// The photo can not be bigger than 1M
-func PhotoToBase64(path string) (string, derrors.Error) {
+// PhotoPathToBase64 reads a image an convert the content to a base64 string
+func PhotoPathToBase64(path string) (string, derrors.Error) {
 	// if there is no path -> empty image
-	if path == ""  {
+	if path == "" {
 		return "", nil
+	}
+
+	viErr := ValidateImage(path)
+	if viErr != nil {
+		return "", viErr
 	}
 
 	convertedPath := GetPath(path)
 	content, err := ioutil.ReadFile(convertedPath)
 	if err != nil {
-		return "", derrors.AsError(err, "cannot read descriptor")
-	}
-
-	if len(content) > (1024*1024) {
-		return "", derrors.NewInvalidArgumentError("photo can not be bigger than 1M")
+		return "", derrors.AsError(err, "cannot read image")
 	}
 
 	// convert the buffer bytes to base64 string - use buf.Bytes() for new image
 	imgBase64Str := base64.StdEncoding.EncodeToString(content)
 
 	return imgBase64Str, nil
+}
+
+// ValidateImage validates that the image is jpg or png and wights under 1 MB
+func ValidateImage(photoPath string) derrors.Error {
+	// Check extension
+	photoExt := filepath.Ext(photoPath)
+	log.Debug().Str("extension", photoExt).Msg("image extension")
+	if photoExt != ".jpg" && photoExt != ".JPG" && photoExt != ".jpeg" && photoExt != ".JPEG" && photoExt != ".png" && photoExt != ".PNG" {
+		log.Error().Msg("invalid image format, please use jpg or png")
+	}
+
+	// Check size
+	photoFile, err := os.Stat(photoPath)
+	if err != nil {
+		log.Error().Err(err).Msg("cannot read photo")
+		return derrors.NewGenericError("cannot read photo")
+	} else {
+		if photoFile.Size() > 1024*1024 {
+			log.Error().Msg("image too big, should weight less than 1 MB")
+			return derrors.NewGenericError("image too big, should weight less than 1 MB")
+		}
+	}
+
+	// Valid image
+	return nil
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Nalej
+ * Copyright 2020 Nalej
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,7 +32,6 @@ import (
 var AppDescriptorListAllowedFields = []string{"name"}
 var LogResponseAllowedFields = []string{"timestamp"}
 var SettingsAllowedFields = []string{"key"}
-
 
 // OrderOptions represents the ordering to be applied
 type OrderOptions struct {

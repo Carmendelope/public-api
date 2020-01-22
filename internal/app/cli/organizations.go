@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Nalej
+ * Copyright 2020 Nalej
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -82,7 +82,7 @@ func (o *Organizations) Update(organizationID string, updateName bool, name stri
 	}
 	defer c.Close()
 
-	photo64, err := PhotoToBase64(photoPath)
+	photo64, err := PhotoPathToBase64(photoPath)
 	if err != nil {
 		o.PrintResultOrError(photoPath, err, "cannot open photo file")
 	}
@@ -146,7 +146,7 @@ func (o *Organizations) UpdateSetting(organizationID string, key string, value s
 	return
 }
 
-func (o *Organizations) ListSettings (organizationID string, desc bool) *grpc_organization_manager_go.SettingList{
+func (o *Organizations) ListSettings(organizationID string, desc bool) *grpc_organization_manager_go.SettingList {
 	if organizationID == "" {
 		log.Fatal().Msg("organizationID cannot be empty")
 	}
@@ -174,7 +174,7 @@ func (o *Organizations) ListSettings (organizationID string, desc bool) *grpc_or
 
 	list, iErr := orgClient.List(ctx, &grpc_public_api_go.ListRequest{
 		OrganizationId: organizationID,
-		Order: order,
+		Order:          order,
 	})
 
 	o.PrintResultOrError(list, iErr, "cannot obtain organization info")

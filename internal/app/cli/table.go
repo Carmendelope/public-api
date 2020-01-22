@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Nalej
+ * Copyright 2020 Nalej
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -233,7 +233,7 @@ func FromOrganization(info *grpc_organization_manager_go.Organization) *ResultTa
 	return &ResultTable{result}
 }
 
-func FromSettingList (list *grpc_organization_manager_go.SettingList) *ResultTable {
+func FromSettingList(list *grpc_organization_manager_go.SettingList) *ResultTable {
 	result := make([][]string, 0)
 	result = append(result, []string{"KEY", "VALUE", "DESCRIPTION"})
 	for _, setting := range list.Settings {
@@ -580,7 +580,7 @@ func FromDownloadLogResponseList(result *grpc_public_api_go.DownloadLogResponseL
 	for _, response := range result.Responses {
 		exp := ""
 		if response.Expiration != 0 {
-			exp= time.Unix(0, response.Expiration).String()
+			exp = time.Unix(0, response.Expiration).String()
 		}
 		r = append(r, []string{response.RequestId, response.StateName, response.Info, exp})
 	}

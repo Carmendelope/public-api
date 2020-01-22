@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Nalej
+ * Copyright 2020 Nalej
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -87,7 +87,7 @@ func (h *Handler) DownloadLog(ctx context.Context, request *grpc_log_download_ma
 	return h.Manager.DownloadLog(request, rm.UserID)
 }
 
-func (h *Handler) List(ctx context.Context, request *grpc_organization_go.OrganizationId) (*grpc_public_api_go.DownloadLogResponseList, error){
+func (h *Handler) List(ctx context.Context, request *grpc_organization_go.OrganizationId) (*grpc_public_api_go.DownloadLogResponseList, error) {
 	rm, err := authhelper.GetRequestMetadata(ctx)
 	if err != nil {
 		return nil, conversions.ToGRPCError(err)

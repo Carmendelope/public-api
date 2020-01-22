@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Nalej
+ * Copyright 2020 Nalej
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -52,7 +52,7 @@ var _ = ginkgo.Describe("Users", func() {
 
 	var (
 		userManagerAddress = os.Getenv("IT_USER_MANAGER_ADDRESS")
-		orgManagerAddress = os.Getenv("IT_ORGMGR_ADDRESS")
+		orgManagerAddress  = os.Getenv("IT_ORGMGR_ADDRESS")
 	)
 
 	if orgManagerAddress == "" || userManagerAddress == "" {
@@ -134,7 +134,7 @@ var _ = ginkgo.Describe("Users", func() {
 			Email:          fmt.Sprintf("random%d@nalej.com", rand.Int()),
 			Password:       "password",
 			Name:           "Name",
-			//RoleName:       targetRole.Name,
+			RoleName:       targetRole.Name,
 		}
 		ctx, cancel := ithelpers.GetContext(token)
 		defer cancel()
@@ -142,7 +142,7 @@ var _ = ginkgo.Describe("Users", func() {
 		gomega.Expect(err).To(gomega.Succeed())
 		gomega.Expect(added.OrganizationId).Should(gomega.Equal(addRequest.OrganizationId))
 		gomega.Expect(added.Email).Should(gomega.Equal(addRequest.Email))
-		//gomega.Expect(added.RoleName).Should(gomega.Equal(addRequest.RoleName))
+		gomega.Expect(added.RoleName).Should(gomega.Equal(addRequest.RoleName))
 	})
 	ginkgo.It("Developer should NOT be able to add a new user", func() {
 		addRequest := &grpc_public_api_go.AddUserRequest{
@@ -150,7 +150,7 @@ var _ = ginkgo.Describe("Users", func() {
 			Email:          fmt.Sprintf("developer%d@nalej.com", rand.Int()),
 			Password:       "password",
 			Name:           "Name",
-			//RoleName:       targetRole.Name,
+			RoleName:       targetRole.Name,
 		}
 		ctx, cancel := ithelpers.GetContext(devToken)
 		defer cancel()
@@ -163,7 +163,7 @@ var _ = ginkgo.Describe("Users", func() {
 			Email:          fmt.Sprintf("operator%d@nalej.com", rand.Int()),
 			Password:       "password",
 			Name:           "Name",
-			//RoleName:       targetRole.Name,
+			RoleName:       targetRole.Name,
 		}
 		ctx, cancel := ithelpers.GetContext(opToken)
 		defer cancel()
@@ -296,7 +296,7 @@ var _ = ginkgo.Describe("Users", func() {
 			OrganizationId: targetUser.OrganizationId,
 			Email:          targetUser.Email,
 			Name:           "newName",
-			PhotoUrl:       "newURL",
+			PhotoBase64:    "newPhotoPath",
 		}
 		ctx, cancel := ithelpers.GetContext(token)
 		defer cancel()
@@ -311,7 +311,7 @@ var _ = ginkgo.Describe("Users", func() {
 			OrganizationId: targetUser.OrganizationId,
 			Email:          targetUser.Email,
 			Name:           "newName",
-			PhotoUrl:       "newURL",
+			PhotoBase64:    "newPhotoPath",
 		}
 		ctx, cancel := ithelpers.GetContext(devToken)
 		defer cancel()
@@ -325,7 +325,7 @@ var _ = ginkgo.Describe("Users", func() {
 			OrganizationId: targetUser.OrganizationId,
 			Email:          targetUser.Email,
 			Name:           "newName",
-			PhotoUrl:       "newURL",
+			PhotoBase64:    "newPhotoPath",
 		}
 		ctx, cancel := ithelpers.GetContext(devToken)
 		defer cancel()
