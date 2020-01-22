@@ -32,3 +32,4 @@ stages:
     - template: steps/cli-publish-main.yaml@ci_templates
     - template: steps/docker-main.yaml@ci_templates
     - template: steps/assets-main.yaml@ci_templates
+    - template: steps/slack-finish-main.yaml@ci_templates
