@@ -25,6 +25,8 @@ import (
 	"github.com/nalej/grpc-user-manager-go"
 	"github.com/nalej/grpc-utils/pkg/conversions"
 	"github.com/nalej/public-api/internal/pkg/server/common"
+	"github.com/rs/zerolog/log"
+	"strconv"
 )
 
 // Manager structure with the required clients for users operations.
@@ -98,11 +100,21 @@ func (m *Manager) Info(userID *grpc_user_go.UserId) (*grpc_public_api_go.User, e
 		return nil, err
 	}
 
+	log.Debug().Str("last login", strconv.FormatInt(retrieved.LastLogin, 10)).Msg("retrieved user last login")
+
 	return &grpc_public_api_go.User{
-		OrganizationId: retrieved.OrganizationId,
-		Email:          retrieved.Email,
-		Name:           retrieved.Name,
-		RoleName:       retrieved.RoleName,
+		OrganizationId:       retrieved.OrganizationId,
+		Email:                retrieved.Email,
+		Name:                 retrieved.Name,
+		PhotoBase64:          retrieved.PhotoBase64,
+		MemberSince:          retrieved.MemberSince,
+		RoleId:               retrieved.RoleId,
+		RoleName:             retrieved.RoleName,
+		LastName:             retrieved.LastName,
+		Title:                retrieved.Title,
+		LastLogin:            retrieved.LastLogin,
+		Phone:                retrieved.Phone,
+		Location:             retrieved.Location,
 	}, nil
 }
 

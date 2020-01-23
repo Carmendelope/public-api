@@ -651,7 +651,6 @@
     "github.com/nalej/grpc-organization-manager-go",
     "github.com/nalej/grpc-provisioner-go",
     "github.com/nalej/grpc-public-api-go",
-    "github.com/nalej/grpc-unified-logging-go",
     "github.com/nalej/grpc-user-go",
     "github.com/nalej/grpc-user-manager-go",
     "github.com/nalej/grpc-utils/pkg/conversions",
