@@ -248,23 +248,38 @@ func FromSettingList(list *grpc_organization_manager_go.SettingList) *ResultTabl
 
 func FromUserManagerUser(user *grpc_user_manager_go.User) *ResultTable {
 	result := make([][]string, 0)
-	result = append(result, []string{"NAME", "ROLE", "EMAIL"})
-	result = append(result, []string{user.Name, user.RoleName, user.Email})
+	lastLogin := "never"
+	if user.LastLogin != 0 {
+		lastLogin = time.Unix(0, user.LastLogin).String()
+	}
+	memberSince := time.Unix(0, user.MemberSince).String()
+	result = append(result, []string{"EMAIL", "TITLE", "NAME", "LAST NAME", "ROLE", "LAST LOGIN", "MEMBER SINCE"})
+	result = append(result, []string{user.Email, user.Title, user.Name, user.LastName, user.RoleName, lastLogin, memberSince})
 	return &ResultTable{result}
 }
 
 func FromUser(user *grpc_public_api_go.User) *ResultTable {
 	result := make([][]string, 0)
-	result = append(result, []string{"NAME", "ROLE", "EMAIL"})
-	result = append(result, []string{user.Name, user.RoleName, user.Email})
+	lastLogin := "never"
+	if user.LastLogin != 0 {
+		lastLogin = time.Unix(0, user.LastLogin).String()
+	}
+	memberSince := time.Unix(0, user.MemberSince).String()
+	result = append(result, []string{"EMAIL", "TITLE", "NAME", "LAST NAME", "ROLE", "LAST LOGIN", "MEMBER SINCE"})
+	result = append(result, []string{user.Email, user.Title, user.Name, user.LastName, user.RoleName, lastLogin, memberSince})
 	return &ResultTable{result}
 }
 
 func FromUserList(user *grpc_public_api_go.UserList) *ResultTable {
 	result := make([][]string, 0)
-	result = append(result, []string{"NAME", "ROLE", "EMAIL"})
+	result = append(result, []string{"EMAIL", "TITLE", "NAME", "LAST NAME", "ROLE", "LOCATION", "LAST LOGIN", "MEMBER SINCE"})
 	for _, u := range user.Users {
-		result = append(result, []string{u.Name, u.RoleName, u.Email})
+		lastLogin := ""
+		if u.LastLogin != 0 {
+			lastLogin = time.Unix(0, u.LastLogin).String()
+		}
+		memberSince := time.Unix(0, u.MemberSince).String()
+		result = append(result, []string{u.Email, u.Title, u.Name, u.LastName, u.RoleName, u.Location, lastLogin, memberSince})
 	}
 	return &ResultTable{result}
 }
