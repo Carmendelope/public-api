@@ -126,8 +126,8 @@ func ValidUpdateOrganizationRequest(request *grpc_organization_go.UpdateOrganiza
 	if request.OrganizationId == "" {
 		return derrors.NewInvalidArgumentError(emptyOrganizationId)
 	}
-	if !request.UpdateName && !request.UpdateFullAddress && !request.UpdateCity && !request.UpdateState &&
-		!request.UpdateCountry && !request.UpdateZipCode && !request.UpdatePhoto {
+	if !request.UpdateName && !request.UpdateEmail && !request.UpdateFullAddress && !request.UpdateCity &&
+		!request.UpdateState && !request.UpdateCountry && !request.UpdateZipCode && !request.UpdatePhoto {
 		return derrors.NewInvalidArgumentError("some field must be modified")
 	}
 	return nil

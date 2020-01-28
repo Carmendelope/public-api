@@ -40,6 +40,7 @@ func init() {
 	orgCmd.AddCommand(infoCmd)
 
 	updateOrgCmd.Flags().StringVar(&name, "name", "", "new organization name")
+	updateOrgCmd.Flags().StringVar(&email, "email", "", "new organization email")
 	updateOrgCmd.Flags().StringVar(&address, "address", "", "new organization address")
 	updateOrgCmd.Flags().StringVar(&city, "city", "", "new organization city")
 	updateOrgCmd.Flags().StringVar(&state, "state", "", "new state")
@@ -91,6 +92,7 @@ var updateOrgCmd = &cobra.Command{
 			cliOptions.ResolveAsInt("labelLength", labelLength))
 		o.Update(cliOptions.Resolve("organizationID", organizationID),
 			cmd.Flag("name").Changed, name,
+			cmd.Flag("email").Changed, email,
 			cmd.Flag("address").Changed, address,
 			cmd.Flag("city").Changed, city,
 			cmd.Flag("state").Changed, state,
