@@ -283,20 +283,20 @@
   version = "v0.0.46"
 
 [[projects]]
-  digest = "1:72ac554d3a65bb7182facea97d8edd0d679df14984c66b1110da0eda47441e7b"
+  digest = "1:e4d08c0d13382dba49921fc0d246b79134b49fb584b0fb711884aeba3250389b"
   name = "github.com/nalej/grpc-organization-go"
   packages = ["."]
   pruneopts = ""
-  revision = "448507f75afa7dd6c13a4481970bef0fb6383d39"
-  version = "v0.0.33"
+  revision = "ed59dc9b5531417b1fb89cadcda8bca82eaca0c7"
+  version = "v0.0.35"
 
 [[projects]]
-  digest = "1:0bb476c605bc915c3ee3df065764de2b8d627364f34df17fee6207f47ed56cf7"
+  digest = "1:c120b1c6b702da878389466ef42aa580fc728e4bae814def6d59190757156194"
   name = "github.com/nalej/grpc-organization-manager-go"
   packages = ["."]
   pruneopts = ""
-  revision = "d055af9a6ef79a132c1ec9fe56072c4015c5b7f8"
-  version = "v0.0.2"
+  revision = "b35d5814f6337b0170a2d9193ab4674a3472b2f3"
+  version = "v0.0.4"
 
 [[projects]]
   digest = "1:04665058968000b594204bad78216f04d1b575f8fefe558a4eeecc75964ebf62"
@@ -477,11 +477,11 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:f3379d6e618c0e7d0a0a260034f43b97fb02e8980f13288a9fb183397d2de171"
+  digest = "1:2dc6ac731cf3c523a1664304b556e76736924ba2974daa9cebcbf1372c0641ec"
   name = "golang.org/x/sys"
   packages = ["unix"]
   pruneopts = ""
-  revision = "34d275377bf96a094e8d5b0c61750ddd54cd6b36"
+  revision = "9fbb57f87de9ccfe3a99d4e3270ce8a926ebba4f"
 
 [[projects]]
   digest = "1:740b51a55815493a8d0f2b1e0d0ae48fe48953bf7eaf3fcc4198823bf67768c0"
@@ -533,7 +533,7 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:d15b46ad7d21bb64bb6f9f057e002dd5c32c6dd10bdd704ebb0b6f61e72550b9"
+  digest = "1:01019562f95c0d81e26db6f1d145db1de6faefc80a8404d376ec34b33239191d"
   name = "google.golang.org/genproto"
   packages = [
     "googleapis/api/annotations",
@@ -542,7 +542,7 @@
     "googleapis/rpc/status",
   ]
   pruneopts = ""
-  revision = "32f20d992d240fbca6ef7dec6c05d1f024314e02"
+  revision = "58ce757ed39bbbe3bf3960b90ded218031b35389"
 
 [[projects]]
   digest = "1:7af390490e636a6adc9c76b37a3c823195fbf375a02c4d9506b4dd49d5d2409a"
@@ -610,12 +610,12 @@
   revision = "dd632973f1e7218eb1089048e0798ec9ae7dceb8"
 
 [[projects]]
-  digest = "1:5a53f6ef09fb1ac261a97f8a72e8837ff53cbaa969022a6679da210e4cbe9b0f"
+  digest = "1:2efc9662a6a1ff28c65c84fc2f9030f13d3afecdb2ecad445f3b0c80e75fc281"
   name = "gopkg.in/yaml.v2"
   packages = ["."]
   pruneopts = ""
-  revision = "1f64d6156d11335c3f22d9330b0ad14fc1e789ce"
-  version = "v2.2.7"
+  revision = "53403b58ad1b561927d19068c655246f2db79d48"
+  version = "v2.2.8"
 
 [solve-meta]
   analyzer-name = "dep"
