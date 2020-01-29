@@ -64,7 +64,7 @@ func (o *Organizations) Info(organizationID string) *grpc_organization_manager_g
 	return info
 }
 
-func (o *Organizations) Update(organizationID string, updateName bool, name string, updateFullAddress bool, fullAddress string,
+func (o *Organizations) Update(organizationID string, updateName bool, name string, updateEmail bool, email string, updateFullAddress bool, fullAddress string,
 	updateCity bool, city string, updateState bool, state string, updateCountry bool, country string,
 	updateZipCode bool, zipCode string, updatePhoto bool, photoPath string) {
 	if organizationID == "" {
@@ -95,6 +95,8 @@ func (o *Organizations) Update(organizationID string, updateName bool, name stri
 		OrganizationId:    organizationID,
 		UpdateName:        updateName,
 		Name:              name,
+		UpdateEmail:       updateEmail,
+		Email:             email,
 		UpdateFullAddress: updateFullAddress,
 		FullAddress:       fullAddress,
 		UpdateCity:        updateCity,

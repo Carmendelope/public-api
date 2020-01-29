@@ -222,8 +222,8 @@ func TruncateString(text string, length int) string {
 
 func FromOrganization(info *grpc_organization_manager_go.Organization) *ResultTable {
 	result := make([][]string, 0)
-	result = append(result, []string{"ID", "NAME"})
-	result = append(result, []string{info.OrganizationId, info.Name})
+	result = append(result, []string{"ID", "NAME", "EMAIL"})
+	result = append(result, []string{info.OrganizationId, info.Name, info.Email})
 	result = append(result, []string{""})
 	result = append(result, []string{"ADDRESS", "CITY", "STATE", "COUNTRY", "ZIP CODE"})
 	result = append(result, []string{info.FullAddress, info.City, info.State, info.Country, info.ZipCode})
