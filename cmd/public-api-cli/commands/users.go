@@ -34,17 +34,10 @@ var usersCmd = &cobra.Command{
 
 func init() {
 	rootCmd.AddCommand(usersCmd)
-	usersCmd.PersistentFlags().StringVar(&email, "email", "", "User email")
 	usersCmd.AddCommand(userInfoCmd)
-	_ = userInfoCmd.MarkPersistentFlagRequired("email")
 	usersCmd.AddCommand(userListCmd)
 	usersCmd.AddCommand(deleteUserCmd)
 
-	resetPasswordCmd.Flags().StringVar(&password, "password", "", "Password")
-	resetPasswordCmd.Flags().StringVar(&newPassword, "newPassword", "", "New password")
-	_ = resetPasswordCmd.MarkPersistentFlagRequired("email")
-	_ = resetPasswordCmd.MarkFlagRequired("password")
-	_ = resetPasswordCmd.MarkFlagRequired("newPassword")
 	usersCmd.AddCommand(resetPasswordCmd)
 
 	updateUserCmd.Flags().StringVar(&name, "name", "", "New name for the user")
@@ -53,32 +46,18 @@ func init() {
 	updateUserCmd.Flags().StringVar(&title, "title", "", "New title for the user")
 	updateUserCmd.Flags().StringVar(&phone, "phone", "", "New phone for the user")
 	updateUserCmd.Flags().StringVar(&location, "location", "", "New location for the user")
-	_ = updateUserCmd.MarkFlagRequired("email")
-	_ = updateUserCmd.MarkFlagRequired("name")
-	_ = updateUserCmd.MarkFlagRequired("lastName")
-	_ = updateUserCmd.MarkFlagRequired("title")
 	usersCmd.AddCommand(updateUserCmd)
 
-	addUserCmd.Flags().StringVar(&name, "name", "", "Full name")
-	addUserCmd.Flags().StringVar(&roleName, "role", "", "Role name")
-	addUserCmd.Flags().StringVar(&password, "password", "", "Password")
 	addUserCmd.Flags().StringVar(&photoPath, "photoPath", "", "Path to user photo")
-	addUserCmd.Flags().StringVar(&lastName, "lastName", "", "Last name")
-	addUserCmd.Flags().StringVar(&title, "title", "", "Title")
 	addUserCmd.Flags().StringVar(&phone, "phone", "", "Phone")
 	addUserCmd.Flags().StringVar(&location, "location", "", "Location")
-	_ = addUserCmd.MarkPersistentFlagRequired("email")
-	_ = addUserCmd.MarkFlagRequired("name")
-	_ = addUserCmd.MarkFlagRequired("lastName")
-	_ = addUserCmd.MarkFlagRequired("title")
-	_ = addUserCmd.MarkFlagRequired("role")
-	_ = addUserCmd.MarkFlagRequired("password")
 	usersCmd.AddCommand(addUserCmd)
 }
 
 var userInfoCmd = &cobra.Command{
-	Use:     "info",
+	Use:     "info <email>",
 	Aliases: []string{"get"},
+	Args:    cobra.ExactArgs(1),
 	Short:   "Get user info",
 	Long:    `Get user info`,
 	Run: func(cmd *cobra.Command, args []string) {
@@ -88,7 +67,7 @@ var userInfoCmd = &cobra.Command{
 			cliOptions.ResolveAsInt("port", nalejPort),
 			insecure, useTLS,
 			cliOptions.Resolve("cacert", caCertPath), cliOptions.Resolve("output", output), cliOptions.ResolveAsInt("labelLength", labelLength))
-		u.Info(cliOptions.Resolve("organizationID", organizationID), cliOptions.Resolve("email", email))
+		u.Info(cliOptions.Resolve("organizationID", organizationID), args[0])
 	},
 }
 
@@ -109,8 +88,9 @@ var userListCmd = &cobra.Command{
 }
 
 var deleteUserCmd = &cobra.Command{
-	Use:     "delete",
+	Use:     "delete <email>",
 	Aliases: []string{"remove", "del", "rm"},
+	Args:    cobra.ExactArgs(1),
 	Short:   "Delete a user",
 	Long:    `Delete a user`,
 	Run: func(cmd *cobra.Command, args []string) {
@@ -120,13 +100,14 @@ var deleteUserCmd = &cobra.Command{
 			cliOptions.ResolveAsInt("port", nalejPort),
 			insecure, useTLS,
 			cliOptions.Resolve("cacert", caCertPath), cliOptions.Resolve("output", output), cliOptions.ResolveAsInt("labelLength", labelLength))
-		u.Delete(cliOptions.Resolve("organizationID", organizationID), email)
+		u.Delete(cliOptions.Resolve("organizationID", organizationID), args[0])
 	},
 }
 
 var resetPasswordCmd = &cobra.Command{
-	Use:     "reset-password",
+	Use:     "reset-password <email> <oldPassword> <newPassword>",
 	Aliases: []string{"reset"},
+	Args:    cobra.ExactArgs(3),
 	Short:   "Reset the password of a user",
 	Long:    `Reset the password of a user`,
 	Run: func(cmd *cobra.Command, args []string) {
@@ -136,12 +117,13 @@ var resetPasswordCmd = &cobra.Command{
 			cliOptions.ResolveAsInt("port", nalejPort),
 			insecure, useTLS,
 			cliOptions.Resolve("cacert", caCertPath), cliOptions.Resolve("output", output), cliOptions.ResolveAsInt("labelLength", labelLength))
-		u.ChangePassword(cliOptions.Resolve("organizationID", organizationID), email, password, newPassword)
+		u.ChangePassword(cliOptions.Resolve("organizationID", organizationID), args[0], args[1], args[2])
 	},
 }
 
 var updateUserCmd = &cobra.Command{
-	Use:   "update",
+	Use:   "update <email>",
+	Args:  cobra.ExactArgs(1),
 	Short: "Update the info of a user",
 	Long:  `Update the info of a user`,
 	Run: func(cmd *cobra.Command, args []string) {
@@ -153,7 +135,7 @@ var updateUserCmd = &cobra.Command{
 			cliOptions.Resolve("cacert", caCertPath),
 			cliOptions.Resolve("output", output),
 			cliOptions.ResolveAsInt("labelLength", labelLength))
-		u.Update(cliOptions.Resolve("organizationID", organizationID), email,
+		u.Update(cliOptions.Resolve("organizationID", organizationID), args[0],
 			cmd.Flag("name").Changed, name,
 			cmd.Flag("photoPath").Changed, photoPath,
 			cmd.Flag("lastName").Changed, lastName,
@@ -164,7 +146,8 @@ var updateUserCmd = &cobra.Command{
 }
 
 var addUserCmd = &cobra.Command{
-	Use:   "add",
+	Use:   "add <email> <password> <name> <lastName> <roleName> <title>",
+	Args:  cobra.ExactArgs(6),
 	Short: "Add a new user",
 	Long:  `Add a new user`,
 	Run: func(cmd *cobra.Command, args []string) {
@@ -174,6 +157,6 @@ var addUserCmd = &cobra.Command{
 			cliOptions.ResolveAsInt("port", nalejPort),
 			insecure, useTLS,
 			cliOptions.Resolve("cacert", caCertPath), cliOptions.Resolve("output", output), cliOptions.ResolveAsInt("labelLength", labelLength))
-		u.Add(cliOptions.Resolve("organizationID", organizationID), email, password, name, roleName, photoPath, lastName, location, phone, title)
+		u.Add(cliOptions.Resolve("organizationID", organizationID), args[0], args[1], args[2], args[4], photoPath, args[3], location, phone, args[5])
 	},
 }
