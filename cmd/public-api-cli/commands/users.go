@@ -28,7 +28,7 @@ var usersCmd = &cobra.Command{
 	Long:    `Manage user`,
 	Run: func(cmd *cobra.Command, args []string) {
 		SetupLogging()
-		cmd.Help()
+		_ = cmd.Help()
 	},
 }
 
@@ -54,6 +54,9 @@ func init() {
 	updateUserCmd.Flags().StringVar(&phone, "phone", "", "New phone for the user")
 	updateUserCmd.Flags().StringVar(&location, "location", "", "New location for the user")
 	_ = updateUserCmd.MarkFlagRequired("email")
+	_ = updateUserCmd.MarkFlagRequired("name")
+	_ = updateUserCmd.MarkFlagRequired("lastName")
+	_ = updateUserCmd.MarkFlagRequired("title")
 	usersCmd.AddCommand(updateUserCmd)
 
 	addUserCmd.Flags().StringVar(&name, "name", "", "Full name")
@@ -66,6 +69,8 @@ func init() {
 	addUserCmd.Flags().StringVar(&location, "location", "", "Location")
 	_ = addUserCmd.MarkPersistentFlagRequired("email")
 	_ = addUserCmd.MarkFlagRequired("name")
+	_ = addUserCmd.MarkFlagRequired("lastName")
+	_ = addUserCmd.MarkFlagRequired("title")
 	_ = addUserCmd.MarkFlagRequired("role")
 	_ = addUserCmd.MarkFlagRequired("password")
 	usersCmd.AddCommand(addUserCmd)
