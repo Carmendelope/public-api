@@ -51,6 +51,8 @@ const emptyNodeId = "node_id cannot be empty"
 const emptyEmail = "email cannot be empty"
 const invalidUpdateUserRequest = "no parameter marked to update"
 const emptyName = "name cannot be empty"
+const emptyLastName = "last_name cannot be empty"
+const emptyTitle = "title cannot be empty"
 const emptyPassword = "password cannot be empty"
 const emptyNewPassword = "new password cannot be empty"
 const emptyRoleName = "role_name cannot be empty"
@@ -167,7 +169,7 @@ func ValidAppInstanceID(appInstanceID *grpc_application_go.AppInstanceId) derror
 func ValidAppDescriptorFormat(jsonContent []byte) derrors.Error {
 
 	// Initialize JSON in case it is not working
-	InitializeJSON()
+	_ = InitializeJSON()
 
 	// TODO: commented until inbound-outbounds are consolidated∫
 	//err := AppDescValidator.appDescriptorSchema.Validate(bytes.NewReader(jsonContent))
@@ -249,6 +251,12 @@ func ValidAddUserRequest(request *grpc_public_api_go.AddUserRequest) derrors.Err
 	if request.Name == "" {
 		return derrors.NewInvalidArgumentError(emptyName)
 	}
+	if request.LastName == "" {
+		return derrors.NewInvalidArgumentError(emptyLastName)
+	}
+	if request.Title == "" {
+		return derrors.NewInvalidArgumentError(emptyTitle)
+	}
 	if request.RoleName == "" {
 		return derrors.NewInvalidArgumentError(emptyRoleName)
 	}
@@ -261,6 +269,15 @@ func ValidUpdateUserRequest(updateUserRequest *grpc_user_go.UpdateUserRequest) d
 	}
 	if updateUserRequest.Email == "" {
 		return derrors.NewInvalidArgumentError(emptyEmail)
+	}
+	if updateUserRequest.UpdateName && updateUserRequest.Name == "" {
+		return derrors.NewInvalidArgumentError(emptyName)
+	}
+	if updateUserRequest.UpdateLastName && updateUserRequest.LastName == "" {
+		return derrors.NewInvalidArgumentError(emptyLastName)
+	}
+	if updateUserRequest.UpdateTitle && updateUserRequest.Title == "" {
+		return derrors.NewInvalidArgumentError(emptyTitle)
 	}
 	return nil
 }

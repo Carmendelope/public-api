@@ -27,8 +27,6 @@ var phone string
 var location string
 var lastName string
 
-var newPassword string
-
 var key string
 var value string
 
@@ -41,7 +39,6 @@ var zipCode string
 var photoPath string
 
 var name string
-var roleName string
 var roleID string
 
 var organizationID string

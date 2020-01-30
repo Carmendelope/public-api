@@ -545,7 +545,7 @@
   revision = "58ce757ed39bbbe3bf3960b90ded218031b35389"
 
 [[projects]]
-  digest = "1:7af390490e636a6adc9c76b37a3c823195fbf375a02c4d9506b4dd49d5d2409a"
+  digest = "1:e89b808a6b6fbb2a11b753dd2382c7ec3bcb1a76fc646f6af42d4e7a93d0843b"
   name = "google.golang.org/grpc"
   packages = [
     ".",
@@ -589,8 +589,8 @@
     "test/bufconn",
   ]
   pruneopts = ""
-  revision = "f5b0812e6fe574d90da76b205e9eb51f6ddb1919"
-  version = "v1.26.0"
+  revision = "a89bee78ddf0f67f27c06b1b2b1b071c18408724"
+  version = "v1.27.0"
 
 [[projects]]
   digest = "1:eb53021a8aa3f599d29c7102e65026242bdedce998a54837dc67f14b6a97c5fd"
