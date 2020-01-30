@@ -52,7 +52,7 @@
 
 [[constraint]]
     name="github.com/nalej/grpc-authx-go"
-    version="=v0.0.53"
+    version="=v0.0.57"
 
 [[constraint]]
     name="github.com/nalej/grpc-user-go"
@@ -60,7 +60,7 @@
 
 [[constraint]]
     name="github.com/nalej/grpc-user-manager-go"
-    version="=v0.0.30"
+    version="=v0.0.31"
 
 [[constraint]]
     name="github.com/nalej/grpc-device-manager-go"
@@ -72,7 +72,7 @@
 
 [[constraint]]
     name="github.com/nalej/grpc-login-api-go"
-    version="=v0.0.22"
+    version="=v0.0.23"
 
 [[constraint]]
     name="github.com/nalej/grpc-common-go"
@@ -84,7 +84,7 @@
 
 [[constraint]]
     name="github.com/nalej/authx"
-    version="=v0.4.0"
+    branch= "master"
 
 [[constraint]]
     name="github.com/rs/zerolog"
