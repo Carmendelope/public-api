@@ -53,6 +53,8 @@ func init() {
 	clustersCmd.AddCommand(installClustersCmd)
 
 	listClustersCmd.Flags().BoolVarP(&watch, "watch", "w", false, "Watch for changes")
+	listClustersCmd.Flags().StringVar(&orderBy, "orderBy", "name", "field by which the clusters will be sorted (name, status or state)")
+	listClustersCmd.Flags().BoolVar(&desc, "desc", false, "Sort clusters in descending order")
 	clustersCmd.AddCommand(listClustersCmd)
 
 	updateClusterCmd.Flags().Float64Var(&millicoresConversionFactor, "millicoresConversionFactor", math.NaN(), "Modify the millicoresConversionFactor assigned to the cluster")
@@ -155,7 +157,7 @@ var listClustersCmd = &cobra.Command{
 			cliOptions.ResolveAsInt("port", nalejPort),
 			insecure, useTLS,
 			cliOptions.Resolve("cacert", caCertPath), cliOptions.Resolve("output", output), cliOptions.ResolveAsInt("labelLength", labelLength))
-		c.List(cliOptions.Resolve("organizationID", organizationID), watch)
+		c.List(cliOptions.Resolve("organizationID", organizationID), watch, orderBy, desc)
 	},
 }
 

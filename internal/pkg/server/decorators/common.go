@@ -33,6 +33,7 @@ type DecoratorResponse struct {
 	AppInstanceList   []*grpc_public_api_go.AppInstance
 	LogResponseList   []*grpc_application_manager_go.LogEntryResponse
 	SettingList       []*grpc_organization_manager_go.Setting
+	ClusterList       []*grpc_public_api_go.Cluster
 	Error             derrors.Error
 }
 
@@ -57,6 +58,8 @@ func ApplyDecorator(result interface{}, decorator Decorator) *DecoratorResponse 
 		return FromLogEntryResponse(result, decorator)
 	case []*grpc_organization_manager_go.Setting:
 		return FromSetting(result, decorator)
+	case []*grpc_public_api_go.Cluster:
+		return FromClusterList(result, decorator)
 	}
 	return &DecoratorResponse{
 		Error: derrors.NewInvalidArgumentError("unable to apply decorator"),
@@ -95,6 +98,33 @@ func FromAppDescriptorList(result []*grpc_application_go.AppDescriptor, decorato
 
 	return &DecoratorResponse{
 		AppDescriptorList: orderedResult,
+	}
+}
+
+func FromClusterList(result []*grpc_public_api_go.Cluster, decorator Decorator) *DecoratorResponse {
+	// convert to []interface{}
+	toGenericList := make([]interface{}, len(result))
+	for i, d := range result {
+		toGenericList[i] = *d
+	}
+
+	// call to apply
+	ordered, err := decorator.Apply(toGenericList)
+	if err != nil {
+		return &DecoratorResponse{
+			Error: err,
+		}
+	}
+
+	// reconvert to grpc_public_api_go.Cluster
+	orderedResult := make([]*grpc_public_api_go.Cluster, len(result))
+	for i, d := range ordered {
+		aux := d.(grpc_public_api_go.Cluster)
+		orderedResult[i] = &aux
+	}
+
+	return &DecoratorResponse{
+		ClusterList: orderedResult,
 	}
 }
 

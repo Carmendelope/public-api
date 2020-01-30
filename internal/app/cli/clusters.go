@@ -18,6 +18,7 @@ package cli
 
 import (
 	"fmt"
+	grpc_common_go "github.com/nalej/grpc-common-go"
 	"io/ioutil"
 	"math"
 	"reflect"
@@ -25,7 +26,6 @@ import (
 
 	"github.com/nalej/grpc-infrastructure-go"
 	"github.com/nalej/grpc-installer-go"
-	"github.com/nalej/grpc-organization-go"
 	"github.com/nalej/grpc-public-api-go"
 	"github.com/rs/zerolog/log"
 	"google.golang.org/grpc"
@@ -134,9 +134,21 @@ func (c *Clusters) Info(organizationID string, clusterID string) {
 	c.PrintResultOrError(retrieved, err, "cannot obtain cluster information")
 }
 
-func (c *Clusters) List(organizationID string, watch bool) {
+func (c *Clusters) List(organizationID string, watch bool, orderBy string, desc bool) {
 	if organizationID == "" {
 		log.Fatal().Msg("organizationID cannot be empty")
+	}
+	// check the name of the filed to sort by is correct
+	orderByColumn := ""
+	if orderBy != "" {
+		switch orderBy {
+		case "name":
+			orderByColumn = orderBy
+		case "status", "state":
+			orderByColumn = orderBy + "_name"
+		default:
+			log.Fatal().Msg("only is allowed to sort by name, status or state")
+		}
 	}
 
 	c.load()
@@ -144,8 +156,24 @@ func (c *Clusters) List(organizationID string, watch bool) {
 	client, conn := c.getClient()
 	defer conn.Close()
 	defer cancel()
-	orgID := &grpc_organization_go.OrganizationId{
+
+	var order *grpc_common_go.OrderOptions
+	if orderBy != "" {
+		descOrder := grpc_common_go.Order_ASC
+		if desc == true {
+			descOrder = grpc_common_go.Order_DESC
+		}
+		order = &grpc_common_go.OrderOptions{
+			Field:                orderByColumn,
+			Order:                descOrder,
+		}
+	}else{
+		order = nil
+	}
+
+	orgID := &grpc_public_api_go.ListRequest{
 		OrganizationId: organizationID,
+		Order: order,
 	}
 	previous, err := client.List(ctx, orgID)
 	c.PrintResultOrError(previous, err, "cannot obtain cluster list")
