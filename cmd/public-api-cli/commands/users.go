@@ -34,11 +34,12 @@ var usersCmd = &cobra.Command{
 
 func init() {
 	rootCmd.AddCommand(usersCmd)
-	usersCmd.AddCommand(userInfoCmd)
 	usersCmd.AddCommand(userListCmd)
 	usersCmd.AddCommand(deleteUserCmd)
-
 	usersCmd.AddCommand(resetPasswordCmd)
+
+	usersCmd.AddCommand(userInfoCmd)
+	userInfoCmd.Flags().StringVar(&email, "email", "", "User email")
 
 	updateUserCmd.Flags().StringVar(&name, "name", "", "New name for the user")
 	updateUserCmd.Flags().StringVar(&photoPath, "photoPath", "", "Path to the new user photo")
@@ -55,9 +56,8 @@ func init() {
 }
 
 var userInfoCmd = &cobra.Command{
-	Use:     "info <email>",
+	Use:     "info",
 	Aliases: []string{"get"},
-	Args:    cobra.ExactArgs(1),
 	Short:   "Get user info",
 	Long:    `Get user info`,
 	Run: func(cmd *cobra.Command, args []string) {
@@ -67,7 +67,7 @@ var userInfoCmd = &cobra.Command{
 			cliOptions.ResolveAsInt("port", nalejPort),
 			insecure, useTLS,
 			cliOptions.Resolve("cacert", caCertPath), cliOptions.Resolve("output", output), cliOptions.ResolveAsInt("labelLength", labelLength))
-		u.Info(cliOptions.Resolve("organizationID", organizationID), args[0])
+		u.Info(cliOptions.Resolve("organizationID", organizationID), cliOptions.Resolve("email", email))
 	},
 }
 
