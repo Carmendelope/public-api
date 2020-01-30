@@ -107,7 +107,7 @@ var deleteUserCmd = &cobra.Command{
 var resetPasswordCmd = &cobra.Command{
 	Use:     "reset-password <email> <newPassword>",
 	Aliases: []string{"reset"},
-	Args:    cobra.ExactArgs(3),
+	Args:    cobra.ExactArgs(2),
 	Short:   "Reset the password of a user",
 	Long:    `Reset the password of a user`,
 	Run: func(cmd *cobra.Command, args []string) {
