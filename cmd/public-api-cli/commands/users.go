@@ -105,7 +105,7 @@ var deleteUserCmd = &cobra.Command{
 }
 
 var resetPasswordCmd = &cobra.Command{
-	Use:     "reset-password <email> <oldPassword> <newPassword>",
+	Use:     "reset-password <email> <newPassword>",
 	Aliases: []string{"reset"},
 	Args:    cobra.ExactArgs(3),
 	Short:   "Reset the password of a user",
@@ -117,7 +117,7 @@ var resetPasswordCmd = &cobra.Command{
 			cliOptions.ResolveAsInt("port", nalejPort),
 			insecure, useTLS,
 			cliOptions.Resolve("cacert", caCertPath), cliOptions.Resolve("output", output), cliOptions.ResolveAsInt("labelLength", labelLength))
-		u.ChangePassword(cliOptions.Resolve("organizationID", organizationID), args[0], args[1], args[2])
+		u.ChangePassword(cliOptions.Resolve("organizationID", organizationID), args[0], args[1])
 	},
 }
 

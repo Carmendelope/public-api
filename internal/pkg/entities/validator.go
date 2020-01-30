@@ -380,9 +380,6 @@ func ValidChangePasswordRequest(request *grpc_user_manager_go.ChangePasswordRequ
 	if request.OrganizationId == "" {
 		return derrors.NewInvalidArgumentError(emptyOrganizationId)
 	}
-	if request.Password == "" {
-		return derrors.NewInvalidArgumentError(emptyPassword)
-	}
 	if request.NewPassword == "" {
 		return derrors.NewInvalidArgumentError(emptyNewPassword)
 	}

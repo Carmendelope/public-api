@@ -155,7 +155,7 @@ func (u *Users) Delete(organizationID string, email string) {
 }
 
 // Reset the password of a user.
-func (u *Users) ChangePassword(organizationID string, email string, password string, newPassword string) {
+func (u *Users) ChangePassword(organizationID string, email string, newPassword string) {
 	if organizationID == "" {
 		log.Fatal().Msg("organizationID cannot be empty")
 	}
@@ -168,7 +168,6 @@ func (u *Users) ChangePassword(organizationID string, email string, password str
 	passwordRequest := &grpc_user_manager_go.ChangePasswordRequest{
 		OrganizationId: organizationID,
 		Email:          email,
-		Password:       password,
 		NewPassword:    newPassword,
 	}
 	done, err := client.ChangePassword(ctx, passwordRequest)
