@@ -28,9 +28,9 @@ import (
 	"fmt"
 	"github.com/nalej/authx/pkg/interceptor"
 	"github.com/nalej/grpc-authx-go"
+	grpc_common_go "github.com/nalej/grpc-common-go"
 	"github.com/nalej/grpc-infrastructure-go"
 	"github.com/nalej/grpc-infrastructure-manager-go"
-	"github.com/nalej/grpc-organization-go"
 	"github.com/nalej/grpc-organization-manager-go"
 	"github.com/nalej/grpc-public-api-go"
 	"github.com/nalej/grpc-utils/pkg/test"
@@ -159,10 +159,14 @@ var _ = ginkgo.Describe("Clusters", func() {
 		}
 	})
 
-	ginkgo.It("should be able to list the clusters", func() {
+	ginkgo.FIt("should be able to list the clusters", func() {
 
-		organizationID := &grpc_organization_go.OrganizationId{
+		organizationID := &grpc_public_api_go.ListRequest{
 			OrganizationId: targetOrganization.OrganizationId,
+			Order: &grpc_common_go.OrderOptions{
+				Field:                "name",
+				Order:                grpc_common_go.Order_ASC,
+			},
 		}
 
 		tests := make([]utils.TestResult, 0)
@@ -173,7 +177,7 @@ var _ = ginkgo.Describe("Clusters", func() {
 		for _, test := range tests {
 			ctx, cancel := ithelpers.GetContext(test.Token)
 			defer cancel()
-			clusters, err := client.List(ctx, organizationID)
+			clusters, err := client.List(ctx,  organizationID)
 			if test.Success {
 				gomega.Expect(err).To(gomega.Succeed())
 				gomega.Expect(len(clusters.Clusters)).To(gomega.Equal(1))

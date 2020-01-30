@@ -59,7 +59,7 @@ func (m *Manager) List(organizationID *grpc_public_api_go.ListRequest) (*grpc_or
 	}
 	// if sorting requested -> apply the decorator
 	if organizationID.Order != nil {
-		sortOptions := decorators.OrderOptions{Field: organizationID.Order.Field, Asc: organizationID.Order.Order == grpc_common_go.Order_ASC}
+		sortOptions := decorators.NewOrderOptions(*organizationID.Order)
 		sortingResponse := decorators.ApplyDecorator(list.Settings, decorators.NewOrderDecorator(sortOptions))
 		if sortingResponse.Error != nil {
 			return nil, conversions.ToGRPCError(sortingResponse.Error)

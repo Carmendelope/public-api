@@ -27,6 +27,7 @@ import (
 	"github.com/nalej/grpc-utils/pkg/conversions"
 	"github.com/nalej/public-api/internal/pkg/entities"
 	"github.com/nalej/public-api/internal/pkg/server/common"
+	"github.com/nalej/public-api/internal/pkg/server/decorators"
 	"github.com/rs/zerolog/log"
 	"github.com/satori/go.uuid"
 )
@@ -165,10 +166,12 @@ func (m *Manager) Info(clusterID *grpc_infrastructure_go.ClusterId) (*grpc_publi
 }
 
 // List all the clusters in an organization.
-func (m *Manager) List(organizationID *grpc_organization_go.OrganizationId) (*grpc_public_api_go.ClusterList, error) {
+func (m *Manager) List(request *grpc_public_api_go.ListRequest) (*grpc_public_api_go.ClusterList, error) {
 	ctx, cancel := common.GetContext()
 	defer cancel()
-	list, err := m.infraClient.ListClusters(ctx, organizationID)
+	list, err := m.infraClient.ListClusters(ctx, &grpc_organization_go.OrganizationId{
+		OrganizationId:       request.OrganizationId,
+	})
 	if err != nil {
 		return nil, err
 	}
@@ -180,6 +183,16 @@ func (m *Manager) List(organizationID *grpc_organization_go.OrganizationId) (*gr
 		}
 		clusters = append(clusters, toAdd)
 	}
+
+	if request.Order != nil  {
+		sortOptions := decorators.NewOrderOptions(*request.Order)
+		sortedClusters := decorators.ApplyDecorator(clusters, decorators.NewOrderDecorator(sortOptions))
+		if sortedClusters.Error != nil {
+			return nil, conversions.ToGRPCError(sortedClusters.Error)
+		}
+		clusters = sortedClusters.ClusterList
+	}
+
 	return &grpc_public_api_go.ClusterList{
 		Clusters: clusters,
 	}, nil

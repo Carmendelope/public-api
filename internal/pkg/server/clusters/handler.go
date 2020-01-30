@@ -22,7 +22,6 @@ import (
 	"github.com/nalej/grpc-common-go"
 	"github.com/nalej/grpc-infrastructure-go"
 	"github.com/nalej/grpc-infrastructure-manager-go"
-	"github.com/nalej/grpc-organization-go"
 	"github.com/nalej/grpc-provisioner-go"
 	"github.com/nalej/grpc-public-api-go"
 	"github.com/nalej/grpc-utils/pkg/conversions"
@@ -156,19 +155,19 @@ func (h *Handler) Info(ctx context.Context, clusterID *grpc_infrastructure_go.Cl
 }
 
 // List all the clusters in an organization.
-func (h *Handler) List(ctx context.Context, organizationID *grpc_organization_go.OrganizationId) (*grpc_public_api_go.ClusterList, error) {
+func (h *Handler) List(ctx context.Context, request *grpc_public_api_go.ListRequest) (*grpc_public_api_go.ClusterList, error) {
 	rm, err := authhelper.GetRequestMetadata(ctx)
 	if err != nil {
 		return nil, conversions.ToGRPCError(err)
 	}
-	if organizationID.OrganizationId != rm.OrganizationID {
+	if request.OrganizationId != rm.OrganizationID {
 		return nil, derrors.NewPermissionDeniedError("cannot access requested OrganizationID")
 	}
-	err = entities.ValidOrganizationId(organizationID)
+	err = entities.ValidListRequest(request)
 	if err != nil {
 		return nil, conversions.ToGRPCError(err)
 	}
-	return h.Manager.List(organizationID)
+	return h.Manager.List(request)
 }
 
 // Update the cluster information.

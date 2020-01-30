@@ -20,7 +20,9 @@ import (
 	"github.com/nalej/derrors"
 	"github.com/nalej/grpc-application-go"
 	"github.com/nalej/grpc-application-manager-go"
+	grpc_common_go "github.com/nalej/grpc-common-go"
 	"github.com/nalej/grpc-organization-manager-go"
+	grpc_public_api_go "github.com/nalej/grpc-public-api-go"
 	"github.com/nalej/public-api/internal/pkg/utils"
 	"github.com/rs/zerolog/log"
 	"reflect"
@@ -32,6 +34,7 @@ import (
 var AppDescriptorListAllowedFields = []string{"name"}
 var LogResponseAllowedFields = []string{"timestamp"}
 var SettingsAllowedFields = []string{"key"}
+var ClusterListAllowedFields = []string{"name", "status_name", "state_name"}
 
 // OrderOptions represents the ordering to be applied
 type OrderOptions struct {
@@ -39,6 +42,10 @@ type OrderOptions struct {
 	Field string
 	// ascending or descending order
 	Asc bool
+}
+
+func NewOrderOptions (order grpc_common_go.OrderOptions) OrderOptions {
+	return OrderOptions{Field: order.Field, Asc: order.Order == grpc_common_go.Order_ASC}
 }
 
 // OrderDecorator implements Decorator interface
@@ -61,6 +68,8 @@ func (od *OrderDecorator) Validate(result interface{}) derrors.Error {
 		return od.ValidateSortingDecorator(LogResponseAllowedFields)
 	case []*grpc_organization_manager_go.Setting:
 		return od.ValidateSortingDecorator(SettingsAllowedFields)
+	case []*grpc_public_api_go.Cluster:
+		return od.ValidateSortingDecorator(ClusterListAllowedFields)
 	}
 
 	return derrors.NewInvalidArgumentError("sorting decorator not allowed")
