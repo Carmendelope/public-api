@@ -164,16 +164,16 @@ func (c *Clusters) List(organizationID string, watch bool, orderBy string, desc 
 			descOrder = grpc_common_go.Order_DESC
 		}
 		order = &grpc_common_go.OrderOptions{
-			Field:                orderByColumn,
-			Order:                descOrder,
+			Field: orderByColumn,
+			Order: descOrder,
 		}
-	}else{
+	} else {
 		order = nil
 	}
 
 	orgID := &grpc_public_api_go.ListRequest{
 		OrganizationId: organizationID,
-		Order: order,
+		Order:          order,
 	}
 	previous, err := client.List(ctx, orgID)
 	c.PrintResultOrError(previous, err, "cannot obtain cluster list")
@@ -242,12 +242,15 @@ func (c *Clusters) ModifyClusterLabels(organizationID string, clusterID string, 
 	c.PrintResultOrError(updated, err, "cannot update cluster labels")
 }
 
-func (c *Clusters) Update(organizationID string, clusterID string, newName string, millicoresConversionFactor float64) {
+func (c *Clusters) Update(organizationID string, clusterID string, updateName bool, newName string, millicoresConversionFactor float64) {
 	if organizationID == "" {
 		log.Fatal().Msg("organizationID cannot be empty")
 	}
 	if clusterID == "" {
 		log.Fatal().Msg("clusterID cannot be empty")
+	}
+	if updateName && newName == "" {
+		log.Fatal().Msg("name cannot be empty")
 	}
 
 	c.load()
@@ -258,7 +261,7 @@ func (c *Clusters) Update(organizationID string, clusterID string, newName strin
 	updateRequest := &grpc_public_api_go.UpdateClusterRequest{
 		OrganizationId:                   organizationID,
 		ClusterId:                        clusterID,
-		UpdateName:                       newName != "",
+		UpdateName:                       updateName,
 		Name:                             newName,
 		UpdateMillicoresConversionFactor: !math.IsNaN(millicoresConversionFactor),
 		MillicoresConversionFactor:       millicoresConversionFactor,

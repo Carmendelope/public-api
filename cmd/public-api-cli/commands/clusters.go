@@ -57,6 +57,7 @@ func init() {
 	listClustersCmd.Flags().BoolVar(&desc, "desc", false, "Sort clusters in descending order")
 	clustersCmd.AddCommand(listClustersCmd)
 
+	updateClusterCmd.Flags().StringVar(&clusterName, "name", "", "new name")
 	updateClusterCmd.Flags().Float64Var(&millicoresConversionFactor, "millicoresConversionFactor", math.NaN(), "Modify the millicoresConversionFactor assigned to the cluster")
 	clustersCmd.AddCommand(updateClusterCmd)
 
@@ -203,7 +204,8 @@ var updateClusterCmd = &cobra.Command{
 			cliOptions.ResolveAsInt("port", nalejPort),
 			insecure, useTLS,
 			cliOptions.Resolve("cacert", caCertPath), cliOptions.Resolve("output", output), cliOptions.ResolveAsInt("labelLength", labelLength))
-		c.Update(cliOptions.Resolve("organizationID", organizationID), args[0], "", millicoresConversionFactor)
+		c.Update(cliOptions.Resolve("organizationID", organizationID), args[0],
+			cmd.Flag("name").Changed, clusterName, millicoresConversionFactor)
 	},
 }
 
