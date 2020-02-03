@@ -44,7 +44,7 @@ type OrderOptions struct {
 	Asc bool
 }
 
-func NewOrderOptions (order grpc_common_go.OrderOptions) OrderOptions {
+func NewOrderOptions(order grpc_common_go.OrderOptions) OrderOptions {
 	return OrderOptions{Field: order.Field, Asc: order.Order == grpc_common_go.Order_ASC}
 }
 

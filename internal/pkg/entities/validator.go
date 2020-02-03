@@ -219,6 +219,10 @@ func ValidUpdateClusterRequest(request *grpc_public_api_go.UpdateClusterRequest)
 	if (request.AddLabels || request.RemoveLabels) && (len(request.Labels) == 0) {
 		return derrors.NewInvalidArgumentError(emptyLabels)
 	}
+	if request.UpdateName && request.Name == "" {
+		return derrors.NewInvalidArgumentError(emptyName)
+
+	}
 	return nil
 }
 

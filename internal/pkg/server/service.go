@@ -149,7 +149,7 @@ func (s *Service) GetClients() (*Clients, derrors.Error) {
 	downloadClient := grpc_log_download_manager_go.NewLogDownloadManagerClient(logDownConn)
 
 	return &Clients{oClient, cClient, nClient, infraClient, umClient,
-		appClient, deviceClient,unifLoggClient, mmClient, amClient,
+		appClient, deviceClient, unifLoggClient, mmClient, amClient,
 		eicClient, invClient, agentClient, appNetClient,
 		provClient, downloadClient}, nil
 }

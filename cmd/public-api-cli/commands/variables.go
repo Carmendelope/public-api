@@ -95,6 +95,7 @@ var watch bool
 
 // cluster update
 var millicoresConversionFactor float64
+var clusterName string
 var orderBy string
 
 var outputPath string

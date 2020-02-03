@@ -170,7 +170,7 @@ func (m *Manager) List(request *grpc_public_api_go.ListRequest) (*grpc_public_ap
 	ctx, cancel := common.GetContext()
 	defer cancel()
 	list, err := m.infraClient.ListClusters(ctx, &grpc_organization_go.OrganizationId{
-		OrganizationId:       request.OrganizationId,
+		OrganizationId: request.OrganizationId,
 	})
 	if err != nil {
 		return nil, err
@@ -184,7 +184,7 @@ func (m *Manager) List(request *grpc_public_api_go.ListRequest) (*grpc_public_ap
 		clusters = append(clusters, toAdd)
 	}
 
-	if request.Order != nil  {
+	if request.Order != nil {
 		sortOptions := decorators.NewOrderOptions(*request.Order)
 		sortedClusters := decorators.ApplyDecorator(clusters, decorators.NewOrderDecorator(sortOptions))
 		if sortedClusters.Error != nil {

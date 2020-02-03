@@ -164,8 +164,8 @@ var _ = ginkgo.Describe("Clusters", func() {
 		organizationID := &grpc_public_api_go.ListRequest{
 			OrganizationId: targetOrganization.OrganizationId,
 			Order: &grpc_common_go.OrderOptions{
-				Field:                "name",
-				Order:                grpc_common_go.Order_ASC,
+				Field: "name",
+				Order: grpc_common_go.Order_ASC,
 			},
 		}
 
@@ -177,7 +177,7 @@ var _ = ginkgo.Describe("Clusters", func() {
 		for _, test := range tests {
 			ctx, cancel := ithelpers.GetContext(test.Token)
 			defer cancel()
-			clusters, err := client.List(ctx,  organizationID)
+			clusters, err := client.List(ctx, organizationID)
 			if test.Success {
 				gomega.Expect(err).To(gomega.Succeed())
 				gomega.Expect(len(clusters.Clusters)).To(gomega.Equal(1))
